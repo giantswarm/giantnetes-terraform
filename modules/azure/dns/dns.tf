@@ -1,4 +1,4 @@
-variable "azure_location" {
+variable "location" {
   type = "string"
 }
 
@@ -35,7 +35,7 @@ resource "azurerm_dns_zone" "dns_zone" {
 
 resource "azurerm_dns_ns_record" "dns_zone_propagation" {
   count               = "${var.root_dns_zone_name == "" ? 0 : 1}"
-  name                = "${var.cluster_name}.${var.azure_location}"
+  name                = "${var.cluster_name}.${var.location}"
   zone_name           = "${var.root_dns_zone_name}"
   resource_group_name = "${var.root_dns_zone_rg}"
   ttl                 = 300

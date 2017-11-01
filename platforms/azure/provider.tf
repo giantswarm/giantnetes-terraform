@@ -1,7 +1,3 @@
-terraform {
-  backend "azurerm" {}
-}
-
 provider "azurerm" {
   environment = "${var.azure_cloud}"
 }

@@ -1,4 +1,4 @@
-variable "azure_location" {
+variable "location" {
   type = "string"
 }
 
@@ -7,7 +7,7 @@ variable "cluster_name" {
 }
 
 resource "azurerm_resource_group" "cluster_rg" {
-  location = "${var.azure_location}"
+  location = "${var.location}"
   name     = "${var.cluster_name}"
 
   tags {

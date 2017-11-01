@@ -1,16 +1,23 @@
 # Installation steps (IN PROGRESS)
 
+## Prerequisites
+
+Common:
+- az cli configured
+
+## Prepare terraform environment
+
 ```
 export CLUSTER_NAME='cluster1'
 mkdir -p build/${CLUSTER_NAME}
 cp -r examples/azure/* build/${CLUSTER_NAME}
+cd build/${CLUSTER_NAME}
 ```
 
-Edit `build/${CLUSTER_NAME}/envs.sh`.
+Edit `envs.sh`.
 
 ```
-source build/${CLUSTER_NAME}/envs.sh
-terraform init -backend-config=build/ant/backend.conf platforms/azure/stage-common
+source envs.sh
 ```
 
 ## Stages
@@ -22,11 +29,13 @@ Creates:
 - dns zone and propagates new zone in root dns zone
 
 ```
-terraform plan platforms/azure/stage-common
+terraform workspace new stage-common
 ```
 
 ```
-terraform apply platforms/azure/stage-common
+terraform init ../../platforms/azure/stage-common
+terraform plan ../../platforms/azure/stage-common
+terraform apply ../../platforms/azure/stage-common
 ```
 
 TBD
