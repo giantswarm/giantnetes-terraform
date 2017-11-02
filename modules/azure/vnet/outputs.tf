@@ -21,3 +21,7 @@ output "bastion_nsg_name" {
 output "bastion_network_interface_ids" {
   value = ["${azurerm_network_interface.bastion.*.id}"]
 }
+
+output "vault_network_interface_ids" {
+  value = ["${azurerm_network_interface.vault.id}"]
+}

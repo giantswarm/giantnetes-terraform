@@ -20,3 +20,11 @@ resource "azurerm_subnet" "bastion_subnet" {
   address_prefix            = "${cidrsubnet(var.vnet_cidr, 8, 0)}"
   network_security_group_id = "${azurerm_network_security_group.bastion.id}"
 }
+
+resource "azurerm_subnet" "vault_subnet" {
+  name                      = "${var.cluster_name}_vault_subnet"
+  resource_group_name       = "${var.resource_group_name}"
+  virtual_network_name      = "${azurerm_virtual_network.cluster_vnet.name}"
+  address_prefix            = "${cidrsubnet(var.vnet_cidr, 8, 1)}"
+  network_security_group_id = "${azurerm_network_security_group.vault.id}"
+}

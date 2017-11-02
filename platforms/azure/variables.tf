@@ -20,6 +20,28 @@ variable "g8s_vault_token" {
   description = "Vault token used by nodes for bootstrapping. Should be defined after Vault is installed."
 }
 
+### Compute and Storage ###
+
+variable "bastion_vm_size" {
+  type    = "string"
+  default = "Standard_A1"
+}
+
+variable "bastion_storage_type" {
+  type    = "string"
+  default = "Standard_LRS"
+}
+
+variable "vault_vm_size" {
+  type    = "string"
+  default = "Standard_DS1_v2"
+}
+
+variable "vault_storage_type" {
+  type    = "string"
+  default = "Premium_LRS"
+}
+
 ### Container Linux ###
 
 variable "container_linux_channel" {
@@ -34,29 +56,33 @@ variable "container_linux_version" {
 
 ### DNS ###
 
-variable "g8s_domain" {
+variable "base_domain" {
   type        = "string"
   description = "Base domain for g8s cluster (i.e. $cluster_name.$azure_location.azure.gigantic.io)."
 }
 
-variable "g8s_vault_dns" {
+variable "vault_dns" {
   type        = "string"
-  description = "FQDN for vault (i.e. vault.$g8s_domain)."
+  description = "vault DNS prefix (i.e. vault)."
+  default     = "vault"
 }
 
-variable "g8s_api_dns" {
+variable "api_dns" {
   type        = "string"
-  description = "FQDN for api (i.e. g8s.$g8s_domain)."
+  description = "FQDN for api (i.e. g8s)."
+  default     = "g8s"
 }
 
-variable "g8s_etcd_dns" {
+variable "etcd_dns" {
   type        = "string"
-  description = "FQDN for etcd (i.e. etcd.$g8s_domain)."
+  description = "FQDN for etcd (i.e. etcd)."
+  default     = "etcd"
 }
 
-variable "g8s_ingress_dns" {
+variable "ingress_dns" {
   type        = "string"
-  description = "FQDN for ingress (i.e. ingress.g8s.$g8s_domain)."
+  description = "FQDN for ingress (i.e. ingress)."
+  default     = "ingress"
 }
 
 variable "root_dns_zone_name" {
