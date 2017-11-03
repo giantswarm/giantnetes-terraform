@@ -15,7 +15,7 @@ variable "azure_cloud" {
   default     = "AZUREPUBLICCLOUD"
 }
 
-variable "g8s_vault_token" {
+variable "nodes_vault_token" {
   type        = "string"
   description = "Vault token used by nodes for bootstrapping. Should be defined after Vault is installed."
 }
@@ -38,6 +38,26 @@ variable "vault_vm_size" {
 }
 
 variable "vault_storage_type" {
+  type    = "string"
+  default = "Premium_LRS"
+}
+
+variable "master_vm_size" {
+  type    = "string"
+  default = "Standard_DS2_v2"
+}
+
+variable "master_storage_type" {
+  type    = "string"
+  default = "Premium_LRS"
+}
+
+variable "worker_vm_size" {
+  type    = "string"
+  default = "Standard_DS2_v2"
+}
+
+variable "worker_storage_type" {
   type    = "string"
   default = "Premium_LRS"
 }

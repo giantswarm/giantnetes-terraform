@@ -22,6 +22,50 @@ output "bastion_network_interface_ids" {
   value = ["${azurerm_network_interface.bastion.*.id}"]
 }
 
+output "vault_subnet" {
+  value = "${azurerm_subnet.vault_subnet.id}"
+}
+
+output "vault_subnet_name" {
+  value = "${azurerm_subnet.vault_subnet.name}"
+}
+
+output "vault_cidr" {
+  value = "${azurerm_subnet.vault_subnet.address_prefix}"
+}
+
+output "vault_nsg_name" {
+  value = "${azurerm_network_security_group.vault.name}"
+}
+
 output "vault_network_interface_ids" {
   value = ["${azurerm_network_interface.vault.id}"]
+}
+
+output "worker_subnet" {
+  value = "${azurerm_subnet.worker_subnet.id}"
+}
+
+output "worker_subnet_name" {
+  value = "${azurerm_subnet.worker_subnet.name}"
+}
+
+output "worker_cidr" {
+  value = "${azurerm_subnet.worker_subnet.address_prefix}"
+}
+
+output "worker_nsg_name" {
+  value = "${azurerm_network_security_group.worker.name}"
+}
+
+output "api_backend_address_pool_id" {
+  value = "${azurerm_lb_backend_address_pool.api-lb.id}"
+}
+
+output "ingress_backend_address_pool_id" {
+  value = "${azurerm_lb_backend_address_pool.ingress-lb.id}"
+}
+
+output "vault_backend_address_pool_id" {
+  value = "${azurerm_lb_backend_address_pool.vault-lb.id}"
 }

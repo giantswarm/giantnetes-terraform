@@ -38,6 +38,7 @@ resource "azurerm_virtual_machine" "bastion" {
   os_profile {
     computer_name  = "bastion-${count.index}"
     admin_username = "core"
+
     # this should be fixed.
     admin_password = "ResetPassw0rdInCloudConfig"
     custom_data    = "${base64encode("${var.cloud_config_data}")}"

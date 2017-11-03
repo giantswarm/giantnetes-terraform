@@ -1,3 +1,19 @@
+resource "azurerm_lb" "vault_lb" {
+  name                = "${var.cluster_name}-vault-lb"
+  location            = "${var.location}"
+  resource_group_name = "${var.resource_group_name}"
+
+  frontend_ip_configuration {
+    name                          = "vault"
+    public_ip_address_id          = "${azurerm_public_ip.vault_ip.id}"
+    private_ip_address_allocation = "dynamic"
+  }
+
+  tags {
+    Environment = "${var.cluster_name}"
+  }
+}
+
 resource "azurerm_public_ip" "vault_ip" {
   name                         = "${var.cluster_name}_vault_ip"
   location                     = "${var.location}"
@@ -20,13 +36,13 @@ resource "azurerm_dns_a_record" "vault_dns" {
 resource "azurerm_lb_backend_address_pool" "vault-lb" {
   name                = "vault-lb-pool"
   resource_group_name = "${var.resource_group_name}"
-  loadbalancer_id     = "${azurerm_lb.cluster_lb.id}"
+  loadbalancer_id     = "${azurerm_lb.vault_lb.id}"
 }
 
 resource "azurerm_lb_rule" "vault_lb" {
   name                    = "${var.cluster_name}-vault-lb-rule-443-8200"
   resource_group_name     = "${var.resource_group_name}"
-  loadbalancer_id         = "${azurerm_lb.cluster_lb.id}"
+  loadbalancer_id         = "${azurerm_lb.vault_lb.id}"
   backend_address_pool_id = "${azurerm_lb_backend_address_pool.vault-lb.id}"
   probe_id                = "${azurerm_lb_probe.vault_lb.id}"
 
@@ -38,7 +54,7 @@ resource "azurerm_lb_rule" "vault_lb" {
 
 resource "azurerm_lb_probe" "vault_lb" {
   name                = "${var.cluster_name}-vault-lb-probe-8200"
-  loadbalancer_id     = "${azurerm_lb.cluster_lb.id}"
+  loadbalancer_id     = "${azurerm_lb.vault_lb.id}"
   resource_group_name = "${var.resource_group_name}"
   protocol            = "tcp"
   port                = 8200

@@ -16,6 +16,6 @@ export TF_VAR_base_domain=${TF_VAR_cluster_name}.${TF_VAR_azure_location}.azure.
 export TF_VAR_root_dns_zone_name="azure.gigantic.io"
 
 # will be added within the installation process
-export TF_VAR_g8s_vault_token=
+export TF_VAR_nodes_vault_token=
 
 # Override here any option from platforms/azure/variables.tf
