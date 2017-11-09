@@ -1,27 +1,12 @@
-data "template_file" "worker_cloud_config" {
-  template = "${file("${path.module}/../../../cloud-config/bastion.yaml.tmpl")}"
-
-  vars {
-    "CLUSTER_NAME"      = "${var.cluster_name}"
-    "ETCD_DOMAIN_NAME"  = "${var.etcd_dns}.${var.base_domain}"
-    "API_DOMAIN_NAME"   = "${var.api_dns}.${var.base_domain}"
-    "VAULT_DOMAIN_NAME" = "${var.vault_dns}.${var.base_domain}"
-    "G8S_VAULT_TOKEN"   = "${var.nodes_vault_token}"
-    "CALICO_CIDR"       = "${var.calico_cidr}"
-    "DOCKER_CIDR"       = "${var.docker_cidr}"
-    "K8S_DNS_IP"        = "${var.k8s_dns_ip}"
-    "DEFAULT_IPV4"      = "$${DEFAULT_IPV4}"
-  }
-}
-
 module "worker" {
   source = "../../../modules/azure/worker-ss"
 
   ingress_backend_address_pool_id = "${module.vnet.ingress_backend_address_pool_id}"
-  cloud_config_data               = "${data.template_file.worker_cloud_config.rendered}"
+  cloud_config_data               = "${file("${path.module}/../../../generated/master.sh")}"
   cluster_name                    = "${var.cluster_name}"
   container_linux_channel         = "${var.container_linux_channel}"
   container_linux_version         = "${module.container_linux.version}"
+  core_ssh_key                    = "${var.core_ssh_key}"
   docker_disk_size                = "100"
   location                        = "${var.azure_location}"
 

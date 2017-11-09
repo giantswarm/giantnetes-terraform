@@ -6,6 +6,11 @@ variable "container_linux_version" {
   type = "string"
 }
 
+variable "core_ssh_key" {
+  description = "ssh key for user core"
+  type        = "string"
+}
+
 variable "cloud_config_data" {
   type        = "string"
   description = "Generated cloud-config data"

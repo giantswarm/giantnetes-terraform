@@ -6,6 +6,11 @@ variable "container_linux_version" {
   type = "string"
 }
 
+variable "core_ssh_key" {
+  description = "ssh key for user core"
+  type        = "string"
+}
+
 variable "cloud_config_data" {
   type        = "string"
   description = "Generated cloud-config data"
@@ -26,6 +31,11 @@ variable "master_count" {
   description = "Count of master nodes to be created."
 }
 
+variable "network_interface_ids" {
+  type        = "list"
+  description = "List of NICs to use for Vault VMs"
+}
+
 variable "resource_group_name" {
   type = "string"
 }
@@ -33,11 +43,6 @@ variable "resource_group_name" {
 variable "storage_type" {
   type        = "string"
   description = "Storage account type"
-}
-
-variable "subnet_id" {
-  type        = "string"
-  description = "ID of master subnet"
 }
 
 variable "vm_size" {

@@ -38,14 +38,17 @@ resource "azurerm_virtual_machine" "bastion" {
   os_profile {
     computer_name  = "bastion-${count.index}"
     admin_username = "core"
-
-    # this should be fixed.
-    admin_password = "ResetPassw0rdInCloudConfig"
+    admin_password = ""
     custom_data    = "${base64encode("${var.cloud_config_data}")}"
   }
 
   os_profile_linux_config {
-    disable_password_authentication = false
+    disable_password_authentication = true
+
+    ssh_keys {
+      path     = "/home/core/.ssh/authorized_keys"
+      key_data = "${var.core_ssh_key}"
+    }
   }
 
   tags {

@@ -1,8 +1,7 @@
 resource "azurerm_network_interface" "vault" {
-  name                 = "${var.cluster_name}-vault"
-  location             = "${var.location}"
-  resource_group_name  = "${var.resource_group_name}"
-  enable_ip_forwarding = true
+  name                = "${var.cluster_name}-vault"
+  location            = "${var.location}"
+  resource_group_name = "${var.resource_group_name}"
 
   ip_configuration {
     private_ip_address_allocation           = "dynamic"

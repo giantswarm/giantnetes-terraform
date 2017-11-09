@@ -16,6 +16,8 @@ resource "azurerm_virtual_machine" "vault" {
 
   delete_os_disk_on_termination = true
 
+  delete_data_disks_on_termination = false
+
   storage_image_reference {
     publisher = "CoreOS"
     offer     = "CoreOS"
@@ -42,12 +44,17 @@ resource "azurerm_virtual_machine" "vault" {
   os_profile {
     computer_name  = "vault"
     admin_username = "core"
-    admin_password = "ResetPassw0rdInCloudConfig"
+    admin_password = ""
     custom_data    = "${base64encode("${var.cloud_config_data}")}"
   }
 
   os_profile_linux_config {
-    disable_password_authentication = false
+    disable_password_authentication = true
+
+    ssh_keys {
+      path     = "/home/core/.ssh/authorized_keys"
+      key_data = "${var.core_ssh_key}"
+    }
   }
 
   tags {

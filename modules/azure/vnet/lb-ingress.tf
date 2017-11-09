@@ -34,6 +34,14 @@ resource "azurerm_dns_a_record" "ingress_dns" {
   records             = ["${azurerm_public_ip.ingress_ip.ip_address}"]
 }
 
+resource "azurerm_dns_a_record" "ingress_wildcard_dns" {
+  name                = "*"
+  zone_name           = "${var.base_domain}"
+  resource_group_name = "${var.resource_group_name}"
+  ttl                 = 300
+  records             = ["${azurerm_public_ip.ingress_ip.ip_address}"]
+}
+
 resource "azurerm_lb_backend_address_pool" "ingress-lb" {
   name                = "ingress-lb-pool"
   resource_group_name = "${var.resource_group_name}"
@@ -54,7 +62,7 @@ resource "azurerm_lb_rule" "ingress_http_lb" {
 }
 
 resource "azurerm_lb_probe" "ingress_30010_lb" {
-  name                = "ingress-lb-probe-30011-up"
+  name                = "ingress-lb-probe-30010-up"
   loadbalancer_id     = "${azurerm_lb.ingress_lb.id}"
   resource_group_name = "${var.resource_group_name}"
   protocol            = "tcp"

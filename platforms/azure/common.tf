@@ -28,12 +28,13 @@ module "vnet" {
   source = "../../../modules/azure/vnet"
 
   api_dns             = "${var.api_dns}"
+  base_domain         = "${var.base_domain}"
   bastion_count       = "2"
-  location            = "${var.azure_location}"
   cluster_name        = "${var.cluster_name}"
   ingress_dns         = "${var.ingress_dns}"
+  location            = "${var.azure_location}"
+  master_count        = "1"
   resource_group_name = "${module.resource_group.name}"
-  base_domain         = "${var.base_domain}"
   vault_dns           = "${var.vault_dns}"
   vnet_cidr           = "${var.vnet_cidr}"
 }
@@ -48,6 +49,7 @@ module "bastion" {
   bastion_count           = "2"
   cloud_config_data       = "${data.template_file.bastion_cloud_config.rendered}"
   cluster_name            = "${var.cluster_name}"
+  core_ssh_key            = "${var.core_ssh_key}"
   container_linux_channel = "${var.container_linux_channel}"
   container_linux_version = "${module.container_linux.version}"
   location                = "${var.azure_location}"

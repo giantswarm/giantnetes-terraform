@@ -1,0 +1,1872 @@
+#cloud-config
+users:
+  - name: joe
+    groups:
+      - "sudo"
+      - "docker"
+      - "rkt"
+    ssh-authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDE178xsxTfHERTXpzxbd8AsH4l1kQ+2y2+s1Ed0YQTfbNzCHMBKuCmabyv56QISc0Frp6oFNutmbRQpRlxNRzvWvcdapb2+wNQIOpc6/aQBPbiyCdU6Tjcw1p3p7z/O8M9wIPZ2e9zYyUjV0EzN/iZxrdDBduF1mrAjKzeG9E+McEUaD3LIJCxmljrt3248wusHvdwpLJGTM8K8ajdrlKNET9KEI3lWTaHBxr8v/cPixBJb+rxnMZuBRV/Hc3XN13OhW3wVftGMkgjrS0oVTcXE8YlrCYCNNlw+A1hVHZ3XBbV/g1Ww65lmL2AOHrOlnUd96bbocFcm6btqUuWr1clDfEZ/FvfAvWKe9pZb2rCxqOCnLzZmB6zUPj9dS8Cg7nnXZFfsIE0p71sO2i4cYd0l9uzQpmsxYPAy+BAdRpR9P2oM1CM/DbLjlO5IIb9qTB3O4R2zaG5WpVjAdvqo9XptXKa5uIi8ZoVHvhCdnqskwaXsMpEHavQVvdxPBal01smXxFv6lLqKMVkzJRBkXBEWXvxa12pv2kiFnaxMWK95jqLFHXpjZVrYS1Z77ld9+SXGr0KjAvd6SShPg1ggiDAd4suBDUbeyVQyhzr0CGJ4auiqHsO5IDSdaFFo7xeqnBzAT+jxsBfzKhn9In7HZNf1XnG+2fF41eqnobWwMbCaQ==  joe
+  - name: marian
+    groups:
+      - "sudo"
+      - "docker"
+      - "rkt"
+    ssh-authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDMSBIK7+MCULpHyUhLvYOKgQEyhkBR1n7/5oyKhzAD5pvAjqBzBcQ64S4EYxL0/Y/JDa2bMzAEzaw0VL1e2kz/nAfd7QiW3ZgyU6uYGDwHHWDekAY+Q30giQoqP3QxFSDTjUVb1EC4kIO49uzAwItwM2ah6C/Jmz4/EWMP+2MKrwCe8DUTCYPI0RyXpyj0O0Uz+11VGVCIdMbxq3O62giC4WwNUFC+RDGS4plrsOo4whrLOlE7ZrYjSp1dU+GdNQmrKXJA8j9k8asIsChljrx6wF2aS7gMF5ltj8M3ufk1Cz4FN8/5luAE0qx14I8K0yej8Ann4dohrRm8sPz3aQOh marian
+  - name: puja
+    groups:
+      - "sudo"
+      - "docker"
+      - "rkt"
+    ssh-authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDFKCoKe/Z2cT7duLiiPdgUXKcsHx+3ESCa0t4hOZtfw6BHptJ0dpDTAqbkvpGRwErVpOO9tIQittWnzgX0RLqnDB98I7eZQ04AIZwoW9AX2aMEyLgbVMTeG9Xgy79pefjVV75T2lVjXtcOY2wJtf6ZU1KFq8/dHZb7vYzzobHBq9j4vIB5ZsNI94jJm7I6TLr24vga3+MEgQrsEQdRqZ2vxacSU1h+LSdfseGQew1XlxSTfTfglUcXE0WUlEFnak9z0JwQbblEmKQsinIwO4O0Sk6FQXObCFlss//gubk64/OM/87I/aKjrmbQTRMkxyqJ5jO4yIXOxeHpp5kNA9AKSmgHABhr1ViS6ocWO8mMekbLdxDWMdViTR6XxtFSPUCgTFAirsQi6/9qfV+6u2RLhKihuajy8akFi4BYqSGr17/crrkCYydBJRUIqNmQSdzGKodTJ9d556iFZ3rCM+Xe2mm4KsHkIQ3YphPMzb0yAWEtZl1ncdqSXHz74M9b1KHUzyJgQhv5KOzhURxXR/UVBy7NNPae8XSEFId/O2uHgc/mWV5Xr5ZwxbwXsmlyto53+EmgynnPcL96RgVyiAmHL/vtvOGAzVSOPtNsnU7QG/YDfA2WrxLmuGEA0WzC63iXZCqSFbPK0adelJo9vctCB2gozrVpjqXWpskg8SZMqw== puja
+  - name: teemow
+    groups:
+      - "sudo"
+      - "docker"
+      - "rkt"
+    ssh-authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCvDv/5/bOgnuNXbxB7n8n8reDpRdAPeZvuCE3pJPVYJNfL0hoNzGhw4MBLRivSd9ViMM9X1CE7iVK6RFO46yt4GK5JWYi1UM88q6I+4bcnswUAWsIFX5a/U0LK0wIR3akDDyU9WEA7CXoJ7IxF7dtIYC9OIqrD6gXc4P/UI0jZQI5iZY3qNjlKVAwsNz8pD/BE2sPpNVHumzgcLJEveoc3WMCmfBAAWQAMfRlhlJ5LjM7Py/5k1/s5Myn4L/yoAvxMWev4k2ZYpumt752/r927K7AIrK/OYTfqLPKzZYSLWAj4g7L3/65sKpFm6g+HFgDmlScgf9P4bAoLn6+mWbYL teemow
+  - name: tobias
+    groups:
+      - "sudo"
+      - "docker"
+      - "rkt"
+    ssh-authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCS/thnoYaUYmuDxwQF9ES3Jsq6KltO+QU/8PVo1tUr5vlEfEY1Q9JYHiPKJW+U0cMH3a/Jv2IDTaH629djoNdtTottaYGDINBoVIlAdR+vwm3JzVUB02mb+QXTzhzLc58fdwhHN0PS82/BcSSFpQzI7PedRGMtzS6Qxcx4YfrzC16vsdF8wMw+tVbtI2fDLwfd9NcpCDr582NrX/qOR22zeck3VVgppnuC5mGAC+XvHCRbp+4pZJ0W4fpEIGwG1cPbktvdA0wYcn7GJo7fU11066PMGMXplV+DEnQTpBUbP+NFXRuY7RzTeuTGSZHXsWO11cmpLPVVB7LdAaQuSPi1 tobias
+  - name: xh3b4sd
+    groups:
+      - "sudo"
+      - "docker"
+      - "rkt"
+    ssh-authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQClCCgsKl7+mQwD+giN6OEruV1ur/prpWXfyGHJyGGQkROZA3IcrpmRPWmKKXpCaW+G8lcb9DXD/K7/rNAh+4hpsfvCUs8u0mJ6u4El/8dcRTQaZUdLX8q3AZZ38gmk+yZz241x7LGd05D4H+aq9sVdtbcAepINUJyZ7p3yXTfCYwHC7QMYiuRFKMaUHY50shFhSYdD9TCEFtH2ybPi1/WOCX6gf90f6O0Ivo7tzwtYGV8ToIa2nO+CqwlIRiGqEy4/g9h1gCPDvgcLZmok74V6mH12whNdMDyJyuT8S1dLwNiKoYkvMbcUkpE0O/0LBCg+SsHVHmgnsNx9t0hUg8iR xh3b4sd
+  - name: calvix
+    groups:
+      - "sudo"
+      - "docker"
+      - "rkt"
+    ssh-authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9IyAZvlEL7lrxDghpqWjs/z/q4E0OtEbmKW9oD0zhYfyHIaX33YYoj3iC7oEd6OEvY4+L4awjRZ2FrXerN/tTg9t1zrW7f7Tah/SnS9XYY9zyo4uzuq1Pa6spOkjpcjtXbQwdQSATD0eeLraBWWVBDIg1COAMsAhveP04UaXAKGSQst6df007dIS5pmcATASNNBc9zzBmJgFwPDLwVviYqoqcYTASka4fSQhQ+fSj9zO1pgrCvvsmA/QeHz2Cn5uFzjh8ftqkM10sjiYibknsBuvVKZ2KpeTY6XoTOT0d9YWoJpfqAEE00+RmYLqDTQGWm5pRuZSc9vbnnH2MiEKf calvix
+  - name: r7vme
+    groups:
+      - "sudo"
+      - "docker"
+      - "rkt"
+    ssh-authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDDntH7rGzQxvcxxOxsEP3scm+2e/hxKAoNjeilckuLbklMKRt+LR1M+sSKLJWgIbFTg0GITqnugk+7jPP2NbRsEiuYN7Scy0iRPWdRMbVjGbtMBHBshPp4J+uUS8n5YquMA2xA9cUa7K+VTo+Plv8pVx0LwgE7Rw5NQFqegaiClZJZapOw+LZkF/Kdrm9DAkuCH3jD543O76xx45dAIQZLWlLYNYeBdYT8ew1ewiSn8mY1F7rhLcjuoBGH1a2Z4iR3vgP36yqFDcrqD9gSG/5xupdKbss5vV4acMeTJu/DKoHCDj9GT5//PKVYjOnNlhEiQKO6Pft/aBgk8ND1ixY5 roman
+  - name: rossf7
+    groups:
+      - "sudo"
+      - "docker"
+      - "rkt"
+    ssh-authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCY0Rn2VqhtOFy7LY6nu53c9bP5Fy0KQ+P5/MA/s4aG8+veIqTyhhpHLwPF0hKbi1mq+HaFvm1nLbovZcTTG2Z+BoP/Y5kV5EOjnq415EtT3rH0YdM0h69Qxuc0KqUvU/F43XOhpEH0o8L+ZK+Vq4UrRPIDRjftc8N5h6MJszAow/kiC7d30nYsPio6FuWHH5jZaAKjucQbBsDU5r160mtVk0HCexutm3s3fHTADojZjFA3t8FJy7vO+Og+VDVzV9ai9E32mgytNL0wVE1dUGqPwoM9MrzxNC2TZedS74zqBoK9TL3y1sfVzD5RpdX4Z5FInhtTz1z4nnYzsPiYQKMx rossf7
+  - name: oponder
+    groups:
+      - "sudo"
+      - "docker"
+      - "rkt"
+    ssh-authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAxEDA/Nr7++9SoFOhTeNJMAubkzJmGZWHtXul0kM+FJR0TM/1V3b4XfoRAwU9gaG88P+4venSwcbLVfvvacnlGQ8hTgw2Jlpz6Z9+iIVjru2+nYgJeELFff5bdPLYWE4Ft/VYpwGibD1DbVGldsO3I7EdaEfd5FeOF0Fk1xPK50UGvTq9CkU+wEcTc9eDzFWpLoz/69KWG/F7XEZhWqswUjHaN1UJtuBlVmoe/0OrlyIYBl2CeUzpmJHNDDv7u8gKOCOFwmzMdDieGHzIITCovIoGLhIJS1dGdT3FPvTPG/s8VOZ/QGS9rfsc5x08J0v0JqwN8GZT9FxFJECeXTN6bw== oponder
+  - name: kopiczko
+    groups:
+      - "sudo"
+      - "docker"
+      - "rkt"
+    ssh-authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDzY+7kp4XTNfinVLbDo28E0yaJUMvEabzdsheGHG3+gubakJgITZw+3m4vy45WRoF8QDOjpZ12n9ov9bpz5X8kRmHSthvWYtNRYJWCJc0d3+td1/Ki9CaHesNhKdeVYcw9g5x55h6o4EPx+g6wIsBhxqjcdZ5O37M+KWXlBfLoP4WKBjORhD4kpU+suA+rMIRF/njLs8zswHL8or3Ynp+voZM1PVCfxENp9ktNeA7W2KyUZpgDtoWxN2cnj0BOs/t2w+XZhqgsPo/9zXO6C0XIvPv69MAOHYMsomKldQgpy+MlODvu/sbP5ruB/4vGiqCg0+E2KS1ZK85KytQtfai3IcmglNtHdRKyYmf2WkY/GMGB6sgQKZWJE4XeN7+mZvRrOih2yo+/GJCkI5U0eWIUInyh/lBMIxVbckbpdZYxMd2SaERkTFNDhqSgncrPu5gW7ZFejgie9gVlkYBLI/D1XXM1YzvpSlA80D9kxLhiqdaAXP7CysPgS7EN56zM0SzHR0vxrr4dhB9XuBxlMeTtC0dvaMPkiIJj43MLDNzE4wtXEpzFQnmzRoOrPAACRhr0OcOTbsH7X+QR9JUB1ygTRSN/kHVFyL+EPRRsfuzbxw57jkzIE7ihGtcINtyv4dIFfqE7c+uDDZV/yUi2C5PI6FLHW33DXwqbzR8yZuOu2Q== pawel
+  - name: marcelmue
+    groups:
+      - "sudo"
+      - "docker"
+      - "rkt"
+    ssh-authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC9pOt/FFXonkNDGamoGMVg6wQJYS7m9r/OO2wWoEPNQS/M4nGL/szKlZfD4Z6tKS3WyeLY5XU7QjOFb3Gt3QQAaVOSDgTkfH1i+usWSNzFlhjARQkIUs0j9m30o7sXznZNOy4r73bnfUjTwYJifGUWBPq/jGokLNCxBRPCaJFi8Od5De3DyuDd93SAoXkTJaDPr7J90tzkVLI6ek5va1GSTeVdHbAifds8r8Shm0wgdmcVKiOYt7/oyzavl0x5XPzMAVXeUI0jIopsvqjiy/fS+Cq7i1TMBQ+rkycWLc8X8CM8U84OQ6eb8LgQw0A4xqVtZHOl2FlHHtWNjLhnwO5MHWjdWxCUSEshK+tS5Wm64ph37nfObupPpoMcRRTmKB2SdsigU0T/aJ9zoJorsIBKDY6lqmXoYk07XEyu5tmuG9cuiP900yLRIoCZeQ14WP3+3KDWLfjic3W8wXr0xlLOTaPNtNpX+v6X4n8R4HuJ0zQw1znEXhBlhTEZTRe1qmdPQTNwQa6XwOlEJVYOIHEOobTQVu+ReIrj+XT3b1VR531pG8M3o9Rhq29aFpAsYiDh12aGk45b+61hddF3WybpMOVQqfvYnf1lVwt/0PujJuIC7e6WuHAlRS2Sshb19ROG8w2mW1sGbp2zN7Y+MUAI5LVOHrBtRqEoZkhz+JXMzQ== marcelmue
+  - name: vol
+    groups:
+      - "sudo"
+      - "docker"
+      - "rkt"
+    ssh-authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDFGDg/p4JWewXAs8kExJnCaNXEN1v2LZf0YWWiblHFp1+i2bp8qSmAJT3i6Yw0kHY2/6MotBCKAsFtlqxuhKaFs3jDcmdOugmWz4Qj7oerQ/ypJE/wZ9PY79gbK75aEKyOdVf7dUT6Ah+oSfETgpY/3a9pVZ/dSF3WBFIBw5k4YarFzcELQE4Bo4dcsLHsNrkI9Bk6gkGbTY+1TtfJmOu0bEXxXHdEq+JfW0MFssjh3I5n0DT09qDnztAvRAjjqjlyNKNt8reErV0LlvsDM5c+426Bz9JgM5vP3sD5ai8lpuH0iCBHoo9678XTKKTYbbz0s7kgXUb0vGS+GbOcaKBKmZ8a0xDpsft9+/LbmnuUic8b4c4/cRw5wSV1IYqyDqARp/d9PaJlYa22ISGnDbYmXUTsef0PhUenK9gtYrGsVhQmkqeLYiIYqwsl7+uouFMpQDmdZjY/B4fKcRA3oRGCFuwzT1vrtJL41dw9WyzM+3xnHTMFZdko9TlgDiEeu6gdpsTGJf4VALUWgXeyW/egte2im86kjMxzQuCw/aOmiYMqwZH2YfI0dS9jLuZbxePKTUounct66SrNXBrbu2d0BiPj6bl1dG6oZhwtArRnbiG5+cTakDvLhFgahTQFAT1De7o3Nr+BfjNQkVlQNKaIPUOdypiDNJE/6q/GOHVRQw==
+  - name: fgimenez
+    groups:
+      - "sudo"
+      - "docker"
+      - "rkt"
+    ssh-authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAxnaIJtNvjR0sPO92hJla/Q71pczHn9KFx/Tc4gHHgY8kY6ysV7F9JxcfmDPzpTrYPNAylHTUR3SNWZGcgk2hYo2AChbTNyUh+PiyrvsEenMifl8e4qnb7145BStK6QdxQkZwkhVebm+T1pXEO+RwR9x2SPdV8+vHJ8EZ/FHwMyQAKGFWXYHkPCtwMgoFElB406VDeGxXCpeL1kpYGpK/2CgXgz4Dpm8nwvxfOWAmBYIDKOIrblzraQhFiyqBQp0fNlI2lgxFEGxpaMLL3WguMGqf7kKAvupUz32DWbY9i6//xFkhoaMWWiigAOZSWCcq7yE30d63Pg3mZE8YMIw3Kw==
+  - name: jgsqware
+    groups:
+      - "sudo"
+      - "docker"
+      - "rkt"
+    ssh-authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDg0b+m551vLRqsnnDrB32PrQnO41Fv62dbYYCGqjcd/if8iOuyXvxNRnbOxnsFFPVSiqY2LB8pXofEAm5MG2qupGyBvivtnq1v+6Ld9nMYTaKdz5WKhI9ypQ/jV4G1DNYrayGno13eRmGemCEnIdZeRrVxp5EfkVX0ZyJ88998Urjv6OtSLV+GSNSiIbNYyvGjLoR0dt5LCVbwbbQd1H5wXYsSoeIkKiqfS7AtMn9wDCIyM1W15yC/4UaCMEGkVfjLZB+4Y8BBfLH1vI1h43zl4EUkaq1PASDvpX0AWlclfemkK2bGEOS/UzVJsZtM73jEoSZvq/aCLe3v/0zI/5Xl
+write_files:
+- path: /srv/calico-policy-controller-sa.yaml
+  owner: root
+  permissions: 644
+  content: |
+    apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: calico-policy-controller
+      namespace: kube-system
+- path: /srv/calico-ipip-pinger-sa.yaml
+  owner: root
+  permissions: 644
+  content: |
+    apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: calico-ipip-pinger
+      namespace: kube-system
+- path: /srv/calico-node-sa.yaml
+  owner: root
+  permissions: 644
+  content: |
+    apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: calico-node
+      namespace: kube-system
+- path: /srv/calico-configmap.yaml
+  owner: root
+  permissions: 644
+  content: |
+    # Calico Version v2.5.1
+    # https://docs.projectcalico.org/v2.5/releases#v2.5.1
+    # This manifest includes the following component versions:
+    #   calico/node:v2.5.1
+    #   calico/cni:v1.10.0
+    #   calico/kube-policy-controller:v0.7.0
+
+    # This ConfigMap is used to configure a self-hosted Calico installation.
+    kind: ConfigMap
+    apiVersion: v1
+    metadata:
+      name: calico-config
+      namespace: kube-system
+    data:
+      # Configure this with the location of your etcd cluster.
+      etcd_endpoints: "https://${ETCD_DOMAIN_NAME}:2379"
+
+      # Configure the Calico backend to use.
+      calico_backend: "bird"
+
+      # The CNI network configuration to install on each node.
+      # TODO: Do we still need to set MTU manually?
+      cni_network_config: |-
+        {
+            "name": "k8s-pod-network",
+            "cniVersion": "0.1.0",
+            "type": "calico",
+            "etcd_endpoints": "__ETCD_ENDPOINTS__",
+            "etcd_key_file": "__ETCD_KEY_FILE__",
+            "etcd_cert_file": "__ETCD_CERT_FILE__",
+            "etcd_ca_cert_file": "__ETCD_CA_CERT_FILE__",
+            "log_level": "info",
+            "ipam": {
+                "type": "calico-ipam"
+            },
+            "mtu": 1430,
+            "policy": {
+                "type": "k8s",
+                "k8s_api_root": "https://__KUBERNETES_SERVICE_HOST__:__KUBERNETES_SERVICE_PORT__",
+                "k8s_auth_token": "__SERVICEACCOUNT_TOKEN__"
+            },
+            "kubernetes": {
+                "kubeconfig": "__KUBECONFIG_FILEPATH__"
+            }
+        }
+
+      etcd_ca: "/etc/kubernetes/ssl/etcd/client-ca.pem"
+      etcd_cert: "/etc/kubernetes/ssl/etcd/client-crt.pem"
+      etcd_key: "/etc/kubernetes/ssl/etcd/client-key.pem"
+
+- path: /srv/calico-ipip-pinger.yaml
+  owner: root
+  permissions: 644
+  content: |
+    apiVersion: extensions/v1beta1
+    kind: DaemonSet
+    metadata:
+      labels:
+        app: calico-ipip-pinger
+      name: calico-ipip-pinger
+      namespace: kube-system
+    spec:
+      updateStrategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxUnavailable: 1
+      template:
+        metadata:
+          labels:
+            app: calico-ipip-pinger
+        spec:
+          serviceAccountName: calico-ipip-pinger
+          containers:
+          - name: calico-ipip-pinger
+            image: quay.io/giantswarm/calico-ipip-pinger:0f197abe866c7c811e42534739148345cb3bded5
+            imagePullPolicy: Always
+            securityContext:
+              privileged: true
+            env:
+              # The location of the Calico etcd cluster.
+              - name: ETCD_ENDPOINTS
+                valueFrom:
+                  configMapKeyRef:
+                    name: calico-config
+                    key: etcd_endpoints
+              # Location of the CA certificate for etcd.
+              - name: ETCD_CA_CERT_FILE
+                valueFrom:
+                  configMapKeyRef:
+                    name: calico-config
+                    key: etcd_ca
+              # Location of the client key for etcd.
+              - name: ETCD_KEY_FILE
+                valueFrom:
+                  configMapKeyRef:
+                    name: calico-config
+                    key: etcd_key
+              # Location of the client certificate for etcd.
+              - name: ETCD_CERT_FILE
+                valueFrom:
+                  configMapKeyRef:
+                    name: calico-config
+                    key: etcd_cert
+            volumeMounts:
+              # Mount in the etcd TLS secrets.
+              - mountPath: /etc/kubernetes/ssl/etcd
+                name: etcd-certs
+          volumes:
+            # Mount in the etcd TLS secrets.
+            - name: etcd-certs
+              hostPath:
+                path: /etc/kubernetes/ssl/etcd
+          tolerations:
+          - effect: NoSchedule
+            key: node-role.kubernetes.io/master
+            operator: Exists
+          hostNetwork: true
+          restartPolicy: Always
+
+- path: /srv/calico-ds.yaml
+  owner: root
+  permissions: 644
+  content: |
+
+    # This manifest installs the calico/node container, as well
+    # as the Calico CNI plugins and network config on
+    # each master and worker node in a Kubernetes cluster.
+    kind: DaemonSet
+    apiVersion: extensions/v1beta1
+    metadata:
+      name: calico-node
+      namespace: kube-system
+      labels:
+        k8s-app: calico-node
+    spec:
+      selector:
+        matchLabels:
+          k8s-app: calico-node
+      updateStrategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxUnavailable: 1
+      template:
+        metadata:
+          labels:
+            k8s-app: calico-node
+          annotations:
+            scheduler.alpha.kubernetes.io/critical-pod: ''
+        spec:
+          # Tolerations part was taken from calico manifest for kubeadm as we are using same taint for master.
+          tolerations:
+          - key: node-role.kubernetes.io/master
+            operator: Exists
+            effect: NoSchedule
+          - key: CriticalAddonsOnly
+            operator: Exists
+          hostNetwork: true
+          serviceAccountName: calico-node
+          containers:
+            # Runs calico/node container on each Kubernetes node.  This
+            # container programs network policy and routes on each
+            # host.
+            - name: calico-node
+              image: quay.io/calico/node:v2.5.1
+              env:
+                # The location of the Calico etcd cluster.
+                - name: ETCD_ENDPOINTS
+                  valueFrom:
+                    configMapKeyRef:
+                      name: calico-config
+                      key: etcd_endpoints
+                # Choose the backend to use.
+                - name: CALICO_NETWORKING_BACKEND
+                  valueFrom:
+                    configMapKeyRef:
+                      name: calico-config
+                      key: calico_backend
+                # Cluster type to identify the deployment type
+                - name: CLUSTER_TYPE
+                  value: "k8s,bgp"
+                # Disable file logging so kubectl logs works.
+                - name: CALICO_DISABLE_FILE_LOGGING
+                  value: "true"
+                # Set Felix endpoint to host default action to ACCEPT.
+                - name: FELIX_DEFAULTENDPOINTTOHOSTACTION
+                  value: "ACCEPT"
+                # Configure the IP Pool from which Pod IPs will be chosen.
+                - name: CALICO_IPV4POOL_CIDR
+                  value: "${CALICO_CIDR}"
+                - name: CALICO_IPV4POOL_IPIP
+                  value: "always"
+                # Disable IPv6 on Kubernetes.
+                - name: FELIX_IPV6SUPPORT
+                  value: "false"
+                # Set Felix logging to "info"
+                - name: FELIX_LOGSEVERITYSCREEN
+                  value: "info"
+                # Set MTU for tunnel device used if ipip is enabled
+                - name: FELIX_IPINIPMTU
+                  value: "1440"
+                # Location of the CA certificate for etcd.
+                - name: ETCD_CA_CERT_FILE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: calico-config
+                      key: etcd_ca
+                # Location of the client key for etcd.
+                - name: ETCD_KEY_FILE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: calico-config
+                      key: etcd_key
+                # Location of the client certificate for etcd.
+                - name: ETCD_CERT_FILE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: calico-config
+                      key: etcd_cert
+                # Auto-detect the BGP IP address.
+                - name: IP
+                  value: ""
+                - name: FELIX_HEALTHENABLED
+                  value: "true"
+              securityContext:
+                privileged: true
+              resources:
+                requests:
+                  cpu: 250m
+              livenessProbe:
+                httpGet:
+                  path: /liveness
+                  port: 9099
+                periodSeconds: 10
+                initialDelaySeconds: 10
+                failureThreshold: 6
+              readinessProbe:
+                httpGet:
+                  path: /readiness
+                  port: 9099
+              volumeMounts:
+                - mountPath: /lib/modules
+                  name: lib-modules
+                  readOnly: true
+                - mountPath: /var/run/calico
+                  name: var-run-calico
+                  readOnly: false
+                - mountPath: /etc/kubernetes/ssl/etcd
+                  name: etcd-certs
+            # This container installs the Calico CNI binaries
+            # and CNI network config file on each node.
+            - name: install-cni
+              image: quay.io/calico/cni:v1.10.0
+              command: ["/install-cni.sh"]
+              env:
+                # The location of the Calico etcd cluster.
+                - name: ETCD_ENDPOINTS
+                  valueFrom:
+                    configMapKeyRef:
+                      name: calico-config
+                      key: etcd_endpoints
+                # The CNI network config to install on each node.
+                - name: CNI_NETWORK_CONFIG
+                  valueFrom:
+                    configMapKeyRef:
+                      name: calico-config
+                      key: cni_network_config
+                # Location of the CA certificate for etcd.
+                - name: CNI_CONF_ETCD_CA
+                  valueFrom:
+                    configMapKeyRef:
+                      name: calico-config
+                      key: etcd_ca
+                # Location of the client key for etcd.
+                - name: CNI_CONF_ETCD_KEY
+                  valueFrom:
+                    configMapKeyRef:
+                      name: calico-config
+                      key: etcd_key
+                # Location of the client certificate for etcd.
+                - name: CNI_CONF_ETCD_CERT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: calico-config
+                      key: etcd_cert
+              volumeMounts:
+                - mountPath: /host/opt/cni/bin
+                  name: cni-bin-dir
+                - mountPath: /host/etc/cni/net.d
+                  name: cni-net-dir
+                - mountPath: /etc/kubernetes/ssl/etcd
+                  name: etcd-certs
+          volumes:
+            # Used by calico/node.
+            - name: etcd-certs
+              hostPath:
+                path: /etc/kubernetes/ssl/etcd
+            - name: lib-modules
+              hostPath:
+                path: /lib/modules
+            - name: var-run-calico
+              hostPath:
+                path: /var/run/calico
+            - name: cni-bin-dir
+              hostPath:
+                path: /opt/cni/bin
+            - name: cni-net-dir
+              hostPath:
+               path: /etc/cni/net.d
+- path: /srv/calico-policy-controller.yaml
+  owner: root
+  permissions: 644
+  content: |
+    # This manifest deploys the Calico policy controller on Kubernetes.
+    # See https://github.com/projectcalico/k8s-policy
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    metadata:
+      name: calico-policy-controller
+      namespace: kube-system
+      labels:
+        k8s-app: calico-policy
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
+        scheduler.alpha.kubernetes.io/tolerations: |
+          [{"key": "dedicated", "value": "master", "effect": "NoSchedule" },
+           {"key":"CriticalAddonsOnly", "operator":"Exists"}]
+    spec:
+      # The policy controller can only have a single active instance.
+      replicas: 1
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          name: calico-policy-controller
+          namespace: kube-system
+          labels:
+            k8s-app: calico-policy
+        spec:
+          # The policy controller must run in the host network namespace so that
+          # it isn't governed by policy that would prevent it from working.
+          hostNetwork: true
+          serviceAccountName: calico-policy-controller
+          containers:
+            - name: calico-policy-controller
+              image: quay.io/calico/kube-policy-controller:v0.7.0
+              env:
+                # The location of the Calico etcd cluster.
+                - name: ETCD_ENDPOINTS
+                  valueFrom:
+                    configMapKeyRef:
+                      name: calico-config
+                      key: etcd_endpoints
+                # Location of the CA certificate for etcd.
+                - name: ETCD_CA_CERT_FILE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: calico-config
+                      key: etcd_ca
+                # Location of the client key for etcd.
+                - name: ETCD_KEY_FILE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: calico-config
+                      key: etcd_key
+                # Location of the client certificate for etcd.
+                - name: ETCD_CERT_FILE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: calico-config
+                      key: etcd_cert
+                # The location of the Kubernetes API.  Use the default Kubernetes
+                # service for API access.
+                - name: K8S_API
+                  value: "https://${API_DOMAIN_NAME}:443"
+                # Since we're running in the host namespace and might not have KubeDNS
+                # access, configure the container's /etc/hosts to resolve
+                # kubernetes.default to the correct service clusterIP.
+                - name: CONFIGURE_ETC_HOSTS
+                  value: "true"
+              volumeMounts:
+                # Mount in the etcd TLS secrets.
+                - mountPath: /etc/kubernetes/ssl/etcd
+                  name: etcd-certs
+          volumes:
+            # Mount in the etcd TLS secrets.
+            - name: etcd-certs
+              hostPath:
+                path: /etc/kubernetes/ssl/etcd
+- path: /srv/default-storage-class.yaml
+  owner: root
+  permissions: 644
+  content: |
+    apiVersion: storage.k8s.io/v1beta1
+    kind: StorageClass
+    metadata:
+      name: gp2
+      annotations:
+        storageclass.beta.kubernetes.io/is-default-class: "true"
+      labels:
+        kubernetes.io/cluster-service: "true"
+        addonmanager.kubernetes.io/mode: EnsureExists
+    provisioner: kubernetes.io/aws-ebs
+    parameters:
+      type: gp2
+- path: /srv/kubedns-cm.yaml
+  owner: root
+  permissions: 0644
+  content: |
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: kube-dns
+      namespace: kube-system
+      labels:
+        addonmanager.kubernetes.io/mode: EnsureExists
+- path: /srv/kubedns-sa.yaml
+  owner: root
+  permissions: 0644
+  content: |
+    apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: kube-dns
+      namespace: kube-system
+      labels:
+        kubernetes.io/cluster-service: "true"
+        addonmanager.kubernetes.io/mode: Reconcile
+- path: /srv/kubedns-dep.yaml
+  owner: root
+  permissions: 0644
+  content: |
+    apiVersion:  extensions/v1beta1
+    kind: Deployment
+    metadata:
+      name: kube-dns
+      namespace: kube-system
+      labels:
+        k8s-app: kube-dns
+        kubernetes.io/cluster-service: "true"
+        addonmanager.kubernetes.io/mode: Reconcile
+    spec:
+      strategy:
+        rollingUpdate:
+          maxSurge: 10%
+          maxUnavailable: 0
+      replicas: 3
+      selector:
+        matchLabels:
+          k8s-app: kube-dns
+      template:
+        metadata:
+          labels:
+            k8s-app: kube-dns
+            kubernetes.io/cluster-service: "true"
+          annotations:
+            scheduler.alpha.kubernetes.io/critical-pod: ''
+        spec:
+          tolerations:
+          - key: "CriticalAddonsOnly"
+            operator: "Exists"
+          containers:
+          - name: kubedns
+            image: gcr.io/google_containers/k8s-dns-kube-dns-amd64:1.14.2
+            volumeMounts:
+            - name: kube-dns-config
+              mountPath: /kube-dns-config
+            - name: config
+              mountPath: /etc/kubernetes/config/
+              readOnly: false
+            - name: ssl
+              mountPath: /etc/kubernetes/ssl/
+              readOnly: false
+            resources:
+              limits:
+                memory: 170Mi
+              requests:
+                cpu: 100m
+                memory: 70Mi
+            args:
+            # command = "/kube-dns
+            - --dns-port=10053
+            - --domain=cluster.local
+            - --config-dir=/kube-dns-config
+            - --v=2
+            - --kubecfg-file=/etc/kubernetes/config/kubelet-kubeconfig.yml
+            - --kube-master-url=https://${API_DOMAIN_NAME}
+            env:
+            - name: PROMETHEUS_PORT
+              value: "10055"
+            ports:
+            - containerPort: 10053
+              name: dns-local
+              protocol: UDP
+            - containerPort: 10053
+              name: dns-tcp-local
+              protocol: TCP
+            - containerPort: 10055
+              name: metrics
+              protocol: TCP
+            livenessProbe:
+              httpGet:
+                path: /healthcheck/kubedns
+                port: 10054
+                scheme: HTTP
+              initialDelaySeconds: 60
+              successThreshold: 1
+              failureThreshold: 5
+              timeoutSeconds: 5
+            readinessProbe:
+              httpGet:
+                path: /readiness
+                port: 8081
+                scheme: HTTP
+              initialDelaySeconds: 3
+              timeoutSeconds: 5
+          - name: dnsmasq
+            image: gcr.io/google_containers/k8s-dns-dnsmasq-nanny-amd64:1.14.2
+            livenessProbe:
+              httpGet:
+                path: /healthcheck/dnsmasq
+                port: 10054
+                scheme: HTTP
+              initialDelaySeconds: 60
+              timeoutSeconds: 5
+              successThreshold: 1
+              failureThreshold: 5
+            args:
+            - -v=2
+            - -logtostderr
+            - -configDir=/etc/k8s/dns/dnsmasq-nanny
+            - -restartDnsmasq=true
+            - --
+            - -k
+            - --cache-size=1000
+            - --no-resolv
+            - --log-facility=-
+            - --server=127.0.0.1#10053
+            - --server=/cluster.local/127.0.0.1#10053
+            - --server=/in-addr.arpa/127.0.0.1#10053
+            - --server=/ip6.arpa/127.0.0.1#10053
+            ports:
+            - containerPort: 53
+              name: dns
+              protocol: UDP
+            - containerPort: 53
+              name: dns-tcp
+              protocol: TCP
+            resources:
+              requests:
+                cpu: 150m
+                memory: 10Mi
+            volumeMounts:
+            - name: kube-dns-config
+              mountPath: /etc/k8s/dns/dnsmasq-nanny
+          - name: sidecar
+            image: gcr.io/google_containers/k8s-dns-sidecar-amd64:1.14.2
+            livenessProbe:
+              httpGet:
+                path: /metrics
+                port: 10054
+                scheme: HTTP
+              initialDelaySeconds: 60
+              timeoutSeconds: 5
+              successThreshold: 1
+              failureThreshold: 5
+            args:
+            - --v=2
+            - --logtostderr
+            - --probe=kubedns,127.0.0.1:10053,kubernetes.default.svc.cluster.local,5,A
+            - --probe=dnsmasq,127.0.0.1:53,kubernetes.default.svc.cluster.local,5,A
+            ports:
+            - containerPort: 10054
+              name: metrics
+              protocol: TCP
+            resources:
+              requests:
+                memory: 20Mi
+                cpu: 10m
+          dnsPolicy: Default  # Don't use cluster DNS.
+          serviceAccountName: kube-dns
+          volumes:
+          - name: kube-dns-config
+            configMap:
+              name: kube-dns
+              optional: true
+          - name: config
+            hostPath:
+              path: /etc/kubernetes/config/
+          - name: ssl
+            hostPath:
+              path: /etc/kubernetes/ssl/
+- path: /srv/kubedns-svc.yaml
+  owner: root
+  permissions: 0644
+  content: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: kube-dns
+      namespace: kube-system
+      labels:
+        k8s-app: kube-dns
+        kubernetes.io/cluster-service: "true"
+        addonmanager.kubernetes.io/mode: Reconcile
+        kubernetes.io/name: "KubeDNS"
+    spec:
+      selector:
+        k8s-app: kube-dns
+      clusterIP: ${K8S_DNS_IP}
+      ports:
+      - name: dns
+        port: 53
+        protocol: UDP
+      - name: dns-tcp
+        port: 53
+        protocol: TCP
+- path: /srv/network-policy.json
+  owner: root
+  permissions: 0644
+  content: |
+    {
+      "kind": "ThirdPartyResource",
+      "apiVersion": "extensions/v1beta1",
+      "metadata": {
+        "name": "network-policy.net.alpha.kubernetes.io"
+      },
+      "description": "Specification for a network isolation policy",
+      "versions": [
+        {
+          "name": "v1alpha1"
+        }
+      ]
+    }
+- path: /srv/default-backend-dep.yml
+  owner: root
+  permissions: 0644
+  content: |
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    metadata:
+      name: default-http-backend
+      namespace: kube-system
+      labels:
+        k8s-app: default-http-backend
+    spec:
+      replicas: 2
+      template:
+        metadata:
+          labels:
+            k8s-app: default-http-backend
+        spec:
+          containers:
+          - name: default-http-backend
+            image: gcr.io/google_containers/defaultbackend:1.0
+            livenessProbe:
+              httpGet:
+                path: /healthz
+                port: 8080
+                scheme: HTTP
+              initialDelaySeconds: 30
+              timeoutSeconds: 5
+            ports:
+            - containerPort: 8080
+            resources:
+              limits:
+                cpu: 10m
+                memory: 20Mi
+              requests:
+                cpu: 10m
+                memory: 20Mi
+- path: /srv/default-backend-svc.yml
+  owner: root
+  permissions: 0644
+  content: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: default-http-backend
+      namespace: kube-system
+      labels:
+        k8s-app: default-http-backend
+    spec:
+      type: NodePort
+      ports:
+      - port: 80
+        targetPort: 8080
+      selector:
+        k8s-app: default-http-backend
+- path: /srv/ingress-controller-cm.yml
+  owner: root
+  permissions: 0644
+  content: |
+    kind: ConfigMap
+    apiVersion: v1
+    metadata:
+      name: ingress-nginx
+      labels:
+        k8s-addon: ingress-nginx.addons.k8s.io
+    data:
+      variables-hash-bucket-size: "128"
+      server-name-hash-bucket-size: "1024"
+      server-name-hash-max-size: "1024"
+- path: /srv/ingress-controller-dep.yml
+  owner: root
+  permissions: 0644
+  content: |
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    metadata:
+      name: nginx-ingress-controller
+      namespace: kube-system
+      labels:
+        k8s-app: nginx-ingress-controller
+      annotations:
+        prometheus.io/port: '10254'
+        prometheus.io/scrape: 'true'
+    spec:
+      replicas: 3
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxUnavailable: 1
+      template:
+        metadata:
+          labels:
+            k8s-app: nginx-ingress-controller
+        spec:
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                      - key: k8s-app
+                        operator: In
+                        values:
+                        - nginx-ingress-controller
+                  topologyKey: kubernetes.io/hostname
+          containers:
+          - name: nginx-ingress-controller
+            image: gcr.io/google_containers/nginx-ingress-controller:0.9.0-beta.10
+            args:
+            - /nginx-ingress-controller
+            - --default-backend-service=$(POD_NAMESPACE)/default-http-backend
+            - --configmap=$(POD_NAMESPACE)/ingress-nginx
+            env:
+              - name: POD_NAME
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.name
+              - name: POD_NAMESPACE
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.namespace
+            readinessProbe:
+              httpGet:
+                path: /healthz
+                port: 10254
+                scheme: HTTP
+            livenessProbe:
+              httpGet:
+                path: /healthz
+                port: 10254
+                scheme: HTTP
+              initialDelaySeconds: 10
+              timeoutSeconds: 1
+            ports:
+            - containerPort: 80
+              hostPort: 80
+            - containerPort: 443
+              hostPort: 443
+- path: /srv/ingress-controller-svc.yml
+  owner: root
+  permissions: 0644
+  content: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: nginx-ingress-controller
+      namespace: kube-system
+      labels:
+        k8s-app: nginx-ingress-controller
+    spec:
+      type: NodePort
+      ports:
+      - name: http
+        port: 80
+        nodePort: 30010
+        protocol: TCP
+        targetPort: 80
+      - name: https
+        port: 443
+        nodePort: 30011
+        protocol: TCP
+        targetPort: 443
+      selector:
+        k8s-app: nginx-ingress-controller
+- path: /srv/kube-lego-cm.yml
+  owner: root
+  permissions: 0644
+  content: |
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: kube-lego
+      namespace: kube-system
+    data:
+      lego.email: "accounts@giantswarm.io"
+      lego.url: "https://acme-v01.api.letsencrypt.org/directory"
+- path: /srv/kube-lego-dep.yml
+  owner: root
+  permissions: 0644
+  content: |
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    metadata:
+      name: kube-lego
+      namespace: kube-system
+    spec:
+      replicas: 1
+      template:
+        metadata:
+          labels:
+            app: kube-lego
+        spec:
+          containers:
+          - name: kube-lego
+            image: jetstack/kube-lego:0.1.5
+            imagePullPolicy: Always
+            ports:
+            - containerPort: 8080
+            env:
+            - name: LEGO_EMAIL
+              valueFrom:
+                configMapKeyRef:
+                  name: kube-lego
+                  key: lego.email
+            - name: LEGO_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: kube-lego
+                  key: lego.url
+            - name: LEGO_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: LEGO_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            readinessProbe:
+              httpGet:
+                path: /healthz
+                port: 8080
+              initialDelaySeconds: 5
+              timeoutSeconds: 1
+- path: /opt/wait-for-domains
+  permissions: 0544
+  content: |
+      #!/bin/bash
+      domains="${ETCD_DOMAIN_NAME} ${API_DOMAIN_NAME} ${VAULT_DOMAIN_NAME}"
+
+      for domain in $domains; do
+        until nslookup $domain; do
+            echo "Waiting for domain $domain to be available"
+            sleep 5
+        done
+
+        echo "Successfully resolved domain $domain"
+      done
+- path: /opt/k8s-addons
+  permissions: 0544
+  content: |
+      #!/bin/bash
+      KUBECTL=quay.io/giantswarm/docker-kubectl:f51f93c30d27927d2b33122994c0929b3e6f2432
+
+      /usr/bin/docker pull $KUBECTL
+
+      # wait for healthy master
+      while [ "$(/usr/bin/docker run --net=host --rm $KUBECTL get cs | grep Healthy | wc -l)" -ne "3" ]; do sleep 1 && echo 'Waiting for healthy k8s'; done
+
+      # apply calico CNI
+      CALICO_FILES="calico-configmap.yaml\
+       calico-node-sa.yaml\
+       calico-policy-controller-sa.yaml\
+       calico-ds.yaml\
+       calico-policy-controller.yaml\
+       calico-ipip-pinger-sa.yaml\
+       calico-ipip-pinger.yaml"
+
+      for manifest in $CALICO_FILES
+      do
+          while
+              /usr/bin/docker run --net=host --rm -v /srv:/srv $KUBECTL apply -f /srv/$manifest
+              [ "$?" -ne "0" ]
+          do
+              echo "failed to apply /src/$manifest, retrying in 5 sec"
+              sleep 5s
+          done
+      done
+
+      # wait for healthy calico - we check for pods - desired vs ready
+      while
+          # result of this is 'eval [ "$DESIRED_POD_COUNT" -eq "$READY_POD_COUNT" ]'
+          /usr/bin/docker run --net=host --rm -v /etc/kubernetes:/etc/kubernetes $KUBECTL -n kube-system  get ds calico-node 2>/dev/null >/dev/null
+          RET_CODE_1=$?
+          eval $(/usr/bin/docker run --net=host --rm $KUBECTL -n kube-system get ds calico-node | tail -1 | awk '{print "[ \"" $2"\" -eq \""$4"\" ] "}')
+          RET_CODE_2=$?
+          [ "$RET_CODE_1" -ne "0" ] || [ "$RET_CODE_2" -ne "0" ]
+      do
+          echo "Waiting for calico to be ready . . "
+          sleep 3s
+      done
+
+      # apply k8s addons
+      MANIFESTS="default-storage-class.yaml kubedns-cm.yaml kubedns-sa.yaml kubedns-dep.yaml kubedns-svc.yaml default-backend-dep.yml default-backend-svc.yml ingress-controller-cm.yml ingress-controller-dep.yml ingress-controller-svc.yml kube-lego-cm.yml kube-lego-dep.yml"
+
+      for manifest in $MANIFESTS
+      do
+          while
+              /usr/bin/docker run --net=host --rm -v /srv:/srv $KUBECTL apply -f /srv/$manifest
+              [ "$?" -ne "0" ]
+          do
+              echo "failed to apply /src/$manifest, retrying in 5 sec"
+              sleep 5s
+          done
+      done
+      echo "Addons successfully installed"
+- path: /etc/kubernetes/config/proxy-kubeconfig.yml
+  owner: root
+  permissions: 0644
+  content: |
+    apiVersion: v1
+    kind: Config
+    users:
+    - name: proxy
+      user:
+        client-certificate: /etc/kubernetes/ssl/apiserver-crt.pem
+        client-key: /etc/kubernetes/ssl/apiserver-key.pem
+    clusters:
+    - name: local
+      cluster:
+        certificate-authority: /etc/kubernetes/ssl/apiserver-ca.pem
+        server: https://${API_DOMAIN_NAME}
+    contexts:
+    - context:
+        cluster: local
+        user: proxy
+      name: service-account-context
+    current-context: service-account-context
+- path: /etc/kubernetes/config/kubelet-kubeconfig.yml
+  owner: root
+  permissions: 0644
+  content: |
+    apiVersion: v1
+    kind: Config
+    users:
+    - name: kubelet
+      user:
+        client-certificate: /etc/kubernetes/ssl/apiserver-crt.pem
+        client-key: /etc/kubernetes/ssl/apiserver-key.pem
+    clusters:
+    - name: local
+      cluster:
+        certificate-authority: /etc/kubernetes/ssl/apiserver-ca.pem
+        server: https://${API_DOMAIN_NAME}
+    contexts:
+    - context:
+        cluster: local
+        user: kubelet
+      name: service-account-context
+    current-context: service-account-context
+- path: /etc/kubernetes/config/controller-manager-kubeconfig.yml
+  owner: root
+  permissions: 0644
+  content: |
+    apiVersion: v1
+    kind: Config
+    users:
+    - name: controller-manager
+      user:
+        client-certificate: /etc/kubernetes/ssl/apiserver-crt.pem
+        client-key: /etc/kubernetes/ssl/apiserver-key.pem
+    clusters:
+    - name: local
+      cluster:
+        certificate-authority: /etc/kubernetes/ssl/apiserver-ca.pem
+        server: https://${API_DOMAIN_NAME}
+    contexts:
+    - context:
+        cluster: local
+        user: controller-manager
+      name: service-account-context
+    current-context: service-account-context
+- path: /etc/kubernetes/config/scheduler-kubeconfig.yml
+  owner: root
+  permissions: 0644
+  content: |
+    apiVersion: v1
+    kind: Config
+    users:
+    - name: scheduler
+      user:
+        client-certificate: /etc/kubernetes/ssl/apiserver-crt.pem
+        client-key: /etc/kubernetes/ssl/apiserver-key.pem
+    clusters:
+    - name: local
+      cluster:
+        certificate-authority: /etc/kubernetes/ssl/apiserver-ca.pem
+        server: https://${API_DOMAIN_NAME}
+    contexts:
+    - context:
+        cluster: local
+        user: scheduler
+      name: service-account-context
+    current-context: service-account-context
+
+- path: /etc/ssh/sshd_config
+  owner: root
+  permissions: 0600
+  content: |
+    # Use most defaults for sshd configuration.
+    UsePrivilegeSeparation sandbox
+    Subsystem sftp internal-sftp
+    ClientAliveInterval 180
+    UseDNS no
+    UsePAM yes
+    PrintLastLog no # handled by PAM
+    PrintMotd no # handled by PAM
+    # Non defaults (#100)
+    ClientAliveCountMax 2
+    PasswordAuthentication no
+
+- path: /opt/get-ca.sh
+  owner: root
+  permissions: 0770
+  content: |
+    #!/bin/bash
+
+    if [ -z "$1" ] || [ -z "$2" ]
+    then
+            echo "Insufficient number of args"
+            echo "$0 <ive_ip_address>:<port> <output_file>"
+            exit
+    fi
+    echo Connecting to $1
+    echo -n | openssl s_client -showcerts -connect $1 2>err.txt 1>out.txt
+    if [ "$?" -ne "0" ]
+    then
+            cat err.txt
+            exit
+    fi
+    echo -n Generating Certificate
+    grep -in "\-----.*CERTIFICATE-----"  out.txt | cut -f 1 -d ":" 1> out1.txt
+    let start_line=`tail -n 2 out1.txt | head -n 1`
+    let end_line=`tail -n 1 out1.txt`
+    if [ -z "$start_line" ]
+    then
+            echo "error"
+            exit
+    fi
+    let nof_lines=$end_line-$start_line+1
+    #echo "from $start_line to $end_line total lines $nof_lines"
+    echo -n " .... "
+    head -n $end_line out.txt | tail -n $nof_lines 1> out1.txt
+    openssl x509 -in out1.txt -outform pem -out $2
+    echo done.
+    rm out.txt out1.txt err.txt
+
+- path: /etc/sysctl.d/hardening.conf
+  owner: root
+  permissions: 0600
+  content: |
+    kernel.kptr_restrict = 2
+    kernel.sysrq = 0
+    net.ipv4.conf.all.log_martians = 1
+    net.ipv4.conf.all.send_redirects = 0
+    net.ipv4.conf.default.accept_redirects = 0
+    net.ipv4.conf.default.log_martians = 1
+    net.ipv4.tcp_timestamps = 0
+    net.ipv6.conf.all.accept_redirects = 0
+    net.ipv6.conf.default.accept_redirects = 0
+
+- path: /etc/audit/rules.d/10-docker.rules
+  owner: root
+  permissions: 0644
+  content: |
+    -w /usr/bin/docker -k docker
+    -w /var/lib/docker -k docker
+    -w /etc/docker -k docker
+    -w /etc/systemd/system/docker.service.d/10-giantswarm-extra-args.conf -k docker
+    -w /etc/systemd/system/docker.service.d/01-wait-docker.conf -k docker
+    -w /usr/lib/systemd/system/docker.service -k docker
+    -w /usr/lib/systemd/system/docker.socket -k docker
+
+- path: /etc/systemd/system/audit-rules.service.d/10-Wait-For-Docker.conf
+  owner: root
+  permissions: 0644
+  content: |
+    [Service]
+    ExecStartPre=/bin/bash -c "while [ ! -f /etc/audit/rules.d/10-docker.rules ]; do echo 'Waiting for /etc/audit/rules.d/10-docker.rules to be written' && sleep 1; done"
+
+- path: /etc/udev/rules.d/99-systemd.rules
+  owner: root
+  permissions: 0644
+  content: |
+    SUBSYSTEM=="block", KERNEL=="xvdh", TAG+="systemd"
+
+coreos:
+  units:
+  - name: format-etcd-disk.service
+    command: start
+    content: |
+      [Unit]
+      Description=Formats the disk drive
+      Requires=dev-xvdh.device
+      After=dev-xvdh.device
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      Environment="LABEL=var-lib-etcd"
+      Environment="DEV=/dev/sdd"
+      # Do not wipe the disk if it's already being used, so the etcd data is persistent across reboot.
+      ExecStart=-/bin/bash -c "if ! findfs LABEL=$LABEL > /tmp/label.$LABEL; then wipefs -a -f $DEV && mkfs.ext4 -T news -F -L $LABEL $DEV && echo wiped; fi"
+  - name: var-lib-etcd.mount
+    command: start
+    content: |
+      [Unit]
+      Description=Mount disk to /var/lib/etcd
+      Requires=format-etcd-disk.service
+      After=format-etcd-disk.service
+      Before=etcd3.service
+      [Mount]
+      What=/dev/sdd
+      Where=/var/lib/etcd
+      Type=ext4
+  - name: format-docker-disk.service
+    command: start
+    content: |
+      [Unit]
+      Description=Formats the disk drive
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      Environment="LABEL=docker"
+      Environment="DEV=/dev/sdc"
+      # Do not wipe the disk if it's already being used, so the etcd data is persistent across reboot.
+      ExecStart=-/bin/bash -c "if ! findfs LABEL=$LABEL > /tmp/label.$LABEL; then wipefs -a -f $DEV && mkfs.xfs  -L $LABEL $DEV && echo wiped; fi"
+  - name: var-lib-docker.mount
+    command: start
+    content: |
+      [Unit]
+      Description=Mount disk to /var/lib/docker
+      Requires=format-docker-disk.service
+      After=format-docker-disk.service
+      Before=docker.service
+      [Mount]
+      What=/dev/sdc
+      Where=/var/lib/docker
+      Type=xfs
+  - name: wait-for-domains.service
+    enable: true
+    command: start
+    content: |
+      [Unit]
+      Description=Wait for etcd, k8s API and vault  domains to be available
+
+      [Service]
+      Type=oneshot
+      ExecStart=/opt/wait-for-domains
+
+      [Install]
+      WantedBy=multi-user.target
+  - name: os-hardening.service
+    enable: true
+    command: start
+    content: |
+      [Unit]
+      Description=Apply os hardening
+
+      [Service]
+      Type=oneshot
+      ExecStartPre=-/bin/bash -c "gpasswd -d core rkt; gpasswd -d core docker; gpasswd -d core wheel"
+      ExecStartPre=/bin/bash -c "until [ -f '/etc/sysctl.d/hardening.conf' ]; do echo Waiting for sysctl file; sleep 1s;done;"
+      ExecStart=/usr/sbin/sysctl -p /etc/sysctl.d/hardening.conf
+
+      [Install]
+      WantedBy=multi-user.target
+  - name: docker.service
+    enable: true
+    command: start
+    drop-ins:
+    - name: 10-giantswarm-extra-args.conf
+      content: |
+        [Unit]
+        Requires=var-lib-docker.mount
+        After=var-lib-docker.mount
+
+        [Service]
+        Environment="DOCKER_CGROUPS=--exec-opt native.cgroupdriver=cgroupfs --log-opt max-size=50m --log-opt max-file=2 --log-opt labels=io.kubernetes.container.hash,io.kubernetes.container.name,io.kubernetes.pod.name,io.kubernetes.pod.namespace,io.kubernetes.pod.uid"
+        Environment="DOCKER_OPT_BIP=--bip=${DOCKER_CIDR}"
+        Environment="DOCKER_OPTS=--live-restore --userland-proxy=false --icc=false --disable-legacy-registry=true"
+  - name: k8s-setup-network-env.service
+    enable: true
+    command: start
+    content: |
+      [Unit]
+      Description=k8s-setup-network-env Service
+      Wants=network-online.target docker.service
+      After=network-online.target docker.service
+
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      TimeoutStartSec=0
+      Environment="IMAGE=quay.io/giantswarm/k8s-setup-network-environment:1f4ffc52095ac368847ce3428ea99b257003d9b9"
+      Environment="NAME=%p.service"
+      Environment="NETWORK_CONFIG_CONTAINER="
+      ExecStartPre=/usr/bin/mkdir -p /opt/bin/
+      ExecStartPre=/usr/bin/docker pull $IMAGE
+      ExecStartPre=-/usr/bin/docker stop -t 10 $NAME
+      ExecStartPre=-/usr/bin/docker rm -f $NAME
+      ExecStart=/usr/bin/docker run --rm --net=host -v /etc:/etc --name $NAME $IMAGE
+      ExecStop=-/usr/bin/docker stop -t 10 $NAME
+      ExecStopPost=-/usr/bin/docker rm -f $NAME
+  - name: etcd2.service
+    command: stop
+    enable: false
+    mask: true
+  - name: flanneld.service
+    enable: false
+    command: stop
+    mask: true
+  - name: fleet.service
+    enable: false
+    command: stop
+    mask: true
+  - name: fleet.socket
+    enable: false
+    mask: true
+    command: stop
+  - name: get-vault-ca.service
+    enable: true
+    command: start
+    content: |
+      [Unit]
+      Description=get vault-ca into trusted certs
+      Before=calico-certs.service api-certs.service etcd3-certs.service
+      After=wait-for-domains.service
+
+      [Service]
+      Type=oneshot
+      ExecStartPre=/opt/get-ca.sh ${VAULT_DOMAIN_NAME}:443 /etc/ssl/certs/gs-ca.pem
+      ExecStart=/sbin/update-ca-certificates
+      RemainAfterExit=yes
+  - name: calico-certs.service
+    enable: true
+    command: start
+    content: |
+      [Unit]
+      Description=calico-certs
+      Requires=docker.service
+      After=docker.service
+
+      [Service]
+      EnvironmentFile=/etc/environment
+      EnvironmentFile=/etc/network-environment
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/calico/
+      ExecStart=/usr/bin/docker run \
+      --net=host \
+      -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
+      -v /etc/kubernetes/ssl/calico/:/etc/kubernetes/ssl/calico/ \
+      quay.io/giantswarm/certctl:b07d0913d5cb369a6b605394bdd4be4633451be9 \
+      issue \
+      --vault-addr=https://${VAULT_DOMAIN_NAME} \
+      --vault-token=${G8S_VAULT_TOKEN} \
+      --cluster-id=g8s \
+      --common-name=${ETCD_DOMAIN_NAME} \
+      --ttl=8760h \
+      --crt-file=/etc/kubernetes/ssl/calico/client-crt.pem \
+      --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
+      --alt-names=localhost \
+      --key-file=/etc/kubernetes/ssl/calico/client-key.pem \
+      --ca-file=/etc/kubernetes/ssl/calico/client-ca.pem
+      ExecStop=/usr/bin/rm -rf /etc/kubernetes/ssl/calico/
+  - name: etcd3-certs.service
+    enable: true
+    command: start
+    content: |
+      [Unit]
+      Description=etcd3-certs
+      Requires=docker.service
+      After=docker.service
+
+      [Service]
+      EnvironmentFile=/etc/environment
+      EnvironmentFile=/etc/network-environment
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/etcd/
+      ExecStart=/usr/bin/docker run \
+      --net=host \
+      -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
+      -v /etc/kubernetes/ssl/etcd/:/etc/kubernetes/ssl/etcd/ \
+      quay.io/giantswarm/certctl:b07d0913d5cb369a6b605394bdd4be4633451be9 \
+      issue \
+      --vault-addr=https://${VAULT_DOMAIN_NAME} \
+      --vault-token=${G8S_VAULT_TOKEN} \
+      --cluster-id=g8s \
+      --common-name=${ETCD_DOMAIN_NAME} \
+      --ttl=8760h \
+      --crt-file=/etc/kubernetes/ssl/etcd/server-crt.pem \
+      --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
+      --alt-names=localhost \
+      --key-file=/etc/kubernetes/ssl/etcd/server-key.pem \
+      --ca-file=/etc/kubernetes/ssl/etcd/server-ca.pem
+      ExecStartPost=/bin/cp /etc/kubernetes/ssl/etcd/server-crt.pem /etc/kubernetes/ssl/etcd/client-crt.pem
+      ExecStartPost=/bin/cp /etc/kubernetes/ssl/etcd/server-ca.pem /etc/kubernetes/ssl/etcd/client-ca.pem
+      ExecStartPost=/bin/cp /etc/kubernetes/ssl/etcd/server-key.pem /etc/kubernetes/ssl/etcd/client-key.pem
+      ExecStop=/usr/bin/rm -rf /etc/kubernetes/ssl/etcd/
+  - name: etcd3.service
+    enable: true
+    command: start
+    content: |
+      [Unit]
+      Description=etcd3
+      Requires=k8s-setup-network-env.service var-lib-etcd.mount
+      After=k8s-setup-network-env.service etcd3-certs.service calico-certs.service var-lib-etcd.mount
+      Conflicts=etcd.service etcd2.service
+      StartLimitIntervalSec=0
+
+      [Service]
+      Restart=always
+      RestartSec=0
+      TimeoutStopSec=10
+      LimitNOFILE=40000
+      Environment=IMAGE=quay.io/coreos/etcd:v3.2.7
+      Environment=NAME=%p.service
+      EnvironmentFile=/etc/network-environment
+      ExecStartPre=-/usr/bin/docker stop  $NAME
+      ExecStartPre=-/usr/bin/docker rm  $NAME
+      ExecStartPre=-/usr/bin/docker pull $IMAGE
+      ExecStartPre=/bin/bash -c "while [ ! -f /etc/kubernetes/ssl/etcd/server-ca.pem ]; do echo 'Waiting for /etc/kubernetes/ssl/etcd/server-ca.pem to be written' && sleep 1; done"
+      ExecStartPre=/bin/bash -c "while [ ! -f /etc/kubernetes/ssl/etcd/server-crt.pem ]; do echo 'Waiting for /etc/kubernetes/ssl/etcd/server-crt.pem to be written' && sleep 1; done"
+      ExecStartPre=/bin/bash -c "while [ ! -f /etc/kubernetes/ssl/etcd/server-key.pem ]; do echo 'Waiting for /etc/kubernetes/ssl/etcd/server-key.pem to be written' && sleep 1; done"
+      ExecStart=/usr/bin/docker run \
+          -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
+          -v /etc/kubernetes/ssl/etcd/:/etc/etcd \
+          -v /var/lib/etcd/:/var/lib/etcd  \
+          --net=host  \
+          --name $NAME \
+          $IMAGE \
+          etcd \
+          --name etcd0 \
+          --trusted-ca-file /etc/etcd/server-ca.pem \
+          --cert-file /etc/etcd/server-crt.pem \
+          --key-file /etc/etcd/server-key.pem \
+          --client-cert-auth=true \
+          --peer-trusted-ca-file /etc/etcd/server-ca.pem \
+          --peer-cert-file /etc/etcd/server-crt.pem \
+          --peer-key-file /etc/etcd/server-key.pem \
+          --peer-client-cert-auth=true \
+          --advertise-client-urls=https://${ETCD_DOMAIN_NAME}:2379 \
+          --initial-advertise-peer-urls=https://127.0.0.1:2380 \
+          --listen-client-urls=https://0.0.0.0:2379 \
+          --listen-peer-urls=https://${DEFAULT_IPV4}:2380 \
+          --initial-cluster-token k8s-etcd-cluster \
+          --initial-cluster etcd0=https://127.0.0.1:2380 \
+          --initial-cluster-state new \
+          --data-dir=/var/lib/etcd \
+          --enable-v2
+
+      [Install]
+      WantedBy=multi-user.target
+  - name: etcd3-defragmentation.service
+    enable: true
+    command: start
+    content: |
+      [Unit]
+      Description=etcd defragmentation job
+      After=docker.service etcd3.service
+      Requires=docker.service etcd3.service
+
+      [Service]
+      Type=oneshot
+      EnvironmentFile=/etc/environment
+      Environment=IMAGE=quay.io/coreos/etcd:v3.2.7
+      Environment=NAME=%p.service
+      ExecStartPre=-/usr/bin/docker stop  $NAME
+      ExecStartPre=-/usr/bin/docker rm  $NAME
+      ExecStartPre=-/usr/bin/docker pull $IMAGE
+      ExecStart=/usr/bin/docker run \
+        -v /etc/kubernetes/ssl/etcd/:/etc/etcd \
+        --net=host  \
+        -e ETCDCTL_API=3 \
+        --name $NAME \
+        $IMAGE \
+        etcdctl \
+        --endpoints https://${ETCD_DOMAIN_NAME}:2379 \
+        --cacert /etc/etcd/server-ca.pem \
+        --cert /etc/etcd/server-crt.pem \
+        --key /etc/etcd/server-key.pem \
+        defrag
+
+      [Install]
+      WantedBy=multi-user.target
+  - name: etcd3-defragmentation.timer
+    enable: true
+    command: start
+    content: |
+      [Unit]
+      Description=Execute etcd3-defragmentation every day at 3.30AM UTC
+
+      [Timer]
+      OnCalendar=*-*-* 03:30:00 UTC
+
+      [Install]
+      WantedBy=multi-user.target
+  - name: k8s-proxy.service
+    enable: true
+    command: start
+    content: |
+      [Unit]
+      Description=k8s-proxy
+      StartLimitIntervalSec=0
+
+      [Service]
+      Restart=always
+      RestartSec=0
+      TimeoutStopSec=10
+      EnvironmentFile=/etc/network-environment
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.7.5_coreos.0"
+      Environment="NAME=%p.service"
+      Environment="NETWORK_CONFIG_CONTAINER="
+      ExecStartPre=/usr/bin/docker pull $IMAGE
+      ExecStartPre=-/usr/bin/docker stop -t 10 $NAME
+      ExecStartPre=-/usr/bin/docker rm -f $NAME
+      ExecStartPre=/bin/sh -c "while ! curl --output /dev/null --silent --head --fail --cacert /etc/kubernetes/ssl/apiserver-ca.pem --cert /etc/kubernetes/ssl/apiserver-crt.pem --key /etc/kubernetes/ssl/apiserver-key.pem https://${API_DOMAIN_NAME}; do sleep 1 && echo 'Waiting for master'; done"
+      ExecStart=/bin/sh -c "/usr/bin/docker run --rm --net=host --privileged=true \
+      --name $NAME \
+      -v /usr/share/ca-certificates:/etc/ssl/certs \
+      -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
+      -v /etc/kubernetes/config/:/etc/kubernetes/config/ \
+      $IMAGE \
+      /hyperkube proxy \
+      --master=https://${API_DOMAIN_NAME} \
+      --proxy-mode=iptables \
+      --logtostderr=true \
+      --kubeconfig=/etc/kubernetes/config/proxy-kubeconfig.yml \
+      --v=2"
+      ExecStop=-/usr/bin/docker stop -t 10 $NAME
+      ExecStopPost=-/usr/bin/docker rm -f $NAME
+  - name: k8s-kubelet.service
+    enable: true
+    command: start
+    content: |
+      [Unit]
+      Description=k8s-kubelet
+      StartLimitIntervalSec=0
+      After=k8s-addons.service k8s-api-server.service
+
+      [Service]
+      Restart=always
+      RestartSec=0
+      TimeoutStopSec=10
+      EnvironmentFile=/etc/network-environment
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.7.5_coreos.0"
+      Environment="NAME=%p.service"
+      Environment="NETWORK_CONFIG_CONTAINER="
+      ExecStartPre=/usr/bin/docker pull $IMAGE
+      ExecStartPre=-/usr/bin/docker stop -t 10 $NAME
+      ExecStartPre=-/usr/bin/docker rm -f $NAME
+      ExecStart=/bin/sh -c "/usr/bin/docker run --rm --pid=host --net=host --privileged=true \
+      -v /:/rootfs:ro,shared \
+      -v /sys:/sys:ro \
+      -v /dev:/dev:rw \
+      -v /run/calico/:/run/calico/:rw \
+      -v /run/docker/:/run/docker/:rw \
+      -v /run/docker.sock:/run/docker.sock:rw \
+      -v /var/log/pods:/var/log/pods:rw \
+      -v /usr/lib/os-release:/etc/os-release \
+      -v /usr/share/ca-certificates/:/etc/ssl/certs \
+      -v /var/lib/docker/:/var/lib/docker:rw,shared \
+      -v /var/lib/kubelet/:/var/lib/kubelet:rw,shared \
+      -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
+      -v /etc/kubernetes/config/:/etc/kubernetes/config/ \
+      -v /etc/cni/net.d/:/etc/cni/net.d/ \
+      -v /opt/cni/bin/:/opt/cni/bin/ \
+      -e ETCD_CA_CERT_FILE=/etc/kubernetes/ssl/etcd/server-ca.pem \
+      -e ETCD_CERT_FILE=/etc/kubernetes/ssl/etcd/server-crt.pem \
+      -e ETCD_KEY_FILE=/etc/kubernetes/ssl/etcd/server-key.pem \
+      --name $NAME \
+      $IMAGE \
+      /hyperkube kubelet \
+      --address=${DEFAULT_IPV4} \
+      --port=10250 \
+      --node-ip=${DEFAULT_IPV4} \
+      --containerized \
+      --enable-server \
+      --logtostderr=true \
+      --cloud-provider=aws \
+      --machine-id-file=/rootfs/etc/machine-id \
+      --cadvisor-port=4194 \
+      --healthz-bind-address=${DEFAULT_IPV4} \
+      --healthz-port=10248 \
+      --cluster-dns=${K8S_DNS_IP} \
+      --cluster-domain=cluster.local \
+      --network-plugin=cni \
+      --register-node=true \
+      --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
+      --allow-privileged=true \
+      --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yml \
+      --require-kubeconfig=true \
+      --node-labels="node-role.kubernetes.io/master,role=master,kubernetes.io/hostname=$HOSTNAME,ip=${DEFAULT_IPV4}," \
+      --v=2"
+      ExecStop=-/usr/bin/docker stop -t 10 $NAME
+      ExecStopPost=-/usr/bin/docker rm -f $NAME
+  - name: update-engine.service
+    enable: false
+    command: stop
+    mask: true
+  - name: locksmithd.service
+    enable: false
+    command: stop
+    mask: true
+  - name: systemd-networkd-wait-online.service
+    enable: true
+    command: start
+  - name: api-certs.service
+    enable: true
+    command: start
+    content: |
+      [Unit]
+      Description=api-certs
+      Requires=docker.service
+      After=docker.service
+
+      [Service]
+      EnvironmentFile=/etc/environment
+      EnvironmentFile=/etc/network-environment
+      Environment=VAULT_TOKEN=${G8S_VAULT_TOKEN}
+      Environment=VAULT_ADDR=https://${VAULT_DOMAIN_NAME}
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/
+      ExecStartPre=/bin/bash -c 'export rsa_key=$(docker run --rm -i -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt --net host --privileged=true -e VAULT_ADDR -e VAULT_TOKEN giantswarm/docker-vault:0.1.0 read -field=key secret/g8s_sa_sign_key 2>/dev/null); echo -e "-----BEGIN RSA PRIVATE KEY-----\n$rsa_key\n-----END RSA PRIVATE KEY-----" > /etc/kubernetes/ssl/service-account-key.pem'
+      ExecStart=/usr/bin/docker run \
+      --net=host \
+      -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
+      -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
+      quay.io/giantswarm/certctl:b07d0913d5cb369a6b605394bdd4be4633451be9 \
+      issue \
+      --vault-addr=https://${VAULT_DOMAIN_NAME} \
+      --vault-token=${G8S_VAULT_TOKEN} \
+      --cluster-id=g8s \
+      --common-name=${API_DOMAIN_NAME} \
+      --ttl=8760h \
+      --crt-file=/etc/kubernetes/ssl/apiserver-crt.pem \
+      --ip-sans=127.0.0.1,${DEFAULT_IPV4},${K8S_API_IP} \
+      --alt-names=localhost,kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.local\
+      --key-file=/etc/kubernetes/ssl/apiserver-key.pem \
+      --ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
+  - name: k8s-api-server.service
+    enable: true
+    command: start
+    content: |
+      [Unit]
+      Description=k8s-api-server
+      StartLimitIntervalSec=0
+      After=docker.service etcd3.service api-certs.service
+      Requires=api-certs.service
+
+      [Service]
+      Restart=always
+      RestartSec=0
+      TimeoutStopSec=10
+      EnvironmentFile=/etc/network-environment
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.7.5_coreos.0"
+      Environment="NAME=%p.service"
+      Environment="NETWORK_CONFIG_CONTAINER="
+      ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
+      ExecStartPre=/usr/bin/docker pull $IMAGE
+      ExecStartPre=-/usr/bin/docker stop -t 10 $NAME
+      ExecStartPre=-/usr/bin/docker rm -f $NAME
+      ExecStart=/usr/bin/docker run --rm --name $NAME --net=host \
+      -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
+      -v /var/log/apiserver/:/var/log/apiserver \
+      $IMAGE \
+      /hyperkube apiserver \
+      --allow_privileged=true \
+      --insecure_bind_address=0.0.0.0 \
+      --insecure_port=8080 \
+      --kubelet_https=true \
+      --secure_port=443 \
+      --cloud-provider=aws \
+      --bind-address=${DEFAULT_IPV4} \
+      --etcd-prefix=giantswarm.io \
+      --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,DefaultStorageClass \
+      --service-cluster-ip-range=${K8S_SERVICE_CIDR} \
+      --etcd-servers=https://${ETCD_DOMAIN_NAME}:2379 \
+      --etcd-cafile=/etc/kubernetes/ssl/etcd/server-ca.pem \
+      --etcd-certfile=/etc/kubernetes/ssl/etcd/server-crt.pem \
+      --etcd-keyfile=/etc/kubernetes/ssl/etcd/server-key.pem \
+      --advertise-address=${DEFAULT_IPV4} \
+      --runtime-config=api/all=true \
+      --logtostderr=true \
+      --profiling=false \
+      --repair-malformed-updates=false \
+      --service-account-lookup=true \
+      --tls-cert-file=/etc/kubernetes/ssl/apiserver-crt.pem \
+      --tls-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem \
+      --client-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem \
+      --service-account-key-file=/etc/kubernetes/ssl/service-account-key.pem \
+      --audit-log-path=/var/log/apiserver/audit.log \
+      --audit-log-maxage=30 \
+      --audit-log-maxbackup=10 \
+      --audit-log-maxsize=100
+      ExecStop=-/usr/bin/docker stop -t 10 $NAME
+      ExecStopPost=-/usr/bin/docker rm -f $NAME
+  - name: k8s-controller-manager.service
+    enable: true
+    command: start
+    content: |
+      [Unit]
+      Description=k8s-controller-manager Service
+      StartLimitIntervalSec=0
+
+      [Service]
+      Restart=always
+      RestartSec=0
+      TimeoutStopSec=10
+      EnvironmentFile=/etc/network-environment
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.7.5_coreos.0"
+      Environment="NAME=%p.service"
+      Environment="NETWORK_CONFIG_CONTAINER="
+      ExecStartPre=/usr/bin/docker pull $IMAGE
+      ExecStartPre=-/usr/bin/docker stop -t 10 $NAME
+      ExecStartPre=-/usr/bin/docker rm -f $NAME
+      ExecStart=/usr/bin/docker run --rm --net=host --name $NAME \
+      -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
+      -v /etc/kubernetes/config/:/etc/kubernetes/config/ \
+      -v /etc/kubernetes/secrets/token_sign_key.pem:/etc/kubernetes/secrets/token_sign_key.pem \
+      $IMAGE \
+      /hyperkube controller-manager \
+      --master=https://${API_DOMAIN_NAME}:443 \
+      --logtostderr=true \
+      --v=2 \
+      --cloud-provider=aws \
+      --profiling=false \
+      --terminated-pod-gc-threshold=10 \
+      --use-service-account-credentials=true \
+      --kubeconfig=/etc/kubernetes/config/controller-manager-kubeconfig.yml \
+      --root-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem \
+      --service-account-private-key-file=/etc/kubernetes/ssl/service-account-key.pem
+      ExecStop=-/usr/bin/docker stop -t 10 $NAME
+      ExecStopPost=-/usr/bin/docker rm -f $NAME
+  - name: k8s-scheduler.service
+    enable: true
+    command: start
+    content: |
+      [Unit]
+      Description=k8s-scheduler Service
+      StartLimitIntervalSec=0
+
+      [Service]
+      Restart=always
+      RestartSec=0
+      TimeoutStopSec=10
+      EnvironmentFile=/etc/network-environment
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.7.5_coreos.0"
+      Environment="NAME=%p.service"
+      Environment="NETWORK_CONFIG_CONTAINER="
+      ExecStartPre=/usr/bin/docker pull $IMAGE
+      ExecStartPre=-/usr/bin/docker stop -t 10 $NAME
+      ExecStartPre=-/usr/bin/docker rm -f $NAME
+      ExecStart=/usr/bin/docker run --rm --net=host --name $NAME \
+      -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
+      -v /etc/kubernetes/config/:/etc/kubernetes/config/ \
+      $IMAGE \
+      /hyperkube scheduler \
+      --master=https://${API_DOMAIN_NAME}:443 \
+      --logtostderr=true \
+      --v=2 \
+      --profiling=false \
+      --kubeconfig=/etc/kubernetes/config/scheduler-kubeconfig.yml
+      ExecStop=-/usr/bin/docker stop -t 10 $NAME
+      ExecStopPost=-/usr/bin/docker rm -f $NAME
+  - name: k8s-addons.service
+    enable: true
+    command: start
+    content: |
+      [Unit]
+      Description=Kubernetes Addons
+      Wants=k8s-api-server.service
+      After=k8s-api-server.service
+      [Service]
+      Type=oneshot
+      EnvironmentFile=/etc/network-environment
+      ExecStart=/opt/k8s-addons
+      [Install]
+      WantedBy=multi-user.target
+  - name: node-exporter.service
+    enable: true
+    command: start
+    content: |
+      [Unit]
+      Description=Prometheus Node Exporter Service
+      Requires=docker.service
+      After=docker.service
+
+      [Service]
+      Restart=always
+      Environment="IMAGE=prom/node-exporter:0.12.0"
+      Environment="NAME=%p.service"
+      ExecStartPre=/usr/bin/docker pull $IMAGE
+      ExecStartPre=-/usr/bin/docker stop -t 10 $NAME
+      ExecStartPre=-/usr/bin/docker rm -f $NAME
+      ExecStart=/usr/bin/docker run --rm \
+        -p 91:91 \
+        --net=host \
+        --name $NAME \
+        $IMAGE \
+        --web.listen-address=:91
+      ExecStop=-/usr/bin/docker stop -t 10 $NAME
+      ExecStopPost=-/usr/bin/docker rm -f $NAME
+
+      [Install]
+      WantedBy=multi-user.target
+  update:
+    reboot-strategy: off

@@ -4,8 +4,7 @@ variable "api_dns" {
 }
 
 variable "bastion_count" {
-  type    = "string"
-  default = "2"
+  type = "string"
 }
 
 variable "base_domain" {
@@ -26,6 +25,10 @@ variable "resource_group_name" {
 }
 
 variable "location" {
+  type = "string"
+}
+
+variable "master_count" {
   type = "string"
 }
 

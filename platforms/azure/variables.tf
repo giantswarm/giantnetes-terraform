@@ -1,5 +1,3 @@
-### Main ###
-
 variable "cluster_name" {
   type        = "string"
   description = "Need to be unique within the account"
@@ -72,6 +70,11 @@ variable "container_linux_channel" {
 variable "container_linux_version" {
   description = "Container linux version."
   default     = "latest"
+}
+
+variable "core_ssh_key" {
+  description = "ssh key for user core"
+  default     = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDIvW4h8X48R38jYIkod5whXMhIL/9Zfgp+EwgkRZi4mn+OAbCprHwc4V3RUGW0ysEdEqI/4FI1ho57X8CbbLa03MazNCKHCd8CNGdGorKai0g4uRaJI4wp+J6wniqERdJjuRKvRVYEZt8Ptv7YS0i3uW2HUDPVipkEqmSUtF7t4lAD1FDtAGQN23bdDhWHfTUAfg5yooiHtm9JfKiEV7MwncMd1nlZIklJWMQf9W5dvJBPmhVU0XmaCsmOH2rvaCi+cZQiMCqJOBKzDnEupanGcaf76iCQ3dn1ToCxXLlnRvhgSL6thR9HC3vA/ivDReKO7BXB8FVuZnr7NT0oxGaz fake"
 }
 
 ### DNS ###
