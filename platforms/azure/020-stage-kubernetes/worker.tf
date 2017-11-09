@@ -2,7 +2,7 @@ module "worker" {
   source = "../../../modules/azure/worker-ss"
 
   ingress_backend_address_pool_id = "${module.vnet.ingress_backend_address_pool_id}"
-  cloud_config_data               = "${file("${path.module}/../../../generated/master.sh")}"
+  cloud_config_data               = "${file("${path.cwd}/generated/master.sh")}"
   cluster_name                    = "${var.cluster_name}"
   container_linux_channel         = "${var.container_linux_channel}"
   container_linux_version         = "${module.container_linux.version}"

@@ -111,7 +111,7 @@ write_files:
   owner: root
   permissions: 0644
   content: |
-    SUBSYSTEM=="block", KERNEL=="xvdh", TAG+="systemd"
+    SUBSYSTEM=="block", KERNEL=="sdc", TAG+="systemd"
 
 coreos:
   units:
@@ -141,13 +141,13 @@ coreos:
       content: |
         [Unit]
         Description=Formats the disk drive
-        Requires=dev-xvdh.device
-        After=dev-xvdh.device
+        Requires=dev-sdc.device
+        After=dev-sdc.device
         [Service]
         Type=oneshot
         RemainAfterExit=yes
         Environment="LABEL=var-lib-etcd"
-        Environment="DEV=/dev/xvdh"
+        Environment="DEV=/dev/sdc"
         # Do not wipe the disk if it's already being used, so the etcd data is persistent across reboot.
         ExecStart=-/bin/bash -c "if ! findfs LABEL=$LABEL > /tmp/label.$LABEL; then wipefs -a -f $DEV && mkfs.ext4 -T news -F -L $LABEL $DEV && echo wiped; fi"
     - name: var-lib-etcd.mount
@@ -159,7 +159,7 @@ coreos:
         After=format-etcd-disk.service
         Before=etcd.service
         [Mount]
-        What=/dev/xvdh
+        What=/dev/sdc
         Where=/var/lib/etcd
         Type=ext4
     # Automount etcd dir when first accessed.

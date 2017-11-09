@@ -529,18 +529,16 @@ write_files:
   owner: root
   permissions: 644
   content: |
-    apiVersion: storage.k8s.io/v1beta1
     kind: StorageClass
+    apiVersion: storage.k8s.io/v1
     metadata:
-      name: gp2
+      name: azure-storage
       annotations:
         storageclass.beta.kubernetes.io/is-default-class: "true"
-      labels:
-        kubernetes.io/cluster-service: "true"
-        addonmanager.kubernetes.io/mode: EnsureExists
-    provisioner: kubernetes.io/aws-ebs
-    parameters:
-      type: gp2
+      provisioner: kubernetes.io/azure-disk
+      parameters:
+        storageaccounttype: Premium_LRS
+          kind: Managed
 - path: /srv/kubedns-cm.yaml
   owner: root
   permissions: 0644
@@ -1244,7 +1242,7 @@ write_files:
   owner: root
   permissions: 0644
   content: |
-    SUBSYSTEM=="block", KERNEL=="xvdh", TAG+="systemd"
+    SUBSYSTEM=="block", KERNEL=="sdd", TAG+="systemd"
 
 coreos:
   units:
@@ -1253,8 +1251,8 @@ coreos:
     content: |
       [Unit]
       Description=Formats the disk drive
-      Requires=dev-xvdh.device
-      After=dev-xvdh.device
+      Requires=dev-sdd.device
+      After=dev-sdd.device
       [Service]
       Type=oneshot
       RemainAfterExit=yes
@@ -1640,7 +1638,7 @@ coreos:
       --containerized \
       --enable-server \
       --logtostderr=true \
-      --cloud-provider=aws \
+      --cloud-provider=azure \
       --machine-id-file=/rootfs/etc/machine-id \
       --cadvisor-port=4194 \
       --healthz-bind-address=${DEFAULT_IPV4} \
@@ -1734,7 +1732,7 @@ coreos:
       --insecure_port=8080 \
       --kubelet_https=true \
       --secure_port=443 \
-      --cloud-provider=aws \
+      --cloud-provider=azure \
       --bind-address=${DEFAULT_IPV4} \
       --etcd-prefix=giantswarm.io \
       --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,DefaultStorageClass \
@@ -1787,7 +1785,7 @@ coreos:
       --master=https://${API_DOMAIN_NAME}:443 \
       --logtostderr=true \
       --v=2 \
-      --cloud-provider=aws \
+      --cloud-provider=azure \
       --profiling=false \
       --terminated-pod-gc-threshold=10 \
       --use-service-account-credentials=true \

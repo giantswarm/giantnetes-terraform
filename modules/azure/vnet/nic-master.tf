@@ -11,3 +11,13 @@ resource "azurerm_network_interface" "master" {
     load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.api-lb.id}"]
   }
 }
+
+# TODO: If more than one master this should become load balancer.
+resource "azurerm_dns_a_record" "etcd_dns" {
+  count               = "${var.master_count}"
+  name                = "${var.etcd_dns}"
+  zone_name           = "${var.base_domain}"
+  resource_group_name = "${var.resource_group_name}"
+  ttl                 = 300
+  records             = ["${element(azurerm_network_interface.master.*.private_ip_address, count.index)}"]
+}

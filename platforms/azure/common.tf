@@ -31,6 +31,7 @@ module "vnet" {
   base_domain         = "${var.base_domain}"
   bastion_count       = "2"
   cluster_name        = "${var.cluster_name}"
+  etcd_dns            = "${var.etcd_dns}"
   ingress_dns         = "${var.ingress_dns}"
   location            = "${var.azure_location}"
   master_count        = "1"

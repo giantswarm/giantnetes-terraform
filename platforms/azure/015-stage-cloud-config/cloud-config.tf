@@ -1,7 +1,7 @@
 module "cloud-config" {
   source = "../../../modules/cloud-config-compressed"
 
-  target_dir = "${path.module}/../../../generated"
+  target_dir = "${path.cwd}/generated"
   source_dir = "${path.module}/../../../cloud-config"
 
   cluster_name      = "${var.cluster_name}"
