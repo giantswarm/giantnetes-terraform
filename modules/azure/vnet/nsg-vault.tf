@@ -32,7 +32,7 @@ resource "azurerm_network_security_rule" "vault_ingress_internal_8200" {
   protocol                    = "TCP"
   source_port_range           = "*"
   destination_port_range      = "8200"
-  source_address_prefix       = "VirtualNetwork"
+  source_address_prefix       = "*"
   destination_address_prefix  = "*"
   resource_group_name         = "${var.resource_group_name}"
   network_security_group_name = "${azurerm_network_security_group.vault.name}"

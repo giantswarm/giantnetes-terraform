@@ -28,21 +28,21 @@ variable "location" {
 
 variable "worker_count" {
   type        = "string"
-  description = "Count of worker nodes to be created."
+  description = "Number of worker nodes to be created."
 }
 
 variable "resource_group_name" {
   type = "string"
 }
 
+variable "network_interface_ids" {
+  type        = "list"
+  description = "List of NICs to use for Vault VMs"
+}
+
 variable "storage_type" {
   type        = "string"
   description = "Storage account type"
-}
-
-variable "subnet_id" {
-  type        = "string"
-  description = "ID of worker subnet"
 }
 
 variable "vm_size" {

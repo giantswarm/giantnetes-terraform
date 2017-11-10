@@ -5,6 +5,12 @@ export TF_VAR_azure_location=<azure-location-for-the-hostcluster>
 # needs to be unique within the azure account
 export TF_VAR_cluster_name=<hostcluster-codename>
 
+# service principal credentials
+export TF_VAR_azure_azure_sp_tenantid=""
+export TF_VAR_azure_azure_sp_subscriptionid=""
+export TF_VAR_azure_azure_sp_aadclientid=""
+export TF_VAR_azure_azure_sp_aadclientsecret=""
+
 # example is a standard gigantic.io domain structure.
 # pls don't change if this cluster is installed with gigantic.io
 #

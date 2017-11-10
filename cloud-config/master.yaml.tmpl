@@ -510,7 +510,7 @@ write_files:
                 # The location of the Kubernetes API.  Use the default Kubernetes
                 # service for API access.
                 - name: K8S_API
-                  value: "https://${API_DOMAIN_NAME}:443"
+                  value: "https://kubernetes.default:443"
                 # Since we're running in the host namespace and might not have KubeDNS
                 # access, configure the container's /etc/hosts to resolve
                 # kubernetes.default to the correct service clusterIP.
@@ -529,16 +529,15 @@ write_files:
   owner: root
   permissions: 644
   content: |
+    apiVersion: storage.k8s.io/v1beta1
     kind: StorageClass
-    apiVersion: storage.k8s.io/v1
     metadata:
-      name: azure-storage
+      name: default
       annotations:
         storageclass.beta.kubernetes.io/is-default-class: "true"
-      provisioner: kubernetes.io/azure-disk
-      parameters:
-        storageaccounttype: Premium_LRS
-          kind: Managed
+      labels:
+        kubernetes.io/cluster-service: "true"
+    provisioner: kubernetes.io/azure-disk
 - path: /srv/kubedns-cm.yaml
   owner: root
   permissions: 0644
@@ -1064,6 +1063,22 @@ write_files:
           done
       done
       echo "Addons successfully installed"
+
+- path: /etc/kubernetes/config/azure.yaml
+  owner: root
+  permissions: 0600
+  content: |
+    cloud: ${AZURE_CLOUD}
+    tenantId: ${AZURE_SP_TENANTID}
+    subscriptionId: ${AZURE_SP_SUBSCRIPTIONID}
+    aadClientId: ${AZURE_SP_AADCLIENTID}
+    aadClientSecret: ${AZURE_SP_AADCLIENTSECRET}
+    resourceGroup: ${AZURE_RESOURCEGROUP}
+    location: ${AZURE_LOCATION}
+    subnetName: ${AZURE_SUBNETNAME}
+    securityGroupName: ${AZURE_SECGROUPNAME}
+    vnetName: ${AZURE_VNETNAME}
+
 - path: /etc/kubernetes/config/proxy-kubeconfig.yml
   owner: root
   permissions: 0644
@@ -1079,7 +1094,7 @@ write_files:
     - name: local
       cluster:
         certificate-authority: /etc/kubernetes/ssl/apiserver-ca.pem
-        server: https://${API_DOMAIN_NAME}
+        server: https://127.0.0.1
     contexts:
     - context:
         cluster: local
@@ -1101,7 +1116,7 @@ write_files:
     - name: local
       cluster:
         certificate-authority: /etc/kubernetes/ssl/apiserver-ca.pem
-        server: https://${API_DOMAIN_NAME}
+        server: https://127.0.0.1
     contexts:
     - context:
         cluster: local
@@ -1123,7 +1138,7 @@ write_files:
     - name: local
       cluster:
         certificate-authority: /etc/kubernetes/ssl/apiserver-ca.pem
-        server: https://${API_DOMAIN_NAME}
+        server: https://127.0.0.1
     contexts:
     - context:
         cluster: local
@@ -1145,7 +1160,7 @@ write_files:
     - name: local
       cluster:
         certificate-authority: /etc/kubernetes/ssl/apiserver-ca.pem
-        server: https://${API_DOMAIN_NAME}
+        server: https://127.0.0.1
     contexts:
     - context:
         cluster: local
@@ -1575,7 +1590,7 @@ coreos:
       ExecStartPre=/usr/bin/docker pull $IMAGE
       ExecStartPre=-/usr/bin/docker stop -t 10 $NAME
       ExecStartPre=-/usr/bin/docker rm -f $NAME
-      ExecStartPre=/bin/sh -c "while ! curl --output /dev/null --silent --head --fail --cacert /etc/kubernetes/ssl/apiserver-ca.pem --cert /etc/kubernetes/ssl/apiserver-crt.pem --key /etc/kubernetes/ssl/apiserver-key.pem https://${API_DOMAIN_NAME}; do sleep 1 && echo 'Waiting for master'; done"
+      ExecStartPre=/bin/sh -c "while ! curl --output /dev/null --silent --head --fail --cacert /etc/kubernetes/ssl/apiserver-ca.pem --cert /etc/kubernetes/ssl/apiserver-crt.pem --key /etc/kubernetes/ssl/apiserver-key.pem https://127.0.0.1; do sleep 1 && echo 'Waiting for master'; done"
       ExecStart=/bin/sh -c "/usr/bin/docker run --rm --net=host --privileged=true \
       --name $NAME \
       -v /usr/share/ca-certificates:/etc/ssl/certs \
@@ -1583,7 +1598,7 @@ coreos:
       -v /etc/kubernetes/config/:/etc/kubernetes/config/ \
       $IMAGE \
       /hyperkube proxy \
-      --master=https://${API_DOMAIN_NAME} \
+      --master=https://127.0.0.1 \
       --proxy-mode=iptables \
       --logtostderr=true \
       --kubeconfig=/etc/kubernetes/config/proxy-kubeconfig.yml \
@@ -1639,6 +1654,7 @@ coreos:
       --enable-server \
       --logtostderr=true \
       --cloud-provider=azure \
+      --cloud-config=/etc/kubernetes/config/azure.yaml \
       --machine-id-file=/rootfs/etc/machine-id \
       --cadvisor-port=4194 \
       --healthz-bind-address=${DEFAULT_IPV4} \
@@ -1733,7 +1749,7 @@ coreos:
       --kubelet_https=true \
       --secure_port=443 \
       --cloud-provider=azure \
-      --bind-address=${DEFAULT_IPV4} \
+      --bind-address=0.0.0.0 \
       --etcd-prefix=giantswarm.io \
       --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,DefaultStorageClass \
       --service-cluster-ip-range=${K8S_SERVICE_CIDR} \
@@ -1782,7 +1798,7 @@ coreos:
       -v /etc/kubernetes/secrets/token_sign_key.pem:/etc/kubernetes/secrets/token_sign_key.pem \
       $IMAGE \
       /hyperkube controller-manager \
-      --master=https://${API_DOMAIN_NAME}:443 \
+      --master=https://127.0.0.1:443 \
       --logtostderr=true \
       --v=2 \
       --cloud-provider=azure \
@@ -1818,7 +1834,7 @@ coreos:
       -v /etc/kubernetes/config/:/etc/kubernetes/config/ \
       $IMAGE \
       /hyperkube scheduler \
-      --master=https://${API_DOMAIN_NAME}:443 \
+      --master=https://127.0.0.1:443 \
       --logtostderr=true \
       --v=2 \
       --profiling=false \

@@ -1,5 +1,5 @@
-resource "azurerm_availability_set" "masters" {
-  name                = "${var.cluster_name}-masters"
+resource "azurerm_availability_set" "workers" {
+  name                = "${var.cluster_name}-workers"
   location            = "${var.location}"
   resource_group_name = "${var.resource_group_name}"
   managed             = true
@@ -9,9 +9,9 @@ resource "azurerm_availability_set" "masters" {
   }
 }
 
-resource "azurerm_managed_disk" "master_docker" {
-  count                = "${var.master_count}"
-  name                 = "${var.cluster_name}-master-docker-disk-${count.index}"
+resource "azurerm_managed_disk" "worker_docker" {
+  count                = "${var.worker_count}"
+  name                 = "${var.cluster_name}-worker-docker-disk-${count.index}"
   location             = "${var.location}"
   resource_group_name  = "${var.resource_group_name}"
   storage_account_type = "${var.storage_type}"
@@ -19,32 +19,22 @@ resource "azurerm_managed_disk" "master_docker" {
   disk_size_gb         = "${var.docker_disk_size}"
 }
 
-resource "azurerm_managed_disk" "master_etcd" {
-  count                = "${var.master_count}"
-  name                 = "${var.cluster_name}-master-etcd-disk-${count.index}"
-  location             = "${var.location}"
-  resource_group_name  = "${var.resource_group_name}"
-  storage_account_type = "${var.storage_type}"
-  create_option        = "Empty"
-  disk_size_gb         = "${var.etcd_disk_size}"
-}
-
-resource "azurerm_virtual_machine" "master" {
-  count = "${var.master_count}"
+resource "azurerm_virtual_machine" "worker" {
+  count = "${var.worker_count}"
 
   # Name and computer_name in os_profile should be equal.
   # Both are used as identifiers of VM.
-  name = "master-${count.index}"
+  name = "worker-${count.index}"
 
   location              = "${var.location}"
   resource_group_name   = "${var.resource_group_name}"
   network_interface_ids = ["${var.network_interface_ids[count.index]}"]
-  availability_set_id   = "${azurerm_availability_set.masters.id}"
+  availability_set_id   = "${azurerm_availability_set.workers.id}"
   vm_size               = "${var.vm_size}"
 
   delete_os_disk_on_termination = true
 
-  delete_data_disks_on_termination = false
+  delete_data_disks_on_termination = true
 
   storage_image_reference {
     publisher = "CoreOS"
@@ -54,7 +44,7 @@ resource "azurerm_virtual_machine" "master" {
   }
 
   storage_os_disk {
-    name              = "master-${count.index}-os"
+    name              = "worker-${count.index}-os"
     managed_disk_type = "${var.storage_type}"
     create_option     = "FromImage"
     caching           = "ReadWrite"
@@ -62,23 +52,15 @@ resource "azurerm_virtual_machine" "master" {
   }
 
   storage_data_disk {
-    name            = "${element(azurerm_managed_disk.master_docker.*.name, count.index)}"
-    managed_disk_id = "${element(azurerm_managed_disk.master_docker.*.id, count.index)}"
+    name            = "${element(azurerm_managed_disk.worker_docker.*.name, count.index)}"
+    managed_disk_id = "${element(azurerm_managed_disk.worker_docker.*.id, count.index)}"
     create_option   = "Attach"
     lun             = 0
-    disk_size_gb    = "${element(azurerm_managed_disk.master_docker.*.disk_size_gb, count.index)}"
-  }
-
-  storage_data_disk {
-    name            = "${azurerm_managed_disk.master_etcd.name}"
-    managed_disk_id = "${azurerm_managed_disk.master_etcd.id}"
-    create_option   = "Attach"
-    lun             = 1
-    disk_size_gb    = "${azurerm_managed_disk.master_etcd.disk_size_gb}"
+    disk_size_gb    = "${element(azurerm_managed_disk.worker_docker.*.disk_size_gb, count.index)}"
   }
 
   os_profile {
-    computer_name  = "master-${count.index}"
+    computer_name  = "worker-${count.index}"
     admin_username = "core"
     admin_password = ""
     custom_data    = "${base64encode("${var.cloud_config_data}")}"

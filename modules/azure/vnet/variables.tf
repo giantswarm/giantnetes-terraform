@@ -37,6 +37,10 @@ variable "master_count" {
   type = "string"
 }
 
+variable "worker_count" {
+  type = "string"
+}
+
 variable "vault_dns" {
   type    = "string"
   default = "vault"

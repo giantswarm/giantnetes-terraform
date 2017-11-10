@@ -13,9 +13,35 @@ variable "azure_cloud" {
   default     = "AZUREPUBLICCLOUD"
 }
 
+variable "azure_sp_tenantid" {
+  type        = "string"
+  description = "Tenant ID of Service Principal for Kubernetes"
+}
+
+variable "azure_sp_subscriptionid" {
+  type        = "string"
+  description = "Subscription ID of Service Principal for Kubernetes"
+}
+
+variable "azure_sp_aadclientid" {
+  type        = "string"
+  description = "ID of Service Principal for Kubernetes"
+}
+
+variable "azure_sp_aadclientsecret" {
+  type        = "string"
+  description = "Secret of Service Principal for Kubernetes"
+}
+
 variable "nodes_vault_token" {
   type        = "string"
   description = "Vault token used by nodes for bootstrapping. Should be defined after Vault is installed."
+}
+
+variable "worker_count" {
+  type        = "string"
+  description = "Number of worker nodes to be created."
+  default     = "4"
 }
 
 ### Compute and Storage ###

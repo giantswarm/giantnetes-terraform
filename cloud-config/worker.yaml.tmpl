@@ -106,6 +106,20 @@ users:
     ssh-authorized_keys:
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDg0b+m551vLRqsnnDrB32PrQnO41Fv62dbYYCGqjcd/if8iOuyXvxNRnbOxnsFFPVSiqY2LB8pXofEAm5MG2qupGyBvivtnq1v+6Ld9nMYTaKdz5WKhI9ypQ/jV4G1DNYrayGno13eRmGemCEnIdZeRrVxp5EfkVX0ZyJ88998Urjv6OtSLV+GSNSiIbNYyvGjLoR0dt5LCVbwbbQd1H5wXYsSoeIkKiqfS7AtMn9wDCIyM1W15yC/4UaCMEGkVfjLZB+4Y8BBfLH1vI1h43zl4EUkaq1PASDvpX0AWlclfemkK2bGEOS/UzVJsZtM73jEoSZvq/aCLe3v/0zI/5Xl
 write_files:
+- path: /etc/kubernetes/config/azure.yaml
+  owner: root
+  permissions: 0600
+  content: |
+    cloud: ${AZURE_CLOUD}
+    tenantId: ${AZURE_SP_TENANTID}
+    subscriptionId: ${AZURE_SP_SUBSCRIPTIONID}
+    aadClientId: ${AZURE_SP_AADCLIENTID}
+    aadClientSecret: ${AZURE_SP_AADCLIENTSECRET}
+    resourceGroup: ${AZURE_RESOURCEGROUP}
+    location: ${AZURE_LOCATION}
+    subnetName: ${AZURE_SUBNETNAME}
+    securityGroupName: ${AZURE_SECGROUPNAME}
+    vnetName: ${AZURE_VNETNAME}
 - path: /etc/kubernetes/config/proxy-kubeconfig.yml
   owner: root
   permissions: 0644

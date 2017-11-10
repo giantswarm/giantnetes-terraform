@@ -58,8 +58,12 @@ output "worker_nsg_name" {
   value = "${azurerm_network_security_group.worker.name}"
 }
 
+output "worker_network_interface_ids" {
+  value = ["${azurerm_network_interface.worker.*.id}"]
+}
+
 output "master_network_interface_ids" {
-  value = ["${azurerm_network_interface.master.id}"]
+  value = ["${azurerm_network_interface.master.*.id}"]
 }
 
 output "api_backend_address_pool_id" {
