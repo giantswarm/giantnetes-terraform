@@ -19,7 +19,6 @@ resource "azurerm_public_ip" "ingress_ip" {
   location                     = "${var.location}"
   resource_group_name          = "${var.resource_group_name}"
   public_ip_address_allocation = "static"
-  domain_name_label            = "${var.ingress_dns}"
 
   tags {
     Environment = "${var.cluster_name}"

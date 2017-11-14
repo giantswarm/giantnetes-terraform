@@ -19,7 +19,6 @@ resource "azurerm_public_ip" "api_ip" {
   location                     = "${var.location}"
   resource_group_name          = "${var.resource_group_name}"
   public_ip_address_allocation = "static"
-  domain_name_label            = "${var.api_dns}"
 
   tags {
     Environment = "${var.cluster_name}"
@@ -31,7 +30,7 @@ resource "azurerm_dns_a_record" "api_dns" {
   zone_name           = "${var.base_domain}"
   resource_group_name = "${var.resource_group_name}"
   ttl                 = 300
-  records             = ["${azurerm_public_ip.ingress_ip.ip_address}"]
+  records             = ["${azurerm_public_ip.api_ip.ip_address}"]
 }
 
 resource "azurerm_lb_backend_address_pool" "api-lb" {

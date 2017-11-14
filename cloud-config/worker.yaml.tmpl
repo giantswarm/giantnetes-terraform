@@ -541,7 +541,8 @@ coreos:
       --containerized \
       --enable-server \
       --logtostderr=true \
-      --cloud-provider=aws \
+      --cloud-provider=azure \
+      --cloud-config=/etc/kubernetes/config/azure.yaml \
       --machine-id-file=/rootfs/etc/machine-id \
       --cadvisor-port=4194 \
       --healthz-bind-address=${DEFAULT_IPV4} \
