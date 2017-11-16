@@ -35,4 +35,5 @@ resource "azurerm_subnet" "worker_subnet" {
   virtual_network_name      = "${azurerm_virtual_network.cluster_vnet.name}"
   address_prefix            = "${cidrsubnet(var.vnet_cidr, 8, 2)}"
   network_security_group_id = "${azurerm_network_security_group.worker.id}"
+  route_table_id            = "${azurerm_route_table.worker_rt.id}"
 }

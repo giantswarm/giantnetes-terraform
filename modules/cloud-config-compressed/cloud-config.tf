@@ -16,7 +16,7 @@ variable "base_domain" {}
 variable "vault_dns" {}
 variable "api_dns" {}
 variable "etcd_dns" {}
-variable "calico_cidr" {}
+variable "pod_cidr" {}
 variable "docker_cidr" {}
 variable "k8s_service_cidr" {}
 variable "k8s_dns_ip" {}
@@ -39,7 +39,8 @@ data "template_file" "master_cloud_config" {
     "AZURE_SUBNETNAME"         = "${var.cluster_name}_worker_subnet"
     "AZURE_SECGROUPNAME"       = "${var.cluster_name}-worker"
     "AZURE_VNETNAME"           = "${var.cluster_name}"
-    "CALICO_CIDR"              = "${var.calico_cidr}"
+    "AZURE_ROUTETABLE"         = "${var.cluster_name}_worker_rt"
+    "POD_CIDR"                 = "${var.pod_cidr}"
     "ETCD_DOMAIN_NAME"         = "${var.etcd_dns}.${var.base_domain}"
     "G8S_VAULT_TOKEN"          = "${var.nodes_vault_token}"
     "DEFAULT_IPV4"             = "$${DEFAULT_IPV4}"
@@ -80,7 +81,8 @@ data "template_file" "worker_cloud_config" {
     "AZURE_SUBNETNAME"         = "${var.cluster_name}_worker_subnet"
     "AZURE_SECGROUPNAME"       = "${var.cluster_name}-worker"
     "AZURE_VNETNAME"           = "${var.cluster_name}"
-    "CALICO_CIDR"              = "${var.calico_cidr}"
+    "AZURE_ROUTETABLE"         = "${var.cluster_name}_worker_rt"
+    "POD_CIDR"                 = "${var.pod_cidr}"
     "CLUSTER_NAME"             = "${var.cluster_name}"
     "DEFAULT_IPV4"             = "$${DEFAULT_IPV4}"
     "DOCKER_CIDR"              = "${var.docker_cidr}"

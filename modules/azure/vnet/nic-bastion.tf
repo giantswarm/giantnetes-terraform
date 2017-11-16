@@ -24,7 +24,7 @@ resource "azurerm_public_ip" "bastion_public_ip" {
 
 resource "azurerm_dns_a_record" "bastion_dns" {
   count               = "${var.bastion_count}"
-  name                = "bastion-${count.index}"
+  name                = "bastion${count.index + 1}"
   zone_name           = "${var.base_domain}"
   resource_group_name = "${var.resource_group_name}"
   ttl                 = 300

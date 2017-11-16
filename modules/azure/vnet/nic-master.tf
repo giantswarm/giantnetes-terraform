@@ -4,6 +4,8 @@ resource "azurerm_network_interface" "master" {
   location            = "${var.location}"
   resource_group_name = "${var.resource_group_name}"
 
+  enable_ip_forwarding = true
+
   ip_configuration {
     private_ip_address_allocation           = "dynamic"
     name                                    = "${var.cluster_name}-masterIPConfiguration"

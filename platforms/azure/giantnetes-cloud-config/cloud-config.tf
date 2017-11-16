@@ -13,7 +13,7 @@ module "cloud-config" {
   azure_sp_aadclientid     = "${var.azure_sp_aadclientid}"
   azure_sp_aadclientsecret = "${var.azure_sp_aadclientsecret}"
   base_domain              = "${var.base_domain}"
-  calico_cidr              = "${var.calico_cidr}"
+  pod_cidr                 = "${var.pod_cidr}"
   cluster_name             = "${var.cluster_name}"
   docker_cidr              = "${var.docker_cidr}"
   etcd_dns                 = "${var.etcd_dns}"

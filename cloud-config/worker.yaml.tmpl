@@ -120,6 +120,7 @@ write_files:
     subnetName: ${AZURE_SUBNETNAME}
     securityGroupName: ${AZURE_SECGROUPNAME}
     vnetName: ${AZURE_VNETNAME}
+    routeTableName: ${AZURE_ROUTETABLE}
 - path: /etc/kubernetes/config/proxy-kubeconfig.yml
   owner: root
   permissions: 0644
@@ -524,7 +525,7 @@ coreos:
       -v /usr/share/ca-certificates/:/etc/ssl/certs \
       -v /var/lib/docker/:/var/lib/docker:rw,shared \
       -v /var/lib/kubelet/:/var/lib/kubelet:rw,shared \
-      -v /var/log/pods:/var/log/pods:rw \
+      -v /var/log:/var/log:rw \
       -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
       -v /etc/kubernetes/config/:/etc/kubernetes/config/ \
       -v /etc/cni/net.d/:/etc/cni/net.d/ \
