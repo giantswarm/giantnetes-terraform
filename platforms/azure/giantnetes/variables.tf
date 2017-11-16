@@ -151,9 +151,9 @@ variable "vnet_cidr" {
   default     = "10.0.0.0/16"
 }
 
-variable "calico_cidr" {
-  description = "CIDR for Calico."
-  default     = "192.168.0.0/16"
+variable "pod_cidr" {
+  description = "CIDR for pods."
+  default     = "10.0.128.0/17"
 }
 
 variable "docker_cidr" {
