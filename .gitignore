@@ -1,0 +1,4 @@
+build
+.terraform
+terraform.tfstate*
+generated
