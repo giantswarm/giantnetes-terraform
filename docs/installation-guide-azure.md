@@ -124,12 +124,14 @@ source envs.sh
 ```
 
 ```
-terraform init ../platoforms/azure/giantnetes-cloud-config
+terraform init ../platforms/azure/giantnetes-cloud-config
 terraform plan ../platforms/azure/giantnetes-cloud-config
 terraform apply ../platforms/azure/giantnetes-cloud-config
 ```
 
-#### Install master
+#### Install master and workers
+
+##### Delete vms manually
 
 Delete master vm manually it will be recreated by terraform (workaround for [this bug](https://github.com/terraform-providers/terraform-provider-azurerm/issues/148)).
 
@@ -138,20 +140,19 @@ az vm delete -y -n master-0 -g $TF_VAR_cluster_name
 az disk delete -y -n master-0-os -g $TF_VAR_cluster_name
 ```
 
-```
-terraform init ../platforms/azure/giantnetes
-terraform plan ../platforms/azure/giantnetes
-terraform apply ../platforms/azure/giantnetes
-```
-
-#### Install workers
-
 Delete workers manually.
 
 ```
-az vm delete --ids $(az vm list -g $TF_VAR_cluster_name --query "[].id" -o tsv | grep worker)
-az disk delete --ids $(az disk list -g $TF_VAR_cluster_name --query "[].id" -o tsv | grep 'worker.*os')
+az vm delete -y --no-wait --ids $(az vm list -g $TF_VAR_cluster_name --query "[].id" -o tsv | grep worker)
 ```
+
+Wait 5 minutes at least, while vms are deleling.
+
+```
+az disk delete -y --ids $(az disk list -g $TF_VAR_cluster_name --query "[].id" -o tsv | grep 'worker.*os')
+```
+
+##### Apply terraform
 
 ```
 terraform init ../platforms/azure/giantnetes
