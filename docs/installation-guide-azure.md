@@ -38,13 +38,20 @@ az storage account keys list -g ${NAME}-terraform  --account-name ${NAME}terrafo
 
 ### Create service principal
 
-To get subscription use `az account list | jq '.[].id'`
+Create resource group for cluster. We need one to assign permissions.
 
 ```
-az ad sp create-for-rbac --name=${NAME}-sp --role="Contributor" --scopes="/subscriptions/XXX..."
+az group create -n ${NAME} -l westeurope
 ```
 
-Make sure to save output, it will be needed in next step.
+Create service principal with permissions limited to resource group.
+
+```
+export SUBSCRIPTION_ID=$(az account list | jq '.[].id')
+az ad sp create-for-rbac --name=${NAME}-sp --role="Contributor" --scopes="/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${NAME}"
+```
+
+Please save these and storage credentials above in keepass (e.g. "<cluster name> azure host cluster credentials"). They will be needed in next step.
 
 ### Prepare terraform environment
 
@@ -176,6 +183,12 @@ Easiest way to delete whole cluster is to delete resource group.
 az group delete -n <cluster name>
 ```
 
+Delete service principal.
+```
+az ad sp list --output=table | grep <cluster name> | awk '{print $1}'
+az ad sp delete --id <appid>
+```
+
 ## Updating cluster
 
 ### Prepare variables and configuration.
@@ -216,4 +229,4 @@ Please see above how to delete master/worker vms. After vm deleted latest state 
 - [TF AzureRM: custom_data is not detected in virtual machine resource](https://github.com/terraform-providers/terraform-provider-azurerm/issues/148).
 - [TF AzureRM: scale set always recreated](https://github.com/terraform-providers/terraform-provider-azurerm/issues/490).
 - [Kubernetes: Azure provider does not support scale sets](https://github.com/kubernetes/kubernetes/issues/40913).
-- [Calico is not supported by Azure](https://github.com/projectcalico/calicoctl/issues/949#issuecomment-304546574)
+- [Calico IPAM and networking are not supported by Azure](https://github.com/projectcalico/calicoctl/issues/949#issuecomment-304546574)
