@@ -25,8 +25,11 @@ resource "azurerm_public_ip" "ingress_ip" {
   }
 }
 
-resource "azurerm_dns_a_record" "ingress_dns" {
-  name                = "${var.ingress_dns}"
+# We need explicitly add this entry for apps like happa.g8s.<base> to be working.
+# In Azure this is required (not needed in AWS) and looks like it's aligned with RFC.
+# https://tools.ietf.org/html/rfc1034#section-4.3.3
+resource "azurerm_dns_a_record" "g8s_wildcard_dns" {
+  name                = "*.${var.api_dns}"
   zone_name           = "${var.base_domain}"
   resource_group_name = "${var.resource_group_name}"
   ttl                 = 300
