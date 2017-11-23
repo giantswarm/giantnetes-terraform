@@ -105,6 +105,13 @@ users:
       - "rkt"
     ssh-authorized_keys:
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDg0b+m551vLRqsnnDrB32PrQnO41Fv62dbYYCGqjcd/if8iOuyXvxNRnbOxnsFFPVSiqY2LB8pXofEAm5MG2qupGyBvivtnq1v+6Ld9nMYTaKdz5WKhI9ypQ/jV4G1DNYrayGno13eRmGemCEnIdZeRrVxp5EfkVX0ZyJ88998Urjv6OtSLV+GSNSiIbNYyvGjLoR0dt5LCVbwbbQd1H5wXYsSoeIkKiqfS7AtMn9wDCIyM1W15yC/4UaCMEGkVfjLZB+4Y8BBfLH1vI1h43zl4EUkaq1PASDvpX0AWlclfemkK2bGEOS/UzVJsZtM73jEoSZvq/aCLe3v/0zI/5Xl
+  - name: fernando
+    groups:
+      - "sudo"
+      - "docker"
+      - "rkt"
+    ssh-authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDdprdoupVo8EH7yL3BDwj1odnJfVs6ab0BZehepcVGL7Yno5YhTM/cof/KvGWZyzER1m0hn8adm9j6HqjhskzhoUSq37b0q4v38t1oZZ7YPjF5b90bvQKnUv/5U6xqOFnE9LfotLFT8cidLLwPSDKOlPacEmSheDKTRFZwAfCJuv4eobZ3Hs0qCfzx7IjKqxYWfEJSvp9x2EUHBJnBSZ3n1ncbpyI6wyyXgjoo9v7bXhWu+HRB+LyXCPvDME7ZWihNdlX4ZesiEoyOtoVKZsBx4/L1ckyhPN2NNDNElG41/w8znrbnKBKPiBM5AGnc7XZw2TP1ivWhJ2EVBjvtPT73GMgR6AdIV4iInNdg89mLKNtHwqZ8Gyj7/xS7ufdMFST1EGnBnk/mGvK1eITWVv6Y9s5Zte84LRhEK7W2jQtND70lT3FMBKLVO/W0q+suWZIqAYWzfpASnvaXlLWIrRApzslzgbyP14Zdp1cTzjwXOoQ+FhHRlqhX7G8uGR7JvNaS732kD8xASDzZulDrkmtxDVYqKFTxRQRwolmCeDzokS2OdnRncS7m6AxwMbwI0QuQwQZp3+G0qIxKXCad+XPCQt2oaYJJRZD+dqPJOKSofbS3eZayP0nPVNqXBP55S4H2PGGSATIpSRQdfy0bebV54x7N+P3KBjxzvIpzX0nn4Q== fernando@giantswarm.io
 write_files:
 - path: /etc/kubernetes/config/azure.yaml
   owner: root
