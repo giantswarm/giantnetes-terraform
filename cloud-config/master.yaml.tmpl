@@ -777,6 +777,15 @@ write_files:
       variables-hash-bucket-size: "128"
       server-name-hash-bucket-size: "1024"
       server-name-hash-max-size: "1024"
+- path: /srv/ingress-controller-sa.yaml
+  owner: root
+  permissions: 644
+  content: |
+    apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: nginx-ingress-controller
+      namespace: kube-system
 - path: /srv/ingress-controller-dep.yml
   owner: root
   permissions: 0644
@@ -814,6 +823,7 @@ write_files:
                         values:
                         - nginx-ingress-controller
                   topologyKey: kubernetes.io/hostname
+          serviceAccountName: nginx-ingress-controller
           containers:
           - name: nginx-ingress-controller
             image: gcr.io/google_containers/nginx-ingress-controller:0.9.0-beta.10
@@ -885,6 +895,15 @@ write_files:
     data:
       lego.email: "accounts@giantswarm.io"
       lego.url: "https://acme-v01.api.letsencrypt.org/directory"
+- path: /srv/kube-lego-sa.yaml
+  owner: root
+  permissions: 644
+  content: |
+    apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: kube-lego
+      namespace: kube-system
 - path: /srv/kube-lego-dep.yml
   owner: root
   permissions: 0644
@@ -901,6 +920,7 @@ write_files:
           labels:
             app: kube-lego
         spec:
+          serviceAccountName: kube-lego
           containers:
           - name: kube-lego
             image: jetstack/kube-lego:0.1.5
