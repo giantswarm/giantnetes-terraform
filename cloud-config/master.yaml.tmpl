@@ -1704,7 +1704,8 @@ coreos:
       --cloud-provider=azure \
       --bind-address=0.0.0.0 \
       --etcd-prefix=giantswarm.io \
-      --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,DefaultStorageClass \
+      --authorization-mode=RBAC \
+      --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,PodSecurityPolicy,DefaultStorageClass \
       --service-cluster-ip-range=${K8S_SERVICE_CIDR} \
       --etcd-servers=https://${ETCD_DOMAIN_NAME}:2379 \
       --etcd-cafile=/etc/kubernetes/ssl/etcd/server-ca.pem \
