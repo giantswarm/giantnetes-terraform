@@ -19,3 +19,36 @@ jobs:
       - run:
           # Run terraform syntax check
           command: terraform fmt -write=false -diff=true -check=true
+  deploy:
+    docker:
+      - image: microsoft/azure-cli:0.10.14
+    steps:
+      - checkout
+      - run:
+          # Install dependencies
+          command: |
+            apt-get update && apt-get -y install unzip
+      - run:
+          # Get terraform binary
+          command: |
+            TF_VERSION=${TF_VERSION:-"0.10.8"}
+            curl -O https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
+            unzip terraform_${TF_VERSION}_linux_amd64.zip -d /bin
+      - run:
+          command: terraform
+
+workflows:
+  version: 2
+  deploy:
+    jobs:
+      - hold:
+          type: approval
+          #filters:
+          #  branches:
+          #    only: master
+      - deploy:
+          requires:
+          - hold
+            #filters:
+            #branches:
+            #  only: master
