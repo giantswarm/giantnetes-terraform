@@ -1,4 +1,4 @@
-variable "channel" {
+variable "coreos_channel" {
   type = "string"
 
   description = <<EOF
@@ -8,7 +8,7 @@ Examples: `stable`, `beta`, `alpha`
 EOF
 }
 
-variable "version" {
+variable "coreos_version" {
   type = "string"
 
   description = <<EOF

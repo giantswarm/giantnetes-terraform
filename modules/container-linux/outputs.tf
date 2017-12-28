@@ -1,3 +1,3 @@
-output "version" {
-  value = "${var.version == "latest" ? data.external.version.result["version"] : var.version}"
+output "coreos_version" {
+  value = "${var.coreos_version == "latest" ? data.external.coreos_version.result["coreos_version"] : var.coreos_version}"
 }
