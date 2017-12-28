@@ -1,8 +1,8 @@
 module "container_linux" {
   source = "../../../modules/container-linux"
 
-  channel = "${var.container_linux_channel}"
-  version = "${var.container_linux_version}"
+  coreos_channel = "${var.container_linux_channel}"
+  coreos_version = "${var.container_linux_version}"
 }
 
 module "resource_group" {
@@ -53,7 +53,7 @@ module "bastion" {
   cluster_name            = "${var.cluster_name}"
   core_ssh_key            = "${var.core_ssh_key}"
   container_linux_channel = "${var.container_linux_channel}"
-  container_linux_version = "${module.container_linux.version}"
+  container_linux_version = "${module.container_linux.coreos_version}"
   location                = "${var.azure_location}"
   network_interface_ids   = "${module.vnet.bastion_network_interface_ids}"
   resource_group_name     = "${module.resource_group.name}"
@@ -75,7 +75,7 @@ module "vault" {
   cloud_config_data       = "${data.template_file.vault_cloud_config.rendered}"
   cluster_name            = "${var.cluster_name}"
   container_linux_channel = "${var.container_linux_channel}"
-  container_linux_version = "${module.container_linux.version}"
+  container_linux_version = "${module.container_linux.coreos_version}"
   core_ssh_key            = "${var.core_ssh_key}"
   location                = "${var.azure_location}"
   network_interface_ids   = "${module.vnet.vault_network_interface_ids}"
@@ -91,7 +91,7 @@ module "master" {
   cloud_config_data           = "${file("${path.cwd}/generated/master.sh")}"
   cluster_name                = "${var.cluster_name}"
   container_linux_channel     = "${var.container_linux_channel}"
-  container_linux_version     = "${module.container_linux.version}"
+  container_linux_version     = "${module.container_linux.coreos_version}"
   core_ssh_key                = "${var.core_ssh_key}"
   docker_disk_size            = "100"
   etcd_disk_size              = "10"
@@ -113,7 +113,7 @@ module "worker" {
   cloud_config_data               = "${file("${path.cwd}/generated/worker.sh")}"
   cluster_name                    = "${var.cluster_name}"
   container_linux_channel         = "${var.container_linux_channel}"
-  container_linux_version         = "${module.container_linux.version}"
+  container_linux_version         = "${module.container_linux.coreos_version}"
   core_ssh_key                    = "${var.core_ssh_key}"
   docker_disk_size                = "100"
   location                        = "${var.azure_location}"
