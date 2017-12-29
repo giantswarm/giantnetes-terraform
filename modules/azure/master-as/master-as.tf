@@ -34,7 +34,7 @@ resource "azurerm_virtual_machine" "master" {
 
   # Name and computer_name in os_profile should be equal.
   # Both are used as identifiers of VM.
-  name = "master-${count.index}"
+  name = "master${count.index}"
 
   location              = "${var.location}"
   resource_group_name   = "${var.resource_group_name}"
@@ -78,7 +78,7 @@ resource "azurerm_virtual_machine" "master" {
   }
 
   os_profile {
-    computer_name  = "master-${count.index}"
+    computer_name  = "master${count.index}"
     admin_username = "core"
     admin_password = ""
     custom_data    = "${base64encode("${var.cloud_config_data}")}"
