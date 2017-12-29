@@ -142,7 +142,7 @@ terraform apply ../platforms/azure/giantnetes-cloud-config
 Delete master vm manually it will be recreated by terraform (workaround for [this bug](https://github.com/terraform-providers/terraform-provider-azurerm/issues/148)).
 
 ```
-az vm delete -y -n master-0 -g $TF_VAR_cluster_name
+az vm delete -y -n master0 -g $TF_VAR_cluster_name
 az disk delete -y -n master-0-os -g $TF_VAR_cluster_name
 ```
 
@@ -213,15 +213,46 @@ terraform apply ../platforms/azure/giantnetes-cloud-config
 
 ### Apply latest state
 
+Check resources that has been changed.
+
 ```
 terraform init ../platforms/azure/giantnetes
 terraform plan ../platforms/azure/giantnetes
-terraform apply ../platforms/azure/giantnetes
 ```
 
-### Update master and workers
+WARN: Do not apply for all resources. Terraform will ALWAYS try to recreate VMs that have Kubernetes PVs attached, to avoid force recreateion, apply terraform only for specific resources (See below).
 
-Please see above how to delete master/worker vms. After vm deleted latest state should be applied like above.
+#### Update master
+
+Delete master VM and OS disk as described [above](#delete-vms-manually)
+
+```
+terraform apply -target=module.master.azurerm_virtual_machine.master ../platforms/azure/giantnetes
+```
+
+### Update workers
+
+Select worker (e.g. last worker with index 3) for update and delete VM and OS disk as described [above](#delete-vms-manually).
+
+WARN: DO NOT DELETE ALL WORKERS TOGETHER.
+
+```
+terraform apply -target="module.worker.azurerm_virtual_machine.worker[3]" ../platforms/azure/giantnetes
+```
+
+### Update other resources
+
+Check what resources should be recreated.
+
+```
+terraform plan ../platforms/azure/giantnetes
+```
+
+Apply terraform for specific resources.
+
+```
+terraform apply -target=TARGET ../platforms/azure/giantnetes
+```
 
 ## Known issues
 
