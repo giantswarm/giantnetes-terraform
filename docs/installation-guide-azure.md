@@ -61,11 +61,10 @@ cp -r examples/azure/example-build/* build
 cd build
 ```
 
-Replace `<cluster_name>` in `backend-cloud-config.tf` and `backend.tf` and make sure backend configuration linked properly.
+Replace `<cluster_name>` in `backend.tf` and make sure backend configuration linked properly.
 
 ```
 cat ../platforms/azure/giantnetes/backend.tf
-cat ../platforms/azure/giantnetes-cloud-config/backend.tf
 ```
 
 Edit `envs.sh`. DO NOT PUT passwords and keys into `envs.sh` as it will be stored as plain text.
@@ -170,7 +169,7 @@ terraform apply ../platforms/azure/giantnetes
 ## Upload variables and configuration
 
 ```
-for i in envs.sh backend-cloud-config.tf backend.tf; do
+for i in envs.sh backend.tf; do
   az storage blob upload --account-name ${NAME}terraform -c ${NAME}-build -n ${i} -f ${i}
 done
 ```
@@ -199,7 +198,7 @@ cd build
 ```
 
 ```
-for i in envs.sh backend-cloud-config.tf backend.tf; do
+for i in envs.sh backend.tf; do
   az storage blob download --account-name ${NAME}terraform -c ${NAME}-build -n ${i} -f ${i}
 done
 ```
