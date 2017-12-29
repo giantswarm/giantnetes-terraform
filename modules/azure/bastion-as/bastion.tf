@@ -11,7 +11,7 @@ resource "azurerm_availability_set" "bastions" {
 
 resource "azurerm_virtual_machine" "bastion" {
   count                 = "${var.bastion_count}"
-  name                  = "${var.cluster_name}-bastion-${count.index}"
+  name                  = "bastion${count.index}"
   location              = "${var.location}"
   resource_group_name   = "${var.resource_group_name}"
   network_interface_ids = ["${var.network_interface_ids[count.index]}"]
@@ -36,7 +36,7 @@ resource "azurerm_virtual_machine" "bastion" {
   }
 
   os_profile {
-    computer_name  = "bastion-${count.index}"
+    computer_name  = "bastion${count.index}"
     admin_username = "core"
     admin_password = ""
     custom_data    = "${base64encode("${var.cloud_config_data}")}"

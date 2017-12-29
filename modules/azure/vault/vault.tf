@@ -8,7 +8,7 @@ resource "azurerm_managed_disk" "vault_data" {
 }
 
 resource "azurerm_virtual_machine" "vault" {
-  name                  = "${var.cluster_name}-vault"
+  name                  = "vault"
   location              = "${var.location}"
   resource_group_name   = "${var.resource_group_name}"
   network_interface_ids = ["${var.network_interface_ids[0]}"]

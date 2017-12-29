@@ -10,3 +10,11 @@ resource "azurerm_network_interface" "vault" {
     load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.vault-lb.id}"]
   }
 }
+
+resource "azurerm_dns_a_record" "vault_private_dns" {
+  name                = "vault1"
+  zone_name           = "${var.base_domain}"
+  resource_group_name = "${var.resource_group_name}"
+  ttl                 = 300
+  records             = ["${azurerm_network_interface.vault.private_ip_address}"]
+}
