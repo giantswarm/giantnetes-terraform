@@ -112,6 +112,13 @@ users:
       - "rkt"
     ssh-authorized_keys:
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDdprdoupVo8EH7yL3BDwj1odnJfVs6ab0BZehepcVGL7Yno5YhTM/cof/KvGWZyzER1m0hn8adm9j6HqjhskzhoUSq37b0q4v38t1oZZ7YPjF5b90bvQKnUv/5U6xqOFnE9LfotLFT8cidLLwPSDKOlPacEmSheDKTRFZwAfCJuv4eobZ3Hs0qCfzx7IjKqxYWfEJSvp9x2EUHBJnBSZ3n1ncbpyI6wyyXgjoo9v7bXhWu+HRB+LyXCPvDME7ZWihNdlX4ZesiEoyOtoVKZsBx4/L1ckyhPN2NNDNElG41/w8znrbnKBKPiBM5AGnc7XZw2TP1ivWhJ2EVBjvtPT73GMgR6AdIV4iInNdg89mLKNtHwqZ8Gyj7/xS7ufdMFST1EGnBnk/mGvK1eITWVv6Y9s5Zte84LRhEK7W2jQtND70lT3FMBKLVO/W0q+suWZIqAYWzfpASnvaXlLWIrRApzslzgbyP14Zdp1cTzjwXOoQ+FhHRlqhX7G8uGR7JvNaS732kD8xASDzZulDrkmtxDVYqKFTxRQRwolmCeDzokS2OdnRncS7m6AxwMbwI0QuQwQZp3+G0qIxKXCad+XPCQt2oaYJJRZD+dqPJOKSofbS3eZayP0nPVNqXBP55S4H2PGGSATIpSRQdfy0bebV54x7N+P3KBjxzvIpzX0nn4Q== fernando@giantswarm.io
+  - name: theo
+    groups:
+      - "sudo"
+      - "docker"
+      - "rkt"
+    ssh-authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDo5PU8w8RDWYDd8SSIKOiYJCeN398PAEJApFGpPWprewBmiDGGMHHDIDV//QR+o5MhR2hBmJ+Pw1K/Edr4u0cfGlIIb6lSVdha+jDEp0l1PtqyQzubzTH3y/RDzxCakAa419N1G3DwzJHkWBxbpyqx7i/DOYcxgQP4vCGvYgkvuOkQYCNk2hfuXAl/Aucv3JXlsuNktyXQ6XKf+Twa2Bg8jIAaYUNGqgKgzMcsCElE55bxVuYeXl441CzD2fdHmXyGwo6nefN7PZ790SxQzkGM8wBpESgc7U4IPUY/dnsn4yQBYw2meontHWGLmZjrvEYxoS7Uv4o8BX8cScgVZUhRojHvNWBBcwOx+hhuPbqoqdc8IFXQLHTTa/szvY9gwlipBejj6nJrRpl3Kxw+EX4QP/loDxkykWQUoByU479Z6/gOtgAkPOe8xZblny6r3uCZyUlaYR9ht2aOEbH8bLuYBaDTPvunMIH/RSgbNxys/Dss3ZC7MJgXtoaSpb/AGdqv1Uj4AdNJJm8544AFhmR/Tky0rms3NpaSEiwO+E5ZIJiBevqPbGWkodbfKM6uydS+wrqHOR+zTNLuwhTHVnNRZ//ePBMptnzR1qbuMmaEgmqMM1HjFflUUVdDLFK6TxcdU3YPJnnWlwGk2bCjlamGjHx0hvoJVSY+Oap6o23cJQ== theo@giantswarm.io
 coreos:
   units:
     - name: update-engine.service
