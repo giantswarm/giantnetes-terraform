@@ -1211,18 +1211,22 @@ write_files:
       apiGroup: rbac.authorization.k8s.io
     ---
     ## DNS
-    kind: ClusterRoleBinding
     apiVersion: rbac.authorization.k8s.io/v1beta1
+    kind: ClusterRoleBinding
     metadata:
-      name: kube-dns
+      annotations:
+        rbac.authorization.kubernetes.io/autoupdate: "true"
+      labels:
+        kubernetes.io/bootstrapping: rbac-defaults
+      name: system:coredns
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: system:coredns
     subjects:
     - kind: ServiceAccount
-      name: kube-dns
+      name: coredns
       namespace: kube-system
-    roleRef:
-      kind: ClusterRole
-      name: system:kube-dns
-      apiGroup: rbac.authorization.k8s.io
     ---
     ## IC
     kind: ClusterRoleBinding
@@ -1370,7 +1374,7 @@ write_files:
       name: calico-policy-controller
       namespace: kube-system
     - kind: ServiceAccount
-      name: kube-dns
+      name: coredns
       namespace: kube-system
     - kind: ServiceAccount
       name: nginx-ingress-controller
