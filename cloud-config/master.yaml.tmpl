@@ -960,32 +960,71 @@ write_files:
     kind: ClusterRole
     apiVersion: rbac.authorization.k8s.io/v1beta1
     metadata:
-      name: calico-policy-controller
-      namespace: kube-system
-    rules:
-      - apiGroups:
-        - ""
-        - extensions
-        resources:
-          - pods
-          - namespaces
-          - networkpolicies
-        verbs:
-          - watch
-          - list
-    ---
-    kind: ClusterRole
-    apiVersion: rbac.authorization.k8s.io/v1beta1
-    metadata:
       name: calico-node
       namespace: kube-system
     rules:
       - apiGroups: [""]
         resources:
+          - namespaces
+        verbs:
+          - get
+          - list
+          - watch
+      - apiGroups: [""]
+        resources:
+          - pods/status
+        verbs:
+          - update
+      - apiGroups: [""]
+        resources:
           - pods
+        verbs:
+          - get
+          - list
+          - watch
+          - patch
+      - apiGroups: [""]
+        resources:
+          - services
+        verbs:
+          - get
+      - apiGroups: [""]
+        resources:
+          - endpoints
+        verbs:
+          - get
+      - apiGroups: [""]
+        resources:
           - nodes
         verbs:
           - get
+          - list
+          - update
+          - watch
+      - apiGroups: ["extensions"]
+        resources:
+          - networkpolicies
+        verbs:
+          - get
+          - list
+          - watch
+      - apiGroups: ["crd.projectcalico.org"]
+        resources:
+          - globalfelixconfigs
+          - felixconfigurations
+          - bgppeers
+          - globalbgpconfigs
+          - bgpconfigurations
+          - ippools
+          - globalnetworkpolicies
+          - networkpolicies
+          - clusterinformations
+        verbs:
+          - create
+          - get
+          - list
+          - update
+          - watch
     ---
     ## IC
     apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -1187,19 +1226,6 @@ write_files:
     kind: ClusterRoleBinding
     apiVersion: rbac.authorization.k8s.io/v1beta1
     metadata:
-      name: calico-policy-controller
-    subjects:
-    - kind: ServiceAccount
-      name: calico-policy-controller
-      namespace: kube-system
-    roleRef:
-      kind: ClusterRole
-      name: calico-policy-controller
-      apiGroup: rbac.authorization.k8s.io
-    ---
-    kind: ClusterRoleBinding
-    apiVersion: rbac.authorization.k8s.io/v1beta1
-    metadata:
       name: calico-node
     subjects:
     - kind: ServiceAccount
@@ -1369,9 +1395,6 @@ write_files:
       namespace: kube-system
     - kind: ServiceAccount
       name: calico-node
-      namespace: kube-system
-    - kind: ServiceAccount
-      name: calico-policy-controller
       namespace: kube-system
     - kind: ServiceAccount
       name: coredns
