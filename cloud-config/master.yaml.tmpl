@@ -1410,9 +1410,6 @@ write_files:
         name: privileged-psp-users
     subjects:
     - kind: ServiceAccount
-      name: calico-ipip-pinger
-      namespace: kube-system
-    - kind: ServiceAccount
       name: calico-node
       namespace: kube-system
     - kind: ServiceAccount
@@ -1511,7 +1508,7 @@ write_files:
       done
 
       # apply k8s addons
-      MANIFESTS="default-storage-class.yaml kubedns-all.yaml default-backend-dep.yml default-backend-svc.yml ingress-controller-cm.yml ingress-controller-sa.yml ingress-controller-dep.yml ingress-controller-svc.yml kube-lego-cm.yml kube-lego-sa.yml kube-lego-dep.yml"
+      MANIFESTS="default-storage-class.yaml coredns-all.yaml default-backend-dep.yml default-backend-svc.yml ingress-controller-cm.yml ingress-controller-sa.yml ingress-controller-dep.yml ingress-controller-svc.yml kube-lego-cm.yml kube-lego-sa.yml kube-lego-dep.yml"
 
       for manifest in $MANIFESTS
       do
