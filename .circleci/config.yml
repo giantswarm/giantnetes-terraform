@@ -16,6 +16,8 @@ jobs:
           command: |
             rm -f platforms/azure/giantnetes/backend.tf
             rm -f platforms/azure/giantnetes-cloud-config/backend.tf
+            rm -f platforms/aws/giantnetes/backend.tf
+            rm -f platforms/aws/giantnetes/provider.tf
       - run:
           # Run terraform syntax check
           command: terraform fmt -write=false -diff=true -check=true
