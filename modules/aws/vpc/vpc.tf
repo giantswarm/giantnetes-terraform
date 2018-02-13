@@ -8,9 +8,7 @@
 
 data "aws_availability_zones" "available" {}
 
-data "aws_region" "current" {
-  current = true
-}
+data "aws_region" "current" {}
 
 resource "aws_vpc" "cluster_vpc" {
   cidr_block = "${var.vpc_cidr}"

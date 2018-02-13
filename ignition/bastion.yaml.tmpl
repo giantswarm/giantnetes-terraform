@@ -1,23 +1,23 @@
 systemd:
   units:
     - name: update-engine.service
-      enable: false
+      enabled: false
       mask: true
     - name: locksmithd.service
-      enable: false
+      enabled: false
       mask: true
     - name: etcd2.service
-      enable: false
+      enabled: false
       mask: true
     - name: etcd-init.service
       command: stop
-      enable: false
+      enabled: false
       mask: true
     - name: fleet.service
-      enable: false
+      enabled: false
       mask: true
     - name: os-hardening.service
-      enable: true
+      enabled: true
       contents: |
         [Unit]
         Description=Apply os hardening

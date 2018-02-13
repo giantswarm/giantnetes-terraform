@@ -67,7 +67,7 @@ data "template_file" "bastion" {
   template = "${file("${path.module}/../../../ignition/bastion.yaml.tmpl")}"
 }
 
-# Convert ignition config to raw json.
+# Convert ignition config to raw json and merge users part.
 data "ct_config" "bastion" {
   content      = "${format("%s\n%s", local.ignition_users, data.template_file.bastion.rendered)}"
   platform     = "ec2"
@@ -79,13 +79,44 @@ module "bastion" {
 
   bastion_count          = "2"
   bastion_subnet_ids     = "${module.vpc.bastion_subnet_ids}"
-  aws_account            = "${var.aws_account}"
   cluster_name           = "${var.cluster_name}"
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   instance_type          = "${var.bastion_instance_type}"
   user_data              = "${data.ct_config.bastion.rendered}"
   with_public_access     = true
+  vpc_cidr               = "${var.vpc_cidr}"
+  vpc_id                 = "${module.vpc.vpc_id}"
+}
+
+# Generate ignition config for Vault.
+data "template_file" "vault" {
+  template = "${file("${path.module}/../../../ignition/aws/vault.yaml.tmpl")}"
+
+  vars {
+    "DOCKER_CIDR" = "${var.docker_cidr}"
+  }
+}
+
+# Convert ignition config to raw json and merge users part.
+data "ct_config" "vault" {
+  content      = "${format("%s\n%s", local.ignition_users, data.template_file.vault.rendered)}"
+  platform     = "ec2"
+  pretty_print = false
+}
+
+module "vault" {
+  source = "../../../modules/aws/vault"
+
+  cluster_name           = "${var.cluster_name}"
+  container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
+  dns_zone_id            = "${module.dns.public_dns_zone_id}"
+  elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
+  instance_type          = "${var.vault_instance_type}"
+  user_data              = "${data.ct_config.vault.rendered}"
+  vault_count            = "1"
+  vault_dns              = "${var.vault_dns}"
+  vault_subnet_ids       = "${module.vpc.vault_subnet_ids}"
   vpc_cidr               = "${var.vpc_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"
 }

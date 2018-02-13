@@ -1,7 +1,3 @@
-variable "aws_account" {
-  type = "string"
-}
-
 variable "bastion_count" {
   type = "string"
 }
@@ -40,9 +36,9 @@ variable "dns_zone_id" {
   type = "string"
 }
 
-variable "root_volume_size" {
+variable "volume_size_root" {
   type    = "string"
-  default = 30
+  default = 8
 }
 
 variable "vpc_cidr" {

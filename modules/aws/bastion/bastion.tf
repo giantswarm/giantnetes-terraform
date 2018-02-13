@@ -10,7 +10,7 @@ resource "aws_instance" "bastion" {
 
   root_block_device = {
     volume_type = "${var.volume_type}"
-    volume_size = "${var.root_volume_size}"
+    volume_size = "${var.volume_size_root}"
   }
 
   user_data = "${var.user_data}"
@@ -67,7 +67,7 @@ resource "aws_security_group" "bastion" {
 resource "aws_route53_record" "bastion" {
   count   = "${var.bastion_count}"
   zone_id = "${var.dns_zone_id}"
-  name    = "bastion${count.index}"
+  name    = "bastion${count.index + 1}"
   type    = "A"
 
   # Add "public_ip" or "private_ip" depending on "with_public_access" parameter.

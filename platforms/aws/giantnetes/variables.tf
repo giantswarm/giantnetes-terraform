@@ -28,12 +28,12 @@ variable "worker_count" {
 
 variable "bastion_instance_type" {
   type    = "string"
-  default = "t2.small"
+  default = "t2.micro"
 }
 
 variable "vault_instance_type" {
   type    = "string"
-  default = "m3.medium"
+  default = "t2.medium"
 }
 
 variable "master_instance_type" {
