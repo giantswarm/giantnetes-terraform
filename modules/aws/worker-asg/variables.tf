@@ -1,4 +1,4 @@
-variable "api_dns" {
+variable "ingress_dns" {
   type = "string"
 }
 

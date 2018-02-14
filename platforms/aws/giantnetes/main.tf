@@ -67,9 +67,9 @@ data "template_file" "bastion" {
   template = "${file("${path.module}/../../../ignition/bastion.yaml.tmpl")}"
 }
 
-# Convert ignition config to raw json and merge users part.
+# Convert ignition config to raw json.
 data "ct_config" "bastion" {
-  content      = "${format("%s\n%s", local.ignition_users, data.template_file.bastion.rendered)}"
+  content      = "${data.template_file.bastion.rendered}"
   platform     = "ec2"
   pretty_print = false
 }
@@ -189,13 +189,13 @@ data "ct_config" "worker" {
 module "worker" {
   source = "../../../modules/aws/worker-asg"
 
-  api_dns                = "${var.api_dns}"
   aws_account            = "${var.aws_account}"
   cluster_name           = "${var.cluster_name}"
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
+  ingress_dns            = "${var.ingress_dns}"
   instance_type          = "${var.worker_instance_type}"
   user_data              = "${data.ct_config.worker.rendered}"
   worker_count           = 4
@@ -203,3 +203,15 @@ module "worker" {
   vpc_cidr               = "${var.vpc_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"
 }
+
+#module "vpn" {
+#  source = "../../../modules/aws/vpn"
+#
+#  customer_gateway_id   = "${var.aws_customer_gateway_id}"
+#  outside_encryption_domain = "${var.outside_encryption_domain}"
+#  public_route_table_ids    = "${module.vpc.public_route_table_ids}"
+#  vpn_count                 = 2
+#  vpn_name                  = "Giant Swarm <-> ${var.cluster_name}"
+#  vpc_id                    = "${module.vpc.vpc_id}"
+#}
+

@@ -176,10 +176,14 @@ systemd:
       [Unit]
       Description=Mount disk to /var/lib/docker
       Before=docker.service
+
       [Mount]
       What=/dev/disk/by-label/docker
       Where=/var/lib/docker
       Type=xfs
+
+      [Install]
+      WantedBy=local-fs.targer
   - name: wait-for-domains.service
     enabled: true
     contents: |
@@ -203,6 +207,9 @@ systemd:
       ExecStartPre=-/bin/bash -c "gpasswd -d core rkt; gpasswd -d core docker; gpasswd -d core wheel"
       ExecStartPre=/bin/bash -c "until [ -f '/etc/sysctl.d/hardening.conf' ]; do echo Waiting for sysctl file; sleep 1s;done;"
       ExecStart=/usr/sbin/sysctl -p /etc/sysctl.d/hardening.conf
+
+      [Install]
+      WantedBy=multi-user.target
   - name: get-vault-ca.service
     enabled: true
     contents: |
@@ -216,6 +223,9 @@ systemd:
       ExecStartPre=/opt/get-ca.sh ${VAULT_DOMAIN_NAME}:443 /etc/ssl/certs/gs-ca.pem
       ExecStart=/sbin/update-ca-certificates
       RemainAfterExit=yes
+
+      [Install]
+      WantedBy=multi-user.target
   - name: docker.service
     enabled: true
     dropins:
@@ -250,13 +260,16 @@ systemd:
       ExecStart=/usr/bin/docker run --rm --net=host -v /etc:/etc --name $NAME $IMAGE
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
+
+      [Install]
+      WantedBy=multi-user.target
   - name: calico-certs.service
     enabled: true
     contents: |
       [Unit]
       Description=gen etcd client certs for calico
-      Requires=docker.service
-      After=docker.service
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service
 
       [Service]
       EnvironmentFile=/etc/environment
@@ -281,12 +294,17 @@ systemd:
       --key-file=/etc/kubernetes/ssl/etcd/client-key.pem \
       --ca-file=/etc/kubernetes/ssl/etcd/client-ca.pem
       ExecStop=/usr/bin/rm -rf /etc/kubernetes/ssl/etcd/
+
+      [Install]
+      WantedBy=multi-user.target
   - name: k8s-proxy.service
     enabled: true
     contents: |
       [Unit]
       Description=k8s-proxy
       StartLimitIntervalSec=0
+      After=k8s-setup-network-env.service docker.service
+      Requires=k8s-setup-network-env.service docker.service
 
       [Service]
       Restart=always
@@ -317,13 +335,16 @@ systemd:
       --v=2"
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
+
+      [Install]
+      WantedBy=multi-user.target
   - name: kubelet-certs.service
     enabled: true
     contents: |
       [Unit]
       Description=api-certs
-      Requires=docker.service
-      After=docker.service
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service
 
       [Service]
       EnvironmentFile=/etc/environment
@@ -347,14 +368,17 @@ systemd:
       --crt-file=/etc/kubernetes/ssl/worker-crt.pem \
       --key-file=/etc/kubernetes/ssl/worker-key.pem \
       --ca-file=/etc/kubernetes/ssl/worker-ca.pem
+
+      [Install]
+      WantedBy=multi-user.target
   - name: k8s-kubelet.service
     enabled: true
     contents: |
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=kubelet-certs.service
-      Requires=kubelet-certs.service
+      After=k8s-setup-network-env.service docker.service kubelet-certs.service
+      Requires=k8s-setup-network-env.service docker.service kubelet-certs.service
 
       [Service]
       Restart=always
@@ -411,6 +435,9 @@ systemd:
       --v=2"
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
+
+      [Install]
+      WantedBy=multi-user.target
 storage:
   filesystems:
     - name: docker

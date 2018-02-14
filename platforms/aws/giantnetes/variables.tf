@@ -167,6 +167,6 @@ variable "outside_encryption_domain" {
 }
 
 variable "aws_customer_gateway_id" {
-  description = "CIDR of peering IPSec network."
+  description = "CIDR of peered IPSec network."
   default     = ""
 }

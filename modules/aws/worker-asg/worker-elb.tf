@@ -83,7 +83,7 @@ resource "aws_route53_record" "worker-wildcard" {
 
 resource "aws_route53_record" "worker-ingress" {
   zone_id = "${var.dns_zone_id}"
-  name    = "${var.api_dns}"
+  name    = "${var.ingress_dns}"
   type    = "A"
 
   alias {

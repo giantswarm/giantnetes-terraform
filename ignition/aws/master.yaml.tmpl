@@ -226,6 +226,7 @@ storage:
                   # and CNI network config file on each node.
                   - name: install-cni
                     image: quay.io/calico/cni:v2.0.0
+                    command: ["/install-cni.sh"]
                     env:
                       # Name of the CNI config file to create.
                       - name: CNI_CONF_NAME
@@ -1538,20 +1539,28 @@ systemd:
       [Unit]
       Description=Mount disk to /var/lib/etcd
       Before=etcd3.service
+
       [Mount]
       What=/dev/disk/by-label/etcd
       Where=/var/lib/etcd
       Type=ext4
+
+      [Install]
+      WantedBy=local-fs.target
   - name: var-lib-docker.mount
     enabled: true
     contents: |
       [Unit]
       Description=Mount disk to /var/lib/docker
       Before=docker.service
+
       [Mount]
       What=/dev/disk/by-label/docker
       Where=/var/lib/docker
       Type=xfs
+
+      [Install]
+      WantedBy=local-fs.target
   - name: wait-for-domains.service
     enabled: true
     contents: |
@@ -1580,7 +1589,7 @@ systemd:
       WantedBy=multi-user.target
   - name: docker.service
     enabled: true
-    drop-ins:
+    dropins:
     - name: 10-giantswarm-extra-args.conf
       contents: |
         [Unit]
@@ -1596,7 +1605,7 @@ systemd:
     contents: |
       [Unit]
       Description=k8s-setup-network-env Service
-      Wants=network-online.target docker.service
+      Requires=network-online.target docker.service
       After=network-online.target docker.service
 
       [Service]
@@ -1613,12 +1622,16 @@ systemd:
       ExecStart=/usr/bin/docker run --rm --net=host -v /etc:/etc --name $NAME $IMAGE
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
+
+      [Install]
+      WantedBy=multi-user.target
   - name: get-vault-ca.service
     enabled: true
     contents: |
       [Unit]
       Description=get vault-ca into trusted certs
       Before=calico-certs.service api-certs.service etcd3-certs.service
+      Requires=wait-for-domains.service
       After=wait-for-domains.service
 
       [Service]
@@ -1626,13 +1639,16 @@ systemd:
       ExecStartPre=/opt/get-ca.sh ${VAULT_DOMAIN_NAME}:443 /etc/ssl/certs/gs-ca.pem
       ExecStart=/sbin/update-ca-certificates
       RemainAfterExit=yes
+
+      [Install]
+      WantedBy=multi-user.target
   - name: calico-certs.service
     enabled: true
     contents: |
       [Unit]
       Description=calico-certs
-      Requires=docker.service
-      After=docker.service
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service
 
       [Service]
       EnvironmentFile=/etc/environment
@@ -1657,13 +1673,16 @@ systemd:
       --key-file=/etc/kubernetes/ssl/calico/client-key.pem \
       --ca-file=/etc/kubernetes/ssl/calico/client-ca.pem
       ExecStop=/usr/bin/rm -rf /etc/kubernetes/ssl/calico/
+
+      [Install]
+      WantedBy=multi-user.target
   - name: etcd3-certs.service
     enabled: true
     contents: |
       [Unit]
       Description=etcd3-certs
-      Requires=docker.service
-      After=docker.service
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service
 
       [Service]
       EnvironmentFile=/etc/environment
@@ -1691,12 +1710,15 @@ systemd:
       ExecStartPost=/bin/cp /etc/kubernetes/ssl/etcd/server-ca.pem /etc/kubernetes/ssl/etcd/client-ca.pem
       ExecStartPost=/bin/cp /etc/kubernetes/ssl/etcd/server-key.pem /etc/kubernetes/ssl/etcd/client-key.pem
       ExecStop=/usr/bin/rm -rf /etc/kubernetes/ssl/etcd/
+
+      [Install]
+      WantedBy=multi-user.target
   - name: etcd3.service
     enabled: true
     contents: |
       [Unit]
       Description=etcd3
-      Requires=k8s-setup-network-env.service var-lib-etcd.mount
+      Requires=k8s-setup-network-env.service etcd3-certs.service calico-certs.service var-lib-etcd.mount
       After=k8s-setup-network-env.service etcd3-certs.service calico-certs.service var-lib-etcd.mount
       Conflicts=etcd.service etcd2.service
       StartLimitIntervalSec=0
@@ -1745,7 +1767,7 @@ systemd:
       [Install]
       WantedBy=multi-user.target
   - name: etcd3-defragmentation.service
-    enabled: true
+    enabled: false
     contents: |
       [Unit]
       Description=etcd defragmentation job
@@ -1792,13 +1814,15 @@ systemd:
       [Unit]
       Description=k8s-proxy
       StartLimitIntervalSec=0
+      Requires=k8s-setup-network-env.service
+      After=k8s-setup-network-env.service
 
       [Service]
       Restart=always
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.7.5_coreos.0"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.8.7_coreos.0"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -1819,20 +1843,24 @@ systemd:
       --v=2"
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
+
+      [Install]
+      WantedBy=multi-user.target
   - name: k8s-kubelet.service
     enabled: true
     contents: |
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=k8s-addons.service k8s-api-server.service
+      Requires=k8s-setup-network-env.service k8s-addons.service k8s-api-server.service
+      After=k8s-setup-network-env.service k8s-addons.service k8s-api-server.service
 
       [Service]
       Restart=always
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.7.5_coreos.0"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.8.7_coreos.0"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -1883,13 +1911,16 @@ systemd:
       --v=2"
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
+
+      [Install]
+      WantedBy=multi-user.target
   - name: api-certs.service
     enabled: true
     contents: |
       [Unit]
       Description=api-certs
-      Requires=docker.service
-      After=docker.service
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service
 
       [Service]
       EnvironmentFile=/etc/environment
@@ -1916,21 +1947,24 @@ systemd:
       --alt-names=localhost,kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.local\
       --key-file=/etc/kubernetes/ssl/apiserver-key.pem \
       --ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
+
+      [Install]
+      WantedBy=multi-user.target
   - name: k8s-api-server.service
     enabled: true
     contents: |
       [Unit]
       Description=k8s-api-server
       StartLimitIntervalSec=0
-      After=docker.service etcd3.service api-certs.service
-      Requires=api-certs.service
+      Requires=k8s-setup-network-env.service docker.service etcd3.service api-certs.service
+      After=k8s-setup-network-env.service docker.service etcd3.service api-certs.service
 
       [Service]
       Restart=always
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.7.5_coreos.0"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.8.7_coreos.0"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
@@ -1974,19 +2008,24 @@ systemd:
       --audit-log-maxsize=100
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
+
+      [Install]
+      WantedBy=multi-user.target
   - name: k8s-controller-manager.service
     enabled: true
     contents: |
       [Unit]
       Description=k8s-controller-manager Service
       StartLimitIntervalSec=0
+      Requires=k8s-setup-network-env.service
+      After=k8s-setup-network-env.service
 
       [Service]
       Restart=always
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.7.5_coreos.0"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.8.7_coreos.0"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -2010,19 +2049,24 @@ systemd:
       --service-account-private-key-file=/etc/kubernetes/ssl/service-account-key.pem
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
+
+      [Install]
+      WantedBy=multi-user.target
   - name: k8s-scheduler.service
     enabled: true
     contents: |
       [Unit]
       Description=k8s-scheduler Service
       StartLimitIntervalSec=0
+      Requires=k8s-setup-network-env.service docker.service
+      After=k8s-setup-network-env.service docker.service
 
       [Service]
       Restart=always
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.7.5_coreos.0"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.8.7_coreos.0"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -2040,20 +2084,24 @@ systemd:
       --kubeconfig=/etc/kubernetes/config/scheduler-kubeconfig.yml
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
+
+      [Install]
+      WantedBy=multi-user.target
   - name: k8s-addons.service
     enabled: true
     contents: |
       [Unit]
       Description=Kubernetes Addons
-      Wants=k8s-api-server.service
-      After=k8s-api-server.service
+      Wants=k8s-setup-network-env.service k8s-api-server.service
+      After=k8s-setup-network-env.service k8s-api-server.service
+
       [Service]
       Type=oneshot
       EnvironmentFile=/etc/network-environment
       ExecStart=/opt/k8s-addons
+
       [Install]
       WantedBy=multi-user.target
-
 storage:
   filesystems:
     - name: etcd
