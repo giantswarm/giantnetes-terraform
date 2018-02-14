@@ -120,3 +120,86 @@ module "vault" {
   vpc_cidr               = "${var.vpc_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"
 }
+
+# Generate ignition config for master.
+data "template_file" "master" {
+  template = "${file("${path.module}/../../../ignition/aws/master.yaml.tmpl")}"
+
+  vars {
+    "API_DOMAIN_NAME"   = "${var.api_dns}.${var.base_domain}"
+    "CALICO_CIDR"       = "${var.calico_cidr}"
+    "DEFAULT_IPV4"      = "$${DEFAULT_IPV4}"
+    "DOCKER_CIDR"       = "${var.docker_cidr}"
+    "ETCD_DOMAIN_NAME"  = "${var.etcd_dns}.${var.base_domain}"
+    "G8S_VAULT_TOKEN"   = "${var.nodes_vault_token}"
+    "K8S_SERVICE_CIDR"  = "${var.k8s_service_cidr}"
+    "K8S_DNS_IP"        = "${var.k8s_dns_ip}"
+    "K8S_API_IP"        = "${var.k8s_api_ip}"
+    "VAULT_DOMAIN_NAME" = "${var.vault_dns}.${var.base_domain}"
+  }
+}
+
+# Convert ignition config to raw json and merge users part.
+data "ct_config" "master" {
+  content      = "${format("%s\n%s", local.ignition_users, data.template_file.master.rendered)}"
+  platform     = "ec2"
+  pretty_print = false
+}
+
+module "master" {
+  source = "../../../modules/aws/master"
+
+  api_dns                = "${var.api_dns}"
+  aws_account            = "${var.aws_account}"
+  cluster_name           = "${var.cluster_name}"
+  container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
+  dns_zone_id            = "${module.dns.public_dns_zone_id}"
+  elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
+  ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
+  instance_type          = "${var.master_instance_type}"
+  user_data              = "${data.ct_config.master.rendered}"
+  master_subnet_ids      = "${module.vpc.worker_subnet_ids}"
+  vpc_cidr               = "${var.vpc_cidr}"
+  vpc_id                 = "${module.vpc.vpc_id}"
+}
+
+# Generate ignition config for worker.
+data "template_file" "worker" {
+  template = "${file("${path.module}/../../../ignition/aws/worker.yaml.tmpl")}"
+
+  vars {
+    "API_DOMAIN_NAME"   = "${var.api_dns}.${var.base_domain}"
+    "CALICO_CIDR"       = "${var.calico_cidr}"
+    "DEFAULT_IPV4"      = "$${DEFAULT_IPV4}"
+    "DOCKER_CIDR"       = "${var.docker_cidr}"
+    "ETCD_DOMAIN_NAME"  = "${var.etcd_dns}.${var.base_domain}"
+    "G8S_VAULT_TOKEN"   = "${var.nodes_vault_token}"
+    "K8S_DNS_IP"        = "${var.k8s_dns_ip}"
+    "VAULT_DOMAIN_NAME" = "${var.vault_dns}.${var.base_domain}"
+  }
+}
+
+# Convert ignition config to raw json and merge users part.
+data "ct_config" "worker" {
+  content      = "${format("%s\n%s", local.ignition_users, data.template_file.worker.rendered)}"
+  platform     = "ec2"
+  pretty_print = false
+}
+
+module "worker" {
+  source = "../../../modules/aws/worker-asg"
+
+  api_dns                = "${var.api_dns}"
+  aws_account            = "${var.aws_account}"
+  cluster_name           = "${var.cluster_name}"
+  container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
+  dns_zone_id            = "${module.dns.public_dns_zone_id}"
+  elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
+  ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
+  instance_type          = "${var.worker_instance_type}"
+  user_data              = "${data.ct_config.worker.rendered}"
+  worker_count           = 4
+  worker_subnet_ids      = "${module.vpc.worker_subnet_ids}"
+  vpc_cidr               = "${var.vpc_cidr}"
+  vpc_id                 = "${module.vpc.vpc_id}"
+}
