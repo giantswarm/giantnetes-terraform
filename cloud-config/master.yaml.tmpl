@@ -2199,6 +2199,7 @@ coreos:
       ExecStartPre=-/usr/bin/docker rm -f $NAME
       ExecStart=/usr/bin/docker run --rm --name $NAME --net=host \
       -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
+      -v /etc/kubernetes/config/:/etc/kubernetes/config/ \
       -v /var/log/apiserver/:/var/log/apiserver \
       $IMAGE \
       /hyperkube apiserver \
@@ -2208,6 +2209,7 @@ coreos:
       --kubelet_https=true \
       --secure_port=443 \
       --cloud-provider=azure \
+      --cloud-config=/etc/kubernetes/config/azure.yaml \
       --bind-address=0.0.0.0 \
       --etcd-prefix=giantswarm.io \
       --authorization-mode=RBAC \
