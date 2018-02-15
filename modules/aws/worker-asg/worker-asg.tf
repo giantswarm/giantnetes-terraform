@@ -1,35 +1,59 @@
-resource "aws_autoscaling_group" "worker" {
-  name                = "${var.cluster_name}-worker"
-  min_size            = 1
-  max_size            = "${var.worker_count}"
-  desired_capacity    = "${var.worker_count}"
-  load_balancers      = ["${aws_elb.worker.id}"]
-  vpc_zone_identifier = ["${var.worker_subnet_ids}"]
+resource "aws_cloudformation_stack" "worker_asg" {
+  name = "${var.cluster_name}-worker"
 
-  health_check_type         = "EC2"
-  health_check_grace_period = 300
-  force_delete              = true
-  metrics_granularity       = "1Minute"
-
-  launch_configuration = "${aws_launch_configuration.worker.name}"
-
-  tag {
-    key                 = "Name"
-    value               = "${var.cluster_name}-worker"
-    propagate_at_launch = true
+  template_body = <<EOF
+{
+  "Resources": {
+    "AutoScalingGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "DesiredCapacity": "${var.worker_count}",
+        "HealthCheckType": "EC2",
+        "HealthCheckGracePeriod": 300,
+        "LaunchConfigurationName": "${aws_launch_configuration.worker.name}",
+        "LoadBalancerNames": [
+          "${var.cluster_name}-worker"
+        ],
+        "MaxSize": "${var.worker_count}",
+        "MinSize": "1",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "${var.cluster_name}-worker",
+            "PropagateAtLaunch": true
+          },
+          {
+            "Key": "Environment",
+            "Value": "${var.cluster_name}",
+            "PropagateAtLaunch": true
+          },
+          {
+            "Key": "KubernetesCluster",
+            "Value": "${var.cluster_name}",
+            "PropagateAtLaunch": true
+          }
+        ],
+        "VPCZoneIdentifier": ${jsonencode(var.worker_subnet_ids)}
+      },
+      "UpdatePolicy": {
+        "AutoScalingRollingUpdate": {
+          "MinInstancesInService": "${var.worker_count - 1}",
+          "MaxBatchSize": "1",
+          "PauseTime": "PT5M"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "AsgName": {
+      "Description": "The name of the auto scaling group",
+      "Value": {
+        "Ref": "AutoScalingGroup"
+      }
+    }
   }
-
-  tag {
-    key                 = "Environment"
-    value               = "${var.cluster_name}"
-    propagate_at_launch = true
-  }
-
-  tag {
-    key                 = "KubernetesCluster"
-    value               = "${var.cluster_name}"
-    propagate_at_launch = true
-  }
+}
+EOF
 }
 
 resource "aws_launch_configuration" "worker" {

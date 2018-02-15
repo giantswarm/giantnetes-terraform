@@ -10,8 +10,8 @@ resource "aws_instance" "vault" {
 
   lifecycle {
     # Vault provisioned also by Ansible,
-    # so prevent recreation if user_data changed.
-    ignore_changes = ["user_data"]
+    # so prevent recreation if user_data or ami changed.
+    ignore_changes = ["ami", "user_data"]
   }
 
   root_block_device = {

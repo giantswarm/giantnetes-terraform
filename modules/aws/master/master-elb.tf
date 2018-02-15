@@ -1,6 +1,7 @@
 resource "aws_elb" "master" {
   name                      = "${var.cluster_name}-master"
   cross_zone_load_balancing = true
+  idle_timeout              = 3600
   internal                  = true
   subnets                   = ["${var.elb_subnet_ids}"]
   security_groups           = ["${aws_security_group.master_elb.id}"]

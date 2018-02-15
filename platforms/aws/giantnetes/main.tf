@@ -67,9 +67,9 @@ data "template_file" "bastion" {
   template = "${file("${path.module}/../../../ignition/bastion.yaml.tmpl")}"
 }
 
-# Convert ignition config to raw json.
+# Convert ignition config to raw json and merge users part.
 data "ct_config" "bastion" {
-  content      = "${data.template_file.bastion.rendered}"
+  content      = "${format("%s\n%s", local.ignition_users, data.template_file.bastion.rendered)}"
   platform     = "ec2"
   pretty_print = false
 }
