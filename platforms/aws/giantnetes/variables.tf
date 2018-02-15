@@ -161,12 +161,14 @@ variable "subnet_worker_1" {
   default     = "10.0.5.128/25"
 }
 
-variable "outside_encryption_domain" {
-  description = "CIDR of peering IPSec network."
-  default     = "172.18.0.0/30"
-}
+### VPN ###
 
 variable "aws_customer_gateway_id" {
-  description = "CIDR of peered IPSec network."
+  description = "AWS customer gateway ID. Should be created manually. Leave blank to disable VPN setup and enable public access for bastions."
   default     = ""
+}
+
+variable "external_ipsec_subnet" {
+  description = "CIDR of peering IPSec network."
+  default     = "172.18.0.0/30"
 }

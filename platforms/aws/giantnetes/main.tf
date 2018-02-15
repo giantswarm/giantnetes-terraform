@@ -84,7 +84,7 @@ module "bastion" {
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   instance_type          = "${var.bastion_instance_type}"
   user_data              = "${data.ct_config.bastion.rendered}"
-  with_public_access     = true
+  with_public_access     = "${var.aws_customer_gateway_id == "" ? 1 : 0 }"
   vpc_cidr               = "${var.vpc_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"
 }
@@ -204,14 +204,13 @@ module "worker" {
   vpc_id                 = "${module.vpc.vpc_id}"
 }
 
-#module "vpn" {
-#  source = "../../../modules/aws/vpn"
-#
-#  customer_gateway_id   = "${var.aws_customer_gateway_id}"
-#  outside_encryption_domain = "${var.outside_encryption_domain}"
-#  public_route_table_ids    = "${module.vpc.public_route_table_ids}"
-#  vpn_count                 = 2
-#  vpn_name                  = "Giant Swarm <-> ${var.cluster_name}"
-#  vpc_id                    = "${module.vpc.vpc_id}"
-#}
+module "vpn" {
+  source = "../../../modules/aws/vpn"
 
+  # If aws_customer_gateway_id is not set, no vpn resources will be created.
+  aws_customer_gateway_id    = "${var.aws_customer_gateway_id}"
+  aws_external_ipsec_subnet  = "${var.external_ipsec_subnet}"
+  aws_public_route_table_ids = "${module.vpc.public_route_table_ids}"
+  aws_vpn_name               = "Giant Swarm <-> ${var.cluster_name}"
+  aws_vpn_vpc_id             = "${module.vpc.vpc_id}"
+}
