@@ -1,3 +1,5 @@
+data "aws_availability_zones" "available" {}
+
 resource "aws_instance" "vault" {
   count         = "${var.vault_count}"
   ami           = "${var.container_linux_ami_id}"
@@ -19,19 +21,32 @@ resource "aws_instance" "vault" {
     volume_size = "${var.volume_size_root}"
   }
 
-  ebs_block_device = {
-    device_name           = "/dev/xvdb"
-    delete_on_termination = false
-    volume_type           = "${var.volume_type}"
-    volume_size           = "${var.volume_size_etcd}"
-  }
-
   user_data = "${var.user_data}"
 
   tags = {
     Name        = "${var.cluster_name}-vault${count.index}"
     Environment = "${var.cluster_name}"
   }
+}
+
+resource "aws_ebs_volume" "vault_etcd" {
+  availability_zone = "${data.aws_availability_zones.available.names[0]}"
+  size              = "${var.volume_size_etcd}"
+  type              = "${var.volume_type}"
+
+  tags {
+    Name        = "${var.cluster_name}-vault"
+    Environment = "${var.cluster_name}"
+  }
+}
+
+resource "aws_volume_attachment" "vault_etcd_ebs" {
+  device_name = "/dev/xvdc"
+  volume_id   = "${aws_ebs_volume.vault_etcd.id}"
+  instance_id = "${aws_instance.vault.id}"
+
+  # Allows reattaching volume.
+  skip_destroy = true
 }
 
 resource "aws_security_group" "vault" {

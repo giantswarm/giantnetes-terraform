@@ -1,3 +1,5 @@
+data "aws_availability_zones" "available" {}
+
 resource "aws_instance" "master" {
   count                = "${var.master_count}"
   ami                  = "${var.container_linux_ami_id}"
@@ -14,22 +16,6 @@ resource "aws_instance" "master" {
     volume_size = "${var.volume_size_root}"
   }
 
-  # Etcd volume.
-  ebs_block_device = {
-    device_name           = "/dev/xvdb"
-    delete_on_termination = false
-    volume_type           = "${var.volume_type}"
-    volume_size           = "${var.volume_size_etcd}"
-  }
-
-  # Docker volume.
-  ebs_block_device = {
-    device_name           = "/dev/xvdc"
-    delete_on_termination = true
-    volume_type           = "${var.volume_type}"
-    volume_size           = "${var.volume_size_docker}"
-  }
-
   user_data = "${data.ignition_config.s3.rendered}"
 
   tags = {
@@ -37,6 +23,46 @@ resource "aws_instance" "master" {
     Environment       = "${var.cluster_name}"
     KubernetesCluster = "${var.cluster_name}"
   }
+}
+
+resource "aws_ebs_volume" "master_docker" {
+  availability_zone = "${data.aws_availability_zones.available.names[0]}"
+  size              = "${var.volume_size_docker}"
+  type              = "${var.volume_type}"
+
+  tags {
+    Name        = "${var.cluster_name}-master"
+    Environment = "${var.cluster_name}"
+  }
+}
+
+resource "aws_volume_attachment" "master_docker" {
+  device_name = "/dev/xvdc"
+  volume_id   = "${aws_ebs_volume.master_docker.id}"
+  instance_id = "${aws_instance.master.id}"
+
+  # Allows reattaching volume.
+  skip_destroy = true
+}
+
+resource "aws_ebs_volume" "master_etcd" {
+  availability_zone = "${data.aws_availability_zones.available.names[0]}"
+  size              = "${var.volume_size_etcd}"
+  type              = "${var.volume_type}"
+
+  tags {
+    Name        = "${var.cluster_name}-master"
+    Environment = "${var.cluster_name}"
+  }
+}
+
+resource "aws_volume_attachment" "master_etcd" {
+  device_name = "/dev/xvdd"
+  volume_id   = "${aws_ebs_volume.master_etcd.id}"
+  instance_id = "${aws_instance.master.id}"
+
+  # Allows reattaching volume.
+  skip_destroy = true
 }
 
 resource "aws_security_group" "master" {
@@ -64,6 +90,14 @@ resource "aws_security_group" "master" {
     from_port   = 10
     to_port     = 65535
     protocol    = "udp"
+    cidr_blocks = ["${var.vpc_cidr}"]
+  }
+
+  # Allow IPIP traffic from vpc
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = 94
     cidr_blocks = ["${var.vpc_cidr}"]
   }
 

@@ -2104,15 +2104,15 @@ systemd:
       WantedBy=multi-user.target
 storage:
   filesystems:
-    - name: etcd
-      mount:
-        device: /dev/xvdb
-        format: ext4
-        wipe_filesystem: false
-        label: etcd
     - name: docker
       mount:
         device: /dev/xvdc
         format: xfs
         wipe_filesystem: false
         label: docker
+    - name: etcd
+      mount:
+        device: /dev/xvdd
+        format: ext4
+        wipe_filesystem: false
+        label: etcd

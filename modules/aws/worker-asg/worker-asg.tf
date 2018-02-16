@@ -113,6 +113,14 @@ resource "aws_security_group" "worker" {
     cidr_blocks = ["${var.vpc_cidr}"]
   }
 
+  # Allow IPIP traffic from vpc
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = 94
+    cidr_blocks = ["${var.vpc_cidr}"]
+  }
+
   tags {
     Name              = "${var.cluster_name}-worker"
     Environment       = "${var.cluster_name}"
