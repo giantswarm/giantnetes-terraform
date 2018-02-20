@@ -23,7 +23,7 @@ systemd:
         Description=Mount disk to /var/lib/etcd
         Before=etcd.service
         [Mount]
-        What=/dev/disk/by-label/etcd
+        What=/dev/disk/by-label/var-lib-etcd
         Where=/var/lib/etcd
         Type=ext4
     # Automount etcd dir when first accessed.
@@ -58,4 +58,4 @@ storage:
         device: /dev/xvdc
         format: ext4
         wipe_filesystem: false
-        label: etcd
+        label: var-lib-etcd

@@ -1541,7 +1541,7 @@ systemd:
       Before=etcd3.service
 
       [Mount]
-      What=/dev/disk/by-label/etcd
+      What=/dev/disk/by-label/var-lib-etcd
       Where=/var/lib/etcd
       Type=ext4
 
@@ -2115,4 +2115,4 @@ storage:
         device: /dev/xvdd
         format: ext4
         wipe_filesystem: false
-        label: etcd
+        label: var-lib-etcd
