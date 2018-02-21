@@ -138,10 +138,10 @@ write_files:
     #   - CALICO_IPV4POOL_IPIP = off
     #   - CALICO_IPV4POOL_CIDR = parameterized
     #
-    # Calico Version v3.0.1
-    # https://docs.projectcalico.org/v3.0/releases#v3.0.1
+    # Calico Version v3.0.2
+    # https://docs.projectcalico.org/v3.0/releases#v3.0.2
     # This manifest includes the following component versions:
-    #   calico/node:v3.0.1
+    #   calico/node:v3.0.2
     #   calico/cni:v2.0.0
 
     # This ConfigMap is used to configure a self-hosted Calico installation.
@@ -337,7 +337,7 @@ write_files:
             # container programs network policy and routes on each
             # host.
             - name: calico-node
-              image: quay.io/calico/node:v3.0.1
+              image: quay.io/calico/node:v3.0.2
               env:
                 # Use Kubernetes API as the backing datastore.
                 - name: DATASTORE_TYPE
@@ -1955,7 +1955,7 @@ coreos:
       RestartSec=0
       TimeoutStopSec=10
       LimitNOFILE=40000
-      Environment=IMAGE=quay.io/coreos/etcd:v3.2.7
+      Environment=IMAGE=quay.io/coreos/etcd:v3.3.1
       Environment=NAME=%p.service
       EnvironmentFile=/etc/network-environment
       ExecStartPre=-/usr/bin/docker stop  $NAME
@@ -2005,7 +2005,7 @@ coreos:
       [Service]
       Type=oneshot
       EnvironmentFile=/etc/environment
-      Environment=IMAGE=quay.io/coreos/etcd:v3.2.7
+      Environment=IMAGE=quay.io/coreos/etcd:v3.3.1
       Environment=NAME=%p.service
       ExecStartPre=-/usr/bin/docker stop  $NAME
       ExecStartPre=-/usr/bin/docker rm  $NAME
@@ -2050,7 +2050,7 @@ coreos:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.8.7_coreos.0"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.9.3"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -2085,7 +2085,7 @@ coreos:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.8.7_coreos.0"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.9.3"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -2197,7 +2197,7 @@ coreos:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.8.7_coreos.0"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.9.3"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
@@ -2256,7 +2256,7 @@ coreos:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.8.7_coreos.0"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.9.3"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -2296,7 +2296,7 @@ coreos:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.8.7_coreos.0"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.9.3"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
