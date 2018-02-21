@@ -4,6 +4,7 @@
 
 Common:
 - `aws` cli
+- `terraform-provider-ct`. See [Appendix A](#appendix-a) for installation.
 
 ### Create S3 bucket and DynamoDB table for terraform state
 
@@ -145,3 +146,11 @@ TBD
 ## Known issues
 
 TBD
+
+## Appendix A
+
+`terraform-provider-ct` should be build from source code, because latest version 0.2 does not work properly with `passwd` section of ignition.
+```
+go get -u github.com/coreos/terraform-provider-ct
+cp $GOPATH/bin/terraform-provider-ct ~/.terraform.d/plugins/linux_amd64/terraform-provider-ct
+```
