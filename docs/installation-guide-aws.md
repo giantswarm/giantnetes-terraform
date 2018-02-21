@@ -36,7 +36,7 @@ cd build
 Put proper values in `backend.tf` and make sure backend configuration linked properly.
 
 ```
-cat ../platforms/azure/giantnetes/backend.tf
+cat ../platforms/aws/giantnetes/backend.tf
 ```
 
 Edit `envs.sh`.
@@ -53,7 +53,7 @@ Install consists two stages:
 - Vault (only needed because we bootstrapping Vault manually)
 - Kubernetes
 
-Master and workers will be created with in the Vault stage and expectedly will fail (and recreated later). This is done to keep single Terraform state and simplify cluster management after installation. Master and workers will be reprovisioned with right configuration in the second state called Kubernetes.
+Master and workers will be created within the Vault stage and expectedly will fail (and recreated later). This is done to keep single Terraform state and simplify cluster management after installation. Master and workers will be reprovisioned with right configuration in the second state called Kubernetes.
 
 ### Stage: Vault
 
@@ -78,15 +78,15 @@ source envs.sh
 ```
 
 ```
-terraform init ../platforms/azure/giantnetes
-terraform plan ../platforms/azure/giantnetes
-terraform apply ../platforms/azure/giantnetes
+terraform init ../platforms/aws/giantnetes
+terraform plan ../platforms/aws/giantnetes
+terraform apply ../platforms/aws/giantnetes
 ```
 
 ## Upload variables and configuration
 
 ```
-export CLUSTER=gauss
+export CLUSTER=cluster1
 
 for i in envs.sh backend.tf; do
   aws s3 cp ${i} s3://${CLUSTER}-state/${i}
@@ -100,8 +100,8 @@ source envs.sh
 ```
 
 ```
-terraform init ../platforms/azure/giantnetes
-terraform destroy ../platforms/azure/giantnetes
+terraform init ../platforms/aws/giantnetes
+terraform destroy ../platforms/aws/giantnetes
 ```
 
 Delete s3 bucket and dynamodb.
@@ -121,7 +121,7 @@ cd build
 ```
 
 ```
-export CLUSTER=gauss
+export CLUSTER=cluster1
 
 for i in envs.sh backend.tf; do
   aws s3 cp s3://${CLUSTER}-state/${i} ${i}
