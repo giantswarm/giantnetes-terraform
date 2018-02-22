@@ -27,5 +27,5 @@ resource "aws_route_table_association" "worker_0" {
 
 resource "aws_route_table_association" "worker_1" {
   subnet_id      = "${aws_subnet.worker_1.id}"
-  route_table_id = "${aws_route_table.cluster_vpc_private_0.id}"
+  route_table_id = "${aws_route_table.cluster_vpc_private_1.id}"
 }
