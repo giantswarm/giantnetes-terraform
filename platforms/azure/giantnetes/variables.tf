@@ -78,7 +78,7 @@ variable "master_storage_type" {
 
 variable "worker_vm_size" {
   type    = "string"
-  default = "Standard_DS2_v2"
+  default = "Standard_DS3_v2"
 }
 
 variable "worker_storage_type" {
