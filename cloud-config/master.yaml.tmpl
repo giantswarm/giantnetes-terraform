@@ -784,7 +784,7 @@ write_files:
       variables-hash-bucket-size: "128"
       server-name-hash-bucket-size: "1024"
       server-name-hash-max-size: "1024"
-- path: /srv/ingress-controller-sa.yaml
+- path: /srv/ingress-controller-sa.yml
   owner: root
   permissions: 644
   content: |
@@ -902,7 +902,7 @@ write_files:
     data:
       lego.email: "accounts@giantswarm.io"
       lego.url: "https://acme-v01.api.letsencrypt.org/directory"
-- path: /srv/kube-lego-sa.yaml
+- path: /srv/kube-lego-sa.yml
   owner: root
   permissions: 644
   content: |
