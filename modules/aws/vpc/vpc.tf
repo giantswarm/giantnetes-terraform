@@ -63,7 +63,7 @@ resource "aws_route_table" "cluster_vpc_private_0" {
   vpc_id = "${aws_vpc.cluster_vpc.id}"
 
   tags {
-    Name        = "${var.cluster_name}-private0"
+    Name        = "${var.cluster_name}_private_0"
     Environment = "${var.cluster_name}"
   }
 }
@@ -72,7 +72,7 @@ resource "aws_route_table" "cluster_vpc_private_1" {
   vpc_id = "${aws_vpc.cluster_vpc.id}"
 
   tags {
-    Name        = "${var.cluster_name}-private1"
+    Name        = "${var.cluster_name}_private_1"
     Environment = "${var.cluster_name}"
   }
 }
