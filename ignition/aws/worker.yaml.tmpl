@@ -1,6 +1,6 @@
 storage:
   files:
-    - path: /etc/kubernetes/config/proxy-kubeconfig.yml
+    - path: /etc/kubernetes/config/proxy-kubeconfig.yaml
       filesystem: root
       mode: 0644
       contents:
@@ -23,7 +23,7 @@ storage:
               user: proxy
             name: service-account-context
           current-context: service-account-context
-    - path: /etc/kubernetes/config/kubelet-kubeconfig.yml
+    - path: /etc/kubernetes/config/kubelet-kubeconfig.yaml
       filesystem: root
       mode: 0644
       contents:
@@ -331,7 +331,7 @@ systemd:
       --master=https://${API_DOMAIN_NAME} \
       --proxy-mode=iptables \
       --logtostderr=true \
-      --kubeconfig=/etc/kubernetes/config/proxy-kubeconfig.yml \
+      --kubeconfig=/etc/kubernetes/config/proxy-kubeconfig.yaml \
       --v=2"
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
@@ -429,7 +429,7 @@ systemd:
       --network-plugin=cni \
       --register-node=true \
       --allow-privileged=true \
-      --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yml \
+      --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yaml \
       --require-kubeconfig=true \
       --node-labels="kubernetes.io/hostname=$HOSTNAME,ip=${DEFAULT_IPV4}," \
       --v=2"
