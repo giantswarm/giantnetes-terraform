@@ -585,7 +585,7 @@ storage:
               }
             ]
           }
-    - path: /srv/default-backend-dep.yml
+    - path: /srv/default-backend-dep.yaml
       filesystem: root
       mode: 0644
       contents:
@@ -623,7 +623,7 @@ storage:
                     requests:
                       cpu: 10m
                       memory: 20Mi
-    - path: /srv/default-backend-svc.yml
+    - path: /srv/default-backend-svc.yaml
       filesystem: root
       mode: 0644
       contents:
@@ -642,7 +642,7 @@ storage:
               targetPort: 8080
             selector:
               k8s-app: default-http-backend
-    - path: /srv/ingress-controller-cm.yml
+    - path: /srv/ingress-controller-cm.yaml
       filesystem: root
       mode: 0644
       contents:
@@ -669,7 +669,7 @@ storage:
           metadata:
             name: nginx-ingress-controller
             namespace: kube-system
-    - path: /srv/ingress-controller-dep.yml
+    - path: /srv/ingress-controller-dep.yaml
       filesystem: root
       mode: 0644
       contents:
@@ -741,7 +741,7 @@ storage:
                     hostPort: 80
                   - containerPort: 443
                     hostPort: 443
-    - path: /srv/ingress-controller-svc.yml
+    - path: /srv/ingress-controller-svc.yaml
       filesystem: root
       mode: 0644
       contents:
@@ -768,7 +768,7 @@ storage:
               targetPort: 443
             selector:
               k8s-app: nginx-ingress-controller
-    - path: /srv/kube-lego-cm.yml
+    - path: /srv/kube-lego-cm.yaml
       filesystem: root
       mode: 0644
       contents:
@@ -791,7 +791,7 @@ storage:
           metadata:
             name: kube-lego
             namespace: kube-system
-    - path: /srv/kube-lego-dep.yml
+    - path: /srv/kube-lego-dep.yaml
       filesystem: root
       mode: 0644
       contents:
@@ -1391,7 +1391,7 @@ storage:
           done
 
           # apply k8s addons
-          MANIFESTS="default-storage-class.yaml coredns-cm.yaml coredns-sa.yaml coredns-dep.yaml coredns-svc.yaml default-backend-dep.yml default-backend-svc.yml ingress-controller-cm.yml ingress-controller-sa.yaml ingress-controller-dep.yml ingress-controller-svc.yml kube-lego-cm.yml kube-lego-sa.yaml kube-lego-dep.yml"
+          MANIFESTS="default-storage-class.yaml coredns-cm.yaml coredns-sa.yaml coredns-dep.yaml coredns-svc.yaml default-backend-dep.yaml default-backend-svc.yaml ingress-controller-cm.yaml ingress-controller-sa.yaml ingress-controller-dep.yaml ingress-controller-svc.yaml kube-lego-cm.yaml kube-lego-sa.yaml kube-lego-dep.yaml"
 
           for manifest in $MANIFESTS
           do
@@ -1404,7 +1404,7 @@ storage:
               done
           done
           echo "Addons successfully installed"
-    - path: /etc/kubernetes/config/proxy-kubeconfig.yml
+    - path: /etc/kubernetes/config/proxy-kubeconfig.yaml
       filesystem: root
       mode: 0644
       contents:
@@ -1427,7 +1427,7 @@ storage:
               user: proxy
             name: service-account-context
           current-context: service-account-context
-    - path: /etc/kubernetes/config/kubelet-kubeconfig.yml
+    - path: /etc/kubernetes/config/kubelet-kubeconfig.yaml
       filesystem: root
       mode: 0644
       contents:
@@ -1450,7 +1450,7 @@ storage:
               user: kubelet
             name: service-account-context
           current-context: service-account-context
-    - path: /etc/kubernetes/config/controller-manager-kubeconfig.yml
+    - path: /etc/kubernetes/config/controller-manager-kubeconfig.yaml
       filesystem: root
       mode: 0644
       contents:
@@ -1473,7 +1473,7 @@ storage:
               user: controller-manager
             name: service-account-context
           current-context: service-account-context
-    - path: /etc/kubernetes/config/scheduler-kubeconfig.yml
+    - path: /etc/kubernetes/config/scheduler-kubeconfig.yaml
       filesystem: root
       mode: 0644
       contents:
@@ -1909,7 +1909,7 @@ systemd:
       --master=https://${API_DOMAIN_NAME} \
       --proxy-mode=iptables \
       --logtostderr=true \
-      --kubeconfig=/etc/kubernetes/config/proxy-kubeconfig.yml \
+      --kubeconfig=/etc/kubernetes/config/proxy-kubeconfig.yaml \
       --v=2"
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
@@ -1975,7 +1975,7 @@ systemd:
       --register-node=true \
       --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
       --allow-privileged=true \
-      --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yml \
+      --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yaml \
       --require-kubeconfig=true \
       --node-labels="node-role.kubernetes.io/master,role=master,kubernetes.io/hostname=$HOSTNAME,ip=${DEFAULT_IPV4}," \
       --v=2"
@@ -2114,7 +2114,7 @@ systemd:
       --profiling=false \
       --terminated-pod-gc-threshold=10 \
       --use-service-account-credentials=true \
-      --kubeconfig=/etc/kubernetes/config/controller-manager-kubeconfig.yml \
+      --kubeconfig=/etc/kubernetes/config/controller-manager-kubeconfig.yaml \
       --root-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem \
       --service-account-private-key-file=/etc/kubernetes/ssl/service-account-key.pem
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
@@ -2151,7 +2151,7 @@ systemd:
       --logtostderr=true \
       --v=2 \
       --profiling=false \
-      --kubeconfig=/etc/kubernetes/config/scheduler-kubeconfig.yml
+      --kubeconfig=/etc/kubernetes/config/scheduler-kubeconfig.yaml
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
 

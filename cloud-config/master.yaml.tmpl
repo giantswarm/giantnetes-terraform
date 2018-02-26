@@ -715,7 +715,7 @@ write_files:
                 items:
                 - key: Corefile
                   path: Corefile
-- path: /srv/default-backend-dep.yml
+- path: /srv/default-backend-dep.yaml
   owner: root
   permissions: 0644
   content: |
@@ -752,7 +752,7 @@ write_files:
               requests:
                 cpu: 10m
                 memory: 20Mi
-- path: /srv/default-backend-svc.yml
+- path: /srv/default-backend-svc.yaml
   owner: root
   permissions: 0644
   content: |
@@ -770,7 +770,7 @@ write_files:
         targetPort: 8080
       selector:
         k8s-app: default-http-backend
-- path: /srv/ingress-controller-cm.yml
+- path: /srv/ingress-controller-cm.yaml
   owner: root
   permissions: 0644
   content: |
@@ -793,7 +793,7 @@ write_files:
     metadata:
       name: nginx-ingress-controller
       namespace: kube-system
-- path: /srv/ingress-controller-dep.yml
+- path: /srv/ingress-controller-dep.yaml
   owner: root
   permissions: 0644
   content: |
@@ -864,7 +864,7 @@ write_files:
               hostPort: 80
             - containerPort: 443
               hostPort: 443
-- path: /srv/ingress-controller-svc.yml
+- path: /srv/ingress-controller-svc.yaml
   owner: root
   permissions: 0644
   content: |
@@ -890,7 +890,7 @@ write_files:
         targetPort: 443
       selector:
         k8s-app: nginx-ingress-controller
-- path: /srv/kube-lego-cm.yml
+- path: /srv/kube-lego-cm.yaml
   owner: root
   permissions: 0644
   content: |
@@ -911,7 +911,7 @@ write_files:
     metadata:
       name: kube-lego
       namespace: kube-system
-- path: /srv/kube-lego-dep.yml
+- path: /srv/kube-lego-dep.yaml
   owner: root
   permissions: 0644
   content: |
@@ -1515,7 +1515,7 @@ write_files:
       done
 
       # apply k8s addons
-      MANIFESTS="default-storage-class.yaml coredns-all.yaml default-backend-dep.yml default-backend-svc.yml ingress-controller-cm.yml ingress-controller-sa.yml ingress-controller-dep.yml ingress-controller-svc.yml kube-lego-cm.yml kube-lego-sa.yml kube-lego-dep.yml"
+      MANIFESTS="default-storage-class.yaml coredns-all.yaml default-backend-dep.yaml default-backend-svc.yaml ingress-controller-cm.yaml ingress-controller-sa.yaml ingress-controller-dep.yaml ingress-controller-svc.yaml kube-lego-cm.yaml kube-lego-sa.yaml kube-lego-dep.yaml"
 
       for manifest in $MANIFESTS
       do
@@ -1545,7 +1545,7 @@ write_files:
     vnetName: ${AZURE_VNETNAME}
     routeTableName: ${AZURE_ROUTETABLE}
 
-- path: /etc/kubernetes/config/proxy-kubeconfig.yml
+- path: /etc/kubernetes/config/proxy-kubeconfig.yaml
   owner: root
   permissions: 0644
   content: |
@@ -1567,7 +1567,7 @@ write_files:
         user: proxy
       name: service-account-context
     current-context: service-account-context
-- path: /etc/kubernetes/config/kubelet-kubeconfig.yml
+- path: /etc/kubernetes/config/kubelet-kubeconfig.yaml
   owner: root
   permissions: 0644
   content: |
@@ -1589,7 +1589,7 @@ write_files:
         user: kubelet
       name: service-account-context
     current-context: service-account-context
-- path: /etc/kubernetes/config/controller-manager-kubeconfig.yml
+- path: /etc/kubernetes/config/controller-manager-kubeconfig.yaml
   owner: root
   permissions: 0644
   content: |
@@ -1611,7 +1611,7 @@ write_files:
         user: controller-manager
       name: service-account-context
     current-context: service-account-context
-- path: /etc/kubernetes/config/scheduler-kubeconfig.yml
+- path: /etc/kubernetes/config/scheduler-kubeconfig.yaml
   owner: root
   permissions: 0644
   content: |
@@ -2067,7 +2067,7 @@ coreos:
       --master=https://127.0.0.1 \
       --proxy-mode=iptables \
       --logtostderr=true \
-      --kubeconfig=/etc/kubernetes/config/proxy-kubeconfig.yml \
+      --kubeconfig=/etc/kubernetes/config/proxy-kubeconfig.yaml \
       --v=2"
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
@@ -2131,7 +2131,7 @@ coreos:
       --register-node=true \
       --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
       --allow-privileged=true \
-      --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yml \
+      --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yaml \
       --require-kubeconfig=true \
       --node-labels="node-role.kubernetes.io/master,role=master,kubernetes.io/hostname=$HOSTNAME,ip=${DEFAULT_IPV4}," \
       --v=2"
@@ -2278,7 +2278,7 @@ coreos:
       --profiling=false \
       --terminated-pod-gc-threshold=10 \
       --use-service-account-credentials=true \
-      --kubeconfig=/etc/kubernetes/config/controller-manager-kubeconfig.yml \
+      --kubeconfig=/etc/kubernetes/config/controller-manager-kubeconfig.yaml \
       --root-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem \
       --service-account-private-key-file=/etc/kubernetes/ssl/service-account-key.pem
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
@@ -2311,7 +2311,7 @@ coreos:
       --logtostderr=true \
       --v=2 \
       --profiling=false \
-      --kubeconfig=/etc/kubernetes/config/scheduler-kubeconfig.yml
+      --kubeconfig=/etc/kubernetes/config/scheduler-kubeconfig.yaml
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
   - name: k8s-addons.service
