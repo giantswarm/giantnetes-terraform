@@ -32,6 +32,11 @@ resource "azurerm_virtual_machine" "worker" {
   availability_set_id   = "${azurerm_availability_set.workers.id}"
   vm_size               = "${var.vm_size}"
 
+  lifecycle {
+    # Workaround to ignore Kubernetes-managed persistent volumes.
+    ignore_changes = ["storage_data_disk"]
+  }
+
   delete_os_disk_on_termination = true
 
   delete_data_disks_on_termination = true
