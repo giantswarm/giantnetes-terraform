@@ -8,7 +8,7 @@ Common:
 ### Create storage account for terraform state
 
 ```
-export NAME="cluster5"
+export NAME="cluster1"
 az group create -n ${NAME}-terraform -l westeurope
 
 az storage account create \
@@ -198,15 +198,22 @@ cd build
 ```
 
 ```
+export NAME=cluster1
 for i in envs.sh backend.tf; do
   az storage blob download --account-name ${NAME}terraform -c ${NAME}-build -n ${i} -f ${i}
 done
 ```
 
+Command below will ask for secrets that can be found in keepass.
+
+```
+source envs.sh
+```
+
 ### Regenerate cloud-config
 
 ```
-terraform init ../platoforms/azure/giantnetes-cloud-config
+terraform init ../platforms/azure/giantnetes-cloud-config
 terraform plan ../platforms/azure/giantnetes-cloud-config
 terraform apply ../platforms/azure/giantnetes-cloud-config
 ```
