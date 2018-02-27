@@ -14,6 +14,12 @@ resource "azurerm_virtual_machine" "vault" {
   network_interface_ids = ["${var.network_interface_ids[0]}"]
   vm_size               = "${var.vm_size}"
 
+  lifecycle {
+    # Vault provisioned also by Ansible,
+    # so prevent recreation if user_data or ami changed.
+    ignore_changes = ["ami", "user_data"]
+  }
+
   delete_os_disk_on_termination = true
 
   delete_data_disks_on_termination = false
