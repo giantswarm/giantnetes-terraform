@@ -11,6 +11,9 @@ Common:
 ```
 export CLUSTER="cluster1"
 export AWS_DEFAULT_REGION="eu-central-1"
+
+# Make sure you have proper profile configured in .aws/config
+export AWS_PROFILE=${CLUSTER}
 ```
 
 ```
@@ -89,7 +92,7 @@ terraform apply ../platforms/aws/giantnetes
 ```
 export CLUSTER=cluster1
 
-for i in envs.sh backend.tf; do
+for i in envs.sh backend.tf provider.tf; do
   aws s3 cp ${i} s3://${CLUSTER}-state/${i}
 done
 ```
@@ -124,7 +127,7 @@ cd build
 ```
 export CLUSTER=cluster1
 
-for i in envs.sh backend.tf; do
+for i in envs.sh backend.tf provider.tf; do
   aws s3 cp s3://${CLUSTER}-state/${i} ${i}
 done
 ```
