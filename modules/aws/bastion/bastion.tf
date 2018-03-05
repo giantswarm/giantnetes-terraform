@@ -1,3 +1,10 @@
+locals {
+  default_ssh_access_subnet = "0.0.0.0/0"
+
+  # If behind VPN allow SSH access only from VPN subnet.
+  ssh_access_subnet = "${var.with_public_access == 0 ? var.external_ipsec_subnet : local.default_ssh_access_subnet}"
+}
+
 resource "aws_instance" "bastion" {
   count         = "${var.bastion_count}"
   ami           = "${var.container_linux_ami_id}"
@@ -54,7 +61,7 @@ resource "aws_security_group" "bastion" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["${local.ssh_access_subnet}"]
     self        = true
   }
 
