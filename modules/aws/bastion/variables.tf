@@ -14,6 +14,10 @@ variable "cluster_name" {
   type = "string"
 }
 
+variable "external_ipsec_subnet" {
+  type = "string"
+}
+
 variable "instance_type" {
   type = "string"
 }
