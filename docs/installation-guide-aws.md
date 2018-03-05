@@ -51,6 +51,18 @@ source envs.sh
 
 NOTE: Reexecute `source envs.sh` in every new console.
 
+### Route53 DNS zone setup
+
+Giantnetes requires real DNS domain, so it's mandatory to have existing DNS zone.
+
+#### Parent DNS zone in Route53
+
+Set id of the zone in `TF_VAR_root_dns_zone_id` in `envs.sh`.
+
+#### Parent DNS zone outside Route53
+
+Leave `TF_VAR_root_dns_zone_id` empty and make delegation [manually](http://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html#UpdateDNSParentDomain) after first `terraform apply`, when DNS zone will be created.
+
 ## Install
 
 Install consists two stages:
