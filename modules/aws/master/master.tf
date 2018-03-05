@@ -97,7 +97,7 @@ resource "aws_security_group" "master" {
   ingress {
     from_port   = 0
     to_port     = 0
-    protocol    = 94
+    protocol    = 4
     cidr_blocks = ["${var.vpc_cidr}"]
   }
 
