@@ -104,7 +104,7 @@ terraform apply ../platforms/azure/giantnetes-cloud-config
 
 #### Create Vault virtual machine and all other necessary resources
 
-Answer "No" for copying state, we are using different keys for the state.
+**Always** answer "No" for copying state, we are using different keys for the state!
 
 ```
 terraform init ../platforms/azure/giantnetes
@@ -129,6 +129,8 @@ Generates script with compressed cloud-config contents.
 ```
 source envs.sh
 ```
+
+!**Always** answer "No" for copying state, we are using different keys for the state!
 
 ```
 terraform init ../platforms/azure/giantnetes-cloud-config
@@ -160,6 +162,9 @@ az disk delete -y --ids $(az disk list -g $TF_VAR_cluster_name --query "[].id" -
 ```
 
 ##### Apply terraform
+
+**Always** answer "No" for copying state, we are using different keys for the state!
+
 
 ```
 terraform init ../platforms/azure/giantnetes
