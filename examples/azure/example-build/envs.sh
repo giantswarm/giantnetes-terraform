@@ -10,7 +10,9 @@ export TF_VAR_nodes_vault_token=
 
 # service principal credentials
 export TF_VAR_azure_sp_tenantid=<value>
+# account subscription id (from az account list --output table)
 export TF_VAR_azure_sp_subscriptionid=<value>
+# equals to azure appId
 export TF_VAR_azure_sp_aadclientid=<value>
 
 # interactively ask for secret keys
