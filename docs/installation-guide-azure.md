@@ -116,7 +116,7 @@ It should create all cluster resources. Please note master and worker vms are cr
 
 #### Provision Vault with Ansible
 
-How to do that see [here](https://github.com/giantswarm/aws-terraform/blob/master/docs/install-g8s-on-aws.md#install-vault-with-hive-ansible)
+How to do that see [here](https://github.com/giantswarm/hive/#install-insecure-vault)
 
 When done make sure to update "TF_VAR_nodes_vault_token" in envs.sh with node token that was outputed by Ansible.
 
