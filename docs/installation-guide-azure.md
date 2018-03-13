@@ -62,13 +62,13 @@ cp -r examples/azure/example-build/* build
 cd build
 ```
 
-Replace `<cluster_name>` in `backend.tf` and make sure backend configuration linked properly.
+Replace `<cluster_name>` in `backend.tf` and make sure backend configuration linked properly. Carefull, the `storage_account_name` doesnt have dash `-` between the cluster_name.
 
 ```
 cat ../platforms/azure/giantnetes/backend.tf
 ```
 
-Edit `envs.sh`. DO NOT PUT passwords and keys into `envs.sh` as it will be stored as plain text.
+Edit `envs.sh`. DO NOT PUT passwords and keys into `envs.sh` as it will be stored as plain text. 
 
 Command below will ask for:
 - storage account access key
