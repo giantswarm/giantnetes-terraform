@@ -3,7 +3,8 @@
 ## Prerequisites
 
 Common:
-- az cli installed and `az login` executed
+- az cli installed 
+- `az login` and `account set --subscription 1be3b2e6-497b-45b9-915f-eb35cae23c6a` executed
 
 ### Create storage account for terraform state
 
