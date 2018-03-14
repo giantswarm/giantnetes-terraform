@@ -130,7 +130,7 @@ Generates script with compressed cloud-config contents.
 source envs.sh
 ```
 
-!**Always** answer "No" for copying state, we are using different keys for the state!
+**Always** answer "No" for copying state, we are using different keys for the state!
 
 ```
 terraform init ../platforms/azure/giantnetes-cloud-config
