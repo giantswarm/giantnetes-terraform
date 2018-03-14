@@ -4,7 +4,7 @@
 
 Common:
 - az cli installed 
-- `az login` and `account set --subscription 1be3b2e6-497b-45b9-915f-eb35cae23c6a` executed
+- `az login` executed
 
 ### Create storage account for terraform state
 
@@ -48,7 +48,7 @@ az group create -n ${NAME} -l westeurope
 Create service principal with permissions limited to resource group.
 
 ```
-export SUBSCRIPTION_ID=$(az account list | jq '.[].id')
+export SUBSCRIPTION_ID=$(az account list | jq '.[].id' | sed 's/\"//g')
 az ad sp create-for-rbac --name=${NAME}-sp --role="Contributor" --scopes="/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${NAME}"
 ```
 
