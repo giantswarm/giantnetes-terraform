@@ -81,6 +81,12 @@ terraform apply ../platforms/aws/giantnetes
 
 It should create all cluster resources. Please note master and worker vms are created, but will fail. This is expected behaviour.
 
+#### Configure IPsec
+
+Use [this guide](https://github.com/giantswarm/vpn#aws-ipsec-configuration) to configure IPSec.
+
+To get passphrase login to AWS console, switch to VPC service and open VPN connections. Select newly created VPN connection and click "Download configuration".
+
 #### Provision Vault with Ansible
 
 How to do that see [here](https://github.com/giantswarm/aws-terraform/blob/master/docs/install-g8s-on-aws.md#install-vault-with-hive-ansible)
