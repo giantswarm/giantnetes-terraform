@@ -23,8 +23,8 @@ resource "aws_instance" "bastion" {
   user_data = "${var.user_data}"
 
   tags = {
-    Name        = "${var.cluster_name}-bastion${count.index}"
-    Environment = "${var.cluster_name}"
+    Name                         = "${var.cluster_name}-bastion${count.index}"
+    "giantswarm.io/installation" = "${var.cluster_name}"
   }
 }
 
@@ -66,8 +66,8 @@ resource "aws_security_group" "bastion" {
   }
 
   tags {
-    Name        = "${var.cluster_name}-bastion"
-    Environment = "${var.cluster_name}"
+    Name                         = "${var.cluster_name}-bastion"
+    "giantswarm.io/installation" = "${var.cluster_name}"
   }
 }
 

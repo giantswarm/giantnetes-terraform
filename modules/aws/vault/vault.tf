@@ -24,8 +24,8 @@ resource "aws_instance" "vault" {
   user_data = "${var.user_data}"
 
   tags = {
-    Name        = "${var.cluster_name}-vault${count.index}"
-    Environment = "${var.cluster_name}"
+    Name                         = "${var.cluster_name}-vault${count.index}"
+    "giantswarm.io/installation" = "${var.cluster_name}"
   }
 }
 
@@ -35,8 +35,8 @@ resource "aws_ebs_volume" "vault_etcd" {
   type              = "${var.volume_type}"
 
   tags {
-    Name        = "${var.cluster_name}-vault"
-    Environment = "${var.cluster_name}"
+    Name                         = "${var.cluster_name}-vault"
+    "giantswarm.io/installation" = "${var.cluster_name}"
   }
 }
 
@@ -78,8 +78,8 @@ resource "aws_security_group" "vault" {
   }
 
   tags {
-    Name        = "${var.cluster_name}-vault"
-    Environment = "${var.cluster_name}"
+    Name                         = "${var.cluster_name}-vault"
+    "giantswarm.io/installation" = "${var.cluster_name}"
   }
 }
 

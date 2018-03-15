@@ -27,10 +27,12 @@ resource "aws_elb" "worker" {
     interval            = 15
   }
 
-  tags {
-    Name        = "${var.cluster_name}-worker"
-    Environment = "${var.cluster_name}"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-worker"
+    )
+  )}"
 }
 
 resource "aws_proxy_protocol_policy" "worker" {
@@ -63,10 +65,12 @@ resource "aws_security_group" "worker_elb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags {
-    Name        = "${var.cluster_name}-worker-elb"
-    Environment = "${var.cluster_name}"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-worker-elb"
+    )
+  )}"
 }
 
 resource "aws_route53_record" "worker-wildcard" {

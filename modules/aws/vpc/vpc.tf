@@ -6,6 +6,13 @@
 #   * vault and worker subnets are using the private route table
 #   * the private nat gateway is in the bastion subnet as well (needs to be in a public subnet)
 
+locals {
+  common_tags = "${map(
+    "giantswarm.io/installation", "${var.cluster_name}",
+    "kubernetes.io/cluster/${var.cluster_name}", "owned"
+  )}"
+}
+
 data "aws_availability_zones" "available" {}
 
 data "aws_region" "current" {}
@@ -16,19 +23,23 @@ resource "aws_vpc" "cluster_vpc" {
   enable_dns_support   = true
   enable_dns_hostnames = true
 
-  tags {
-    Name        = "${var.cluster_name}"
-    Environment = "${var.cluster_name}"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}"
+    )
+  )}"
 }
 
 resource "aws_internet_gateway" "cluster_vpc" {
   vpc_id = "${aws_vpc.cluster_vpc.id}"
 
-  tags {
-    Name        = "${var.cluster_name}"
-    Environment = "${var.cluster_name}"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}"
+    )
+  )}"
 }
 
 resource "aws_nat_gateway" "private_nat_gateway_0" {
@@ -44,55 +55,67 @@ resource "aws_nat_gateway" "private_nat_gateway_1" {
 resource "aws_eip" "private_nat_gateway_0" {
   vpc = true
 
-  tags {
-    Name        = "${var.cluster_name}-private-nat-gateway0"
-    Environment = "${var.cluster_name}"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-private-nat-gateway0"
+    )
+  )}"
 }
 
 resource "aws_eip" "private_nat_gateway_1" {
   vpc = true
 
-  tags {
-    Name        = "${var.cluster_name}-private-nat-gateway1"
-    Environment = "${var.cluster_name}"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-private-nat-gateway1"
+    )
+  )}"
 }
 
 resource "aws_route_table" "cluster_vpc_private_0" {
   vpc_id = "${aws_vpc.cluster_vpc.id}"
 
-  tags {
-    Name        = "${var.cluster_name}_private_0"
-    Environment = "${var.cluster_name}"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}_private_0"
+    )
+  )}"
 }
 
 resource "aws_route_table" "cluster_vpc_private_1" {
   vpc_id = "${aws_vpc.cluster_vpc.id}"
 
-  tags {
-    Name        = "${var.cluster_name}_private_1"
-    Environment = "${var.cluster_name}"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}_private_1"
+    )
+  )}"
 }
 
 resource "aws_route_table" "cluster_vpc_public_0" {
   vpc_id = "${aws_vpc.cluster_vpc.id}"
 
-  tags {
-    Name        = "${var.cluster_name}-public0"
-    Environment = "${var.cluster_name}"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-public0"
+    )
+  )}"
 }
 
 resource "aws_route_table" "cluster_vpc_public_1" {
   vpc_id = "${aws_vpc.cluster_vpc.id}"
 
-  tags {
-    Name        = "${var.cluster_name}-public1"
-    Environment = "${var.cluster_name}"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-public1"
+    )
+  )}"
 }
 
 resource "aws_route" "vpc_local_route_0" {

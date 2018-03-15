@@ -1,3 +1,10 @@
+locals {
+  common_tags = "${map(
+    "giantswarm.io/installation", "${var.cluster_name}",
+    "kubernetes.io/cluster/${var.cluster_name}", "owned"
+  )}"
+}
+
 resource "aws_cloudformation_stack" "worker_asg" {
   name = "${var.cluster_name}-worker"
 
@@ -23,13 +30,13 @@ resource "aws_cloudformation_stack" "worker_asg" {
             "PropagateAtLaunch": true
           },
           {
-            "Key": "Environment",
+            "Key": "giantswarm.io/installation",
             "Value": "${var.cluster_name}",
             "PropagateAtLaunch": true
           },
           {
-            "Key": "KubernetesCluster",
-            "Value": "${var.cluster_name}",
+            "Key": "kubernetes.io/cluster/${var.cluster_name}",
+            "Value": "owned",
             "PropagateAtLaunch": true
           }
         ],
@@ -121,11 +128,12 @@ resource "aws_security_group" "worker" {
     cidr_blocks = ["${var.vpc_cidr}"]
   }
 
-  tags {
-    Name              = "${var.cluster_name}-worker"
-    Environment       = "${var.cluster_name}"
-    KubernetesCluster = "${var.cluster_name}"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-worker"
+    )
+  )}"
 }
 
 # To avoid 16kb user_data limit upload CoreOS ignition config to a s3 bucket.
@@ -138,10 +146,12 @@ resource "aws_s3_bucket_object" "ignition_worker" {
 
   server_side_encryption = "AES256"
 
-  tags = {
-    Name        = "${var.cluster_name}-ignition-worker"
-    Environment = "${var.cluster_name}"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-ignition-worker"
+    )
+  )}"
 }
 
 data "ignition_config" "s3" {
