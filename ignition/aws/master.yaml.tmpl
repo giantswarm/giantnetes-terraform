@@ -1497,6 +1497,12 @@ storage:
               user: scheduler
             name: service-account-context
           current-context: service-account-context
+    - path: /etc/tokens/node
+      filesystem: root
+      mode: 0400
+      contents:
+        inline: |
+          VAULT_TOKEN=${G8S_VAULT_TOKEN}
     - path: /etc/ssh/sshd_config
       filesystem: root
       mode: 0600
@@ -1722,6 +1728,7 @@ systemd:
       [Service]
       EnvironmentFile=/etc/environment
       EnvironmentFile=/etc/network-environment
+      EnvironmentFile=/etc/tokens/node
       Type=oneshot
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/calico/
@@ -1732,7 +1739,7 @@ systemd:
       quay.io/giantswarm/certctl:b07d0913d5cb369a6b605394bdd4be4633451be9 \
       issue \
       --vault-addr=https://${VAULT_DOMAIN_NAME} \
-      --vault-token=${G8S_VAULT_TOKEN} \
+      --vault-token=$${VAULT_TOKEN} \
       --cluster-id=g8s \
       --common-name=${ETCD_DOMAIN_NAME} \
       --ttl=8760h \
@@ -1756,6 +1763,7 @@ systemd:
       [Service]
       EnvironmentFile=/etc/environment
       EnvironmentFile=/etc/network-environment
+      EnvironmentFile=/etc/tokens/node
       Type=oneshot
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/etcd/
@@ -1766,7 +1774,7 @@ systemd:
       quay.io/giantswarm/certctl:b07d0913d5cb369a6b605394bdd4be4633451be9 \
       issue \
       --vault-addr=https://${VAULT_DOMAIN_NAME} \
-      --vault-token=${G8S_VAULT_TOKEN} \
+      --vault-token=$${VAULT_TOKEN} \
       --cluster-id=g8s \
       --common-name=${ETCD_DOMAIN_NAME} \
       --ttl=8760h \
@@ -1994,7 +2002,7 @@ systemd:
       [Service]
       EnvironmentFile=/etc/environment
       EnvironmentFile=/etc/network-environment
-      Environment=VAULT_TOKEN=${G8S_VAULT_TOKEN}
+      EnvironmentFile=/etc/tokens/node
       Environment=VAULT_ADDR=https://${VAULT_DOMAIN_NAME}
       Type=oneshot
       RemainAfterExit=yes
@@ -2006,8 +2014,8 @@ systemd:
       -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
       quay.io/giantswarm/certctl:b07d0913d5cb369a6b605394bdd4be4633451be9 \
       issue \
-      --vault-addr=https://${VAULT_DOMAIN_NAME} \
-      --vault-token=${G8S_VAULT_TOKEN} \
+      --vault-addr=$${VAULT_ADDR} \
+      --vault-token=$${VAULT_TOKEN} \
       --cluster-id=g8s \
       --common-name=${API_DOMAIN_NAME} \
       --ttl=8760h \
