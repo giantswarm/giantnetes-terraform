@@ -39,6 +39,7 @@ module "dns" {
 module "vpc" {
   source = "../../../modules/aws/vpc"
 
+  aws_account      = "${var.aws_account}"
   cluster_name     = "${var.cluster_name}"
   subnet_bastion_0 = "${var.subnet_bastion_0}"
   subnet_bastion_1 = "${var.subnet_bastion_1}"

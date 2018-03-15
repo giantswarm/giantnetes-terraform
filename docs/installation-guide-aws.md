@@ -22,6 +22,10 @@ aws s3 mb s3://$CLUSTER-state --region $AWS_DEFAULT_REGION
 aws s3api put-bucket-versioning --bucket $CLUSTER-state \
     --versioning-configuration Status=Enabled
 
+aws s3api put-bucket-encryption --bucket $CLUSTER-state \
+    --server-side-encryption-configuration \
+        '{"Rules":[{"ApplyServerSideEncryptionByDefault":{"SSEAlgorithm":"AES256"}}]}'
+
 aws dynamodb create-table --region $AWS_DEFAULT_REGION \
     --table-name $CLUSTER-lock \
     --attribute-definitions AttributeName=LockID,AttributeType=S \
