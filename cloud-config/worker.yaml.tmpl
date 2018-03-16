@@ -430,6 +430,7 @@ coreos:
       [Service]
       EnvironmentFile=/etc/environment
       EnvironmentFile=/etc/network-environment
+      EnvironmentFile=/etc/tokens/node
       Type=oneshot
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/etcd/
@@ -440,7 +441,7 @@ coreos:
       quay.io/giantswarm/certctl:b07d0913d5cb369a6b605394bdd4be4633451be9 \
       issue \
       --vault-addr=https://${VAULT_DOMAIN_NAME} \
-      --vault-token=${G8S_VAULT_TOKEN} \
+      --vault-token=$${VAULT_TOKEN} \
       --cluster-id=g8s \
       --common-name=${ETCD_DOMAIN_NAME} \
       --ttl=8760h \
@@ -510,7 +511,7 @@ coreos:
       quay.io/giantswarm/certctl:b07d0913d5cb369a6b605394bdd4be4633451be9 \
       issue \
       --vault-addr=https://${VAULT_DOMAIN_NAME} \
-      --vault-token=${VAULT_TOKEN} \
+      --vault-token=$${VAULT_TOKEN} \
       --cluster-id=g8s \
       --common-name=${API_DOMAIN_NAME} \
       --ttl=8760h \
