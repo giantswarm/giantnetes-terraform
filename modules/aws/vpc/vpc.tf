@@ -154,6 +154,21 @@ resource "aws_vpc_endpoint" "s3" {
     "${aws_route_table.cluster_vpc_public_0.id}",
     "${aws_route_table.cluster_vpc_public_1.id}",
   ]
+
+  policy = <<EOF
+{
+  "Version": "2008-10-17",
+  "Statement": [
+    {
+      "Sid": "Restricted-access-to-S3",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Effect": "Allow",
+      "Resource": "arn:aws:s3:::${var.aws_account}-${var.cluster_name}-ignition/*"
+    }
+  ]
+}
+EOF
 }
 
 # Deny all traffic in default sec.group.
