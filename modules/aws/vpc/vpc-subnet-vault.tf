@@ -3,10 +3,12 @@ resource "aws_subnet" "vault_0" {
   availability_zone = "${data.aws_availability_zones.available.names[0]}"
   cidr_block        = "${var.subnet_vault_0}"
 
-  tags {
-    Name        = "${var.cluster_name}-vault0"
-    Environment = "${var.cluster_name}"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-vault0"
+    )
+  )}"
 }
 
 resource "aws_route_table_association" "vault_0" {

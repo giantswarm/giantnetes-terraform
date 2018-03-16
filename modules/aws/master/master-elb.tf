@@ -21,10 +21,12 @@ resource "aws_elb" "master" {
     interval            = 15
   }
 
-  tags {
-    Name        = "${var.cluster_name}-master"
-    Environment = "${var.cluster_name}"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-master"
+    )
+  )}"
 }
 
 resource "aws_elb_attachment" "master" {
@@ -50,10 +52,12 @@ resource "aws_security_group" "master_elb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags {
-    Name        = "${var.cluster_name}-master-elb"
-    Environment = "${var.cluster_name}"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-master-elb"
+    )
+  )}"
 }
 
 resource "aws_route53_record" "master-api" {

@@ -1,3 +1,10 @@
+locals {
+  common_tags = "${map(
+    "giantswarm.io/installation", "${var.cluster_name}",
+    "kubernetes.io/cluster/${var.cluster_name}", "owned"
+  )}"
+}
+
 data "aws_availability_zones" "available" {}
 
 resource "aws_instance" "master" {
@@ -18,11 +25,12 @@ resource "aws_instance" "master" {
 
   user_data = "${data.ignition_config.s3.rendered}"
 
-  tags = {
-    Name              = "${var.cluster_name}-master${count.index}"
-    Environment       = "${var.cluster_name}"
-    KubernetesCluster = "${var.cluster_name}"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-master${count.index}"
+    )
+  )}"
 }
 
 resource "aws_ebs_volume" "master_docker" {
@@ -30,10 +38,12 @@ resource "aws_ebs_volume" "master_docker" {
   size              = "${var.volume_size_docker}"
   type              = "${var.volume_type}"
 
-  tags {
-    Name        = "${var.cluster_name}-master"
-    Environment = "${var.cluster_name}"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-master-docker"
+    )
+  )}"
 }
 
 resource "aws_volume_attachment" "master_docker" {
@@ -50,10 +60,12 @@ resource "aws_ebs_volume" "master_etcd" {
   size              = "${var.volume_size_etcd}"
   type              = "${var.volume_type}"
 
-  tags {
-    Name        = "${var.cluster_name}-master"
-    Environment = "${var.cluster_name}"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-master-etcd"
+    )
+  )}"
 }
 
 resource "aws_volume_attachment" "master_etcd" {
@@ -101,10 +113,12 @@ resource "aws_security_group" "master" {
     cidr_blocks = ["${var.vpc_cidr}"]
   }
 
-  tags {
-    Name        = "${var.cluster_name}-master"
-    Environment = "${var.cluster_name}"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-master"
+    )
+  )}"
 }
 
 resource "aws_route53_record" "master" {
@@ -135,10 +149,12 @@ resource "aws_s3_bucket_object" "ignition_master" {
 
   server_side_encryption = "AES256"
 
-  tags = {
-    Name        = "${var.cluster_name}-ignition-master"
-    Environment = "${var.cluster_name}"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-ignition-master"
+    )
+  )}"
 }
 
 data "ignition_config" "s3" {

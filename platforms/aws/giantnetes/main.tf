@@ -210,6 +210,7 @@ module "vpn" {
 
   # If aws_customer_gateway_id is not set, no vpn resources will be created.
   aws_customer_gateway_id    = "${var.aws_customer_gateway_id}"
+  aws_cluster_name           = "${var.cluster_name}"
   aws_external_ipsec_subnet  = "${var.external_ipsec_subnet}"
   aws_public_route_table_ids = "${module.vpc.public_route_table_ids}"
   aws_vpn_name               = "Giant Swarm <-> ${var.cluster_name}"

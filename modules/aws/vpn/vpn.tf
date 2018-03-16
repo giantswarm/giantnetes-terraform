@@ -1,5 +1,6 @@
 # site2site vpn for access to bastion
 
+variable "aws_cluster_name" {}
 variable "aws_customer_gateway_id" {}
 variable "aws_external_ipsec_subnet" {}
 variable "aws_vpn_name" {}
@@ -14,8 +15,8 @@ resource "aws_vpn_gateway" "vpn_gw" {
   vpc_id = "${var.aws_vpn_vpc_id}"
 
   tags {
-    Name        = "${var.aws_vpn_name}"
-    Environment = "${var.aws_vpn_name}"
+    Name                         = "${var.aws_vpn_name}"
+    "giantswarm.io/installation" = "${var.aws_cluster_name}"
   }
 }
 
@@ -27,8 +28,8 @@ resource "aws_vpn_connection" "aws_vpn_conn" {
   static_routes_only  = true
 
   tags {
-    Name        = "${var.aws_vpn_name}"
-    Environment = "${var.aws_vpn_name}"
+    Name                         = "${var.aws_vpn_name}"
+    "giantswarm.io/installation" = "${var.aws_cluster_name}"
   }
 }
 
