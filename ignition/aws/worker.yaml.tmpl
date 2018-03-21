@@ -173,7 +173,7 @@ systemd:
     enabled: false
     mask: true
   - name: systemd-networkd-wait-online.service
-    enabled: true
+    mask: true
   - name: var-lib-docker.mount
     enabled: true
     contents: |
@@ -248,8 +248,8 @@ systemd:
     contents: |
       [Unit]
       Description=k8s-setup-network-env Service
-      Wants=network-online.target docker.service
-      After=network-online.target docker.service
+      Wants=network.target docker.service
+      After=network.target docker.service
 
       [Service]
       Type=oneshot
