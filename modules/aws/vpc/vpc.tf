@@ -160,11 +160,18 @@ resource "aws_vpc_endpoint" "s3" {
   "Version": "2008-10-17",
   "Statement": [
     {
-      "Sid": "Restricted-access-to-S3",
+      "Sid": "Host-Cluster-Rule",
       "Principal": "*",
       "Action": "s3:GetObject",
       "Effect": "Allow",
       "Resource": "arn:aws:s3:::${var.aws_account}-${var.cluster_name}-ignition/*"
+    },
+    {
+      "Sid": "AWS-Operator-Rule",
+      "Principal": "*",
+      "Action": "*",
+      "Effect": "Allow",
+      "Resource": "arn:aws:s3:::*-g8s-*"
     }
   ]
 }
