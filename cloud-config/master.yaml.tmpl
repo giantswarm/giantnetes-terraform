@@ -571,6 +571,7 @@ write_files:
     parameters:
       kind: Managed
       storageaccounttype: Premium_LRS
+    allowVolumeExpansion: true
     ---
     apiVersion: storage.k8s.io/v1beta1
     kind: StorageClass
@@ -583,6 +584,7 @@ write_files:
     parameters:
       kind: Managed
       storageaccounttype: Premium_LRS
+    allowVolumeExpansion: true
     ---
     apiVersion: storage.k8s.io/v1beta1
     kind: StorageClass
@@ -595,6 +597,7 @@ write_files:
     parameters:
       kind: Managed
       storageaccounttype: Standard_LRS
+    allowVolumeExpansion: true
 - path: /srv/coredns-all.yaml
   owner: root
   permissions: 0644
@@ -2135,6 +2138,7 @@ coreos:
       --cluster-dns=${K8S_DNS_IP} \
       --cluster-domain=cluster.local \
       --network-plugin=cni \
+      --feature-gates=ExpandPersistentVolumes=true \
       --register-node=true \
       --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
       --allow-privileged=true \
@@ -2226,7 +2230,7 @@ coreos:
       --bind-address=0.0.0.0 \
       --etcd-prefix=giantswarm.io \
       --authorization-mode=RBAC \
-      --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,PodSecurityPolicy,DefaultStorageClass \
+      --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,PodSecurityPolicy,PersistentVolumeClaimResize,DefaultStorageClass \
       --service-cluster-ip-range=${K8S_SERVICE_CIDR} \
       --etcd-servers=https://${ETCD_DOMAIN_NAME}:2379 \
       --etcd-cafile=/etc/kubernetes/ssl/etcd/server-ca.pem \
@@ -2242,7 +2246,7 @@ coreos:
       --tls-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem \
       --client-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem \
       --service-account-key-file=/etc/kubernetes/ssl/service-account-key.pem \
-      --feature-gates=AdvancedAuditing=false \
+      --feature-gates=AdvancedAuditing=false,ExpandPersistentVolumes=true \
       --audit-log-path=/var/log/apiserver/audit.log \
       --audit-log-maxage=30 \
       --audit-log-maxbackup=30 \
@@ -2284,6 +2288,7 @@ coreos:
       --profiling=false \
       --terminated-pod-gc-threshold=10 \
       --use-service-account-credentials=true \
+      --feature-gates=ExpandPersistentVolumes=true \
       --kubeconfig=/etc/kubernetes/config/controller-manager-kubeconfig.yaml \
       --root-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem \
       --service-account-private-key-file=/etc/kubernetes/ssl/service-account-key.pem
