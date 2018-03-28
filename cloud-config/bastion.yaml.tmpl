@@ -126,6 +126,13 @@ users:
       - "rkt"
     ssh-authorized_keys:
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCzkt5Tls3jGFzHW/cj6kz3OPAYR+fINFlDFk7qEY98sjkAbKqTwntVLY7ghOdynmt+0qoQRHklLoxDTUsFoYUu2vOpdtKKCdzHR08uYS2RlvOdA+Ex0d0qEHyxX4H3b+ym+8BqCn9Bh5X4/thGWt3cqVtroqYeUAES5SneQ1rX420hN9MoZ+83vC5gwTr90GqZbsqweNTHPkhuYLylvphzxbXOitzLr61VRxjGb4gZiRD6kCXuW/uP0nrtYXkHjROXMvdj1ZZA+VLR4TAbIukApYa3JpRAApanNScgmZTsa/HhEfDVQtGesG+C6fsZVcStxuWMcpx1vZFZ6gkeIDw+R47250E3BzaDYhjGo6URuijcmepllHsU+KgpvawmgjN8hlLdbBfCDLNML23mPDIwZmUznVwL1qH0Vf744ioExKKLHx1RpiohQMCnE6K+x85tf/5NAy/VlNPxD4qeS62Bcr4DPNnn3My1h+1U1hDyclw/4SynAZXNlBh7q6ksjzaRZ68LsZhWsyOZMKuz+igkV509SYhjqZfCT34zRlxEmRaI05fVAst/mZOfsfWb1AhADNVNF172jfat0qeot/Hs/Fs4D6bpl0mwW2jQD3dB3OkytroM4TBSvG7weJwJWoDgLvy1gx6Nd4rIsUlnQKivzwmEgCaV448Y6sVpEWpCAw== tobiasrichter@giantswarm.io
+  - name: tuommaki
+    groups:
+      - "sudo"
+      - "docker"
+      - "rkt"
+    ssh-authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCu2V1p0cZ2N4ucug9LQMB+YMg9AQ5+aZQTdDTZ7oBuEcBuGtdnSSbcxj1lHoMYvhz6ugFVolkusRnZSakZY/XPVlwIHC56TWWrJ0hJ4sQEzCqVSHx0ZBHaMZepxCz7KSh/4KjtZFyaBC9SFwUo7kGgBYoFdClhxZsmfMsk0RneY8FjWme/cwXSaEGdaaTyOA52UOCg6Ax3nnE/gAJBsL8HgI17bFjj8og6TdPoP+33wujGHFORy8HF/m6p1I2Nm9Mp+gkG6PzdkWbF7UFci5uYHXy5IEu6uGzEPQiB5BjgfVIvZyH3VfKxmG1T2yyp4/qDQOmkjlIahpPyI00Y3SWAab7MdQXJ2hTgWFo/NP+AEdd45+PrSvTMy2k5bVl9GMntP+z+9oAhwH8OStSCJ0GBGlVG89fd0vFV1XVmLPwS8XhuhAoU1KRt6/Hc8cs7uSUiKOTY8Xn6VNUozxK137QpHBb81jU7OCcmopF9dlqoV6m18iZK1NjP4+FFxUyi5O4HI6aFrZXf7Cw5G9C8EXML3qLIMxd2pIJsu8QTw/5kC7sBtmFY/5RqW0TZ5hWuyGSuFcRan5E08Qct5rGAQ6QjJ9rZqQUPeJFcN6gEvGUam0XdeziZD6lPFUDkte9y653lIrPqBoSbsJuk/FJU/+RTSYEl+VCmaac3ru6jYV6M8w== tuomas@giantswarm.io
 coreos:
   units:
     - name: update-engine.service
