@@ -433,6 +433,7 @@ systemd:
       --network-plugin=cni \
       --register-node=true \
       --allow-privileged=true \
+      --feature-gates=ExpandPersistentVolumes=true \
       --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yaml \
       --require-kubeconfig=true \
       --node-labels="kubernetes.io/hostname=$HOSTNAME,ip=${DEFAULT_IPV4}," \

@@ -581,6 +581,7 @@ coreos:
       --healthz-port=10248 \
       --cluster-dns=${K8S_DNS_IP} \
       --cluster-domain=cluster.local \
+      --feature-gates=ExpandPersistentVolumes=true \
       --network-plugin=cni \
       --register-node=true \
       --allow-privileged=true \
