@@ -387,6 +387,8 @@ coreos:
     command: stop
     mask: true
   - name: systemd-networkd-wait-online.service
+    enable: false
+    command: stop
     mask: true
   - name: docker.service
     enable: true
