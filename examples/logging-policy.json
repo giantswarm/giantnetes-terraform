@@ -1,0 +1,6 @@
+{
+    "LoggingEnabled": {
+      "TargetBucket": "<cluster name>-access-logs",
+      "TargetPrefix": "<access-logs-prefix>/"
+    }
+  }
