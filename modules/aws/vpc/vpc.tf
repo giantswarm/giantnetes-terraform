@@ -167,6 +167,13 @@ resource "aws_vpc_endpoint" "s3" {
       "Resource": "arn:aws:s3:::${var.aws_account}-${var.cluster_name}-ignition/*"
     },
     {
+      "Sid": "Etcd-Backup-Rule",
+      "Principal": "*",
+      "Action": "*",
+      "Effect": "Allow",
+      "Resource": "arn:aws:s3:::etcd-backups.giantswarm.io/*"
+    },
+    {
       "Sid": "AWS-Operator-Rule",
       "Principal": "*",
       "Action": "*",
