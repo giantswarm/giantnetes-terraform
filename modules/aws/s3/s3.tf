@@ -10,6 +10,11 @@ resource "aws_s3_bucket" "ignition" {
   acl           = "private"
   force_destroy = true
 
+  logging {
+    target_bucket = "${var.cluster_name}-access-logs"
+    target_prefix = "${var.cluster_name}-ignition-logs/"
+  }
+
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
