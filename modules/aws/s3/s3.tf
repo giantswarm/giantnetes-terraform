@@ -12,7 +12,7 @@ resource "aws_s3_bucket" "ignition" {
 
   logging {
     target_bucket = "${var.cluster_name}-access-logs"
-    target_prefix = "${var.cluster_name}-ignition/"
+    target_prefix = "${var.cluster_name}-ignition-logs/"
   }
 
   server_side_encryption_configuration {

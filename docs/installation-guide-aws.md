@@ -59,7 +59,7 @@ aws dynamodb create-table --region $AWS_DEFAULT_REGION \
 ```
 
 Before enable the logging in this bucket, modify the placeholders again in `examples/logging-policy.json`
-(For convention use `<cluster-name>-access-logs` as prefix).
+(For convention use `<cluster-name>-state-logs` as prefix).
 ```
 aws s3api put-bucket-logging --bucket $CLUSTER-state --bucket-logging-status file://examples/logging-policy.json
 ```
