@@ -34,7 +34,7 @@ After we need to grant permission to receive logs from the AWS delivery system.
 aws s3api put-bucket-acl --bucket $CLUSTER-access-logs --grant-write URI=http://acs.amazonaws.com/groups/s3/LogDelivery --grant-read-acp URI=http://acs.amazonaws.com/groups/s3/LogDelivery
 ```
 
-Now let's adding an expiration rule to clean logs after a period of time. Every client could have different policies for the retention (default 365 days) so check [installations](https://github.com/giantswarm/installations/blob/master/), in the customer cluster yaml definition which is the value. If there is not value defined, then let's set 365 days. To do that modify `examples/lifecycle-configuration.json` with the value. Afterwards, run the following command:
+Now let's adding an expiration rule to clean logs after a period of time. Every client could have different policies for the retention (default 365 days) so check [installations](https://github.com/giantswarm/installations/blob/master/), in the customer cluster yaml definition which is the value. If there is no value defined, then let's set 365 days. To do that modify `examples/lifecycle-configuration.json` with the value. Afterward, run the following command:
 ```
 aws s3api put-bucket-lifecycle-configuration  \
 --bucket $CLUSTER-access-logs  \
