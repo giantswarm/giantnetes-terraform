@@ -35,7 +35,7 @@ aws s3api put-bucket-acl --bucket $CLUSTER-access-logs --grant-write URI=http://
 ```
 
 Finally, we want to enable also logging for the access logs bucket itself. In order to do that, 
-modify placeholders in `examples/logging-policy.json` before create run the command (For convention use `self-access-logs` as prefix)
+modify placeholders in `examples/logging-policy.json` before create run the command (For convention use `self-logs` as prefix)
 ```
 aws s3api put-bucket-logging --bucket $CLUSTER-access-logs --bucket-logging-status file://examples/logging-policy.json
 ```
