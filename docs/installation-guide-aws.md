@@ -34,6 +34,13 @@ After we need to grant permission to receive logs from the AWS delivery system.
 aws s3api put-bucket-acl --bucket $CLUSTER-access-logs --grant-write URI=http://acs.amazonaws.com/groups/s3/LogDelivery --grant-read-acp URI=http://acs.amazonaws.com/groups/s3/LogDelivery
 ```
 
+Add a expiration rule for the access log bucket (Check first `examples/lifecycle-configuration.json`).
+```
+aws s3api put-bucket-lifecycle-configuration  \
+--bucket $CLUSTER-access-logs  \
+--lifecycle-configuration file://examples/lifecycle-configuration.json
+```
+
 Finally, we want to enable also logging for the access logs bucket itself. In order to do that, 
 modify placeholders in `examples/logging-policy.json` before create run the command (For convention use `self-logs` as prefix)
 ```

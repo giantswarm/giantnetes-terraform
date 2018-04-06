@@ -1,0 +1,12 @@
+{
+    "Rules": [
+        {
+            "ID": "ExpirationLogs",
+            "Status": "Enabled",
+            "Filter": {},
+            "Expiration": {
+                "Days": 365
+            }
+        }
+    ]
+}
