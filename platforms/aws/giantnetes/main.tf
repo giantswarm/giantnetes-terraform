@@ -200,7 +200,7 @@ module "worker" {
   ingress_dns            = "${var.ingress_dns}"
   instance_type          = "${var.worker_instance_type}"
   user_data              = "${data.ct_config.worker.rendered}"
-  worker_count           = 4
+  worker_count           = "${var.worker_count}"
   worker_subnet_ids      = "${module.vpc.worker_subnet_ids}"
   vpc_cidr               = "${var.vpc_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"

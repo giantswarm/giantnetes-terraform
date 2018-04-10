@@ -21,3 +21,29 @@ jobs:
       - run:
           # Run terraform syntax check
           command: terraform fmt -write=false -diff=true -check=true
+
+  e2eTestAWS:
+    docker:
+      - image: quay.io/giantswarm/docker-terraform-and-stuff:latest
+    steps:
+    - checkout
+    - run: ./misc/e2e-aws.sh
+
+workflows:
+  version: 2
+  build_e2e:
+    jobs:
+
+      - build
+
+      - hold:
+          type: approval
+          filters:
+            branches:
+              ignore: master
+          requires:
+          - build
+
+      - e2eTestAWS:
+          requires:
+          - hold
