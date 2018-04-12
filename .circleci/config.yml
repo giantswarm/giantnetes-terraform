@@ -22,12 +22,15 @@ jobs:
           # Run terraform syntax check
           command: terraform fmt -write=false -diff=true -check=true
 
-  e2eTestAWS:
+  e2eTestAWS: &e2eTestAWS
     docker:
       - image: quay.io/giantswarm/docker-terraform-and-stuff:latest
     steps:
     - checkout
     - run: ./misc/e2e-aws.sh
+
+  e2eTestAWSMaster:
+    <<: *e2eTestAWS
 
 workflows:
   version: 2
@@ -47,3 +50,10 @@ workflows:
       - e2eTestAWS:
           requires:
           - hold
+
+      - e2eTestAWSMaster:
+          filters:
+            branches:
+              only: master
+          requires:
+          - build
