@@ -64,6 +64,6 @@ resource "azurerm_virtual_machine" "vault" {
   }
 
   tags {
-    Environment = "${var.cluster_name}"
+    GiantSwarmInstallation = "${var.cluster_name}"
   }
 }

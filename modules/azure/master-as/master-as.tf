@@ -5,7 +5,7 @@ resource "azurerm_availability_set" "masters" {
   managed             = true
 
   tags {
-    Environment = "${var.cluster_name}"
+    GiantSwarmInstallation = "${var.cluster_name}"
   }
 }
 
@@ -94,6 +94,6 @@ resource "azurerm_virtual_machine" "master" {
   }
 
   tags {
-    Environment = "${var.cluster_name}"
+    GiantSwarmInstallation = "${var.cluster_name}"
   }
 }
