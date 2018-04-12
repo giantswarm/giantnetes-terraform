@@ -116,6 +116,19 @@ EOF
     ssh-add ${BUILDDIR}/${SSH_USER}.key
 }
 
+stage-prepare-logging-bucket() {
+  cd ${BUILDDIR}
+
+  source envs.sh
+  aws s3 mb s3://${CLUSTER}-access-logs
+  aws s3api put-bucket-acl \
+          --bucket ${CLUSTER}-access-logs \
+          --grant-write URI=http://acs.amazonaws.com/groups/s3/LogDelivery \
+          --grant-read-acp URI=http://acs.amazonaws.com/groups/s3/LogDelivery
+
+  cd -
+}
+
 stage-terraform-only-vault() {
   cd ${BUILDDIR}
 
@@ -206,6 +219,8 @@ stage-destroy() {
   terraform init ../platforms/aws/giantnetes
   terraform destroy -force ../platforms/aws/giantnetes
 
+  aws s3 rb s3://${CLUSTER}-access-logs
+
   cd -
 }
 
@@ -242,6 +257,7 @@ main() {
   stage-prepare-builddir
   stage-prepare-ssh
   trap "stage-destroy" EXIT
+  stage-prepare-logging-bucket
   stage-terraform-only-vault
   stage-vault
   stage-terraform
