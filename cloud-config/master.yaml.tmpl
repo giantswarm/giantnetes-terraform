@@ -2227,7 +2227,7 @@ coreos:
       -v /var/log/apiserver/:/var/log/apiserver \
       $IMAGE \
       /hyperkube apiserver \
-      --allow_privileged=true \
+      --allow-privileged=true \
       --insecure-bind-address=127.0.0.1 \
       --insecure-port=8080 \
       --kubelet-https=true \

@@ -2054,8 +2054,8 @@ systemd:
       -v /var/log/apiserver/:/var/log/apiserver \
       $IMAGE \
       /hyperkube apiserver \
-      --allow_privileged=true \
-      --insecure-bind_address=127.0.0.1 \
+      --allow-privileged=true \
+      --insecure-bind-address=127.0.0.1 \
       --insecure-port=8080 \
       --kubelet-https=true \
       --secure-port=443 \
