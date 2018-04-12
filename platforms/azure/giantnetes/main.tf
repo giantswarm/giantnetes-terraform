@@ -89,7 +89,6 @@ data "ct_config" "vault" {
   pretty_print = false
 }
 
-
 module "vault" {
   source = "../../../modules/azure/vault"
 
@@ -133,7 +132,7 @@ data "template_file" "worker" {
   template = "${file("${path.module}/../../../ignition/azure/worker.yaml.tmpl")}"
 
   vars {
-    "API_DOMAIN_NAME"   = "${var.api_dns}.${var.base_domain}"
+    "API_DOMAIN_NAME"          = "${var.api_dns}.${var.base_domain}"
     "AZURE_CLOUD"              = "${var.azure_cloud}"
     "AZURE_LOCATION"           = "${var.azure_location}"
     "AZURE_SP_TENANTID"        = "${var.azure_sp_tenantid}"
@@ -162,7 +161,6 @@ data "ct_config" "worker" {
   platform     = "azure"
   pretty_print = false
 }
-
 
 module "worker" {
   source = "../../../modules/azure/worker-as"
