@@ -11,8 +11,8 @@ resource "azurerm_resource_group" "cluster_rg" {
   name     = "${var.cluster_name}"
 
   tags {
-    Name        = "${var.cluster_name}"
-    Environment = "${var.cluster_name}"
+    Name                   = "${var.cluster_name}"
+    GiantSwarmInstallation = "${var.cluster_name}"
   }
 }
 

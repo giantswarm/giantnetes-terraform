@@ -9,7 +9,7 @@ resource "azurerm_lb" "vault_lb" {
   }
 
   tags {
-    Environment = "${var.cluster_name}"
+    GiantSwarmInstallation = "${var.cluster_name}"
   }
 }
 

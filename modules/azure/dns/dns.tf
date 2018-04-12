@@ -28,8 +28,8 @@ resource "azurerm_dns_zone" "dns_zone" {
   resource_group_name = "${var.resource_group_name}"
 
   tags {
-    Name        = "${var.zone_name}"
-    Environment = "${var.cluster_name}"
+    Name                   = "${var.zone_name}"
+    GiantSwarmInstallation = "${var.cluster_name}"
   }
 }
 
@@ -57,6 +57,6 @@ resource "azurerm_dns_ns_record" "dns_zone_propagation" {
   }
 
   tags {
-    Environment = "${var.cluster_name}"
+    GiantSwarmInstallation = "${var.cluster_name}"
   }
 }

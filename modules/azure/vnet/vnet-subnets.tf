@@ -5,7 +5,7 @@ resource "azurerm_virtual_network" "cluster_vnet" {
   location            = "${var.location}"
 
   tags {
-    Environment = "${var.cluster_name}"
+    GiantSwarmInstallation = "${var.cluster_name}"
   }
 }
 

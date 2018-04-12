@@ -5,7 +5,7 @@ resource "azurerm_availability_set" "bastions" {
   managed             = true
 
   tags {
-    Environment = "${var.cluster_name}"
+    GiantSwarmInstallation = "${var.cluster_name}"
   }
 }
 
@@ -52,6 +52,6 @@ resource "azurerm_virtual_machine" "bastion" {
   }
 
   tags {
-    Environment = "${var.cluster_name}"
+    GiantSwarmInstallation = "${var.cluster_name}"
   }
 }
