@@ -39,7 +39,12 @@ msg() {
 
 determine-changes() {
   # Output all changed file names between this PR and master branch.
-  git diff-tree --no-commit-id --name-only -r HEAD | grep -q -E $1
+  # For master branch check changed files in last commit.
+  if [ ${CIRCLE_BRANCH} = "master" ]; then
+    git diff-tree --no-commit-id --name-only -r HEAD | grep -q -E $1
+  else
+    git diff-tree --no-commit-id --name-only -r HEAD origin/master | grep -q -E $1
+  fi
 }
 
 exec_on(){
@@ -71,6 +76,8 @@ stage-preflight() {
   [ ! -z "${E2E_AWS_REGION+x}" ] || fail "variable E2E_AWS_REGION is not set"
   [ ! -z "${E2E_AWS_ROUTE53_ZONE+x}" ] || fail "variable E2E_AWS_ROUTE53_ZONE is not set"
   [ ! -z "${E2E_GITHUB_TOKEN+x}" ] || fail "variable E2E_GITHUB_TOKEN is not set"
+  [ ! -z "${CIRCLE_BRANCH+x}" ] || fail "variable CIRCLE_BRANCH is not set"
+  [ ! -z "${CIRCLE_SHA1+x}" ] || fail "variable CIRCLE_SHA1 is not set"
 }
 
 stage-prepare-builddir() {
