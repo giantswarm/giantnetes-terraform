@@ -1900,7 +1900,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.9.6"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.10.0"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -1938,7 +1938,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.9.6"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.10.0"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -1985,7 +1985,6 @@ systemd:
       --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
       --allow-privileged=true \
       --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yaml \
-      --require-kubeconfig=true \
       --node-labels="node-role.kubernetes.io/master,role=master,kubernetes.io/hostname=$HOSTNAME,ip=${DEFAULT_IPV4}," \
       --v=2"
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
@@ -2043,7 +2042,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.9.6"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.10.0"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
@@ -2056,10 +2055,10 @@ systemd:
       $IMAGE \
       /hyperkube apiserver \
       --allow_privileged=true \
-      --insecure_bind_address=0.0.0.0 \
-      --insecure_port=8080 \
-      --kubelet_https=true \
-      --secure_port=443 \
+      --insecure-bind_address=127.0.0.1 \
+      --insecure-port=8080 \
+      --kubelet-https=true \
+      --secure-port=443 \
       --cloud-provider=aws \
       --bind-address=${DEFAULT_IPV4} \
       --etcd-prefix=giantswarm.io \
@@ -2104,7 +2103,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.9.6"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.10.0"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -2146,7 +2145,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.9.6"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.10.0"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE

@@ -316,7 +316,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.9.6"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.10.0"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -389,7 +389,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.9.6"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.10.0"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -435,7 +435,6 @@ systemd:
       --allow-privileged=true \
       --feature-gates=ExpandPersistentVolumes=true \
       --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yaml \
-      --require-kubeconfig=true \
       --node-labels="kubernetes.io/hostname=$HOSTNAME,ip=${DEFAULT_IPV4}," \
       --v=2"
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
