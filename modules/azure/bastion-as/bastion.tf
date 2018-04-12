@@ -39,7 +39,7 @@ resource "azurerm_virtual_machine" "bastion" {
     computer_name  = "bastion${count.index}"
     admin_username = "core"
     admin_password = ""
-    custom_data    = "${base64encode("${var.cloud_config_data}")}"
+    custom_data    = "${base64encode("${var.user_data}")}"
   }
 
   os_profile_linux_config {
