@@ -48,7 +48,7 @@ az group create -n ${NAME} -l westeurope
 Create service principal with permissions limited to resource group.
 
 ```
-export SUBSCRIPTION_ID=$(az account list | jq '.[].id' | sed 's/\"//g')
+export SUBSCRIPTION_ID=$(az account list | jq '.[0].id' | sed 's/\"//g')
 az ad sp create-for-rbac --name=${NAME}-sp --role="Contributor" --scopes="/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${NAME}"
 ```
 
