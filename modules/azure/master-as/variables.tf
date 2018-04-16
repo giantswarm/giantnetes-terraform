@@ -11,9 +11,9 @@ variable "core_ssh_key" {
   type        = "string"
 }
 
-variable "cloud_config_data" {
+variable "user_data" {
   type        = "string"
-  description = "Generated cloud-config data"
+  description = "Generated user data"
 }
 
 variable "cluster_name" {
@@ -65,4 +65,9 @@ variable "etcd_disk_size" {
 variable "api_backend_address_pool_id" {
   type        = "string"
   description = "API load balances address pool id."
+}
+
+variable "boot_diagnostics_storage_uri" {
+  type        = "string"
+  description = "storage account uri fro boot diagnostics"
 }

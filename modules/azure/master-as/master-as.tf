@@ -81,7 +81,7 @@ resource "azurerm_virtual_machine" "master" {
     computer_name  = "master${count.index}"
     admin_username = "core"
     admin_password = ""
-    custom_data    = "${base64encode("${var.cloud_config_data}")}"
+    custom_data    = "${base64encode("${var.user_data}")}"
   }
 
   os_profile_linux_config {
@@ -91,6 +91,11 @@ resource "azurerm_virtual_machine" "master" {
       path     = "/home/core/.ssh/authorized_keys"
       key_data = "${var.core_ssh_key}"
     }
+  }
+
+  boot_diagnostics {
+    enabled     = true
+    storage_uri = "${var.boot_diagnostics_storage_uri}"
   }
 
   tags {

@@ -11,9 +11,9 @@ variable "core_ssh_key" {
   type        = "string"
 }
 
-variable "cloud_config_data" {
+variable "user_data" {
   type        = "string"
-  description = "Generated cloud-config data"
+  description = "Generated user data"
 }
 
 variable "cluster_name" {

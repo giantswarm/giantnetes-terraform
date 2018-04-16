@@ -1,8 +1,8 @@
 storage:
   files:
     - path: /etc/kubernetes/config/azure.yaml
-      owner: root
-      permissions: 0600
+      filesystem: root
+      mode: 0600
       contents: 
         inline: |
           cloud: ${AZURE_CLOUD}
@@ -17,8 +17,8 @@ storage:
           vnetName: ${AZURE_VNETNAME}
           routeTableName: ${AZURE_ROUTETABLE}
     - path: /etc/kubernetes/config/proxy-kubeconfig.yaml
-      owner: root
-      permissions: 0644
+      filesystem: root
+      mode: 0644
       contents:
         inline:  |
           apiVersion: v1
@@ -40,8 +40,8 @@ storage:
             name: service-account-context
           current-context: service-account-context
     - path: /etc/kubernetes/config/kubelet-kubeconfig.yaml
-      owner: root
-      permissions: 0644
+      filesystem: root
+      mode: 0644
       contents: 
         inline: |
           apiVersion: v1
@@ -63,7 +63,8 @@ storage:
             name: service-account-context
           current-context: service-account-context
     - path: /opt/wait-for-domains
-      permissions: 0544
+      filesystem: root
+      mode: 0544
       contents: 
         inline: |
           #!/bin/bash
@@ -79,15 +80,16 @@ storage:
           done
 
     - path: /etc/tokens/node
+      filesystem: root
       owner: root
-      permissions: 0400
+      mode: 0400
       contents:
         inline:  |
           VAULT_TOKEN=${G8S_VAULT_TOKEN}
 
     - path: /etc/ssh/sshd_config
-      owner: root
-      permissions: 0600
+      filesystem: root
+      mode: 0600
       contents:
         inline:  |
           # Use most defaults for sshd configuration.
@@ -103,8 +105,8 @@ storage:
           PasswordAuthentication no
 
     - path: /opt/get-ca.sh
-      owner: root
-      permissions: 0770
+      filesystem: root
+      mode: 0770
       contents:
         inline:  |
           #!/bin/bash
@@ -140,8 +142,8 @@ storage:
           rm out.txt out1.txt err.txt
 
     - path: /etc/sysctl.d/hardening.conf
-      owner: root
-      permissions: 0600
+      filesystem: root
+      mode: 0600
       contents: 
         inline: |
           kernel.kptr_restrict = 2
@@ -153,8 +155,8 @@ storage:
           net.ipv6.conf.default.accept_redirects = 0
 
     - path: /etc/audit/rules.d/10-docker.rules
-      owner: root
-      permissions: 0644
+      filesystem: root
+      mode: 0644
       contents:
         inline:  |
           -w /usr/bin/docker -k docker
@@ -166,8 +168,8 @@ storage:
           -w /usr/lib/systemd/system/docker.socket -k docker
 
     - path: /etc/systemd/system/audit-rules.service.d/10-Wait-For-Docker.conf
-      owner: root
-      permissions: 0644
+      filesystem: root
+      mode: 0644
       contents:
         inline:  |
           [Service]
@@ -294,8 +296,8 @@ systemd:
     contents: |
       [Unit]
       Description=gen etcd client certs for calico
-      Requires=docker.service
-      After=docker.service
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service
 
       [Service]
       EnvironmentFile=/etc/environment
@@ -330,6 +332,8 @@ systemd:
       [Unit]
       Description=k8s-proxy
       StartLimitIntervalSec=0
+      After=kubelet-certs.service
+      Requires=kubelet-certs.service
 
       [Service]
       Restart=always
@@ -368,8 +372,8 @@ systemd:
     contents: |
       [Unit]
       Description=api-certs
-      Requires=docker.service
-      After=docker.service
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service
 
       [Service]
       EnvironmentFile=/etc/environment

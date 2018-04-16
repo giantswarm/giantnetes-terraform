@@ -69,13 +69,13 @@ module "bastion" {
   network_interface_ids   = "${module.vnet.bastion_network_interface_ids}"
   resource_group_name     = "${module.resource_group.name}"
   storage_type            = "${var.bastion_storage_type}"
-  user_data               = "${{data.ct_config.bastion.rendered}}"
+  user_data               = "${data.ct_config.bastion.rendered}"
   vm_size                 = "${var.bastion_vm_size}"
 }
 
 # Generate ignition config for Vault.
 data "template_file" "vault" {
-  template = "${file("${path.module}/../../../ignition/aws/vault.yaml.tmpl")}"
+  template = "${file("${path.module}/../../../ignition/azure/vault.yaml.tmpl")}"
 
   vars {
     "DOCKER_CIDR" = "${var.docker_cidr}"
@@ -92,7 +92,6 @@ data "ct_config" "vault" {
 module "vault" {
   source = "../../../modules/azure/vault"
 
-  cloud_config_data       = "${data.template_file.vault_cloud_config.rendered}"
   cluster_name            = "${var.cluster_name}"
   container_linux_channel = "${var.container_linux_channel}"
   container_linux_version = "${module.container_linux.coreos_version}"
@@ -105,11 +104,95 @@ module "vault" {
   vm_size                 = "${var.vault_vm_size}"
 }
 
+# Generate ignition config for master.
+data "template_file" "master_big" {
+  template = "${file("${path.module}/../../../ignition/azure/master.yaml.tmpl")}"
+
+  vars {
+    "API_DOMAIN_NAME"          = "${var.api_dns}.${var.base_domain}"
+    "AZURE_CLOUD"              = "${var.azure_cloud}"
+    "AZURE_LOCATION"           = "${var.azure_location}"
+    "AZURE_SP_TENANTID"        = "${var.azure_sp_tenantid}"
+    "AZURE_SP_SUBSCRIPTIONID"  = "${var.azure_sp_subscriptionid}"
+    "AZURE_SP_AADCLIENTID"     = "${var.azure_sp_aadclientid}"
+    "AZURE_SP_AADCLIENTSECRET" = "${var.azure_sp_aadclientsecret}"
+    "AZURE_RESOURCEGROUP"      = "${var.cluster_name}"
+    "AZURE_SUBNETNAME"         = "${var.cluster_name}_worker_subnet"
+    "AZURE_SECGROUPNAME"       = "${var.cluster_name}-worker"
+    "AZURE_VNETNAME"           = "${var.cluster_name}"
+    "AZURE_ROUTETABLE"         = "${var.cluster_name}_worker_rt"
+    "POD_CIDR"                 = "${var.pod_cidr}"
+    "K8S_SERVICE_CIDR"         = "${var.k8s_service_cidr}"
+    "K8S_API_IP"               = "${var.k8s_api_ip}"
+    "CLUSTER_NAME"             = "${var.cluster_name}"
+    "DEFAULT_IPV4"             = "$${DEFAULT_IPV4}"
+    "DOCKER_CIDR"              = "${var.docker_cidr}"
+    "ETCD_DOMAIN_NAME"         = "${var.etcd_dns}.${var.base_domain}"
+    "G8S_VAULT_TOKEN"          = "${var.nodes_vault_token}"
+    "K8S_DNS_IP"               = "${var.k8s_dns_ip}"
+    "VAULT_DOMAIN_NAME"        = "${var.vault_dns}.${var.base_domain}"
+  }
+}
+
+# Convert ignition config to raw json and merge users part.
+data "ct_config" "master_big" {
+  content      = "${format("%s\n%s", local.ignition_users, data.template_file.master_big.rendered)}"
+  platform     = "azure"
+  pretty_print = false
+}
+
+resource "local_file" "master_ignition_big" {
+  content  = "${data.ct_config.master_big.rendered}"
+  filename = "${path.cwd}/generated/master-ignition.yaml"
+}
+
+resource "azurerm_storage_account" "storage_acc" {
+  name                     = "${var.cluster_name}machine"
+  resource_group_name      = "${module.resource_group.name}"
+  location                 = "westeurope"
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
+
+resource "azurerm_storage_container" "ignition" {
+  name                  = "ignition"
+  resource_group_name   = "${module.resource_group.name}"
+  storage_account_name  = "${azurerm_storage_account.storage_acc.name}"
+  container_access_type = "container"
+}
+
+resource "azurerm_storage_blob" "ignition_blob" {
+  name = "master-ignition.yaml"
+
+  resource_group_name    = "${module.resource_group.name}"
+  storage_account_name   = "${azurerm_storage_account.storage_acc.name}"
+  storage_container_name = "${azurerm_storage_container.ignition.name}"
+
+  type   = "block"
+  source = "${path.cwd}/generated/master-ignition.yaml"
+}
+
+# Generate ignition config for master.
+data "template_file" "master" {
+  template = "${file("${path.module}/../../../ignition/azure/master-loader.yaml.tmpl")}"
+
+  vars {
+    "BIG_IGNITION_URL" = "${azurerm_storage_blob.ignition_blob.url}"
+  }
+}
+
+# Convert ignition config to raw json and merge users part.
+data "ct_config" "master" {
+  content      = "${data.template_file.master.rendered}"
+  platform     = "azure"
+  pretty_print = false
+}
+
 module "master" {
   source = "../../../modules/azure/master-as"
 
   api_backend_address_pool_id = "${module.vnet.api_backend_address_pool_id}"
-  cloud_config_data           = "${file("${path.cwd}/generated/master.sh")}"
+  user_data                   = "${data.ct_config.master.rendered}"
   cluster_name                = "${var.cluster_name}"
   container_linux_channel     = "${var.container_linux_channel}"
   container_linux_version     = "${module.container_linux.coreos_version}"
@@ -123,8 +206,9 @@ module "master" {
   resource_group_name = "${module.resource_group.name}"
   storage_type        = "${var.master_storage_type}"
 
-  network_interface_ids = "${module.vnet.master_network_interface_ids}"
-  vm_size               = "${var.master_vm_size}"
+  network_interface_ids        = "${module.vnet.master_network_interface_ids}"
+  vm_size                      = "${var.master_vm_size}"
+  boot_diagnostics_storage_uri = "${azurerm_storage_account.storage_acc.primary_blob_endpoint}"
 }
 
 # Generate ignition config for worker.
