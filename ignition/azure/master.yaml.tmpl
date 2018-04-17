@@ -1638,6 +1638,8 @@ storage:
       contents:
         inline: |
           SUBSYSTEM=="block", KERNEL=="sdd", TAG+="systemd"
+          SUBSYSTEM=="block", KERNEL=="sdc", TAG+="systemd"
+          SUBSYSTEM=="block", KERNEL=="sda6", TAG+="systemd"
 
 systemd:
   units:
@@ -1660,17 +1662,16 @@ systemd:
     enabled: false
     mask: true
   - name: systemd-networkd-wait-online.service
+    enabled: false
     mask: true
   - name: var-lib-etcd.mount
     enabled: true
     contents: |
       [Unit]
       Description=Mount disk to /var/lib/etcd
-      Requires=format-etcd-disk.service
-      After=format-etcd-disk.service
       Before=etcd3.service
       [Mount]
-      What=/dev/sdd
+      What=/dev/disk/by-label/var-lib-etcd
       Where=/var/lib/etcd
       Type=ext4
       [Install]
@@ -1680,13 +1681,22 @@ systemd:
     contents: |
       [Unit]
       Description=Mount disk to /var/lib/docker
-      Requires=format-docker-disk.service
-      After=format-docker-disk.service
       Before=docker.service
       [Mount]
-      What=/dev/sdc
+      What=/dev/disk/by-label/docker
       Where=/var/lib/docker
       Type=xfs
+      [Install]
+      WantedBy=local-fs.target
+  - name: usr-share-oem.mount
+    enabled: true
+    contents: |
+      [Unit]
+      Description=Mount OEM to /usr/share/oem
+      [Mount]
+      What=/dev/sda6
+      Where=/usr/share/oem
+      Type=ext4
       [Install]
       WantedBy=local-fs.target
   - name: wait-for-domains.service
@@ -1733,13 +1743,12 @@ systemd:
     contents: |
       [Unit]
       Description=k8s-setup-network-env Service
-      Wants=network.target docker.service
-      After=network.target docker.service
+      Wants=network.target docker.service waagent.service
+      After=network.target docker.service waagent.service
 
       [Service]
       Type=oneshot
       RemainAfterExit=yes
-      TimeoutStartSec=0
       Environment="IMAGE=quay.io/giantswarm/k8s-setup-network-environment:1f4ffc52095ac368847ce3428ea99b257003d9b9"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
@@ -1759,7 +1768,8 @@ systemd:
       [Unit]
       Description=get vault-ca into trusted certs
       Before=calico-certs.service api-certs.service etcd3-certs.service
-      After=wait-for-domains.service
+      After=wait-for-domains.service waagent.service
+      Requires=waagent.service wait-for-domains.service
 
       [Service]
       Type=oneshot
@@ -1777,6 +1787,9 @@ systemd:
       After=get-vault-ca.service k8s-setup-network-env.service docker.service
 
       [Service]
+      Restart=always
+      RestartSec=0
+      TimeoutStopSec=10
       EnvironmentFile=/etc/environment
       EnvironmentFile=/etc/network-environment
       EnvironmentFile=/etc/tokens/node
@@ -1977,8 +1990,8 @@ systemd:
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service k8s-addons.service k8s-api-server.service
-      Requires=k8s-setup-network-env.service k8s-addons.service k8s-api-server.service
+      After=k8s-setup-network-env.service k8s-api-server.service
+      Requires=k8s-setup-network-env.service k8s-api-server.service
 
       [Service]
       Restart=always

@@ -162,7 +162,7 @@ resource "azurerm_storage_container" "ignition" {
 }
 
 resource "azurerm_storage_blob" "ignition_blob" {
-  name = "master-ignition.yaml"
+  name = "master-ignition-${timestamp()}.yaml"
 
   resource_group_name    = "${module.resource_group.name}"
   storage_account_name   = "${azurerm_storage_account.storage_acc.name}"
@@ -172,27 +172,18 @@ resource "azurerm_storage_blob" "ignition_blob" {
   source = "${path.cwd}/generated/master-ignition.yaml"
 }
 
-# Generate ignition config for master.
-data "template_file" "master" {
-  template = "${file("${path.module}/../../../ignition/azure/master-loader.yaml.tmpl")}"
-
-  vars {
-    "BIG_IGNITION_URL" = "${azurerm_storage_blob.ignition_blob.url}"
+data "ignition_config" "loader" {
+  replace {
+    source       = "${azurerm_storage_blob.ignition_blob.url}"
+    verification = "sha512-${sha512(file("${path.cwd}/generated/master-ignition.yaml"))}"
   }
-}
-
-# Convert ignition config to raw json and merge users part.
-data "ct_config" "master" {
-  content      = "${data.template_file.master.rendered}"
-  platform     = "azure"
-  pretty_print = false
 }
 
 module "master" {
   source = "../../../modules/azure/master-as"
 
   api_backend_address_pool_id = "${module.vnet.api_backend_address_pool_id}"
-  user_data                   = "${data.ct_config.master.rendered}"
+  user_data                   = "${data.ignition_config.loader.rendered}"
   cluster_name                = "${var.cluster_name}"
   container_linux_channel     = "${var.container_linux_channel}"
   container_linux_version     = "${module.container_linux.coreos_version}"
