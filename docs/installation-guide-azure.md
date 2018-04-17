@@ -82,9 +82,8 @@ NOTE: Reexecute `source envs.sh` everytime if opening new console.
 
 ## Install
 
-Terraform has two separate manifests:
+Terraform has one manifest:
 - platforms/azure/giantnetes - all cluster resources
-- platforms/azure/giantnetes-cloud-config - manifest to generate compressed cloud-config (workaround for custom_data size limit)
 
 Install consists two stages:
 - Vault (only needed because we bootstrapping Vault manually)
@@ -93,19 +92,6 @@ Install consists two stages:
 Master and workers will be created with in the Vault stage and expectedly will fail (and recreated later). This is done to keep single Terraform state and simplify cluster management after installation. Master and workers will be reprovisioned with right configuration in the second state called Kubernetes.
 
 ### Stage: Vault
-
-#### Pregenerate cloud-configs for master and workers (We just need files to be exist).
-
-```
-terraform init ../platforms/azure/giantnetes-cloud-config
-terraform plan ../platforms/azure/giantnetes-cloud-config
-terraform apply ../platforms/azure/giantnetes-cloud-config
-```
-
-Delete terraform files for this auxiliary `giantnetes-cloud-config` stage.
-```
-rm -rf .terraform terraform.tfstate
-```
 
 #### Create Vault virtual machine and all other necessary resources
 
