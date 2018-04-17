@@ -648,7 +648,8 @@ write_files:
             health
             kubernetes cluster.local ${K8S_SERVICE_CIDR} ${POD_CIDR} {
               pods insecure
-              upstream /etc/resolv.conf
+              upstream
+              fallthrough in-addr.arpa ip6.arpa
             }
             prometheus :9153
             proxy . /etc/resolv.conf
@@ -695,7 +696,7 @@ write_files:
                   topologyKey: kubernetes.io/hostname
           containers:
           - name: coredns
-            image: coredns/coredns:1.0.5
+            image: coredns/coredns:1.1.1
             imagePullPolicy: IfNotPresent
             args: [ "-conf", "/etc/coredns/Corefile" ]
             volumeMounts:
