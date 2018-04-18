@@ -22,7 +22,7 @@ WORKDIR=$(pwd)
 BUILDDIR=${WORKDIR}/build
 CLUSTER=e2e-cluster-$(echo ${CIRCLE_SHA1} | cut -c 1-6)
 SSH_USER="e2e"
-KUBECTL_CMD="docker run --net=host --rm quay.io/giantswarm/docker-kubectl:f51f93c30d27927d2b33122994c0929b3e6f2432"
+KUBECTL_CMD="docker run -i --net=host --rm quay.io/giantswarm/docker-kubectl:f51f93c30d27927d2b33122994c0929b3e6f2432"
 WORKER_COUNT=1
 
 # Which files concerned by AWS.
@@ -226,7 +226,7 @@ stage-destroy() {
   terraform init ../platforms/aws/giantnetes
   terraform destroy -force ../platforms/aws/giantnetes
 
-  aws s3 rb s3://${CLUSTER}-access-logs
+  aws s3 rb s3://${CLUSTER}-access-logs --force
 
   cd -
 }
@@ -249,8 +249,26 @@ stage-wait-kubernetes-nodes(){
 }
 
 stage-e2e(){
-    # TODO: Use sonoboy.
-    true
+    local url="https://raw.githubusercontent.com/giantswarm/giantnetes-terraform/${CIRCLE_SHA1}/misc/e2e-conformance-pod.yaml"
+
+    # Allow default service account to list nodes, required by e2e tests.
+    exec_on master1 ${KUBECTL_CMD} create clusterrolebinding default-admin \
+      --clusterrole=cluster-admin \
+      --serviceaccount=default:default
+
+    # Remove nginx-ingress-controller, because pods are staying in Pending state,
+    # when only one worker. But e2e tests require all pods in kube-system to be Running.
+    exec_on master1 ${KUBECTL_CMD} delete deploy nginx-ingress-controller -n kube-system
+
+    exec_on master1 "curl -L ${url} 2>/dev/null | ${KUBECTL_CMD} apply -f -"
+    msg "Started e2e tests..."
+
+    # Give some time for pod to be created and connect to stdout.
+    sleep 60
+
+    exec_on master1 ${KUBECTL_CMD} logs e2e -f
+    exec_on master1 ${KUBECTL_CMD} logs e2e --tail 1 | grep -q 'Test Suite Passed'
+    exec_on master1 "curl -L ${url} 2>/dev/null | ${KUBECTL_CMD} delete -f -"
 }
 
 main() {
