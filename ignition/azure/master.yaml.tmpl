@@ -2056,8 +2056,8 @@ systemd:
     contents: |
       [Unit]
       Description=api-certs
-      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service
-      After=get-vault-ca.service k8s-setup-network-env.service docker.service
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service waagent.service
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service waagent.service
       
       [Service]
       EnvironmentFile=/etc/environment

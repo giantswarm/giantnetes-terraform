@@ -296,8 +296,8 @@ systemd:
     contents: |
       [Unit]
       Description=gen etcd client certs for calico
-      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service
-      After=get-vault-ca.service k8s-setup-network-env.service docker.service
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service waagent.service
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service waagent.service
 
       [Service]
       EnvironmentFile=/etc/environment
@@ -372,8 +372,8 @@ systemd:
     contents: |
       [Unit]
       Description=api-certs
-      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service
-      After=get-vault-ca.service k8s-setup-network-env.service docker.service
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service waagent.service
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service waagent.service
 
       [Service]
       EnvironmentFile=/etc/environment
@@ -460,7 +460,7 @@ systemd:
       --register-node=true \
       --allow-privileged=true \
       --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yaml \
-      --node-labels="kubernetes.io/hostname=$HOSTNAME,ip=${DEFAULT_IPV4}," \
+      --node-labels="node-role.kubernetes.io/worker,role=worker,kubernetes.io/hostname=$HOSTNAME,ip=${DEFAULT_IPV4}," \
       --v=2"
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
