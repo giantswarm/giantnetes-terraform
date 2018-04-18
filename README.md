@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/giantswarm/giantnetes-terraform.svg?style=svg)](https://circleci.com/gh/giantswarm/giantnetes-terraform)
+
 # Giantnetes terraform for host cluster
 
 Terraform manifests for Giantnetes host cluster installation.
