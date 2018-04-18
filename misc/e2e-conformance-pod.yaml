@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: e2e
+spec:
+  containers:
+  - name: e2e
+    image: gcr.io/heptio-images/kube-conformance:v1.10
+    env:
+    - name: E2E_FOCUS
+      value: '\[Conformance\]'
+    imagePullPolicy: Always
+  restartPolicy: Never
