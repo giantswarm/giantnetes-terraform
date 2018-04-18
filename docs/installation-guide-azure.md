@@ -113,28 +113,20 @@ When done make sure to update "TF_VAR_nodes_vault_token" in envs.sh with node to
 
 ### Stage: Kubernetes
 
-#### Regenenerate cloud-configs for master and workers
-
-Generates script with compressed cloud-config contents.
-
 ```
 source envs.sh
 ```
 
-**Always** answer "No" for copying state, we are using different keys for the state!
-
-```
-terraform init ../platforms/azure/giantnetes-cloud-config
-terraform plan ../platforms/azure/giantnetes-cloud-config
-terraform apply ../platforms/azure/giantnetes-cloud-config
-```
-
-Delete terraform files for this auxiliary `giantnetes-cloud-config` stage.
-```
-rm -rf .terraform terraform.tfstate
-```
-
 #### Install master and workers
+
+##### Taint machines so they are recreated
+```
+terraform taint -module="master" azurerm_virtual_machine.master
+terraform taint -module="worker" "azurerm_virtual_machine.worker.0"
+terraform taint -module="worker" "azurerm_virtual_machine.worker.1"
+terraform taint -module="worker" "azurerm_virtual_machine.worker.2"
+terraform taint -module="worker" "azurerm_virtual_machine.worker.3"
+```
 
 ##### Apply terraform
 
@@ -188,19 +180,6 @@ Command below will ask for secrets that can be found in keepass.
 
 ```
 source envs.sh
-```
-
-### Regenerate cloud-config
-
-```
-terraform init ../platforms/azure/giantnetes-cloud-config
-terraform plan ../platforms/azure/giantnetes-cloud-config
-terraform apply ../platforms/azure/giantnetes-cloud-config
-```
-
-Delete terraform files for this auxiliary `giantnetes-cloud-config` stage.
-```
-rm -rf .terraform terraform.tfstate
 ```
 
 ### Apply latest state

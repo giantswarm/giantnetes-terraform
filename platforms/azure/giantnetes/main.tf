@@ -174,8 +174,7 @@ resource "azurerm_storage_blob" "ignition_blob" {
 
 data "ignition_config" "loader" {
   replace {
-    source       = "${azurerm_storage_blob.ignition_blob.url}"
-    verification = "sha512-${sha512(file("${path.cwd}/generated/master-ignition.yaml"))}"
+    source = "${azurerm_storage_blob.ignition_blob.url}"
   }
 }
 
