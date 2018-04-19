@@ -170,7 +170,7 @@ module "master" {
   network_interface_ids = "${module.vnet.master_network_interface_ids}"
   vm_size               = "${var.master_vm_size}"
 
-  storage_acc       = "$[module.blob.storage_acc}"
+  storage_acc       = "${module.blob.storage_acc}"
   storage_container = "${module.blob.storage_container}"
 }
 

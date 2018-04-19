@@ -1,7 +1,3 @@
-provisioner "local-exec" {
-    command = "echo 'DEBUG:storage account name: ${var.cluster_name}config'"
-}
-
 resource "azurerm_storage_account" "storage_acc" {
   name                     = "${var.cluster_name}config"
   resource_group_name      = "${var.resource_group_name}"
