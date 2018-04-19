@@ -20,7 +20,7 @@ set -o pipefail
 
 WORKDIR=$(pwd)
 BUILDDIR=${WORKDIR}/build
-CLUSTER=e2e-cluster-$(echo ${CIRCLE_SHA1} | cut -c 1-6)
+CLUSTER=e2ecluster$(echo ${CIRCLE_SHA1} | cut -c 1-6)
 SSH_USER="e2e"
 KUBECTL_CMD="docker run --net=host --rm quay.io/giantswarm/docker-kubectl:f51f93c30d27927d2b33122994c0929b3e6f2432"
 WORKER_COUNT=1

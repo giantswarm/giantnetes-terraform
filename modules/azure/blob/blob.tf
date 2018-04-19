@@ -3,7 +3,7 @@ resource "azurerm_storage_account" "storage_acc" {
   resource_group_name      = "${var.resource_group_name}"
   location                 = "${var.azure_location}"
   account_kind             = "BlobStorage"
-  account_tier             = "Cool"
+  account_tier             = "Standart"
   account_replication_type = "LRS"
 }
 
