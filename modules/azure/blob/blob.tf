@@ -1,5 +1,5 @@
 resource "azurerm_storage_account" "storage_acc" {
-  name                     = "${var.cluster_name}machine"
+  name                     = "${var.cluster_name}config"
   resource_group_name      = "${var.resource_group_name}"
   location                 = "${var.azure_location}"
   account_kind             = "BlobStorage"
