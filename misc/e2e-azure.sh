@@ -62,7 +62,7 @@ exec_on(){
 stage-preflight() {
   # TODO: move this to e2e-Dockerfile
   pip install ansible -q -q -q --upgrade
-  apt update && apt -y install ed
+  apt update && apt -y install
 
   PROGS=( git terraform terraform-provider-ct az ansible-playbook ssh-keygen )
   for prog in ${PROGS[@]}; do
