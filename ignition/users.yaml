@@ -1,5 +1,9 @@
 passwd:
   users:
+  - name: giantswarm
+    groups:
+      - "sudo"
+      - "docker"
   - name: joe
     groups:
       - "sudo"
