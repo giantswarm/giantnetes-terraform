@@ -14,10 +14,10 @@ resource "azurerm_storage_container" "ignition" {
   container_access_type = "container"
 }
 
-output "blob_storage_account" {
+output "storage_acc" {
   value = "${azurerm_storage_account.storage_acc.name}"
 }
 
-output "blob_storage_container" {
+output "storage_container" {
   value = "${azurerm_storage_container.ignition.name}"
 }

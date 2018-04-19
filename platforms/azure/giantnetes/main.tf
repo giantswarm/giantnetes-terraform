@@ -170,8 +170,8 @@ module "master" {
   network_interface_ids = "${module.vnet.master_network_interface_ids}"
   vm_size               = "${var.master_vm_size}"
 
-  blob_storage_account   = "$[module.blob.blob_storage_account}"
-  blob_storage_container = "${module.blob.blob_storage_container}"
+  storage_acc       = "$[module.blob.storage_acc}"
+  storage_container = "${module.blob.storage_container}"
 }
 
 # Generate ignition config for worker.

@@ -67,12 +67,12 @@ variable "api_backend_address_pool_id" {
   description = "API load balances address pool id."
 }
 
-variable "blob_storage_account" {
+variable "storage_acc" {
   type        = "string"
   description = "Blob storage account name."
 }
 
-variable "blob_storage_container" {
+variable "storage_container" {
   type        = "string"
   description = "Blob storage container name."
 }

@@ -107,8 +107,8 @@ resource "azurerm_storage_blob" "ignition_blob" {
   name = "master-ignition-${timestamp()}.yaml"
 
   resource_group_name    = "${var.resource_group_name}"
-  storage_account_name   = "${var.blob_storage_account}"
-  storage_container_name = "${var.blob_storage_container}"
+  storage_account_name   = "${var.storage_acc}"
+  storage_container_name = "${var.storage_container}"
 
   type   = "block"
   source = "${path.cwd}/generated/master-ignition.yaml"
