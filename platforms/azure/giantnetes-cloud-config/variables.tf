@@ -1,1 +1,0 @@
-../giantnetes/variables.tf

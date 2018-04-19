@@ -1,17 +1,33 @@
 storage:
   files:
+    - path: /etc/kubernetes/config/azure.yaml
+      filesystem: root
+      mode: 0600
+      contents: 
+        inline: |
+          cloud: ${AZURE_CLOUD}
+          tenantId: ${AZURE_SP_TENANTID}
+          subscriptionId: ${AZURE_SP_SUBSCRIPTIONID}
+          aadClientId: ${AZURE_SP_AADCLIENTID}
+          aadClientSecret: ${AZURE_SP_AADCLIENTSECRET}
+          resourceGroup: ${AZURE_RESOURCEGROUP}
+          location: ${AZURE_LOCATION}
+          subnetName: ${AZURE_SUBNETNAME}
+          securityGroupName: ${AZURE_SECGROUPNAME}
+          vnetName: ${AZURE_VNETNAME}
+          routeTableName: ${AZURE_ROUTETABLE}
     - path: /etc/kubernetes/config/proxy-kubeconfig.yaml
       filesystem: root
       mode: 0644
       contents:
-        inline: |
+        inline:  |
           apiVersion: v1
           kind: Config
           users:
           - name: proxy
             user:
-              client-certificate: /etc/kubernetes/ssl/worker-crt.pem
-              client-key: /etc/kubernetes/ssl/worker-key.pem
+            client-certificate: /etc/kubernetes/ssl/worker-crt.pem
+            client-key: /etc/kubernetes/ssl/worker-key.pem
           clusters:
           - name: local
             cluster:
@@ -26,7 +42,7 @@ storage:
     - path: /etc/kubernetes/config/kubelet-kubeconfig.yaml
       filesystem: root
       mode: 0644
-      contents:
+      contents: 
         inline: |
           apiVersion: v1
           kind: Config
@@ -49,7 +65,7 @@ storage:
     - path: /opt/wait-for-domains
       filesystem: root
       mode: 0544
-      contents:
+      contents: 
         inline: |
           #!/bin/bash
           domains="${ETCD_DOMAIN_NAME} ${API_DOMAIN_NAME} ${VAULT_DOMAIN_NAME}"
@@ -62,17 +78,20 @@ storage:
 
             echo "Successfully resolved domain $domain"
           done
+
     - path: /etc/tokens/node
       filesystem: root
+      owner: root
       mode: 0400
       contents:
-        inline: |
+        inline:  |
           VAULT_TOKEN=${G8S_VAULT_TOKEN}
+
     - path: /etc/ssh/sshd_config
       filesystem: root
       mode: 0600
       contents:
-        inline: |
+        inline:  |
           # Use most defaults for sshd configuration.
           UsePrivilegeSeparation sandbox
           Subsystem sftp internal-sftp
@@ -84,11 +103,12 @@ storage:
           # Non defaults (#100)
           ClientAliveCountMax 2
           PasswordAuthentication no
+
     - path: /opt/get-ca.sh
       filesystem: root
       mode: 0770
       contents:
-        inline: |
+        inline:  |
           #!/bin/bash
 
           if [ -z "$1" ] || [ -z "$2" ]
@@ -120,10 +140,11 @@ storage:
           openssl x509 -in out1.txt -outform pem -out $2
           echo done.
           rm out.txt out1.txt err.txt
+
     - path: /etc/sysctl.d/hardening.conf
       filesystem: root
       mode: 0600
-      contents:
+      contents: 
         inline: |
           kernel.kptr_restrict = 2
           kernel.sysrq = 0
@@ -132,11 +153,12 @@ storage:
           net.ipv4.tcp_timestamps = 0
           net.ipv6.conf.all.accept_redirects = 0
           net.ipv6.conf.default.accept_redirects = 0
+
     - path: /etc/audit/rules.d/10-docker.rules
       filesystem: root
       mode: 0644
       contents:
-        inline: |
+        inline:  |
           -w /usr/bin/docker -k docker
           -w /var/lib/docker -k docker
           -w /etc/docker -k docker
@@ -144,20 +166,24 @@ storage:
           -w /etc/systemd/system/docker.service.d/01-wait-docker.conf -k docker
           -w /usr/lib/systemd/system/docker.service -k docker
           -w /usr/lib/systemd/system/docker.socket -k docker
+
     - path: /etc/systemd/system/audit-rules.service.d/10-Wait-For-Docker.conf
       filesystem: root
       mode: 0644
       contents:
-        inline: |
+        inline:  |
           [Service]
           ExecStartPre=/bin/bash -c "while [ ! -f /etc/audit/rules.d/10-docker.rules ]; do echo 'Waiting for /etc/audit/rules.d/10-docker.rules to be written' && sleep 1; done"
 
 systemd:
   units:
-  - name: etcd2.service
+  - name: update-engine.service
     enabled: false
     mask: true
-  - name: flanneld.service
+  - name: locksmithd.service
+    enabled: false
+    mask: true
+  - name: etcd2.service
     enabled: false
     mask: true
   - name: fleet.service
@@ -166,13 +192,11 @@ systemd:
   - name: fleet.socket
     enabled: false
     mask: true
-  - name: update-engine.service
-    enabled: false
-    mask: true
-  - name: locksmithd.service
+  - name: flanneld.service
     enabled: false
     mask: true
   - name: systemd-networkd-wait-online.service
+    enabled: false
     mask: true
   - name: var-lib-docker.mount
     enabled: true
@@ -185,7 +209,7 @@ systemd:
       What=/dev/disk/by-label/docker
       Where=/var/lib/docker
       Type=xfs
-
+   
       [Install]
       WantedBy=local-fs.targer
   - name: wait-for-domains.service
@@ -272,8 +296,8 @@ systemd:
     contents: |
       [Unit]
       Description=gen etcd client certs for calico
-      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service
-      After=get-vault-ca.service k8s-setup-network-env.service docker.service
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service waagent.service
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service waagent.service
 
       [Service]
       EnvironmentFile=/etc/environment
@@ -308,8 +332,8 @@ systemd:
       [Unit]
       Description=k8s-proxy
       StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service docker.service
-      Requires=k8s-setup-network-env.service docker.service
+      After=kubelet-certs.service
+      Requires=kubelet-certs.service
 
       [Service]
       Restart=always
@@ -348,8 +372,8 @@ systemd:
     contents: |
       [Unit]
       Description=api-certs
-      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service
-      After=get-vault-ca.service k8s-setup-network-env.service docker.service
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service waagent.service
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service waagent.service
 
       [Service]
       EnvironmentFile=/etc/environment
@@ -381,8 +405,8 @@ systemd:
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service docker.service kubelet-certs.service
-      Requires=k8s-setup-network-env.service docker.service kubelet-certs.service
+      After=kubelet-certs.service
+      Requires=kubelet-certs.service
 
       [Service]
       Restart=always
@@ -423,17 +447,18 @@ systemd:
       --containerized \
       --enable-server \
       --logtostderr=true \
-      --cloud-provider=aws \
+      --cloud-provider=azure \
+      --cloud-config=/etc/kubernetes/config/azure.yaml \
       --machine-id-file=/rootfs/etc/machine-id \
       --cadvisor-port=4194 \
       --healthz-bind-address=${DEFAULT_IPV4} \
       --healthz-port=10248 \
       --cluster-dns=${K8S_DNS_IP} \
       --cluster-domain=cluster.local \
+      --feature-gates=ExpandPersistentVolumes=true \
       --network-plugin=cni \
       --register-node=true \
       --allow-privileged=true \
-      --feature-gates=ExpandPersistentVolumes=true \
       --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yaml \
       --node-labels="node-role.kubernetes.io/worker,role=worker,kubernetes.io/hostname=$HOSTNAME,ip=${DEFAULT_IPV4}," \
       --v=2"
@@ -446,7 +471,7 @@ storage:
   filesystems:
     - name: docker
       mount:
-        device: /dev/xvdb
+        device: /dev/sdc
         format: xfs
         wipe_filesystem: false
         label: docker

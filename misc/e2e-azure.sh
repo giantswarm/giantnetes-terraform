@@ -20,13 +20,13 @@ set -o pipefail
 
 WORKDIR=$(pwd)
 BUILDDIR=${WORKDIR}/build
-CLUSTER=e2e-cluster-$(echo ${CIRCLE_SHA1} | cut -c 1-6)
+CLUSTER=e2e$(echo ${CIRCLE_SHA1} | cut -c 1-4)
 SSH_USER="e2e"
 KUBECTL_CMD="docker run -i --net=host --rm quay.io/giantswarm/docker-kubectl:f51f93c30d27927d2b33122994c0929b3e6f2432"
 WORKER_COUNT=1
 
 # Which files concerned by Azure.
-AZURE_FILES_REGEX="^modules/azure|^modules/container-linux|^platforms/azure|^cloud-config|^misc/e2e-azure.sh|^\.circleci"
+AZURE_FILES_REGEX="^modules/azure|^modules/container-linux|^platforms/azure|^ignition/azure|^misc/e2e-azure.sh|^\.circleci"
 
 fail() {
   printf "\033[1;31merror: %s: %s\033[0m\n" ${FUNCNAME[1]} "${1:-"Unknown error"}"
@@ -62,7 +62,7 @@ exec_on(){
 stage-preflight() {
   # TODO: move this to e2e-Dockerfile
   pip install ansible -q -q -q --upgrade
-  apt update && apt -y install ed
+  apt update && apt -y install
 
   PROGS=( git terraform terraform-provider-ct az ansible-playbook ssh-keygen )
   for prog in ${PROGS[@]}; do
@@ -112,33 +112,16 @@ stage-prepare-ssh(){
     ssh_pub_key=$(cat ${BUILDDIR}/${SSH_USER}.key.pub)
 
     # TODO Add after second line.
-    for n in bastion master vault; do
-      ed --quiet ${WORKDIR}/cloud-config/${n}.yaml.tmpl << EOF
-3i
+    cat >> ${WORKDIR}/ignition/users.yaml << EOF
   - name: ${SSH_USER}
     groups:
       - "sudo"
       - "docker"
-    ssh-authorized_keys:
+    ssh_authorized_keys:
       - $(cat ${BUILDDIR}/${SSH_USER}.key.pub)
-.
-w
-q
 EOF
-    done
-
     eval "$(ssh-agent)"
     ssh-add ${BUILDDIR}/${SSH_USER}.key
-}
-
-stage-terraform-cloud-config() {
-  cd ${BUILDDIR}
-
-  source envs.sh
-  terraform init ../platforms/azure/giantnetes-cloud-config
-  terraform apply -state=$(mktemp) -auto-approve ../platforms/azure/giantnetes-cloud-config
-
-  cd -
 }
 
 stage-terraform-only-vault() {
@@ -287,10 +270,8 @@ main() {
   stage-prepare-builddir
   stage-prepare-ssh
   trap "stage-destroy" EXIT
-  stage-terraform-cloud-config
   stage-terraform-only-vault
   stage-vault
-  stage-terraform-cloud-config
   stage-terraform
 
   # Wait for kubernetes nodes.
