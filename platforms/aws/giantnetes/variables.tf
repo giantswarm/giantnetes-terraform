@@ -38,12 +38,12 @@ variable "vault_instance_type" {
 
 variable "master_instance_type" {
   type    = "string"
-  default = "m4.large"
+  default = "m5.large"
 }
 
 variable "worker_instance_type" {
   type    = "string"
-  default = "m4.xlarge"
+  default = "m5.xlarge"
 }
 
 ### Container Linux ###

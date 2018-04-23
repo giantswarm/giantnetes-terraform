@@ -2186,13 +2186,13 @@ storage:
   filesystems:
     - name: docker
       mount:
-        device: /dev/xvdc
+        device: /dev/nvme1n1
         format: xfs
         wipe_filesystem: false
         label: docker
     - name: etcd
       mount:
-        device: /dev/xvdd
+        device: /dev/nvme2n1
         format: ext4
         wipe_filesystem: false
         label: var-lib-etcd
