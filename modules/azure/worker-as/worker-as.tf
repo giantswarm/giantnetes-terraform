@@ -5,7 +5,7 @@ resource "azurerm_availability_set" "workers" {
   managed             = true
 
   tags {
-    Environment = "${var.cluster_name}"
+    GiantSwarmInstallation = "${var.cluster_name}"
   }
 }
 
@@ -68,7 +68,7 @@ resource "azurerm_virtual_machine" "worker" {
     computer_name  = "worker${count.index}"
     admin_username = "core"
     admin_password = ""
-    custom_data    = "${base64encode("${var.cloud_config_data}")}"
+    custom_data    = "${base64encode("${var.user_data}")}"
   }
 
   os_profile_linux_config {
@@ -81,6 +81,6 @@ resource "azurerm_virtual_machine" "worker" {
   }
 
   tags {
-    Environment = "${var.cluster_name}"
+    GiantSwarmInstallation = "${var.cluster_name}"
   }
 }
