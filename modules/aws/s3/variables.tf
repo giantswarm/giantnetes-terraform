@@ -5,3 +5,8 @@ variable "aws_account" {
 variable "cluster_name" {
   type = "string"
 }
+
+variable "expiration_days" {
+  type    = "string"
+  default = "365"
+}

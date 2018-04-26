@@ -75,6 +75,7 @@ stage-preflight() {
   [ ! -z "${E2E_AWS_SECRET_KEY+x}" ] || fail "variable E2E_AWS_SECRET_KEY is not set"
   [ ! -z "${E2E_AWS_REGION+x}" ] || fail "variable E2E_AWS_REGION is not set"
   [ ! -z "${E2E_AWS_ROUTE53_ZONE+x}" ] || fail "variable E2E_AWS_ROUTE53_ZONE is not set"
+  [ ! -z "${E2E_EXPIRATION_DAYS+x}" ] || fail "variable E2E_EXPIRATION_DAYS is not set"
   [ ! -z "${E2E_GITHUB_TOKEN+x}" ] || fail "variable E2E_GITHUB_TOKEN is not set"
   [ ! -z "${CIRCLE_BRANCH+x}" ] || fail "variable CIRCLE_BRANCH is not set"
   [ ! -z "${CIRCLE_SHA1+x}" ] || fail "variable CIRCLE_SHA1 is not set"
@@ -102,6 +103,7 @@ export TF_VAR_root_dns_zone_id=${E2E_AWS_ROUTE53_ZONE}
 export TF_VAR_nodes_vault_token=
 export TF_VAR_aws_customer_gateway_id=
 export TF_VAR_worker_count=${WORKER_COUNT}
+export TF_VAR_expiration_days=${E2E_EXPIRATION_DAYS}
 EOF
 }
 

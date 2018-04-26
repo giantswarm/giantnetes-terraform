@@ -16,38 +16,7 @@ export AWS_DEFAULT_REGION="eu-central-1"
 export AWS_PROFILE=${CLUSTER}
 ```
 
-We need to create an extra bucket for saving all access logs.
-So apart of the bucket to save the terraform state we will have a bucket for save
-the access log entries of the aforementioned bucket and also the ignition bucket.
-
-First, let's create the access log bucket. 
-```
-aws s3 mb s3://$CLUSTER-access-logs --region $AWS_DEFAULT_REGION
-
-aws s3api put-bucket-encryption --bucket $CLUSTER-access-logs \
-    --server-side-encryption-configuration \
-        '{"Rules":[{"ApplyServerSideEncryptionByDefault":{"SSEAlgorithm":"AES256"}}]}'
-```
-
-After we need to grant permission to receive logs from the AWS delivery system.
-```
-aws s3api put-bucket-acl --bucket $CLUSTER-access-logs --grant-write URI=http://acs.amazonaws.com/groups/s3/LogDelivery --grant-read-acp URI=http://acs.amazonaws.com/groups/s3/LogDelivery
-```
-
-Add a expiration rule for the access log bucket (Check first `examples/lifecycle-configuration.json`).
-```
-aws s3api put-bucket-lifecycle-configuration  \
---bucket $CLUSTER-access-logs  \
---lifecycle-configuration file://examples/lifecycle-configuration.json
-```
-
-Finally, we want to enable also logging for the access logs bucket itself. In order to do that, 
-modify placeholders in `examples/logging-policy.json` before create run the command (For convention use `self-logs` as prefix)
-```
-aws s3api put-bucket-logging --bucket $CLUSTER-access-logs --bucket-logging-status file://examples/logging-policy.json
-```
-
-Now, let's create the bucket for terraform state.
+Let's create the bucket for terraform state.
 ```
 aws s3 mb s3://$CLUSTER-state --region $AWS_DEFAULT_REGION
 
@@ -63,12 +32,6 @@ aws dynamodb create-table --region $AWS_DEFAULT_REGION \
     --attribute-definitions AttributeName=LockID,AttributeType=S \
     --key-schema AttributeName=LockID,KeyType=HASH \
     --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
-```
-
-Before enable the logging in this bucket, modify the placeholders again in `examples/logging-policy.json`
-(For convention use `<cluster-name>-state-logs` as prefix).
-```
-aws s3api put-bucket-logging --bucket $CLUSTER-state --bucket-logging-status file://examples/logging-policy.json
 ```
 
 ### Prepare terraform build directory
@@ -173,6 +136,14 @@ Delete s3 bucket and dynamodb.
 ```
 aws s3 rb s3://$CLUSTER-build
 aws dynamodb delete-table --region $AWS_DEFAULT_REGION --table-name $CLUSTER-lock
+```
+
+## Enable access logs for state bucket
+
+For enabling the access logs in the terraform state bucket, modify the placeholders in `examples/logging-policy.json`
+(For convention use `<cluster-name>-state-logs` as prefix).
+```
+aws s3api put-bucket-logging --bucket $CLUSTER-state --bucket-logging-status file://examples/logging-policy.json
 ```
 
 ## Updating cluster
