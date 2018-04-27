@@ -269,7 +269,7 @@ main() {
 
   stage-prepare-builddir
   stage-prepare-ssh
-  trap "stage-destroy" EXIT
+#  trap "stage-destroy" EXIT
   stage-terraform-only-vault
   stage-vault
   stage-terraform
