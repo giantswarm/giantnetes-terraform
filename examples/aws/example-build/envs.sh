@@ -27,7 +27,4 @@ export TF_VAR_root_dns_zone_id=<aws route53 zone id>
 export TF_VAR_subnet_bastion_0=<bastion subnet cidr 1>
 export TF_VAR_subnet_bastion_1=<bastion subnet cidr 2>
 
-# Logging bucket expiration days
-export TF_VAR_expiration_days=<expiration days>
-
 # Overwrite any parameters from "platforms/aws/giantnetes/variables.tf" here.
