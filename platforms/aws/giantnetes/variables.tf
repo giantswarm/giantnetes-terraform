@@ -24,7 +24,7 @@ variable "worker_count" {
   default     = "4"
 }
 
-variable "expiration_days" {
+variable "logs_expiration_days" {
   type        = "string"
   description = "Number of days access logs will be stored in logging bucket."
   default     = "365"
