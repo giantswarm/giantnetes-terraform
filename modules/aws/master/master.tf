@@ -69,7 +69,10 @@ resource "aws_ebs_volume" "master_etcd" {
 }
 
 resource "aws_volume_attachment" "master_etcd" {
-  device_name = "/dev/xvdd"
+  # NOTE: For m5 type we must use xvdh here to guarantee that
+  # that disk will be the second one.
+  device_name = "/dev/xvdh"
+
   volume_id   = "${aws_ebs_volume.master_etcd.id}"
   instance_id = "${aws_instance.master.id}"
 
