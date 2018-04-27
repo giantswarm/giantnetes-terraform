@@ -126,6 +126,12 @@ done
 source envs.sh
 ```
 
+Before delete all resources, you could want to keep access logs.
+
+```
+aws s3 sync s3://$CLUSTER-access-logs .
+```
+
 ```
 terraform init ../platforms/aws/giantnetes
 terraform destroy ../platforms/aws/giantnetes

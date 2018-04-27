@@ -6,8 +6,9 @@ locals {
 }
 
 resource "aws_s3_bucket" "logging" {
-  bucket = "${var.cluster_name}-access-logs"
-  acl    = "log-delivery-write"
+  bucket        = "${var.cluster_name}-access-logs"
+  acl           = "log-delivery-write"
+  force_destroy = true
 
   logging {
     target_bucket = "${var.cluster_name}-access-logs"
