@@ -216,9 +216,6 @@ stage-destroy() {
   terraform init ../platforms/aws/giantnetes
   terraform destroy -force ../platforms/aws/giantnetes
 
-  # Remove manually the bucket because it should stay in a prod env
-  aws s3 rb s3://${CLUSTER}-access-logs --force
-  
   cd -
 }
 
