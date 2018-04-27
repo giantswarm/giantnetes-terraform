@@ -1499,7 +1499,7 @@ storage:
           done
 
           # apply k8s addons
-          MANIFESTS="default-storage-class.yaml coredns-cm.yaml coredns-sa.yaml coredns-dep.yaml coredns-svc.yaml default-backend-dep.yaml default-backend-svc.yaml ingress-controller-cm.yaml ingress-controller-sa.yaml ingress-controller-dep.yaml ingress-controller-svc.yaml kube-lego-cm.yaml kube-lego-sa.yaml kube-lego-dep.yaml kube-proxy-sa.yaml kube-proxy-ds.yaml"
+          MANIFESTS="kube-proxy-sa.yaml kube-proxy-ds.yaml default-storage-class.yaml coredns-cm.yaml coredns-sa.yaml coredns-dep.yaml coredns-svc.yaml default-backend-dep.yaml default-backend-svc.yaml ingress-controller-cm.yaml ingress-controller-sa.yaml ingress-controller-dep.yaml ingress-controller-svc.yaml kube-lego-cm.yaml kube-lego-sa.yaml kube-lego-dep.yaml"
 
           for manifest in $MANIFESTS
           do
