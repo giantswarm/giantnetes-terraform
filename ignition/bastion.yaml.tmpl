@@ -52,3 +52,22 @@ systemd:
                $IMAGE\
                read -field=public_key gs-ssh-client-signer/config/ca > /etc/ssh/trusted-user-ca-keys.pem);\
            [ $? -ne 0 ] && echo "Failed to fetch CA ssh public key" && exit 1 || echo "Sucesfully retrieved CA ssh public key";'
+storage:
+  files:
+    - path: /etc/ssh/sshd_config
+      filesystem: root
+      mode: 0600
+      contents:
+        inline: |
+          # Use most defaults for sshd configuration.
+          UsePrivilegeSeparation sandbox
+          Subsystem sftp internal-sftp
+          ClientAliveInterval 180
+          UseDNS no
+          UsePAM yes
+          PrintLastLog no # handled by PAM
+          PrintMotd no # handled by PAM
+          # Non defaults
+          ClientAliveCountMax 2
+          PasswordAuthentication no
+          TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem

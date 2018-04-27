@@ -1521,6 +1521,7 @@ storage:
           # Non defaults (#100)
           ClientAliveCountMax 2
           PasswordAuthentication no
+          TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem
     - path: /opt/get-ca.sh
       filesystem: root
       mode: 0770
@@ -1557,6 +1558,23 @@ storage:
           openssl x509 -in out1.txt -outform pem -out $2
           echo done.
           rm out.txt out1.txt err.txt
+    - path: /etc/ssh/sshd_config
+      filesystem: root
+      mode: 0600
+      contents:
+        inline: |
+          # Use most defaults for sshd configuration.
+          UsePrivilegeSeparation sandbox
+          Subsystem sftp internal-sftp
+          ClientAliveInterval 180
+          UseDNS no
+          UsePAM yes
+          PrintLastLog no # handled by PAM
+          PrintMotd no # handled by PAM
+          # Non defaults
+          ClientAliveCountMax 2
+          PasswordAuthentication no
+          TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem
     - path: /etc/sysctl.d/hardening.conf
       filesystem: root
       mode: 0600
@@ -2212,13 +2230,13 @@ storage:
   filesystems:
     - name: docker
       mount:
-        device: /dev/xvdc
+        device: /dev/nvme1n1
         format: xfs
         wipe_filesystem: false
         label: docker
     - name: etcd
       mount:
-        device: /dev/xvdd
+        device: /dev/nvme2n1
         format: ext4
         wipe_filesystem: false
         label: var-lib-etcd
