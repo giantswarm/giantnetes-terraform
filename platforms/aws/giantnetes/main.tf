@@ -55,8 +55,9 @@ module "vpc" {
 module "s3" {
   source = "../../../modules/aws/s3"
 
-  aws_account  = "${var.aws_account}"
-  cluster_name = "${var.cluster_name}"
+  aws_account          = "${var.aws_account}"
+  cluster_name         = "${var.cluster_name}"
+  logs_expiration_days = "${var.logs_expiration_days}"
 }
 
 locals {

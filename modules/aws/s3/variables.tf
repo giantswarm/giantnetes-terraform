@@ -6,6 +6,6 @@ variable "cluster_name" {
   type = "string"
 }
 
-variable "expiration_days" {
+variable "logs_expiration_days" {
   type = "string"
 }

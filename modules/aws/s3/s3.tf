@@ -28,7 +28,7 @@ resource "aws_s3_bucket" "logging" {
     enabled = true
 
     expiration {
-      days = "${var.expiration_days}"
+      days = "${var.logs_expiration_days}"
     }
   }
 
