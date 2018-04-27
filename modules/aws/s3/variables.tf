@@ -7,6 +7,5 @@ variable "cluster_name" {
 }
 
 variable "expiration_days" {
-  type    = "string"
-  default = "365"
+  type = "string"
 }
