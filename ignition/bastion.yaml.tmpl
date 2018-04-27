@@ -50,7 +50,7 @@ systemd:
                -e VAULT_ADDR\
                -e VAULT_TOKEN\
                $IMAGE\
-               read -field=public_key gs-ssh-client-signer/config/ca > /etc/ssh/trusted-user-ca-keys.pem);\
+               read -field=public_key ssh-client-signer/config/ca > /etc/ssh/trusted-user-ca-keys.pem);\
            [ $? -ne 0 ] && echo "Failed to fetch CA ssh public key" && exit 1 || echo "Sucesfully retrieved CA ssh public key";'
 storage:
   files:
