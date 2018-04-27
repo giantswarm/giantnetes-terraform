@@ -1741,7 +1741,7 @@ systemd:
       Environment=IMAGE=vault:0.10.0
       Type=oneshot
       RemainAfterExit=yes
-      ExecStartPre=docker pull $IMAGE
+      ExecStartPre=/usr/bin/docker pull $IMAGE
       ExecStart=/bin/bash -c '\
              result=$(docker run --rm -i\
              -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt\
