@@ -22,7 +22,7 @@ WORKDIR=$(pwd)
 BUILDDIR=${WORKDIR}/build
 CLUSTER=e2e-cluster-$(echo ${CIRCLE_SHA1} | cut -c 1-6)
 SSH_USER="e2e"
-KUBECTL_CMD="docker run -i --net=host --rm quay.io/giantswarm/docker-kubectl:f51f93c30d27927d2b33122994c0929b3e6f2432"
+KUBECTL_CMD="docker run -i --net=host --rm quay.io/giantswarm/docker-kubectl:8cabd75bacbcdad7ac5d85efc3ca90c2fabf023b"
 WORKER_COUNT=1
 
 # Which files concerned by AWS.
@@ -263,10 +263,8 @@ stage-e2e(){
     exec_on master1 "curl -L ${url} 2>/dev/null | ${KUBECTL_CMD} apply -f -"
     msg "Started e2e tests..."
 
-    # Give some time for pod to be created and connect to stdout.
     sleep 60
-
-    exec_on master1 ${KUBECTL_CMD} logs e2e -f
+    exec_on master1 ${KUBECTL_CMD} logs --pod-running-timeout=120s e2e -f
     exec_on master1 ${KUBECTL_CMD} logs e2e --tail 1 | grep -q 'Test Suite Passed'
     exec_on master1 "curl -L ${url} 2>/dev/null | ${KUBECTL_CMD} delete -f -"
 }
