@@ -12,11 +12,11 @@ storage:
           #   - CALICO_IPV4POOL_IPIP = off
           #   - CALICO_IPV4POOL_CIDR = parameterized
           #
-          # Calico Version v3.0.2
-          # https://docs.projectcalico.org/v3.0/releases#v3.0.2
+          # Calico Version v3.0.5
+          # https://docs.projectcalico.org/v3.0/releases#v3.0.5
           # This manifest includes the following component versions:
-          #   calico/node:v3.0.2
-          #   calico/cni:v2.0.0
+          #   calico/node:v3.0.5
+          #   calico/cni:v2.0.4
 
           # This ConfigMap is used to configure a self-hosted Calico installation.
           kind: ConfigMap
@@ -95,12 +95,12 @@ storage:
             labels:
               k8s-app: calico-typha
           spec:
-          # Number of Typha replicas.  To enable Typha, set this to a non-zero value *and* set the
-          # typha_service_name variable in the calico-config ConfigMap above.
-          #
-          # We recommend using Typha if you have more than 50 nodes.  Above 100 nodes it is essential
-          # (when using the Kubernetes datastore).  Use one replica for every 100-200 nodes.  In
-          # production, we recommend running at least 3 replicas to reduce the impact of rolling upgrade.
+            # Number of Typha replicas.  To enable Typha, set this to a non-zero value *and* set the
+            # typha_service_name variable in the calico-config ConfigMap above.
+            #
+            # We recommend using Typha if you have more than 50 nodes.  Above 100 nodes it is essential
+            # (when using the Kubernetes datastore).  Use one replica for every 100-200 nodes.  In
+            # production, we recommend running at least 3 replicas to reduce the impact of rolling upgrade.
             replicas: 0
             revisionHistoryLimit: 2
             template:
@@ -121,7 +121,7 @@ storage:
                 hostNetwork: true
                 serviceAccountName: calico-node
                 containers:
-                - image: quay.io/calico/typha:v0.6.0
+                - image: quay.io/calico/typha:v0.6.3
                   name: calico-typha
                   ports:
                   - containerPort: 5473
@@ -211,7 +211,7 @@ storage:
                   # container programs network policy and routes on each
                   # host.
                   - name: calico-node
-                    image: quay.io/calico/node:v3.0.2
+                    image: quay.io/calico/node:v3.0.5
                     env:
                       # Use Kubernetes API as the backing datastore.
                       - name: DATASTORE_TYPE
@@ -237,7 +237,9 @@ storage:
                       # Wait for the datastore.
                       - name: WAIT_FOR_DATASTORE
                         value: "true"
-                      # The Calico IPv4 pool to use.  This should match `--cluster-cidr`
+                      # The default IPv4 pool to create on startup if none exists. Pod IPs will be
+                      # chosen from this range. Changing this value after installation will have
+                      # no effect. This should fall within `--cluster-cidr`.
                       - name: CALICO_IPV4POOL_CIDR
                         value: "${POD_CIDR}"
                       # Enable IPIP
@@ -254,9 +256,6 @@ storage:
                         valueFrom:
                           fieldRef:
                             fieldPath: spec.nodeName
-                      # No IP address needed.
-                      - name: IP
-                        value: ""
                       - name: FELIX_HEALTHENABLED
                         value: "true"
                     securityContext:
@@ -286,7 +285,7 @@ storage:
                   # This container installs the Calico CNI binaries
                   # and CNI network config file on each node.
                   - name: install-cni
-                    image: quay.io/calico/cni:v2.0.0
+                    image: quay.io/calico/cni:v2.0.4
                     command: ["/install-cni.sh"]
                     env:
                       # Name of the CNI config file to create.
@@ -348,7 +347,7 @@ storage:
           description: Calico BGP Configuration
           kind: CustomResourceDefinition
           metadata:
-             name: bgpconfigurations.crd.projectcalico.org
+            name: bgpconfigurations.crd.projectcalico.org
           spec:
             scope: Cluster
             group: crd.projectcalico.org
@@ -477,7 +476,7 @@ storage:
       filesystem: root
       mode: 0644
       contents:
-      inline:  |
+        inline:  |
           apiVersion: v1
           kind: Service
           metadata:
@@ -1349,13 +1348,13 @@ storage:
         inline: |
             #!/bin/bash
             domains="${ETCD_DOMAIN_NAME} ${API_DOMAIN_NAME} ${VAULT_DOMAIN_NAME}"
-      
+
             for domain in $domains; do
               until nslookup $domain; do
                   echo "Waiting for domain $domain to be available"
                   sleep 5
               done
-      
+
               echo "Successfully resolved domain $domain"
             done
     - path: /opt/k8s-addons
@@ -1365,19 +1364,19 @@ storage:
         inline: |
             #!/bin/bash
             KUBECTL=quay.io/giantswarm/docker-kubectl:f51f93c30d27927d2b33122994c0929b3e6f2432
-      
+
             /usr/bin/docker pull $KUBECTL
-      
+
             # wait for healthy master
             while [ "$(/usr/bin/docker run --net=host --rm $KUBECTL get cs | grep Healthy | wc -l)" -ne "3" ]; do sleep 1 && echo 'Waiting for healthy k8s'; done
-      
+
             # apply Security bootstrap (RBAC and PSP)
             SECURITY_FILES="rbac-roles.yaml\
               rbac-bindings.yaml\
               psp-policies.yaml\
               psp-roles.yaml\
               psp-bindings.yaml"
-      
+
             for manifest in $SECURITY_FILES
             do
                 while
@@ -1388,18 +1387,18 @@ storage:
                     sleep 5s
                 done
             done
-      
+
             # apply calico CNI
             CALICO_FILE="calico-all.yaml"
-      
+
             while
                 /usr/bin/docker run --net=host --rm -v /srv:/srv $KUBECTL apply -f /srv/$CALICO_FILE
                 [ "$?" -ne "0" ]
             do
-                echo "failed to apply /src/$CALICO_FILE, retrying in 5 sec"
+                echo "failed to apply /srv/$CALICO_FILE, retrying in 5 sec"
                 sleep 5s
             done
-      
+
             # wait for healthy calico - we check for pods - desired vs ready
             while
                 # result of this is 'eval [ "$DESIRED_POD_COUNT" -eq "$READY_POD_COUNT" ]'
@@ -1412,17 +1411,17 @@ storage:
                 echo "Waiting for calico to be ready . . "
                 sleep 3s
             done
-      
+
             # apply k8s addons
             MANIFESTS="default-storage-class.yaml coredns-all.yaml default-backend-dep.yaml default-backend-svc.yaml ingress-controller-cm.yaml ingress-controller-sa.yaml ingress-controller-dep.yaml ingress-controller-svc.yaml kube-lego-cm.yaml kube-lego-sa.yaml kube-lego-dep.yaml"
-      
+
             for manifest in $MANIFESTS
             do
                 while
                     /usr/bin/docker run --net=host --rm -v /srv:/srv $KUBECTL apply -f /srv/$manifest
                     [ "$?" -ne "0" ]
                 do
-                    echo "failed to apply /src/$manifest, retrying in 5 sec"
+                    echo "failed to apply /srv/$manifest, retrying in 5 sec"
                     sleep 5s
                 done
             done
@@ -1569,7 +1568,7 @@ storage:
       contents:
         inline: |
           #!/bin/bash
-      
+
           if [ -z "$1" ] || [ -z "$2" ]
           then
                   echo "Insufficient number of args"
@@ -2059,7 +2058,7 @@ systemd:
       Description=api-certs
       Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service waagent.service
       After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service waagent.service
-      
+
       [Service]
       EnvironmentFile=/etc/environment
       EnvironmentFile=/etc/network-environment
@@ -2227,7 +2226,7 @@ systemd:
       ExecStopPost=-/usr/bin/docker rm -f $NAME
       [Install]
       WantedBy=multi-user.target
-      
+
   - name: k8s-addons.service
     enabled: true
     contents: |
