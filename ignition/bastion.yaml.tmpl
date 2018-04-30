@@ -56,6 +56,12 @@ systemd:
         WantedBy=multi-user.target
 storage:
   files:
+    - path: /etc/tokens/node
+      filesystem: root
+      mode: 0400
+      contents:
+        inline: |
+          VAULT_TOKEN=${G8S_VAULT_TOKEN}
     - path: /etc/ssh/sshd_config
       filesystem: root
       mode: 0600

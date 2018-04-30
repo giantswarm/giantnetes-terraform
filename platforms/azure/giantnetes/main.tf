@@ -59,6 +59,7 @@ data "template_file" "bastion" {
 
   vars {
     "VAULT_DOMAIN_NAME" = "${var.vault_dns}.${var.base_domain}"
+    "G8S_VAULT_TOKEN"   = "${var.nodes_vault_token}"
   }
 }
 
