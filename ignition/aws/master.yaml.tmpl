@@ -1,74 +1,5 @@
 storage:
   files:
-    - path: /srv/calico-ipip-pinger-ds.yaml
-      filesystem: root
-      mode: 0644
-      contents:
-        inline: |
-          apiVersion: extensions/v1beta1
-          kind: DaemonSet
-          metadata:
-            labels:
-              app: calico-ipip-pinger
-            name: calico-ipip-pinger
-            namespace: kube-system
-          spec:
-            updateStrategy:
-              type: RollingUpdate
-              rollingUpdate:
-                maxUnavailable: 1
-            template:
-              metadata:
-                labels:
-                  app: calico-ipip-pinger
-              spec:
-                serviceAccountName: calico-node
-                containers:
-                - name: calico-ipip-pinger
-                  image: quay.io/giantswarm/calico-ipip-pinger:c2d40fb9bd4dcd78fd28b897f43b2d9a744ab374
-                  imagePullPolicy: Always
-                  securityContext:
-                    privileged: true
-                  env:
-                    # The location of the Calico etcd cluster.
-                    - name: ETCD_ENDPOINTS
-                      valueFrom:
-                        configMapKeyRef:
-                          name: calico-config
-                          key: etcd_endpoints
-                    # Location of the CA certificate for etcd.
-                    - name: ETCD_CA_CERT_FILE
-                      valueFrom:
-                        configMapKeyRef:
-                          name: calico-config
-                          key: etcd_ca
-                    # Location of the client key for etcd.
-                    - name: ETCD_KEY_FILE
-                      valueFrom:
-                        configMapKeyRef:
-                          name: calico-config
-                          key: etcd_key
-                    # Location of the client certificate for etcd.
-                    - name: ETCD_CERT_FILE
-                      valueFrom:
-                        configMapKeyRef:
-                          name: calico-config
-                          key: etcd_cert
-                  volumeMounts:
-                    # Mount in the etcd TLS secrets.
-                    - mountPath: /etc/kubernetes/ssl/etcd
-                      name: etcd-certs
-                volumes:
-                  # Mount in the etcd TLS secrets.
-                  - name: etcd-certs
-                    hostPath:
-                      path: /etc/kubernetes/ssl/etcd
-                tolerations:
-                - effect: NoSchedule
-                  key: node-role.kubernetes.io/master
-                  operator: Exists
-                hostNetwork: true
-                restartPolicy: Always
     - path: /srv/calico-kube-controllers-sa.yaml
       filesystem: root
       mode: 0644
@@ -94,12 +25,12 @@ storage:
       mode: 0644
       contents:
         inline: |
-          # Calico Version v3.0.2
+          # Calico Version v3.0.5
           # https://docs.projectcalico.org/v3.0/releases#v3.0.2
           # This manifest includes the following component versions:
-          #   calico/node:v3.0.2
-          #   calico/cni:v2.0.0
-          #   calico/kube-controllers:v2.0.0
+          #   calico/node:v3.0.5
+          #   calico/cni:v2.0.4
+          #   calico/kube-controllers:v2.0.3
 
           # This ConfigMap is used to configure a self-hosted Calico installation.
           kind: ConfigMap
@@ -200,7 +131,7 @@ storage:
                   # container programs network policy and routes on each
                   # host.
                   - name: calico-node
-                    image: quay.io/calico/node:v3.0.2
+                    image: quay.io/calico/node:v3.0.5
                     env:
                       # The location of the Calico etcd cluster.
                       - name: ETCD_ENDPOINTS
@@ -294,7 +225,7 @@ storage:
                   # This container installs the Calico CNI binaries
                   # and CNI network config file on each node.
                   - name: install-cni
-                    image: quay.io/calico/cni:v2.0.0
+                    image: quay.io/calico/cni:v2.0.4
                     command: ["/install-cni.sh"]
                     env:
                       # Name of the CNI config file to create.
@@ -379,7 +310,7 @@ storage:
                 serviceAccountName: calico-kube-controllers
                 containers:
                   - name: calico-kube-controllers
-                    image: quay.io/calico/kube-controllers:v2.0.0
+                    image: quay.io/calico/kube-controllers:v2.0.3
                     env:
                       # The location of the Calico etcd cluster.
                       - name: ETCD_ENDPOINTS
@@ -1380,9 +1311,6 @@ storage:
               name: privileged-psp-users
           subjects:
           - kind: ServiceAccount
-            name: calico-ipip-pinger
-            namespace: kube-system
-          - kind: ServiceAccount
             name: calico-node
             namespace: kube-system
           - kind: ServiceAccount
@@ -1471,8 +1399,7 @@ storage:
            calico-node-sa.yaml\
            calico-kube-controllers-sa.yaml\
            calico-ds.yaml\
-           calico-kube-controllers.yaml\
-           calico-ipip-pinger-ds.yaml"
+           calico-kube-controllers.yaml"
 
           for manifest in $CALICO_FILES
           do
@@ -2071,7 +1998,7 @@ systemd:
       --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
       --allow-privileged=true \
       --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yaml \
-      --node-labels="node-role.kubernetes.io/master,role=master,kubernetes.io/hostname=$HOSTNAME,ip=${DEFAULT_IPV4}," \
+      --node-labels="node-role.kubernetes.io/master,role=master,ip=${DEFAULT_IPV4}" \
       --v=2"
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME

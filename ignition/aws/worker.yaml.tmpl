@@ -395,7 +395,7 @@ systemd:
       --allow-privileged=true \
       --feature-gates=ExpandPersistentVolumes=true \
       --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yaml \
-      --node-labels="node-role.kubernetes.io/worker,role=worker,kubernetes.io/hostname=$HOSTNAME,ip=${DEFAULT_IPV4}," \
+      --node-labels="node-role.kubernetes.io/worker,role=worker,ip=${DEFAULT_IPV4}" \
       --v=2"
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME

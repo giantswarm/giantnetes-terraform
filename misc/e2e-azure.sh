@@ -22,8 +22,12 @@ WORKDIR=$(pwd)
 BUILDDIR=${WORKDIR}/build
 CLUSTER=e2e$(echo ${CIRCLE_SHA1} | cut -c 1-4)
 SSH_USER="e2e"
-KUBECTL_CMD="docker run -i --net=host --rm quay.io/giantswarm/docker-kubectl:f51f93c30d27927d2b33122994c0929b3e6f2432"
+KUBECTL_CMD="docker run -i --net=host --rm quay.io/giantswarm/docker-kubectl:8cabd75bacbcdad7ac5d85efc3ca90c2fabf023b"
 WORKER_COUNT=1
+
+# Please set any non empty value to E2E_ENABLE_CONFORMANCE in CircleCI
+# to enable full run of e2e conformance tests.
+E2E_ENABLE_CONFORMANCE=${E2E_ENABLE_CONFORMANCE:-""}
 
 # Which files concerned by Azure.
 AZURE_FILES_REGEX="^modules/azure|^modules/container-linux|^platforms/azure|^ignition/azure|^misc/e2e-azure.sh|^\.circleci"
@@ -77,6 +81,7 @@ stage-preflight() {
   [ ! -z "${E2E_SP_SUBSCRIPTION_ID+x}" ] || fail "variable E2E_SP_SUBSCRIPTION_ID is not set"
   [ ! -z "${E2E_SP_TENANT_ID+x}" ] || fail "variable E2E_SP_TENANT_ID is not set"
   [ ! -z "${E2E_GITHUB_TOKEN+x}" ] || fail "variable E2E_GITHUB_TOKEN is not set"
+  [ ! -z "${E2E_ENABLE_CONFORMANCE+x}" ] || fail "variable E2E_ENABLE_CONFORMANCE is not set"
   [ ! -z "${CIRCLE_BRANCH+x}" ] || fail "variable CIRCLE_BRANCH is not set"
   [ ! -z "${CIRCLE_SHA1+x}" ] || fail "variable CIRCLE_SHA1 is not set"
 }
@@ -251,10 +256,8 @@ stage-e2e(){
     exec_on master1 "curl -L ${url} 2>/dev/null | ${KUBECTL_CMD} apply -f -"
     msg "Started e2e tests..."
 
-    # Give some time for pod to be created and connect to stdout.
     sleep 60
-
-    exec_on master1 ${KUBECTL_CMD} logs e2e -f
+    exec_on master1 ${KUBECTL_CMD} logs --pod-running-timeout=120s e2e -f
     exec_on master1 ${KUBECTL_CMD} logs e2e --tail 1 | grep -q 'Test Suite Passed'
     exec_on master1 "curl -L ${url} 2>/dev/null | ${KUBECTL_CMD} delete -f -"
 }
@@ -277,8 +280,8 @@ main() {
   # Wait for kubernetes nodes.
   stage-wait-kubernetes-nodes
 
-  # Finally run tests.
-  stage-e2e
+  # Finally run tests if enabled.
+  [ ! ${E2E_ENABLE_CONFORMANCE} ] || stage-e2e
 }
 
 main

@@ -5,3 +5,7 @@ variable "aws_account" {
 variable "cluster_name" {
   type = "string"
 }
+
+variable "logs_expiration_days" {
+  type = "string"
+}
