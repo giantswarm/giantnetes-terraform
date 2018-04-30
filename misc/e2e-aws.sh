@@ -25,6 +25,10 @@ SSH_USER="e2e"
 KUBECTL_CMD="docker run -i --net=host --rm quay.io/giantswarm/docker-kubectl:8cabd75bacbcdad7ac5d85efc3ca90c2fabf023b"
 WORKER_COUNT=1
 
+# Please set any non empty value to E2E_ENABLE_CONFORMANCE in CircleCI
+# to enable full run of e2e conformance tests.
+E2E_ENABLE_CONFORMANCE=${E2E_ENABLE_CONFORMANCE:-""}
+
 # Which files concerned by AWS.
 AWS_FILES_REGEX="^modules/aws|^modules/container-linux|^platforms/aws|^ignition|^misc/e2e-aws.sh|^misc/e2e.sh|^\.circleci"
 
@@ -76,6 +80,7 @@ stage-preflight() {
   [ ! -z "${E2E_AWS_REGION+x}" ] || fail "variable E2E_AWS_REGION is not set"
   [ ! -z "${E2E_AWS_ROUTE53_ZONE+x}" ] || fail "variable E2E_AWS_ROUTE53_ZONE is not set"
   [ ! -z "${E2E_GITHUB_TOKEN+x}" ] || fail "variable E2E_GITHUB_TOKEN is not set"
+  [ ! -z "${E2E_ENABLE_CONFORMANCE+x}" ] || fail "variable E2E_ENABLE_CONFORMANCE is not set"
   [ ! -z "${CIRCLE_BRANCH+x}" ] || fail "variable CIRCLE_BRANCH is not set"
   [ ! -z "${CIRCLE_SHA1+x}" ] || fail "variable CIRCLE_SHA1 is not set"
 }
@@ -273,8 +278,8 @@ main() {
   # Wait for kubernetes nodes.
   stage-wait-kubernetes-nodes
 
-  # Finally run tests.
-  stage-e2e
+  # Finally run tests if enabled.
+  [ ! ${E2E_ENABLE_CONFORMANCE} ] || stage-e2e
 }
 
 main
