@@ -1797,7 +1797,7 @@ systemd:
     contents: |
       [Unit]
       Description=get vault-ca into trusted certs
-      Before=calico-certs.service api-certs.service etcd3-certs.service
+      Before=calico-certs.service api-certs.service etcd3-certs.service get-vault-ssh-ca.service
       After=wait-for-domains.service waagent.service
       Requires=waagent.service wait-for-domains.service
 
