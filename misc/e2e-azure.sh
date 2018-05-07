@@ -257,7 +257,7 @@ stage-e2e(){
     msg "Started e2e tests..."
 
     # Give some time for pod to be created and connect to stdout.
-    sleep 120
+    sleep 60
 
     exec_on master1 ${KUBECTL_CMD} logs e2e -f
     exec_on master1 ${KUBECTL_CMD} logs e2e --tail 1 | grep -q 'Test Suite Passed'
@@ -274,7 +274,7 @@ main() {
 
   stage-prepare-builddir
   stage-prepare-ssh
-  #trap "stage-destroy" EXIT
+  trap "stage-destroy" EXIT
   stage-terraform-only-vault
   stage-vault
   stage-terraform
