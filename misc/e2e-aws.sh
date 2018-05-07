@@ -264,7 +264,7 @@ stage-e2e(){
     msg "Started e2e tests..."
 
     # Give some time for pod to be created and connect to stdout.
-    sleep 60
+    sleep 120
 
     exec_on master1 ${KUBECTL_CMD} logs e2e -f
     exec_on master1 ${KUBECTL_CMD} logs e2e --tail 1 | grep -q 'Test Suite Passed'
