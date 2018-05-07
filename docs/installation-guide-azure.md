@@ -121,7 +121,9 @@ source envs.sh
 
 ##### Taint machines so they are recreated
 ```
-terraform taint -module="master" azurerm_virtual_machine.master
+terraform taint -module="bastion" "azurerm_virtual_machine.bastion.0"
+terraform taint -module="bastion" "azurerm_virtual_machine.bastion.1"
+terraform taint -module="master" "azurerm_virtual_machine.master"
 terraform taint -module="worker" "azurerm_virtual_machine.worker.0"
 terraform taint -module="worker" "azurerm_virtual_machine.worker.1"
 terraform taint -module="worker" "azurerm_virtual_machine.worker.2"

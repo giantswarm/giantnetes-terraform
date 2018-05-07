@@ -1831,6 +1831,34 @@ systemd:
 
       [Install]
       WantedBy=multi-user.target
+  - name: get-vault-ssh-ca.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=get-vault-ssh-ca
+      Requires=docker.service
+      After=docker.service
+
+      [Service]
+      EnvironmentFile=/etc/tokens/node
+      Environment=VAULT_ADDR=https://${VAULT_DOMAIN_NAME}:443
+      Environment=IMAGE=vault:0.10.0
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStartPre=/usr/bin/docker pull $IMAGE
+      ExecStart=/bin/bash -c '\
+             result=$(docker run --rm -i\
+             -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt\
+             -v /etc/ssh/:/etc/ssh/\
+             --net host\
+             --privileged=true\
+             -e VAULT_ADDR\
+             -e VAULT_TOKEN\
+             $IMAGE\
+             read -field=public_key ssh-client-signer/config/ca > /etc/ssh/trusted-user-ca-keys.pem);\
+         [ $? -ne 0 ] && echo "Failed to fetch CA ssh public key" && exit 1 || echo "Sucesfully retrieved CA ssh public key";'
+      [Install]
+      WantedBy=multi-user.target
   - name: docker.service
     enabled: true
     dropins:
@@ -1873,7 +1901,7 @@ systemd:
     contents: |
       [Unit]
       Description=get vault-ca into trusted certs
-      Before=calico-certs.service api-certs.service etcd3-certs.service
+      Before=calico-certs.service api-certs.service etcd3-certs.service get-vault-ssh-ca.service
       After=wait-for-domains.service waagent.service
       Requires=waagent.service wait-for-domains.service
 
@@ -2064,7 +2092,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.10.1"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.10.2"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -2168,7 +2196,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.10.1"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.10.2"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
@@ -2230,7 +2258,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.10.1"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.10.2"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -2274,7 +2302,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.10.1"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.10.2"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
