@@ -1649,6 +1649,91 @@ storage:
         inline: |
           VAULT_TOKEN=${G8S_VAULT_TOKEN}
 
+    - path: /etc/kubernetes/manifests/k8s-api-server.yaml
+      filesystem: root
+      mode: 0600
+      contents:
+        inline: |
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            name: k8s-api-server
+            namespace: kube-system
+          spec:
+            hostNetwork: true
+            containers:
+              - name: k8s-api-server
+                image: quay.io/giantswarm/hyperkube:v1.10.2
+                env:
+                - name: HOST_IP
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: status.podIP
+                command:
+                - /hyperkube
+                - --allow-privileged=true
+                - --insecure-bind-address=127.0.0.1
+                - --insecure-port=8080
+                - --kubelet-https=true
+                - --secure-port=443
+                - --cloud-provider=azure \
+                - --cloud-config=/etc/kubernetes/config/azure.yaml
+                - --bind-address=$(HOST_IP)
+                - --etcd-prefix=giantswarm.io
+                - --authorization-mode=RBAC
+                - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,PodSecurityPolicy,PersistentVolumeClaimResize,DefaultStorageClass
+                - --service-cluster-ip-range=${K8S_SERVICE_CIDR}
+                - --etcd-servers=https://${ETCD_DOMAIN_NAME}:2379
+                - --etcd-cafile=/etc/kubernetes/ssl/etcd/server-ca.pem
+                - --etcd-certfile=/etc/kubernetes/ssl/etcd/server-crt.pem
+                - --etcd-keyfile=/etc/kubernetes/ssl/etcd/server-key.pem
+                - --advertise-address=$(HOST_IP)
+                - --runtime-config=api/all=true
+                - --logtostderr=true
+                - --profiling=false
+                - --repair-malformed-updates=false
+                - --service-account-lookup=true
+                - --tls-cert-file=/etc/kubernetes/ssl/apiserver-crt.pem
+                - --tls-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
+                - --client-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
+                - --service-account-key-file=/etc/kubernetes/ssl/service-account-key.pem
+                - --feature-gates=AdvancedAuditing=false,ExpandPersistentVolumes=true
+                - --audit-log-path=/var/log/apiserver/audit.log
+                - --audit-log-maxage=30
+                - --audit-log-maxbackup=30
+                - --audit-log-maxsize=100
+                resources:
+                  requests:
+                    cpu: 300m
+                    memory: 300Mi
+                livenessProbe:
+                  tcpSocket:
+                    port: 443
+                  initialDelaySeconds: 15
+                  timeoutSeconds: 15
+                ports:
+                - containerPort: 443
+                  hostPort: 443
+                  name: https
+                volumeMounts:
+                - mountPath: /var/log/apiserver/
+                  name: apiserver-log
+                - mountPath: /etc/kubernetes/ssl/
+                  name: ssl-certs-kubernetes
+                  readOnly: true
+                - mountPath: /etc/kubernetes/config/
+                  name: apiserver-config
+                  readOnly: true
+            volumes:
+            - hostPath:
+                path: /var/log/apiserver/
+              name: apiserver-log
+            - hostPath:
+                path: /etc/kubernetes/ssl
+              name: ssl-certs-kubernetes
+            - hostPath:
+                path: /etc/kubernetes/config
+              name: apiserver-config
     - path: /etc/ssh/sshd_config
       filesystem: root
       mode: 0600
@@ -2076,8 +2161,8 @@ systemd:
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service k8s-api-server.service
-      Requires=k8s-setup-network-env.service k8s-api-server.service
+      After=k8s-setup-network-env.service
+      Requires=k8s-setup-network-env.service
 
       [Service]
       Restart=always
@@ -2174,68 +2259,6 @@ systemd:
       --ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
       [Install]
       WantedBy=multi-user.target
-  - name: k8s-api-server.service
-    enabled: true
-    contents: |
-      [Unit]
-      Description=k8s-api-server
-      StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service docker.service etcd3.service api-certs.service
-      Requires=k8s-setup-network-env.service docker.service etcd3.service api-certs.service
-
-      [Service]
-      Restart=always
-      RestartSec=0
-      TimeoutStopSec=10
-      EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.10.2"
-      Environment="NAME=%p.service"
-      Environment="NETWORK_CONFIG_CONTAINER="
-      ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
-      ExecStartPre=/usr/bin/docker pull $IMAGE
-      ExecStartPre=-/usr/bin/docker stop -t 10 $NAME
-      ExecStartPre=-/usr/bin/docker rm -f $NAME
-      ExecStart=/usr/bin/docker run --rm --name $NAME --net=host \
-      -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
-      -v /etc/kubernetes/config/:/etc/kubernetes/config/ \
-      -v /var/log/apiserver/:/var/log/apiserver \
-      $IMAGE \
-      /hyperkube apiserver \
-      --allow-privileged=true \
-      --insecure-bind-address=127.0.0.1 \
-      --insecure-port=8080 \
-      --kubelet-https=true \
-      --secure-port=443 \
-      --cloud-provider=azure \
-      --cloud-config=/etc/kubernetes/config/azure.yaml \
-      --bind-address=0.0.0.0 \
-      --etcd-prefix=giantswarm.io \
-      --authorization-mode=RBAC \
-      --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,PodSecurityPolicy,PersistentVolumeClaimResize,DefaultStorageClass \
-      --service-cluster-ip-range=${K8S_SERVICE_CIDR} \
-      --etcd-servers=https://${ETCD_DOMAIN_NAME}:2379 \
-      --etcd-cafile=/etc/kubernetes/ssl/etcd/server-ca.pem \
-      --etcd-certfile=/etc/kubernetes/ssl/etcd/server-crt.pem \
-      --etcd-keyfile=/etc/kubernetes/ssl/etcd/server-key.pem \
-      --advertise-address=${DEFAULT_IPV4} \
-      --runtime-config=api/all=true \
-      --logtostderr=true \
-      --profiling=false \
-      --repair-malformed-updates=false \
-      --service-account-lookup=true \
-      --tls-cert-file=/etc/kubernetes/ssl/apiserver-crt.pem \
-      --tls-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem \
-      --client-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem \
-      --service-account-key-file=/etc/kubernetes/ssl/service-account-key.pem \
-      --feature-gates=AdvancedAuditing=false,ExpandPersistentVolumes=true \
-      --audit-log-path=/var/log/apiserver/audit.log \
-      --audit-log-maxage=30 \
-      --audit-log-maxbackup=30 \
-      --audit-log-maxsize=100
-      ExecStop=-/usr/bin/docker stop -t 10 $NAME
-      ExecStopPost=-/usr/bin/docker rm -f $NAME
-      [Install]
-      WantedBy=multi-user.target
   - name: k8s-controller-manager.service
     enabled: true
     contents: |
@@ -2320,8 +2343,8 @@ systemd:
     contents: |
       [Unit]
       Description=Kubernetes Addons
-      Wants=k8s-api-server.service
-      After=k8s-api-server.service
+      Wants=k8s-kubelet.service
+      After=k8s-kubelet.service
       [Service]
       Type=oneshot
       EnvironmentFile=/etc/network-environment
