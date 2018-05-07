@@ -56,6 +56,11 @@ locals {
 # Generate ignition config for bastions.
 data "template_file" "bastion" {
   template = "${file("${path.module}/../../../ignition/bastion.yaml.tmpl")}"
+
+  vars {
+    "VAULT_DOMAIN_NAME" = "${var.vault_dns}.${var.base_domain}"
+    "G8S_VAULT_TOKEN"   = "${var.nodes_vault_token}"
+  }
 }
 
 # Convert ignition config to raw json and merge users part.
