@@ -554,7 +554,7 @@ storage:
                   - --master=https://${API_DOMAIN_NAME}
                   - --proxy-mode=iptables
                   - --logtostderr=true
-                  - --kubeconfig=/etc/kubernetes/config/kube-proxy-kubeconfig.yaml
+                  - --kubeconfig=/etc/kubernetes/config/proxy-kubeconfig.yaml
                   - --v=2
                   livenessProbe:
                     httpGet:
