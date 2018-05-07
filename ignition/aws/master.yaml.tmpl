@@ -1559,6 +1559,7 @@ storage:
                       fieldPath: status.podIP
                 command:
                 - /hyperkube
+                - apiserver
                 - --allow-privileged=true
                 - --insecure-bind-address=127.0.0.1
                 - --insecure-port=8080
@@ -1615,6 +1616,73 @@ storage:
             - hostPath:
                 path: /etc/kubernetes/ssl
               name: ssl-certs-kubernetes
+    - path: /etc/kubernetes/manifests/k8s-controller-manager.yaml
+      filesystem: root
+      mode: 0600
+      contents:
+        inline: |
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            name: k8s-controller-manager
+            namespace: kube-system
+          spec:
+            hostNetwork: true
+            containers:
+              - name: k8s-controller-manager
+                image: quay.io/giantswarm/hyperkube:v1.10.2
+                env:
+                - name: HOST_IP
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: status.podIP
+                command:
+                - /hyperkube
+                - controller-manager
+                - --master=https://${API_DOMAIN_NAME}:443 \
+                - --logtostderr=true \
+                - --v=2 \
+                - --cloud-provider=aws \
+                - --profiling=false \
+                - --terminated-pod-gc-threshold=10 \
+                - --use-service-account-credentials=true \
+                - --feature-gates=ExpandPersistentVolumes=true \
+                - --kubeconfig=/etc/kubernetes/config/controller-manager-kubeconfig.yaml \
+                - --root-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem \
+                - --service-account-private-key-file=/etc/kubernetes/ssl/service-account-key.pem
+                resources:
+                  requests:
+                    cpu: 200m
+                    memory: 200Mi
+                livenessProbe:
+                  httpGet:
+                    host: 127.0.0.1
+                    path: /healthz
+                    port: 10251
+                  initialDelaySeconds: 15
+                  timeoutSeconds: 15
+                volumeMounts:
+                - mountPath: /etc/kubernetes/ssl/
+                  name: ssl-certs-kubernetes
+                  readOnly: true
+                volumeMounts:
+                - mountPath: /etc/kubernetes/secrets/
+                  name: k8s-secrets
+                  readOnly: true
+                volumeMounts:
+                - mountPath: /etc/kubernetes/config/
+                  name: k8s-config
+                  readOnly: true
+            volumes:
+            - hostPath:
+                path: /etc/kubernetes/ssl
+              name: ssl-certs-kubernetes
+            - hostPath:
+                path: /etc/kubernetes/config
+              name: k8s-config
+            - hostPath:
+                path: /etc/kubernetes/secrets
+              name: k8s-secrets
     - path: /etc/ssh/sshd_config
       filesystem: root
       mode: 0600
@@ -2136,48 +2204,6 @@ systemd:
       --alt-names=localhost,kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.local\
       --key-file=/etc/kubernetes/ssl/apiserver-key.pem \
       --ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
-
-      [Install]
-      WantedBy=multi-user.target
-  - name: k8s-controller-manager.service
-    enabled: true
-    contents: |
-      [Unit]
-      Description=k8s-controller-manager Service
-      StartLimitIntervalSec=0
-      Requires=k8s-setup-network-env.service
-      After=k8s-setup-network-env.service
-
-      [Service]
-      Restart=always
-      RestartSec=0
-      TimeoutStopSec=10
-      EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.10.2"
-      Environment="NAME=%p.service"
-      Environment="NETWORK_CONFIG_CONTAINER="
-      ExecStartPre=/usr/bin/docker pull $IMAGE
-      ExecStartPre=-/usr/bin/docker stop -t 10 $NAME
-      ExecStartPre=-/usr/bin/docker rm -f $NAME
-      ExecStart=/usr/bin/docker run --rm --net=host --name $NAME \
-      -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
-      -v /etc/kubernetes/config/:/etc/kubernetes/config/ \
-      -v /etc/kubernetes/secrets/token_sign_key.pem:/etc/kubernetes/secrets/token_sign_key.pem \
-      $IMAGE \
-      /hyperkube controller-manager \
-      --master=https://${API_DOMAIN_NAME}:443 \
-      --logtostderr=true \
-      --v=2 \
-      --cloud-provider=aws \
-      --profiling=false \
-      --terminated-pod-gc-threshold=10 \
-      --use-service-account-credentials=true \
-      --feature-gates=ExpandPersistentVolumes=true \
-      --kubeconfig=/etc/kubernetes/config/controller-manager-kubeconfig.yaml \
-      --root-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem \
-      --service-account-private-key-file=/etc/kubernetes/ssl/service-account-key.pem
-      ExecStop=-/usr/bin/docker stop -t 10 $NAME
-      ExecStopPost=-/usr/bin/docker rm -f $NAME
 
       [Install]
       WantedBy=multi-user.target
