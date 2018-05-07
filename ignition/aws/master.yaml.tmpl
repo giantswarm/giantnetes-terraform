@@ -1614,8 +1614,8 @@ systemd:
     contents: |
       [Unit]
       Description=get-vault-ssh-ca
-      Requires=docker.service
-      After=docker.service
+      Requires=docker.service wait-for-domains.service
+      After=docker.service wait-for-domains.service
 
       [Service]
       EnvironmentFile=/etc/tokens/node
