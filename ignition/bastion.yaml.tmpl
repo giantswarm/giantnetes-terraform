@@ -112,7 +112,7 @@ storage:
       filesystem: root
       mode: 0770
       contents:
-        inline:  |
+        inline: |
           #!/bin/bash
 
           if [ -z "$1" ] || [ -z "$2" ]
@@ -147,7 +147,7 @@ storage:
     - path: /opt/wait-for-domains
       filesystem: root
       mode: 0544
-      contents: 
+      contents:
         inline: |
           #!/bin/bash
           domains="${VAULT_DOMAIN_NAME}"

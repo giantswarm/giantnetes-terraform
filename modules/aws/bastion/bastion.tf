@@ -81,3 +81,28 @@ resource "aws_route53_record" "bastion" {
   records = ["${var.with_public_access ? element(aws_instance.bastion.*.public_ip, count.index) : element(aws_instance.bastion.*.private_ip, count.index)}"]
   ttl     = "300"
 }
+
+# To avoid 16kb user_data limit upload CoreOS ignition config to a s3 bucket.
+# Ignition supports s3 out-of-the-box.
+resource "aws_s3_bucket_object" "ignition_bastion" {
+  bucket  = "${var.ignition_bucket_id}"
+  key     = "${var.cluster_name}-ignition-bastion.json"
+  content = "${var.user_data}"
+  acl     = "private"
+
+  server_side_encryption = "AES256"
+
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-ignition-bastion"
+    )
+  )}"
+}
+
+data "ignition_config" "s3" {
+  replace {
+    source       = "${format("s3://%s/%s", var.ignition_bucket_id, aws_s3_bucket_object.ignition_bastion.key)}"
+    verification = "sha512-${sha512(var.user_data)}"
+  }
+}
