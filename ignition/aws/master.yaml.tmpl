@@ -2181,6 +2181,7 @@ systemd:
       -v /var/lib/kubelet/:/var/lib/kubelet:rw,rshared \
       -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
       -v /etc/kubernetes/config/:/etc/kubernetes/config/ \
+      -v /etc/kubernetes/manifests/:/etc/kubernetes/manifests/ \
       -v /etc/cni/net.d/:/etc/cni/net.d/ \
       -v /opt/cni/bin/:/opt/cni/bin/ \
       -e ETCD_CA_CERT_FILE=/etc/kubernetes/ssl/etcd/server-ca.pem \
@@ -2204,6 +2205,7 @@ systemd:
       --cluster-domain=cluster.local \
       --network-plugin=cni \
       --feature-gates=ExpandPersistentVolumes=true \
+      --pod-manifest-path=/etc/kubernetes/manifests \
       --register-node=true \
       --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
       --allow-privileged=true \
