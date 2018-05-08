@@ -90,6 +90,7 @@ module "bastion" {
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   external_ipsec_subnet  = "${var.external_ipsec_subnet}"
+  ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
   instance_type          = "${var.bastion_instance_type}"
   user_data              = "${data.ct_config.bastion.rendered}"
   with_public_access     = "${var.aws_customer_gateway_id == "" ? 1 : 0 }"

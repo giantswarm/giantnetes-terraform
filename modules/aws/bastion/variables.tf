@@ -18,6 +18,10 @@ variable "external_ipsec_subnet" {
   type = "string"
 }
 
+variable "ignition_bucket_id" {
+  type = "string"
+}
+
 variable "instance_type" {
   type = "string"
 }
