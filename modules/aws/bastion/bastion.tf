@@ -92,12 +92,9 @@ resource "aws_s3_bucket_object" "ignition_bastion" {
 
   server_side_encryption = "AES256"
 
-  tags = "${merge(
-    local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-ignition-bastion"
-    )
-  )}"
+  tags {
+    Name = "${var.cluster_name}-ignition-bastion"
+  }
 }
 
 data "ignition_config" "s3" {
