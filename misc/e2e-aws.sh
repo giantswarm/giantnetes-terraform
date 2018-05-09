@@ -182,7 +182,7 @@ EOF
 
     # Wait for bastions
     echo "Waiting for bastions to become available..."
-    sleep 60
+    sleep 360
 
     # Bootstrap insecure Vault.
     export ANSIBLE_HOST_KEY_CHECKING=False
