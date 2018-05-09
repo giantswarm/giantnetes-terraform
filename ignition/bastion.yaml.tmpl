@@ -71,8 +71,8 @@ systemd:
       contents: |
         [Unit]
         Description=get vault-ca into trusted certs
-        Before=get-vault-ssh-ca.service
         After=wait-for-domains.service
+        Requies=wait-for-domains.service
 
         [Service]
         Type=oneshot
