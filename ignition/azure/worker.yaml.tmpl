@@ -274,6 +274,7 @@ systemd:
       Description=get vault-ca into trusted certs
       Before=calico-certs.service kubelet-certs.service get-vault-ssh-ca.service
       After=wait-for-domains.service
+      Requires=wait-for-domains.service
 
       [Service]
       Type=oneshot
