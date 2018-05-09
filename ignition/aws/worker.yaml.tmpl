@@ -220,8 +220,8 @@ systemd:
     contents: |
       [Unit]
       Description=get-vault-ssh-ca
-      Requires=docker.service get-vault-ssh-ca.service
-      After=docker.service get-vault-ssh-ca.service
+      Requires=docker.service get-vault-ca.service
+      After=docker.service get-vault-ca.service
 
       [Service]
       EnvironmentFile=/etc/tokens/node
