@@ -46,7 +46,7 @@ resource "aws_s3_bucket" "ignition" {
   force_destroy = true
 
   logging {
-    target_bucket = "${var.cluster_name}-access-logs"
+    target_bucket = "${aws_s3_bucket.logging.id}"
     target_prefix = "${var.cluster_name}-ignition-logs/"
   }
 
