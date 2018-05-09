@@ -11,9 +11,9 @@ locals {
 }
 
 resource "aws_instance" "bastion" {
-  count         = "${var.bastion_count}"
-  ami           = "${var.container_linux_ami_id}"
-  instance_type = "${var.instance_type}"
+  count                = "${var.bastion_count}"
+  ami                  = "${var.container_linux_ami_id}"
+  instance_type        = "${var.instance_type}"
   iam_instance_profile = "${aws_iam_instance_profile.bastion.name}"
 
   associate_public_ip_address = "${var.with_public_access}"
