@@ -38,29 +38,13 @@ systemd:
         ExecStart=-/bin/bash -c "gpasswd -d core rkt; gpasswd -d core docker; gpasswd -d core wheel"
         [Install]
         WantedBy=multi-user.target
-    - name: get-vault-ca.service
-      enabled: true
-      contents: |
-        [Unit]
-        Description=get vault-ca into trusted certs
-        Before=get-vault-ssh-ca.service
-        After=wait-for-domains.service
-
-        [Service]
-        Type=oneshot
-        ExecStartPre=/opt/get-ca.sh ${VAULT_DOMAIN_NAME}:443 /etc/ssl/certs/gs-ca.pem
-        ExecStart=/sbin/update-ca-certificates
-        RemainAfterExit=yes
-
-        [Install]
-        WantedBy=multi-user.target
     - name: get-vault-ssh-ca.service
       enabled: true
       contents: |
         [Unit]
         Description=get-vault-ssh-ca
-        Requires=docker.service
-        After=docker.service
+        Requires=docker.service wait-for-domains.service
+        After=docker.service wait-for-domains.service
 
         [Service]
         EnvironmentFile=/etc/tokens/node
@@ -80,6 +64,22 @@ systemd:
                $IMAGE\
                read -field=public_key ssh-client-signer/config/ca > /etc/ssh/trusted-user-ca-keys.pem);\
            [ $? -ne 0 ] && echo "Failed to fetch CA ssh public key" && exit 1 || echo "Sucesfully retrieved CA ssh public key";'
+        [Install]
+        WantedBy=multi-user.target
+    - name: get-vault-ca.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=get vault-ca into trusted certs
+        Before=get-vault-ssh-ca.service
+        After=wait-for-domains.service
+
+        [Service]
+        Type=oneshot
+        ExecStartPre=/opt/get-ca.sh ${VAULT_DOMAIN_NAME}:443 /etc/ssl/certs/gs-ca.pem
+        ExecStart=/sbin/update-ca-certificates
+        RemainAfterExit=yes
+
         [Install]
         WantedBy=multi-user.target
 storage:
