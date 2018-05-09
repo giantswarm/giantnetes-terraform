@@ -1,3 +1,7 @@
+variable "aws_account" {
+  type = "string"
+}
+
 variable "bastion_count" {
   type = "string"
 }
