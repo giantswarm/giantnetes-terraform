@@ -84,6 +84,7 @@ data "ct_config" "bastion" {
 module "bastion" {
   source = "../../../modules/aws/bastion"
 
+  aws_account            = "${var.aws_account}"
   bastion_count          = "2"
   bastion_subnet_ids     = "${module.vpc.bastion_subnet_ids}"
   cluster_name           = "${var.cluster_name}"
