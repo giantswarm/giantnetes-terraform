@@ -3,6 +3,11 @@ locals {
 
   # If behind VPN allow SSH access only from VPN subnet.
   ssh_access_subnet = "${var.with_public_access == 0 ? var.external_ipsec_subnet : local.default_ssh_access_subnet}"
+
+  common_tags = "${map(
+    "giantswarm.io/installation", "${var.cluster_name}",
+    "kubernetes.io/cluster/${var.cluster_name}", "owned"
+  )}"
 }
 
 resource "aws_instance" "bastion" {
@@ -92,9 +97,12 @@ resource "aws_s3_bucket_object" "ignition_bastion" {
 
   server_side_encryption = "AES256"
 
-  tags {
-    Name = "${var.cluster_name}-ignition-bastion"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-ignition-master"
+    )
+  )}"
 }
 
 data "ignition_config" "s3" {
