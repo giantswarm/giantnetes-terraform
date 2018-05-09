@@ -25,7 +25,7 @@ resource "aws_instance" "bastion" {
     volume_size = "${var.volume_size_root}"
   }
 
-  user_data = "${var.user_data}"
+  user_data = "${data.ignition_config.s3.rendered}"
 
   tags = {
     Name                         = "${var.cluster_name}-bastion${count.index}"
