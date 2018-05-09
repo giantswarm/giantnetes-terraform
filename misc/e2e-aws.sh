@@ -180,10 +180,6 @@ allowed_domains: "kubernetes,kubernetes.default,kubernetes.default.svc,kubernete
 bare_metal: False
 EOF
 
-    # Wait for bastions
-    echo "Waiting for bastions to become available..."
-    sleep 360
-
     # Bootstrap insecure Vault.
     export ANSIBLE_HOST_KEY_CHECKING=False
     ansible-playbook -i hosts_inventory/${CLUSTER} -e dc=${CLUSTER} bootstrap1.yml
