@@ -182,8 +182,6 @@ EOF
 
     # Bootstrap insecure Vault.
     export ANSIBLE_HOST_KEY_CHECKING=False
-    # wait for vault
-    sleep 30
     ansible-playbook -i hosts_inventory/${CLUSTER} -e dc=${CLUSTER} bootstrap1.yml
 
     # Init Vault with one unencrypted unseal key.
