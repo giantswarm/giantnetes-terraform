@@ -100,7 +100,7 @@ resource "aws_s3_bucket_object" "ignition_bastion" {
   tags = "${merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}-ignition-master"
+      "Name", "${var.cluster_name}-ignition-bastion"
     )
   )}"
 }
