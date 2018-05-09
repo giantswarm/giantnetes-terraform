@@ -135,6 +135,7 @@ stage-terraform-only-vault() {
   terraform init ../platforms/aws/giantnetes
   terraform apply -auto-approve -target="module.dns" ../platforms/aws/giantnetes
   terraform apply -auto-approve -target="module.vpc" ../platforms/aws/giantnetes
+  terraform apply -auto-approve -target="module.s3" ../platforms/aws/giantnetes
   terraform apply -auto-approve -target="module.bastion" ../platforms/aws/giantnetes
   terraform apply -auto-approve -target="module.vault" ../platforms/aws/giantnetes
 
@@ -181,6 +182,8 @@ EOF
 
     # Bootstrap insecure Vault.
     export ANSIBLE_HOST_KEY_CHECKING=False
+    # wait for vault
+    sleep 30
     ansible-playbook -i hosts_inventory/${CLUSTER} -e dc=${CLUSTER} bootstrap1.yml
 
     # Init Vault with one unencrypted unseal key.
