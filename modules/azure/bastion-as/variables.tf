@@ -36,6 +36,12 @@ variable "network_interface_ids" {
   description = "List of NICs to use for bastion VMs"
 }
 
+variable "platform_fault_domain_count" {
+  type        = "string"
+  description = "Number of failure domains to use for availability set."
+  default     = 3
+}
+
 variable "resource_group_name" {
   type = "string"
 }

@@ -31,6 +31,12 @@ variable "worker_count" {
   description = "Number of worker nodes to be created."
 }
 
+variable "platform_fault_domain_count" {
+  type        = "string"
+  description = "Number of failure domains to use for availability set."
+  default     = 3
+}
+
 variable "resource_group_name" {
   type = "string"
 }

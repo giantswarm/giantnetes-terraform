@@ -3,20 +3,21 @@
 ## Prerequisites
 
 Common:
-- az cli installed 
-- `az login` executed
+- az cli installed
+- `az login` executed (To switch to German cloud `az cloud set --name AzureGermanCloud`)
 
 ### Create storage account for terraform state
 
 ```
 export NAME="cluster1"
-az group create -n ${NAME}-terraform -l westeurope
+export REGION="westeurope"
+az group create -n ${NAME}-terraform -l ${REGION}
 
 az storage account create \
   -n ${NAME}terraform \
   -g ${NAME}-terraform \
   --kind BlobStorage \
-  --location westeurope \
+  --location ${REGION} \
   --sku Standard_RAGRS \
   --access-tier Cool
 
@@ -42,7 +43,7 @@ az storage account keys list -g ${NAME}-terraform  --account-name ${NAME}terrafo
 Create resource group for cluster. We need one to assign permissions.
 
 ```
-az group create -n ${NAME} -l westeurope
+az group create -n ${NAME} -l ${REGION}
 ```
 
 Create service principal with permissions limited to resource group.
@@ -73,6 +74,12 @@ Edit `envs.sh`. DO NOT PUT passwords and keys into `envs.sh` as it will be store
 Command below will ask for:
 - storage account access key
 - service principal secret key
+
+For German cloud add following two variables into `envs.sh`
+```
+export ARM_ENVIRONMENT="german"
+export TF_VAR_azure_cloud=AZUREGERMANCLOUD
+```
 
 ```
 source envs.sh
