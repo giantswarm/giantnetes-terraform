@@ -135,6 +135,7 @@ stage-terraform-only-vault() {
   terraform init ../platforms/aws/giantnetes
   terraform apply -auto-approve -target="module.dns" ../platforms/aws/giantnetes
   terraform apply -auto-approve -target="module.vpc" ../platforms/aws/giantnetes
+  terraform apply -auto-approve -target="module.s3" ../platforms/aws/giantnetes
   terraform apply -auto-approve -target="module.bastion" ../platforms/aws/giantnetes
   terraform apply -auto-approve -target="module.vault" ../platforms/aws/giantnetes
 

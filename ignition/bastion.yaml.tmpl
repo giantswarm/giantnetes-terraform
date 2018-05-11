@@ -43,8 +43,8 @@ systemd:
       contents: |
         [Unit]
         Description=get-vault-ssh-ca
-        Requires=docker.service wait-for-domains.service
-        After=docker.service wait-for-domains.service
+        Requires=docker.service get-vault-ca.service
+        After=docker.service get-vault-ca.service
 
         [Service]
         EnvironmentFile=/etc/tokens/node
@@ -66,14 +66,13 @@ systemd:
            [ $? -ne 0 ] && echo "Failed to fetch CA ssh public key" && exit 1 || echo "Sucesfully retrieved CA ssh public key";'
         [Install]
         WantedBy=multi-user.target
-
     - name: get-vault-ca.service
       enabled: true
       contents: |
         [Unit]
         Description=get vault-ca into trusted certs
-        Before=get-vault-ssh-ca.service
         After=wait-for-domains.service
+        Requies=wait-for-domains.service
 
         [Service]
         Type=oneshot
@@ -112,7 +111,7 @@ storage:
       filesystem: root
       mode: 0770
       contents:
-        inline:  |
+        inline: |
           #!/bin/bash
 
           if [ -z "$1" ] || [ -z "$2" ]
@@ -147,7 +146,7 @@ storage:
     - path: /opt/wait-for-domains
       filesystem: root
       mode: 0544
-      contents: 
+      contents:
         inline: |
           #!/bin/bash
           domains="${VAULT_DOMAIN_NAME}"

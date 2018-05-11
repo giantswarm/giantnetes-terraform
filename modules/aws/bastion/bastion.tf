@@ -3,12 +3,18 @@ locals {
 
   # If behind VPN allow SSH access only from VPN subnet.
   ssh_access_subnet = "${var.with_public_access == 0 ? var.external_ipsec_subnet : local.default_ssh_access_subnet}"
+
+  common_tags = "${map(
+    "giantswarm.io/installation", "${var.cluster_name}",
+    "kubernetes.io/cluster/${var.cluster_name}", "owned"
+  )}"
 }
 
 resource "aws_instance" "bastion" {
-  count         = "${var.bastion_count}"
-  ami           = "${var.container_linux_ami_id}"
-  instance_type = "${var.instance_type}"
+  count                = "${var.bastion_count}"
+  ami                  = "${var.container_linux_ami_id}"
+  instance_type        = "${var.instance_type}"
+  iam_instance_profile = "${aws_iam_instance_profile.bastion.name}"
 
   associate_public_ip_address = "${var.with_public_access}"
   source_dest_check           = false
@@ -20,7 +26,7 @@ resource "aws_instance" "bastion" {
     volume_size = "${var.volume_size_root}"
   }
 
-  user_data = "${var.user_data}"
+  user_data = "${data.ignition_config.s3.rendered}"
 
   tags = {
     Name                         = "${var.cluster_name}-bastion${count.index}"
@@ -80,4 +86,29 @@ resource "aws_route53_record" "bastion" {
   # Add "public_ip" or "private_ip" depending on "with_public_access" parameter.
   records = ["${var.with_public_access ? element(aws_instance.bastion.*.public_ip, count.index) : element(aws_instance.bastion.*.private_ip, count.index)}"]
   ttl     = "300"
+}
+
+# To avoid 16kb user_data limit upload CoreOS ignition config to a s3 bucket.
+# Ignition supports s3 out-of-the-box.
+resource "aws_s3_bucket_object" "ignition_bastion" {
+  bucket  = "${var.ignition_bucket_id}"
+  key     = "${var.cluster_name}-ignition-bastion.json"
+  content = "${var.user_data}"
+  acl     = "private"
+
+  server_side_encryption = "AES256"
+
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-ignition-bastion"
+    )
+  )}"
+}
+
+data "ignition_config" "s3" {
+  replace {
+    source       = "${format("s3://%s/%s", var.ignition_bucket_id, aws_s3_bucket_object.ignition_bastion.key)}"
+    verification = "sha512-${sha512(var.user_data)}"
+  }
 }

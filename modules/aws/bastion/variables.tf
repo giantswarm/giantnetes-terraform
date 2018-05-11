@@ -1,3 +1,7 @@
+variable "aws_account" {
+  type = "string"
+}
+
 variable "bastion_count" {
   type = "string"
 }
@@ -15,6 +19,10 @@ variable "cluster_name" {
 }
 
 variable "external_ipsec_subnet" {
+  type = "string"
+}
+
+variable "ignition_bucket_id" {
   type = "string"
 }
 
