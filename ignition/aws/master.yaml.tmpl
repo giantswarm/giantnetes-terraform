@@ -1741,7 +1741,7 @@ systemd:
              read -field=public_key ssh-client-signer/config/ca > /etc/ssh/trusted-user-ca-keys.pem);\
          [ $? -ne 0 ] && echo "Failed to fetch CA ssh public key" && exit 1 || echo "Sucesfully retrieved CA ssh public key";'
       [Install]
-      WantedBy=multi-user.targetPort
+      WantedBy=multi-user.target
   - name: docker.service
     enabled: true
     dropins:
