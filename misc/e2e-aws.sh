@@ -213,6 +213,7 @@ EOF
 }
 
 stage-destroy() {
+  sleep 600
   cd ${BUILDDIR}
 
   source envs.sh
