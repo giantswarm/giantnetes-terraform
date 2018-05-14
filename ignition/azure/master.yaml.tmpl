@@ -1845,7 +1845,7 @@ systemd:
       Type=oneshot
       RemainAfterExit=yes
       ExecStart=/bin/bash -c '\
-         result=$( curl -o /etc/ssh/trusted-user-ca-keys.pem \
+         result=$(curl -o /etc/ssh/trusted-user-ca-keys.pem \
                    --header "X-Vault-Token: $VAULT_TOKEN" \
                    $VAULT_ADDR/v1/ssh-client-signer/public_key);\
          [ $? -ne 0 ] && echo "Failed to fetch CA ssh public key" && exit 1 || echo "Sucesfully retrieved CA ssh public key";'
