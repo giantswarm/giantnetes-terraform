@@ -1660,11 +1660,9 @@ storage:
                 - mountPath: /etc/kubernetes/ssl/
                   name: ssl-certs-kubernetes
                   readOnly: true
-                volumeMounts:
                 - mountPath: /etc/kubernetes/secrets/
                   name: k8s-secrets
                   readOnly: true
-                volumeMounts:
                 - mountPath: /etc/kubernetes/config/
                   name: k8s-config
                   readOnly: true
@@ -1716,7 +1714,6 @@ storage:
                 - mountPath: /etc/kubernetes/ssl/
                   name: ssl-certs-kubernetes
                   readOnly: true
-                volumeMounts:
                 - mountPath: /etc/kubernetes/config/
                   name: k8s-config
                   readOnly: true

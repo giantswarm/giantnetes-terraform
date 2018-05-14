@@ -1759,7 +1759,7 @@ storage:
                 - --cloud-provider=azure
                 - --cloud-config=/etc/kubernetes/config/azure.yaml
                 - --allocate-node-cidrs=true
-                - --cluster-cidr ${POD_CIDR}
+                - --cluster-cidr=${POD_CIDR}
                 - --profiling=false
                 - --terminated-pod-gc-threshold=10
                 - --use-service-account-credentials=true
@@ -1782,11 +1782,9 @@ storage:
                 - mountPath: /etc/kubernetes/ssl/
                   name: ssl-certs-kubernetes
                   readOnly: true
-                volumeMounts:
                 - mountPath: /etc/kubernetes/secrets/
                   name: k8s-secrets
                   readOnly: true
-                volumeMounts:
                 - mountPath: /etc/kubernetes/config/
                   name: k8s-config
                   readOnly: true
@@ -1838,7 +1836,6 @@ storage:
                 - mountPath: /etc/kubernetes/ssl/
                   name: ssl-certs-kubernetes
                   readOnly: true
-                volumeMounts:
                 - mountPath: /etc/kubernetes/config/
                   name: k8s-config
                   readOnly: true
