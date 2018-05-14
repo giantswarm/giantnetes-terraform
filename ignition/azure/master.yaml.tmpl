@@ -2273,8 +2273,8 @@ systemd:
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service
-      Requires=k8s-setup-network-env.service
+      After=k8s-setup-network-env.service docker.service
+      Requires=k8s-setup-network-env.service docker.service
 
       [Service]
       Restart=always

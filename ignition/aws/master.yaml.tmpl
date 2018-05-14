@@ -2150,8 +2150,8 @@ systemd:
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      Requires=k8s-setup-network-env.service k8s-addons.service
-      After=k8s-setup-network-env.service k8s-addons.service
+      Requires=k8s-setup-network-env.service docker.service
+      After=k8s-setup-network-env.service docker.service
 
       [Service]
       Restart=always
@@ -2290,8 +2290,8 @@ systemd:
     contents: |
       [Unit]
       Description=Kubernetes Addons
-      Wants=k8s-setup-network-env.service
-      After=k8s-setup-network-env.service
+      Wants=k8s-kubelet.service
+      After=k8s-kubelet.service
 
       [Service]
       Type=oneshot
