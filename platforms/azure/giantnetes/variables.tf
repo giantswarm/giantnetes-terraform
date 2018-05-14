@@ -13,6 +13,14 @@ variable "azure_cloud" {
   default     = "AZUREPUBLICCLOUD"
 }
 
+# Azure has different number of failure domains depending on location.
+# For example, German cloud central location has 2 failure domains.
+variable "platform_fault_domain_count" {
+  type        = "string"
+  description = "Number of failure domains to use for availability sets."
+  default     = 3
+}
+
 variable "azure_sp_tenantid" {
   type        = "string"
   description = "Tenant ID of Service Principal for Kubernetes"

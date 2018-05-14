@@ -1,8 +1,9 @@
 resource "azurerm_availability_set" "bastions" {
-  name                = "${var.cluster_name}-bastions"
-  location            = "${var.location}"
-  resource_group_name = "${var.resource_group_name}"
-  managed             = true
+  name                        = "${var.cluster_name}-bastions"
+  location                    = "${var.location}"
+  resource_group_name         = "${var.resource_group_name}"
+  managed                     = true
+  platform_fault_domain_count = "${var.platform_fault_domain_count}"
 
   tags {
     GiantSwarmInstallation = "${var.cluster_name}"

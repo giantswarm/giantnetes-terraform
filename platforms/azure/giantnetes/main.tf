@@ -73,17 +73,18 @@ data "ct_config" "bastion" {
 module "bastion" {
   source = "../../../modules/azure/bastion-as"
 
-  bastion_count           = "2"
-  cluster_name            = "${var.cluster_name}"
-  core_ssh_key            = "${var.core_ssh_key}"
-  container_linux_channel = "${var.container_linux_channel}"
-  container_linux_version = "${module.container_linux.coreos_version}"
-  location                = "${var.azure_location}"
-  network_interface_ids   = "${module.vnet.bastion_network_interface_ids}"
-  resource_group_name     = "${module.resource_group.name}"
-  storage_type            = "${var.bastion_storage_type}"
-  user_data               = "${data.ct_config.bastion.rendered}"
-  vm_size                 = "${var.bastion_vm_size}"
+  bastion_count               = "2"
+  cluster_name                = "${var.cluster_name}"
+  core_ssh_key                = "${var.core_ssh_key}"
+  container_linux_channel     = "${var.container_linux_channel}"
+  container_linux_version     = "${module.container_linux.coreos_version}"
+  location                    = "${var.azure_location}"
+  network_interface_ids       = "${module.vnet.bastion_network_interface_ids}"
+  platform_fault_domain_count = "${var.platform_fault_domain_count}"
+  resource_group_name         = "${module.resource_group.name}"
+  storage_type                = "${var.bastion_storage_type}"
+  user_data                   = "${data.ct_config.bastion.rendered}"
+  vm_size                     = "${var.bastion_vm_size}"
 }
 
 # Generate ignition config for Vault.
@@ -168,9 +169,10 @@ module "master" {
   location                    = "${var.azure_location}"
 
   # Only single master supported.
-  master_count        = "1"
-  resource_group_name = "${module.resource_group.name}"
-  storage_type        = "${var.master_storage_type}"
+  master_count                = "1"
+  resource_group_name         = "${module.resource_group.name}"
+  platform_fault_domain_count = "${var.platform_fault_domain_count}"
+  storage_type                = "${var.master_storage_type}"
 
   network_interface_ids = "${module.vnet.master_network_interface_ids}"
   vm_size               = "${var.master_vm_size}"
@@ -226,9 +228,10 @@ module "worker" {
   docker_disk_size                = "100"
   location                        = "${var.azure_location}"
 
-  worker_count        = "${var.worker_count}"
-  resource_group_name = "${module.resource_group.name}"
-  storage_type        = "${var.worker_storage_type}"
+  worker_count                = "${var.worker_count}"
+  resource_group_name         = "${module.resource_group.name}"
+  platform_fault_domain_count = "${var.platform_fault_domain_count}"
+  storage_type                = "${var.worker_storage_type}"
 
   network_interface_ids = "${module.vnet.worker_network_interface_ids}"
   vm_size               = "${var.worker_vm_size}"
