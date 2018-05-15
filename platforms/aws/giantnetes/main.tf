@@ -136,16 +136,18 @@ data "template_file" "master" {
   template = "${file("${path.module}/../../../ignition/aws/master.yaml.tmpl")}"
 
   vars {
-    "API_DOMAIN_NAME"   = "${var.api_dns}.${var.base_domain}"
-    "CALICO_CIDR"       = "${var.calico_cidr}"
-    "DEFAULT_IPV4"      = "$${DEFAULT_IPV4}"
-    "DOCKER_CIDR"       = "${var.docker_cidr}"
-    "ETCD_DOMAIN_NAME"  = "${var.etcd_dns}.${var.base_domain}"
-    "G8S_VAULT_TOKEN"   = "${var.nodes_vault_token}"
-    "K8S_SERVICE_CIDR"  = "${var.k8s_service_cidr}"
-    "K8S_DNS_IP"        = "${var.k8s_dns_ip}"
-    "K8S_API_IP"        = "${var.k8s_api_ip}"
-    "VAULT_DOMAIN_NAME" = "${var.vault_dns}.${var.base_domain}"
+    "API_DOMAIN_NAME"          = "${var.api_dns}.${var.base_domain}"
+    "CALICO_CIDR"              = "${var.calico_cidr}"
+    "DEFAULT_IPV4"             = "$${DEFAULT_IPV4}"
+    "DOCKER_CIDR"              = "${var.docker_cidr}"
+    "ETCD_DOMAIN_NAME"         = "${var.etcd_dns}.${var.base_domain}"
+    "G8S_VAULT_TOKEN"          = "${var.nodes_vault_token}"
+    "K8S_SERVICE_CIDR"         = "${var.k8s_service_cidr}"
+    "K8S_DNS_IP"               = "${var.k8s_dns_ip}"
+    "K8S_API_IP"               = "${var.k8s_api_ip}"
+    "MOUNT_DEVICE_NAME_DOCKER" = "${var.master_instance["mount_device_name_docker"]}"
+    "MOUNT_DEVICE_NAME_ETCD"   = "${var.master_instance["mount_device_name_etcd"]}"
+    "VAULT_DOMAIN_NAME"        = "${var.vault_dns}.${var.base_domain}"
   }
 }
 
@@ -159,18 +161,19 @@ data "ct_config" "master" {
 module "master" {
   source = "../../../modules/aws/master"
 
-  api_dns                = "${var.api_dns}"
-  aws_account            = "${var.aws_account}"
-  cluster_name           = "${var.cluster_name}"
-  container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
-  dns_zone_id            = "${module.dns.public_dns_zone_id}"
-  elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
-  ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
-  instance_type          = "${var.master_instance_type}"
-  user_data              = "${data.ct_config.master.rendered}"
-  master_subnet_ids      = "${module.vpc.worker_subnet_ids}"
-  vpc_cidr               = "${var.vpc_cidr}"
-  vpc_id                 = "${module.vpc.vpc_id}"
+  api_dns                 = "${var.api_dns}"
+  aws_account             = "${var.aws_account}"
+  cluster_name            = "${var.cluster_name}"
+  container_linux_ami_id  = "${data.aws_ami.coreos_ami.image_id}"
+  dns_zone_id             = "${module.dns.public_dns_zone_id}"
+  elb_subnet_ids          = "${module.vpc.elb_subnet_ids}"
+  ignition_bucket_id      = "${module.s3.ignition_bucket_id}"
+  instance_type           = "${var.master_instance["type"]}"
+  user_data               = "${data.ct_config.master.rendered}"
+  master_subnet_ids       = "${module.vpc.worker_subnet_ids}"
+  volume_device_name_etcd = "${var.master_instance["volume_device_name_etcd"]}"
+  vpc_cidr                = "${var.vpc_cidr}"
+  vpc_id                  = "${module.vpc.vpc_id}"
 }
 
 # Generate ignition config for worker.
@@ -178,14 +181,15 @@ data "template_file" "worker" {
   template = "${file("${path.module}/../../../ignition/aws/worker.yaml.tmpl")}"
 
   vars {
-    "API_DOMAIN_NAME"   = "${var.api_dns}.${var.base_domain}"
-    "CALICO_CIDR"       = "${var.calico_cidr}"
-    "DEFAULT_IPV4"      = "$${DEFAULT_IPV4}"
-    "DOCKER_CIDR"       = "${var.docker_cidr}"
-    "ETCD_DOMAIN_NAME"  = "${var.etcd_dns}.${var.base_domain}"
-    "G8S_VAULT_TOKEN"   = "${var.nodes_vault_token}"
-    "K8S_DNS_IP"        = "${var.k8s_dns_ip}"
-    "VAULT_DOMAIN_NAME" = "${var.vault_dns}.${var.base_domain}"
+    "API_DOMAIN_NAME"          = "${var.api_dns}.${var.base_domain}"
+    "CALICO_CIDR"              = "${var.calico_cidr}"
+    "DEFAULT_IPV4"             = "$${DEFAULT_IPV4}"
+    "DOCKER_CIDR"              = "${var.docker_cidr}"
+    "ETCD_DOMAIN_NAME"         = "${var.etcd_dns}.${var.base_domain}"
+    "G8S_VAULT_TOKEN"          = "${var.nodes_vault_token}"
+    "K8S_DNS_IP"               = "${var.k8s_dns_ip}"
+    "MOUNT_DEVICE_NAME_DOCKER" = "${var.worker_instance["mount_device_name_docker"]}"
+    "VAULT_DOMAIN_NAME"        = "${var.vault_dns}.${var.base_domain}"
   }
 }
 
@@ -199,19 +203,20 @@ data "ct_config" "worker" {
 module "worker" {
   source = "../../../modules/aws/worker-asg"
 
-  aws_account            = "${var.aws_account}"
-  cluster_name           = "${var.cluster_name}"
-  container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
-  dns_zone_id            = "${module.dns.public_dns_zone_id}"
-  elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
-  ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
-  ingress_dns            = "${var.ingress_dns}"
-  instance_type          = "${var.worker_instance_type}"
-  user_data              = "${data.ct_config.worker.rendered}"
-  worker_count           = "${var.worker_count}"
-  worker_subnet_ids      = "${module.vpc.worker_subnet_ids}"
-  vpc_cidr               = "${var.vpc_cidr}"
-  vpc_id                 = "${module.vpc.vpc_id}"
+  aws_account               = "${var.aws_account}"
+  cluster_name              = "${var.cluster_name}"
+  container_linux_ami_id    = "${data.aws_ami.coreos_ami.image_id}"
+  dns_zone_id               = "${module.dns.public_dns_zone_id}"
+  elb_subnet_ids            = "${module.vpc.elb_subnet_ids}"
+  ignition_bucket_id        = "${module.s3.ignition_bucket_id}"
+  ingress_dns               = "${var.ingress_dns}"
+  instance_type             = "${var.worker_instance["type"]}"
+  user_data                 = "${data.ct_config.worker.rendered}"
+  worker_count              = "${var.worker_count}"
+  worker_subnet_ids         = "${module.vpc.worker_subnet_ids}"
+  volume_device_name_docker = "${var.worker_instance["volume_device_name_docker"]}"
+  vpc_cidr                  = "${var.vpc_cidr}"
+  vpc_id                    = "${module.vpc.vpc_id}"
 }
 
 module "vpn" {

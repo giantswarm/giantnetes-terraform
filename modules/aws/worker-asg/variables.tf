@@ -57,6 +57,10 @@ variable "volume_size_docker" {
   default = 50
 }
 
+variable "volume_device_name_docker" {
+  type = "string"
+}
+
 variable "volume_size_etcd" {
   type    = "string"
   default = 10
