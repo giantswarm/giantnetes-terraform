@@ -40,8 +40,6 @@ resource "azurerm_virtual_machine" "worker" {
 
   delete_os_disk_on_termination = true
 
-  delete_data_disks_on_termination = true
-
   storage_image_reference {
     publisher = "CoreOS"
     offer     = "CoreOS"
