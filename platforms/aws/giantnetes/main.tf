@@ -145,6 +145,8 @@ data "template_file" "master" {
     "K8S_SERVICE_CIDR"  = "${var.k8s_service_cidr}"
     "K8S_DNS_IP"        = "${var.k8s_dns_ip}"
     "K8S_API_IP"        = "${var.k8s_api_ip}"
+    "MOUNT_DOCKER"      = "${var.master_instance["mount_docker"]}"
+    "MOUNT_ETCD"        = "${var.master_instance["mount_etcd"]}"
     "VAULT_DOMAIN_NAME" = "${var.vault_dns}.${var.base_domain}"
   }
 }
@@ -166,9 +168,10 @@ module "master" {
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
-  instance_type          = "${var.master_instance_type}"
+  instance_type          = "${var.master_instance["type"]}"
   user_data              = "${data.ct_config.master.rendered}"
   master_subnet_ids      = "${module.vpc.worker_subnet_ids}"
+  volume_etcd            = "${var.master_instance["volume_etcd"]}"
   vpc_cidr               = "${var.vpc_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"
 }
@@ -185,6 +188,7 @@ data "template_file" "worker" {
     "ETCD_DOMAIN_NAME"  = "${var.etcd_dns}.${var.base_domain}"
     "G8S_VAULT_TOKEN"   = "${var.nodes_vault_token}"
     "K8S_DNS_IP"        = "${var.k8s_dns_ip}"
+    "MOUNT_DOCKER"      = "${var.worker_instance["mount_docker"]}"
     "VAULT_DOMAIN_NAME" = "${var.vault_dns}.${var.base_domain}"
   }
 }
@@ -206,10 +210,11 @@ module "worker" {
   elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
   ingress_dns            = "${var.ingress_dns}"
-  instance_type          = "${var.worker_instance_type}"
+  instance_type          = "${var.worker_instance["type"]}"
   user_data              = "${data.ct_config.worker.rendered}"
   worker_count           = "${var.worker_count}"
   worker_subnet_ids      = "${module.vpc.worker_subnet_ids}"
+  volume_docker          = "${var.worker_instance["volume_docker"]}"
   vpc_cidr               = "${var.vpc_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"
 }

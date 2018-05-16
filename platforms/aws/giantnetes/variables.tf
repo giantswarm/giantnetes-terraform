@@ -42,14 +42,25 @@ variable "vault_instance_type" {
   default = "t2.medium"
 }
 
-variable "master_instance_type" {
-  type    = "string"
-  default = "m5.large"
+variable "master_instance" {
+  type = "map"
+
+  default = {
+    type         = "m5.large"
+    mount_docker = "/dev/nvme1n1"
+    mount_etcd   = "/dev/nvme2n1"
+    volume_etcd  = "/dev/xvdh"
+  }
 }
 
-variable "worker_instance_type" {
-  type    = "string"
-  default = "m5.xlarge"
+variable "worker_instance" {
+  type = "map"
+
+  default = {
+    type          = "m5.xlarge"
+    mount_docker  = "/dev/nvme1n1"
+    volume_docker = "/dev/xvdc"
+  }
 }
 
 ### Container Linux ###
