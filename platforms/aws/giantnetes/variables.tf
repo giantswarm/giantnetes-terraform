@@ -46,10 +46,10 @@ variable "master_instance" {
   type = "map"
 
   default = {
-    type                     = "m5.large"
-    mount_device_name_docker = "/dev/nvme1n1"
-    mount_device_name_etcd   = "/dev/nvme2n1"
-    volume_device_name_etcd  = "/dev/xvdh"
+    type         = "m5.large"
+    mount_docker = "/dev/nvme1n1"
+    mount_etcd   = "/dev/nvme2n1"
+    volume_etcd  = "/dev/xvdh"
   }
 }
 
@@ -57,9 +57,9 @@ variable "worker_instance" {
   type = "map"
 
   default = {
-    type                      = "m5.xlarge"
-    mount_device_name_docker  = "/dev/nvme1n1"
-    volume_device_name_docker = "/dev/xvdc"
+    type          = "m5.xlarge"
+    mount_docker  = "/dev/nvme1n1"
+    volume_docker = "/dev/xvdc"
   }
 }
 

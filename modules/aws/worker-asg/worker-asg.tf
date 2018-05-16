@@ -83,7 +83,7 @@ resource "aws_launch_configuration" "worker" {
 
   # Docker volume.
   ebs_block_device = {
-    device_name           = "${var.volume_device_name_docker}"
+    device_name           = "${var.volume_docker}"
     delete_on_termination = true
     volume_type           = "${var.volume_type}"
     volume_size           = "${var.volume_size_docker}"

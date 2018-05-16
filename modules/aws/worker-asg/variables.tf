@@ -57,7 +57,7 @@ variable "volume_size_docker" {
   default = 50
 }
 
-variable "volume_device_name_docker" {
+variable "volume_docker" {
   type = "string"
 }
 

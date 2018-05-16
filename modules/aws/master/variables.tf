@@ -68,7 +68,7 @@ variable "volume_size_root" {
   default = 8
 }
 
-variable "volume_device_name_etcd" {
+variable "volume_etcd" {
   type = "string"
 }
 

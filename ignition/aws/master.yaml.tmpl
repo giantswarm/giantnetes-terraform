@@ -2304,13 +2304,13 @@ storage:
   filesystems:
     - name: docker
       mount:
-        device: ${MOUNT_DEVICE_NAME_DOCKER}
+        device: ${MOUNT_DOCKER}
         format: xfs
         wipe_filesystem: false
         label: docker
     - name: etcd
       mount:
-        device: ${MOUNT_DEVICE_NAME_ETCD}
+        device: ${MOUNT_ETCD}
         format: ext4
         wipe_filesystem: false
         label: var-lib-etcd

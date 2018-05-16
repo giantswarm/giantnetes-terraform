@@ -427,7 +427,7 @@ storage:
   filesystems:
     - name: docker
       mount:
-        device: /dev/nvme1n1
+        device: /dev/${MOUNT_DOCKER}
         format: xfs
         wipe_filesystem: false
         label: docker
