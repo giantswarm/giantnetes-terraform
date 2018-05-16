@@ -108,6 +108,7 @@ export TF_VAR_base_domain=\${TF_VAR_cluster_name}.\${TF_VAR_azure_location}.azur
 export TF_VAR_root_dns_zone_name="azure.gigantic.io"
 export TF_VAR_nodes_vault_token=
 export TF_VAR_worker_count=${WORKER_COUNT}
+export TF_VAR_delete_data_disks_on_termination="true"
 EOF
 }
 
