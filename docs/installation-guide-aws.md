@@ -112,13 +112,25 @@ terraform apply ../platforms/aws/giantnetes
 
 ## Upload variables and configuration
 
+Create `terraform` folder in [installations repositry](https://github.com/giantswarm/installations) under particular installation folder. Copy variables and configuration.
+
 ```
 export CLUSTER=cluster1
+export INSTALLATIONS=<installations_repo_path>
 
+mkdir ${INSTALLATIONS}/${CLUSTER}/terraform
 for i in envs.sh backend.tf provider.tf; do
-  aws s3 cp ${i} s3://${CLUSTER}-state/${i}
+  cp ${i} ${INSTALLATIONS}/${CLUSTER}/terraform/
 done
+
+cd ${INSTALLATIONS}
+git checkout -b "${cluster}_terraform"
+git add ${INSTALLATIONS}/${CLUSTER}/terraform
+git commit -S -m "Add ${CLUSTER} terraform variables and configuration"
 ```
+
+Create PR with related changes.
+
 
 ## Deletion
 
@@ -137,12 +149,6 @@ terraform init ../platforms/aws/giantnetes
 terraform destroy ../platforms/aws/giantnetes
 ```
 
-Delete s3 bucket and dynamodb.
-
-```
-aws s3 rb s3://$CLUSTER-build
-aws dynamodb delete-table --region $AWS_DEFAULT_REGION --table-name $CLUSTER-lock
-```
 
 ## Enable access logs for state bucket
 
@@ -162,11 +168,14 @@ cd build
 ```
 
 ```
-export CLUSTER=cluster1
+export NAME=cluster1
+export INSTALLATIONS=<installations_repo_path>
 
-for i in envs.sh backend.tf provider.tf; do
-  aws s3 cp s3://${CLUSTER}-state/${i} ${i}
-done
+cp ${INSTALLATIONS}/${CLUSTER}/terraform/* .
+```
+
+```
+source envs.sh
 ```
 
 ### Apply latest state

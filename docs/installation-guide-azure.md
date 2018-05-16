@@ -149,11 +149,25 @@ terraform apply ../platforms/azure/giantnetes
 
 ## Upload variables and configuration
 
+
+Create `terraform` folder in [installations repositry](https://github.com/giantswarm/installations) under particular installation folder. Copy variables and configuration.
+
 ```
-for i in envs.sh backend.tf; do
-  az storage blob upload --account-name ${NAME}terraform -c ${NAME}-build -n ${i} -f ${i}
+export CLUSTER=cluster1
+export INSTALLATIONS=<installations_repo_path>
+
+mkdir ${INSTALLATIONS}/${CLUSTER}/terraform
+for i in envs.sh backend.tf provider.tf; do
+  cp ${i} ${INSTALLATIONS}/${CLUSTER}/terraform/
 done
+
+cd ${INSTALLATIONS}
+git checkout -b "${cluster}_terraform"
+git add ${INSTALLATIONS}/${CLUSTER}/terraform
+git commit -S -m "Add ${CLUSTER} terraform variables and configuration"
 ```
+
+Create PR with related changes.
 
 ## Deletion
 
@@ -180,12 +194,10 @@ cd build
 
 ```
 export NAME=cluster1
-for i in envs.sh backend.tf; do
-  az storage blob download --account-name ${NAME}terraform -c ${NAME}-build -n ${i} -f ${i}
-done
-```
+export INSTALLATIONS=<installations_repo_path>
 
-Command below will ask for secrets that can be found in keepass.
+cp ${INSTALLATIONS}/${CLUSTER}/terraform/* .
+```
 
 ```
 source envs.sh
