@@ -11,6 +11,10 @@ variable "core_ssh_key" {
   type        = "string"
 }
 
+variable "delete_data_disks_on_termination" {
+  default = false
+}
+
 variable "user_data" {
   type        = "string"
   description = "Generated user data"
