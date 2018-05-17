@@ -131,7 +131,7 @@ storage:
                   # container programs network policy and routes on each
                   # host.
                   - name: calico-node
-                    image: quay.io/calico/node:v3.0.5
+                    image: quay.io/giantswarm/node:v3.0.5
                     env:
                       # The location of the Calico etcd cluster.
                       - name: ETCD_ENDPOINTS
@@ -225,7 +225,7 @@ storage:
                   # This container installs the Calico CNI binaries
                   # and CNI network config file on each node.
                   - name: install-cni
-                    image: quay.io/calico/cni:v2.0.4
+                    image: quay.io/giantswarm/cni:v2.0.4
                     command: ["/install-cni.sh"]
                     env:
                       # Name of the CNI config file to create.
@@ -310,7 +310,7 @@ storage:
                 serviceAccountName: calico-kube-controllers
                 containers:
                   - name: calico-kube-controllers
-                    image: quay.io/calico/kube-controllers:v2.0.3
+                    image: quay.io/giantswarm/kube-controllers:v2.0.3
                     env:
                       # The location of the Calico etcd cluster.
                       - name: ETCD_ENDPOINTS
@@ -445,7 +445,7 @@ storage:
                         topologyKey: kubernetes.io/hostname
                 containers:
                 - name: coredns
-                  image: coredns/coredns:1.1.1
+                  image: quay.io/giantswarm/coredns:1.1.1
                   imagePullPolicy: IfNotPresent
                   args: [ "-conf", "/etc/coredns/Corefile" ]
                   volumeMounts:
@@ -627,7 +627,7 @@ storage:
               spec:
                 containers:
                 - name: default-http-backend
-                  image: gcr.io/google_containers/defaultbackend:1.0
+                  image: quay.io/giantswarm/defaultbackend:1.0
                   livenessProbe:
                     httpGet:
                       path: /healthz
@@ -833,7 +833,7 @@ storage:
                 serviceAccountName: kube-lego
                 containers:
                 - name: kube-lego
-                  image: jetstack/kube-lego:0.1.5
+                  image: quay.io/giantswarm/kube-lego:0.1.5
                   imagePullPolicy: Always
                   ports:
                   - containerPort: 8080
@@ -2064,7 +2064,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       LimitNOFILE=40000
-      Environment=IMAGE=quay.io/coreos/etcd:v3.3.1
+      Environment=IMAGE=quay.io/giantswarm/etcd:v3.3.1
       Environment=NAME=%p.service
       EnvironmentFile=/etc/network-environment
       ExecStartPre=-/usr/bin/docker stop  $NAME
@@ -2113,7 +2113,7 @@ systemd:
       [Service]
       Type=oneshot
       EnvironmentFile=/etc/environment
-      Environment=IMAGE=quay.io/coreos/etcd:v3.3.1
+      Environment=IMAGE=quay.io/giantswarm/etcd:v3.3.1
       Environment=NAME=%p.service
       ExecStartPre=-/usr/bin/docker stop  $NAME
       ExecStartPre=-/usr/bin/docker rm  $NAME
