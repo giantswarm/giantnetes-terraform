@@ -1,4 +1,7 @@
 locals {
+  # In China there is no tags for s3 buckets
+  s3_ignition_worker_key = "${element(concat(aws_s3_bucket_object.ignition_worker_with_tags.*.key, aws_s3_bucket_object.ignition_worker_without_tags.*.key), 0)}"
+
   common_tags = "${map(
     "giantswarm.io/installation", "${var.cluster_name}",
     "kubernetes.io/cluster/${var.cluster_name}", "owned"
@@ -138,7 +141,8 @@ resource "aws_security_group" "worker" {
 
 # To avoid 16kb user_data limit upload CoreOS ignition config to a s3 bucket.
 # Ignition supports s3 out-of-the-box.
-resource "aws_s3_bucket_object" "ignition_worker" {
+resource "aws_s3_bucket_object" "ignition_worker_with_tags" {
+  count   = "${var.s3_bucket_tags ? 1 : 0}"
   bucket  = "${var.ignition_bucket_id}"
   key     = "${var.cluster_name}-ignition-worker.json"
   content = "${var.user_data}"
@@ -154,9 +158,21 @@ resource "aws_s3_bucket_object" "ignition_worker" {
   )}"
 }
 
+# To avoid 16kb user_data limit upload CoreOS ignition config to a s3 bucket.
+# Ignition supports s3 out-of-the-box.
+resource "aws_s3_bucket_object" "ignition_worker_without_tags" {
+  count   = "${var.s3_bucket_tags ? 0 : 1}"
+  bucket  = "${var.ignition_bucket_id}"
+  key     = "${var.cluster_name}-ignition-worker.json"
+  content = "${var.user_data}"
+  acl     = "private"
+
+  server_side_encryption = "AES256"
+}
+
 data "ignition_config" "s3" {
   replace {
-    source       = "${format("s3://%s/%s", var.ignition_bucket_id, aws_s3_bucket_object.ignition_worker.key)}"
+    source       = "${format("s3://%s/%s", var.ignition_bucket_id, local.s3_ignition_worker_key)}"
     verification = "sha512-${sha512(var.user_data)}"
   }
 }

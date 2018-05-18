@@ -164,21 +164,21 @@ resource "aws_vpc_endpoint" "s3" {
       "Principal": "*",
       "Action": "s3:GetObject",
       "Effect": "Allow",
-      "Resource": "arn:aws:s3:::${var.aws_account}-${var.cluster_name}-ignition/*"
+      "Resource": "arn:${var.arn_region}:s3:::${var.aws_account}-${var.cluster_name}-ignition/*"
     },
     {
       "Sid": "Etcd-Backup-Rule",
       "Principal": "*",
       "Action": "*",
       "Effect": "Allow",
-      "Resource": "arn:aws:s3:::etcd-backups.giantswarm.io/*"
+      "Resource": "arn:${var.arn_region}:s3:::etcd-backups.giantswarm.io/*"
     },
     {
       "Sid": "AWS-Operator-Rule",
       "Principal": "*",
       "Action": "*",
       "Effect": "Allow",
-      "Resource": "arn:aws:s3:::*-g8s-*"
+      "Resource": "arn:${var.arn_region}:s3:::*-g8s-*"
     }
   ]
 }

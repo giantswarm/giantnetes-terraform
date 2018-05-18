@@ -2201,6 +2201,7 @@ systemd:
       --cluster-dns=${K8S_DNS_IP} \
       --cluster-domain=cluster.local \
       --network-plugin=cni \
+      --pod-infra-container-image=${POD_INFRA_IMAGE} \
       --feature-gates=ExpandPersistentVolumes=true \
       --pod-manifest-path=/etc/kubernetes/manifests \
       --register-node=true \

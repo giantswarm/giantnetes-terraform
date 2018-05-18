@@ -14,7 +14,7 @@ resource "aws_iam_role" "bastion" {
       "Sid": "",
       "Effect": "Allow",
       "Principal": {
-        "Service": "ec2.amazonaws.com"
+        "Service": "${var.iam_region}"
       },
       "Action": "sts:AssumeRole"
     }
@@ -33,18 +33,14 @@ resource "aws_iam_role_policy" "bastion" {
 
   policy = <<EOF
 {
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:GetObject"
-      ],
-      "Resource": [
-        "arn:aws:s3:::${var.aws_account}-${var.cluster_name}-ignition/*"
-      ]
-    }
-  ]
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "s3:GetObject",
+            "Resource": "arn:${var.arn_region}:s3:::${var.aws_account}-${var.cluster_name}-ignition/*"
+        }
+    ]
 }
 EOF
 }

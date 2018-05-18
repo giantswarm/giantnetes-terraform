@@ -61,6 +61,7 @@ resource "aws_security_group" "master_elb" {
 }
 
 resource "aws_route53_record" "master-api" {
+  count   = "${var.route53_enabled ? 1 : 0}"
   zone_id = "${var.dns_zone_id}"
   name    = "${var.api_dns}"
   type    = "A"

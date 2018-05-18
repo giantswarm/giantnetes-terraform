@@ -412,6 +412,7 @@ systemd:
       --cluster-dns=${K8S_DNS_IP} \
       --cluster-domain=cluster.local \
       --network-plugin=cni \
+      --pod-infra-container-image=${POD_INFRA_IMAGE} \
       --register-node=true \
       --allow-privileged=true \
       --feature-gates=ExpandPersistentVolumes=true \
