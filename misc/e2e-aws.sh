@@ -216,7 +216,6 @@ stage-destroy() {
   cd ${BUILDDIR}
 
   source envs.sh
-  sleep 600
   terraform init ../platforms/aws/giantnetes
   terraform destroy -force ../platforms/aws/giantnetes
 
@@ -233,7 +232,7 @@ stage-wait-kubernetes-nodes(){
     until [ ${nodes_num_expected} -eq ${nodes_num_actual} ]; do
         msg "Waiting all nodes to be ready."
         sleep 30; let tries+=1;
-        [ ${tries} -gt 6 ] && fail "Timeout waiting all nodes to be ready."
+        [ ${tries} -gt 10 ] && fail "Timeout waiting all nodes to be ready."
         local nodes_num_actual=$(exec_on master1 ${KUBECTL_CMD} get node | tail -n +2 | grep -v NotReady | wc -l)
         msg "Expected nodes ${nodes_num_expected}, actual nodes ${nodes_num_actual}."
     done
