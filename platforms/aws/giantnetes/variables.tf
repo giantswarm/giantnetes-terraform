@@ -1,3 +1,8 @@
+variable "arn_region" {
+  type    = "string"
+  default = "aws"
+}
+
 variable "cluster_name" {
   type        = "string"
   description = "Need to be unique within the account"
@@ -11,6 +16,17 @@ variable "aws_region" {
 variable "aws_account" {
   type        = "string"
   description = "An AWS account ID."
+}
+
+variable "ami_owner" {
+  type        = "string"
+  default     = "595879546273"
+  description = "ID of the ami owner for CoreOS images."
+}
+
+variable "iam_region" {
+  type    = "string"
+  default = "ec2.amazonaws.com"
 }
 
 variable "nodes_vault_token" {
@@ -28,6 +44,10 @@ variable "logs_expiration_days" {
   type        = "string"
   description = "Number of days access logs will be stored in logging bucket."
   default     = "365"
+}
+
+variable "s3_bucket_tags" {
+  default = true
 }
 
 ### Compute and Storage ###
@@ -111,6 +131,10 @@ variable "root_dns_zone_id" {
   default     = ""
 }
 
+variable "route53_enabled" {
+  default = true
+}
+
 ### Network ###
 
 variable "vpc_cidr" {
@@ -188,4 +212,9 @@ variable "aws_customer_gateway_id" {
 variable "external_ipsec_subnet" {
   description = "CIDR of peering IPSec network."
   default     = "172.18.0.0/30"
+}
+
+### Kubernetes ###
+variable "pod_infra_image" {
+  default = "gcr.io/google_containers/pause-amd64:3.1"
 }

@@ -1,3 +1,7 @@
+variable "arn_region" {
+  type = "string"
+}
+
 variable "aws_account" {
   type = "string"
 }
@@ -23,6 +27,10 @@ variable "external_ipsec_subnet" {
 }
 
 variable "ignition_bucket_id" {
+  type = "string"
+}
+
+variable "iam_region" {
   type = "string"
 }
 
@@ -60,3 +68,9 @@ variable "vpc_cidr" {
 variable "vpc_id" {
   type = "string"
 }
+
+variable "route53_enabled" {
+  default = true
+}
+
+variable "s3_bucket_tags" {}

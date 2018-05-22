@@ -4,6 +4,9 @@ locals {
   # If behind VPN allow SSH access only from VPN subnet.
   ssh_access_subnet = "${var.with_public_access == 0 ? var.external_ipsec_subnet : local.default_ssh_access_subnet}"
 
+  # In China there is no tags for s3 buckets
+  s3_ignition_bastion_key = "${element(concat(aws_s3_bucket_object.ignition_bastion_with_tags.*.key, aws_s3_bucket_object.ignition_bastion_without_tags.*.key), 0)}"
+
   common_tags = "${map(
     "giantswarm.io/installation", "${var.cluster_name}",
     "kubernetes.io/cluster/${var.cluster_name}", "owned"
@@ -78,7 +81,7 @@ resource "aws_security_group" "bastion" {
 }
 
 resource "aws_route53_record" "bastion" {
-  count   = "${var.bastion_count}"
+  count   = "${var.route53_enabled ? var.bastion_count : 0}"
   zone_id = "${var.dns_zone_id}"
   name    = "bastion${count.index + 1}"
   type    = "A"
@@ -90,7 +93,8 @@ resource "aws_route53_record" "bastion" {
 
 # To avoid 16kb user_data limit upload CoreOS ignition config to a s3 bucket.
 # Ignition supports s3 out-of-the-box.
-resource "aws_s3_bucket_object" "ignition_bastion" {
+resource "aws_s3_bucket_object" "ignition_bastion_with_tags" {
+  count   = "${var.s3_bucket_tags ? 1 : 0}"
   bucket  = "${var.ignition_bucket_id}"
   key     = "${var.cluster_name}-ignition-bastion.json"
   content = "${var.user_data}"
@@ -106,9 +110,19 @@ resource "aws_s3_bucket_object" "ignition_bastion" {
   )}"
 }
 
+resource "aws_s3_bucket_object" "ignition_bastion_without_tags" {
+  count   = "${var.s3_bucket_tags ? 0 : 1}"
+  bucket  = "${var.ignition_bucket_id}"
+  key     = "${var.cluster_name}-ignition-bastion.json"
+  content = "${var.user_data}"
+  acl     = "private"
+
+  server_side_encryption = "AES256"
+}
+
 data "ignition_config" "s3" {
   replace {
-    source       = "${format("s3://%s/%s", var.ignition_bucket_id, aws_s3_bucket_object.ignition_bastion.key)}"
+    source       = "${format("s3://%s/%s", var.ignition_bucket_id, local.s3_ignition_bastion_key)}"
     verification = "sha512-${sha512(var.user_data)}"
   }
 }

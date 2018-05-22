@@ -14,7 +14,7 @@ resource "aws_iam_role" "worker" {
       "Sid": "",
       "Effect": "Allow",
       "Principal": {
-        "Service": "ec2.amazonaws.com"
+        "Service": "${var.iam_region}"
       },
       "Action": "sts:AssumeRole"
     }
@@ -69,7 +69,7 @@ resource "aws_iam_role_policy" "worker" {
         "s3:GetObject"
       ],
       "Resource": [
-        "arn:aws:s3:::${var.aws_account}-${var.cluster_name}-ignition/*"
+        "arn:${var.arn_region}:s3:::${var.aws_account}-${var.cluster_name}-ignition/*"
       ]
     }
   ]
