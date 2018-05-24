@@ -790,78 +790,6 @@ storage:
               targetPort: 443
             selector:
               k8s-app: nginx-ingress-controller
-    - path: /srv/kube-lego-cm.yaml
-      filesystem: root
-      mode: 0644
-      contents:
-        inline: |
-          apiVersion: v1
-          kind: ConfigMap
-          metadata:
-            name: kube-lego
-            namespace: kube-system
-          data:
-            lego.email: "accounts@giantswarm.io"
-            lego.url: "https://acme-v01.api.letsencrypt.org/directory"
-    - path: /srv/kube-lego-sa.yaml
-      filesystem: root
-      mode: 0644
-      contents:
-        inline: |
-          apiVersion: v1
-          kind: ServiceAccount
-          metadata:
-            name: kube-lego
-            namespace: kube-system
-    - path: /srv/kube-lego-dep.yaml
-      filesystem: root
-      mode: 0644
-      contents:
-        inline: |
-          apiVersion: extensions/v1beta1
-          kind: Deployment
-          metadata:
-            name: kube-lego
-            namespace: kube-system
-          spec:
-            replicas: 1
-            template:
-              metadata:
-                labels:
-                  app: kube-lego
-              spec:
-                serviceAccountName: kube-lego
-                containers:
-                - name: kube-lego
-                  image: quay.io/giantswarm/kube-lego:0.1.5
-                  imagePullPolicy: Always
-                  ports:
-                  - containerPort: 8080
-                  env:
-                  - name: LEGO_EMAIL
-                    valueFrom:
-                      configMapKeyRef:
-                        name: kube-lego
-                        key: lego.email
-                  - name: LEGO_URL
-                    valueFrom:
-                      configMapKeyRef:
-                        name: kube-lego
-                        key: lego.url
-                  - name: LEGO_NAMESPACE
-                    valueFrom:
-                      fieldRef:
-                        fieldPath: metadata.namespace
-                  - name: LEGO_POD_IP
-                    valueFrom:
-                      fieldRef:
-                        fieldPath: status.podIP
-                  readinessProbe:
-                    httpGet:
-                      path: /healthz
-                      port: 8080
-                    initialDelaySeconds: 5
-                    timeoutSeconds: 1
     - path: /srv/rbac-roles.yaml
       filesystem: root
       mode: 0644
@@ -1012,34 +940,6 @@ storage:
                 - get
                 - create
                 - update
-          ---
-          ## kube-lego
-          apiVersion: rbac.authorization.k8s.io/v1beta1
-          kind: ClusterRole
-          metadata:
-            name: kube-lego
-          rules:
-          - apiGroups:
-            - extensions
-            resources:
-            - ingresses
-            verbs:
-            - list
-            - get
-            - create
-            - update
-            - delete
-            - watch
-          - apiGroups:
-            - ""
-            resources:
-            - endpoints
-            - services
-            - secrets
-            verbs:
-            - get
-            - create
-            - update
     - path: /srv/rbac-bindings.yaml
       filesystem: root
       mode: 0644
@@ -1185,20 +1085,6 @@ storage:
             name: nginx-ingress-role
             apiGroup: rbac.authorization.k8s.io
           ---
-          ## kube-lego
-          kind: ClusterRoleBinding
-          apiVersion: rbac.authorization.k8s.io/v1beta1
-          metadata:
-            name: kube-lego
-          subjects:
-          - kind: ServiceAccount
-            name: kube-lego
-            namespace: kube-system
-          roleRef:
-            kind: ClusterRole
-            name: kube-lego
-            apiGroup: rbac.authorization.k8s.io
-          ---
           ## kube-proxy
           kind: ClusterRoleBinding
           apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -1323,9 +1209,6 @@ storage:
             name: nginx-ingress-controller
             namespace: kube-system
           - kind: ServiceAccount
-            name: kube-lego
-            namespace: kube-system
-          - kind: ServiceAccount
             name: kube-proxy
             namespace: kube-system
           roleRef:
@@ -1426,7 +1309,7 @@ storage:
           done
 
           # apply k8s addons
-          MANIFESTS="kube-proxy-sa.yaml kube-proxy-ds.yaml default-storage-class.yaml coredns-cm.yaml coredns-sa.yaml coredns-dep.yaml coredns-svc.yaml default-backend-dep.yaml default-backend-svc.yaml ingress-controller-cm.yaml ingress-controller-sa.yaml ingress-controller-dep.yaml ingress-controller-svc.yaml kube-lego-cm.yaml kube-lego-sa.yaml kube-lego-dep.yaml"
+          MANIFESTS="kube-proxy-sa.yaml kube-proxy-ds.yaml default-storage-class.yaml coredns-cm.yaml coredns-sa.yaml coredns-dep.yaml coredns-svc.yaml default-backend-dep.yaml default-backend-svc.yaml ingress-controller-cm.yaml ingress-controller-sa.yaml ingress-controller-dep.yaml ingress-controller-svc.yaml"
 
           for manifest in $MANIFESTS
           do
