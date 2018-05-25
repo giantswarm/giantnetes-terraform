@@ -98,25 +98,3 @@ resource "azurerm_virtual_machine" "master" {
     GiantSwarmInstallation = "${var.cluster_name}"
   }
 }
-
-resource "local_file" "master_ignition" {
-  content  = "${var.user_data}"
-  filename = "${path.cwd}/generated/master-ignition.yaml"
-}
-
-resource "azurerm_storage_blob" "ignition_blob" {
-  name = "master-ignition-${timestamp()}.yaml"
-
-  resource_group_name    = "${var.resource_group_name}"
-  storage_account_name   = "${var.storage_acc}"
-  storage_container_name = "${var.storage_container}"
-
-  type   = "block"
-  source = "${path.cwd}/generated/master-ignition.yaml"
-}
-
-data "ignition_config" "loader" {
-  replace {
-    source = "${azurerm_storage_blob.ignition_blob.url}"
-  }
-}

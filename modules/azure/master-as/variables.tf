@@ -78,6 +78,11 @@ variable "storage_acc" {
   description = "Blob storage account name."
 }
 
+variable "storage_acc_url" {
+  type        = "string"
+  description = "Blob storage account URL."
+}
+
 variable "storage_container" {
   type        = "string"
   description = "Blob storage container name."
