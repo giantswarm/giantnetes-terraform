@@ -46,9 +46,9 @@ variable "resource_group_name" {
   type = "string"
 }
 
-variable "storage_type" {
+variable "os_disk_storage_type" {
   type        = "string"
-  description = "Storage account type"
+  description = "Storage account type for OS disk."
 }
 
 variable "vm_size" {

@@ -82,7 +82,7 @@ module "bastion" {
   network_interface_ids       = "${module.vnet.bastion_network_interface_ids}"
   platform_fault_domain_count = "${var.platform_fault_domain_count}"
   resource_group_name         = "${module.resource_group.name}"
-  storage_type                = "${var.bastion_storage_type}"
+  os_disk_storage_type        = "${var.os_disk_storage_type}"
   user_data                   = "${data.ct_config.bastion.rendered}"
   vm_size                     = "${var.bastion_vm_size}"
 }
@@ -112,6 +112,7 @@ module "vault" {
   core_ssh_key            = "${var.core_ssh_key}"
   location                = "${var.azure_location}"
   network_interface_ids   = "${module.vnet.vault_network_interface_ids}"
+  os_disk_storage_type    = "${var.os_disk_storage_type}"
   resource_group_name     = "${module.resource_group.name}"
   storage_type            = "${var.vault_storage_type}"
   user_data               = "${data.ct_config.vault.rendered}"
@@ -171,6 +172,7 @@ module "master" {
   # Only single master supported.
   master_count                = "1"
   resource_group_name         = "${module.resource_group.name}"
+  os_disk_storage_type        = "${var.os_disk_storage_type}"
   platform_fault_domain_count = "${var.platform_fault_domain_count}"
   storage_type                = "${var.master_storage_type}"
 
@@ -230,6 +232,7 @@ module "worker" {
 
   worker_count                = "${var.worker_count}"
   resource_group_name         = "${module.resource_group.name}"
+  os_disk_storage_type        = "${var.os_disk_storage_type}"
   platform_fault_domain_count = "${var.platform_fault_domain_count}"
   storage_type                = "${var.worker_storage_type}"
 
