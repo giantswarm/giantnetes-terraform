@@ -180,6 +180,7 @@ module "master" {
   vm_size               = "${var.master_vm_size}"
 
   storage_acc       = "${module.blob.storage_acc}"
+  storage_acc_url   = "${module.blob.storage_acc_url}"
   storage_container = "${module.blob.storage_container}"
 }
 
