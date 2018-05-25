@@ -86,7 +86,7 @@ variable "master_storage_type" {
 
 variable "worker_vm_size" {
   type    = "string"
-  default = "Standard_D3s_v3"
+  default = "Standard_D4s_v3"
 }
 
 variable "worker_storage_type" {
