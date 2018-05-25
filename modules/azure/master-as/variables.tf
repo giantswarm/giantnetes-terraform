@@ -13,7 +13,7 @@ variable "core_ssh_key" {
 
 variable "user_data" {
   type        = "string"
-  description = "Generated user data"
+  description = "Generated user data."
 }
 
 variable "cluster_name" {
@@ -23,7 +23,7 @@ variable "cluster_name" {
 
 variable "location" {
   type        = "string"
-  description = "Location is the Azure Location (East US, West US, etc)"
+  description = "Location is the Azure Location (East US, West US, etc)."
 }
 
 variable "master_count" {
@@ -46,14 +46,19 @@ variable "resource_group_name" {
   type = "string"
 }
 
+variable "os_disk_storage_type" {
+  type        = "string"
+  description = "Storage account type for OS disk."
+}
+
 variable "storage_type" {
   type        = "string"
-  description = "Storage account type"
+  description = "Storage account type."
 }
 
 variable "vm_size" {
   type        = "string"
-  description = "VM Size name"
+  description = "VM Size name."
 }
 
 variable "docker_disk_size" {

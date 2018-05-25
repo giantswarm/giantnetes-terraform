@@ -49,7 +49,7 @@ variable "nodes_vault_token" {
 variable "worker_count" {
   type        = "string"
   description = "Number of worker nodes to be created."
-  default     = "4"
+  default     = "3"
 }
 
 ### Compute and Storage ###
@@ -59,7 +59,7 @@ variable "bastion_vm_size" {
   default = "Standard_A1"
 }
 
-variable "bastion_storage_type" {
+variable "os_disk_storage_type" {
   type    = "string"
   default = "Standard_LRS"
 }
@@ -76,7 +76,7 @@ variable "vault_storage_type" {
 
 variable "master_vm_size" {
   type    = "string"
-  default = "Standard_DS2_v2"
+  default = "Standard_D2s_v3"
 }
 
 variable "master_storage_type" {
@@ -86,12 +86,12 @@ variable "master_storage_type" {
 
 variable "worker_vm_size" {
   type    = "string"
-  default = "Standard_DS3_v2"
+  default = "Standard_D3s_v3"
 }
 
 variable "worker_storage_type" {
   type    = "string"
-  default = "Premium_LRS"
+  default = "Standard_LRS"
 }
 
 ### Container Linux ###

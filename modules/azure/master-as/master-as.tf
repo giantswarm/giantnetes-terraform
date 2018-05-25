@@ -56,7 +56,7 @@ resource "azurerm_virtual_machine" "master" {
 
   storage_os_disk {
     name              = "master-${count.index}-os"
-    managed_disk_type = "${var.storage_type}"
+    managed_disk_type = "${var.os_disk_storage_type}"
     create_option     = "FromImage"
     caching           = "ReadWrite"
     os_type           = "linux"

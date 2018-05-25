@@ -50,6 +50,11 @@ variable "network_interface_ids" {
   description = "List of NICs to use for Vault VMs"
 }
 
+variable "os_disk_storage_type" {
+  type        = "string"
+  description = "Storage account type for OS disk."
+}
+
 variable "storage_type" {
   type        = "string"
   description = "Storage account type"
