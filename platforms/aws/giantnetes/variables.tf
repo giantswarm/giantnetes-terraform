@@ -37,7 +37,7 @@ variable "nodes_vault_token" {
 variable "worker_count" {
   type        = "string"
   description = "Number of worker nodes to be created."
-  default     = "4"
+  default     = "3"
 }
 
 variable "logs_expiration_days" {
