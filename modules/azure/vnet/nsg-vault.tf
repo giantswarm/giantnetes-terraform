@@ -41,7 +41,7 @@ resource "azurerm_network_security_rule" "vault_ingress_internal_8200" {
 resource "azurerm_network_security_rule" "vault_ingress_node-exporter" {
   name                        = "${var.cluster_name}-vault-node-exporter"
   description                 = "${var.cluster_name} vault - node-exporter"
-  priority                    = 500
+  priority                    = 700
   direction                   = "Inbound"
   access                      = "Allow"
   protocol                    = "TCP"
