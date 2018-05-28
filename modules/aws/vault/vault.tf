@@ -4,7 +4,7 @@ data "aws_availability_zones" "available" {}
 # node-exporter ruler.
 data "aws_subnet" "worker_subnets" {
   count = "${length(var.worker_subnet_ids)}"
-  id = "${var.worker_subnet_ids[count.index]}"
+  id    = "${var.worker_subnet_ids[count.index]}"
 }
 
 resource "aws_instance" "vault" {
@@ -86,9 +86,9 @@ resource "aws_security_group" "vault" {
 
   # Allow node-exporter from worker nodes.
   ingress {
-    from_port = 10300
-    to_port = 10300
-    protocol = "tcp"
+    from_port   = 10300
+    to_port     = 10300
+    protocol    = "tcp"
     cidr_blocks = ["${data.aws_subnet.worker_subnets.*.cidr_block}"]
   }
 
