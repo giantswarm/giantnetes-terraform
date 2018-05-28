@@ -1,5 +1,12 @@
 data "aws_availability_zones" "available" {}
 
+# "Recreate" worker subnets in order to lookup CIDR blocks for security group
+# node-exporter ruler.
+data "aws_subnet" "worker_subnets" {
+  count = "${length(var.worker_subnet_ids)}"
+  id = "${var.worker_subnet_ids[count.index]}"
+}
+
 resource "aws_instance" "vault" {
   count         = "${var.vault_count}"
   ami           = "${var.container_linux_ami_id}"
@@ -75,6 +82,14 @@ resource "aws_security_group" "vault" {
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["${var.vpc_cidr}"]
+  }
+
+  # Allow node-exporter from worker nodes.
+  ingress {
+    from_port = 10300
+    to_port = 10300
+    protocol = "tcp"
+    cidr_blocks = ["${data.aws_subnet.worker_subnets.*.cidr_block}"]
   }
 
   tags {

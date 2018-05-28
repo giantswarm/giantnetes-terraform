@@ -63,6 +63,10 @@ variable "vpc_id" {
   type = "string"
 }
 
+variable "worker_subnet_ids" {
+  type = "list"
+}
+
 variable "route53_enabled" {
   default = false
 }

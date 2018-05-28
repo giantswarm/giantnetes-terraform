@@ -135,6 +135,7 @@ module "vault" {
   vault_subnet_ids       = "${module.vpc.vault_subnet_ids}"
   vpc_cidr               = "${var.vpc_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"
+  worker_subnet_ids      = "${module.vpc.worker_subnet_ids}"
 }
 
 # Generate ignition config for master.
