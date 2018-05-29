@@ -362,8 +362,8 @@ systemd:
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service docker.service kubelet-certs.service
-      Requires=k8s-setup-network-env.service docker.service kubelet-certs.service
+      After=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service
+      Requires=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service
 
       [Service]
       Restart=always
