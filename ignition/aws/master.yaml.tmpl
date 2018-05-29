@@ -2103,8 +2103,8 @@ systemd:
     contents: |
       [Unit]
       Description=api-certs
-      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service
-      After=get-vault-ca.service k8s-setup-network-env.service docker.service
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service
 
       [Service]
       EnvironmentFile=/etc/environment
@@ -2114,7 +2114,19 @@ systemd:
       Type=oneshot
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/
-      ExecStartPre=/bin/bash -c 'export rsa_key=$(docker run --rm -i -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt --net host --privileged=true -e VAULT_ADDR -e VAULT_TOKEN giantswarm/docker-vault:0.1.0 read -field=key secret/g8s_sa_sign_key 2>/dev/null); echo -e "-----BEGIN RSA PRIVATE KEY-----\n$rsa_key\n-----END RSA PRIVATE KEY-----" > /etc/kubernetes/ssl/service-account-key.pem'
+      ExecStartPre=/bin/bash -c '\
+        export rsa_key=$(\
+        docker run --rm -i\
+        -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt\
+        --net host\
+        --privileged=true\
+        -e VAULT_ADDR\
+        -e VAULT_TOKEN\
+        quay.io/giantswarm/vault:0.9.3\
+        read -field=key secret/g8s_sa_sign_key 2>/dev/null\
+       );\
+       [ -z "$rsa_key" ] && echo "Failed to fetch g8s_sa_key" && exit 1 || echo "Sucesfully retrieved g8s_sa_key";\
+        echo -e "-----BEGIN RSA PRIVATE KEY-----\n$rsa_key\n-----END RSA PRIVATE KEY-----" > /etc/kubernetes/ssl/service-account-key.pem'
       ExecStart=/usr/bin/docker run \
       --net=host \
       -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
