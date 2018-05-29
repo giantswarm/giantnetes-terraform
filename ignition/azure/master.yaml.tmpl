@@ -2240,14 +2240,14 @@ systemd:
       ExecStartPre=/bin/bash -c '\
         export rsa_key=$(\
         docker run --rm -i\
-        -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt\ 
-        --net host\ 
-        --privileged=true\ 
-        -e VAULT_ADDR\ 
-        -e VAULT_TOKEN\ 
+        -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt\
+        --net host\
+        --privileged=true\
+        -e VAULT_ADDR\
+        -e VAULT_TOKEN\
         quay.io/giantswarm/vault:0.9.3\
         read -field=key secret/g8s_sa_sign_key 2>/dev/null\
-       );\ 
+       );\
        [ -z "$rsa_key" ] && echo "Failed to fetch g8s_sa_key" && exit 1 || echo "Sucesfully retrieved g8s_sa_key";\
         echo -e "-----BEGIN RSA PRIVATE KEY-----\n$rsa_key\n-----END RSA PRIVATE KEY-----" > /etc/kubernetes/ssl/service-account-key.pem'
       ExecStart=/usr/bin/docker run \
