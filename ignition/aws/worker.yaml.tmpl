@@ -294,8 +294,8 @@ systemd:
     contents: |
       [Unit]
       Description=gen etcd client certs for calico
-      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service
-      After=get-vault-ca.service k8s-setup-network-env.service docker.service
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service
 
       [Service]
       EnvironmentFile=/etc/environment
@@ -362,8 +362,8 @@ systemd:
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service
-      Requires=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service
+      After=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service
+      Requires=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service
 
       [Service]
       Restart=always

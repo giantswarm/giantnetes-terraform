@@ -1864,8 +1864,8 @@ systemd:
     contents: |
       [Unit]
       Description=calico-certs
-      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service
-      After=get-vault-ca.service k8s-setup-network-env.service docker.service
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service
 
       [Service]
       EnvironmentFile=/etc/environment
