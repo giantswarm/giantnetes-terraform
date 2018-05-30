@@ -1761,7 +1761,11 @@ storage:
                   exit
           fi
           echo Connecting to $1
-          echo -n | openssl s_client -showcerts -connect $1 2>err.txt 1>out.txt
+          while ! `echo -n | openssl s_client -showcerts -connect $1 2>err.txt 1>out.txt`
+          do
+                sleep 1s
+                echo retrying
+          done
           if [ "$?" -ne "0" ]
           then
                   cat err.txt
@@ -1924,6 +1928,7 @@ systemd:
       Environment=VAULT_ADDR=https://${VAULT_DOMAIN_NAME}:443
       Type=oneshot
       RemainAfterExit=yes
+      ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/bin/bash -c '\
          result=$(curl -o /etc/ssh/trusted-user-ca-keys.pem \
                    --header "X-Vault-Token: $VAULT_TOKEN" \
@@ -1989,8 +1994,8 @@ systemd:
     contents: |
       [Unit]
       Description=calico-certs
-      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service
-      After=get-vault-ca.service k8s-setup-network-env.service docker.service
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service waagent.service
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service waagent.service
 
       [Service]
       EnvironmentFile=/etc/environment
@@ -1999,6 +2004,7 @@ systemd:
       Type=oneshot
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/calico/
+      ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/usr/bin/docker run \
       --net=host \
       -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
@@ -2033,6 +2039,7 @@ systemd:
       Type=oneshot
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/etcd/
+      ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/usr/bin/docker run \
       --net=host \
       -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
@@ -2156,8 +2163,8 @@ systemd:
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service docker.service
-      Requires=k8s-setup-network-env.service docker.service
+      After=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service
+      Requires=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service
 
       [Service]
       Restart=always
@@ -2237,7 +2244,20 @@ systemd:
       Type=oneshot
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/
-      ExecStartPre=/bin/bash -c 'export rsa_key=$(docker run --rm -i -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt --net host --privileged=true -e VAULT_ADDR -e VAULT_TOKEN giantswarm/docker-vault:0.1.0 read -field=key secret/g8s_sa_sign_key 2>/dev/null); echo -e "-----BEGIN RSA PRIVATE KEY-----\n$rsa_key\n-----END RSA PRIVATE KEY-----" > /etc/kubernetes/ssl/service-account-key.pem'
+      ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
+      ExecStartPre=/bin/bash -c '\
+        export rsa_key=$(\
+        docker run --rm -i\
+        -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt\
+        --net host\
+        --privileged=true\
+        -e VAULT_ADDR\
+        -e VAULT_TOKEN\
+        quay.io/giantswarm/vault:0.9.3\
+        read -field=key secret/g8s_sa_sign_key 2>/dev/null\
+       );\
+       [ -z "$rsa_key" ] && echo "Failed to fetch g8s_sa_key" && exit 1 || echo "Sucesfully retrieved g8s_sa_key";\
+        echo -e "-----BEGIN RSA PRIVATE KEY-----\n$rsa_key\n-----END RSA PRIVATE KEY-----" > /etc/kubernetes/ssl/service-account-key.pem'
       ExecStart=/usr/bin/docker run \
       --net=host \
       -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
