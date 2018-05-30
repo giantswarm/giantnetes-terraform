@@ -252,6 +252,7 @@ systemd:
       Environment=VAULT_ADDR=https://${VAULT_DOMAIN_NAME}:443
       Type=oneshot
       RemainAfterExit=yes
+      ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/bin/bash -c '\
          result=$(curl -o /etc/ssh/trusted-user-ca-keys.pem \
                    --header "X-Vault-Token: $VAULT_TOKEN" \
@@ -270,6 +271,7 @@ systemd:
 
       [Service]
       Type=oneshot
+      ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
       ExecStartPre=/opt/get-ca.sh ${VAULT_DOMAIN_NAME}:443 /etc/ssl/certs/gs-ca.pem
       ExecStart=/sbin/update-ca-certificates
       RemainAfterExit=yes
