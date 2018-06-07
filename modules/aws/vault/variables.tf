@@ -59,6 +59,10 @@ variable "vpc_cidr" {
   type = "string"
 }
 
+variable "vpc_guest_cidr" {
+  type = "string"
+}
+
 variable "vpc_id" {
   type = "string"
 }

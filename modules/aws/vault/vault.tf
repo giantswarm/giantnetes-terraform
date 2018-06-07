@@ -76,6 +76,15 @@ resource "aws_security_group" "vault" {
     cidr_blocks = ["${var.vpc_cidr}"]
   }
 
+  # Allow Vault API from guest-vpc
+  # Required in case where Vault is used instead of KMS
+  ingress {
+    from_port   = 8200
+    to_port     = 8200
+    protocol    = "tcp"
+    cidr_blocks = ["${var.vpc_guest_cidr}"]
+  }
+
   # Allow SSH from vpc
   ingress {
     from_port   = 22

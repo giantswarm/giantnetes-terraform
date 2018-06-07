@@ -142,6 +142,11 @@ variable "vpc_cidr" {
   default     = "10.0.0.0/16"
 }
 
+variable "vpc_guest_cidr" {
+  description = "CIDR for guest VMs internal virtual network."
+  default     = "10.1.0.0/16"
+}
+
 variable "calico_cidr" {
   description = "CIDR for Calico."
   default     = "192.168.0.0/16"
