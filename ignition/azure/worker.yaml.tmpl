@@ -394,6 +394,7 @@ systemd:
       Requires=kubelet-certs.service calico-certs.service
 
       [Service]
+      TimeoutStartSec=300
       Restart=always
       RestartSec=0
       TimeoutStopSec=10

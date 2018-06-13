@@ -2044,6 +2044,7 @@ systemd:
       After=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service
 
       [Service]
+      TimeoutStartSec=300
       Restart=always
       RestartSec=0
       TimeoutStopSec=10
