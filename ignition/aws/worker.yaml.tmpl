@@ -370,6 +370,7 @@ systemd:
       Requires=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service
 
       [Service]
+      TimeoutStartSec=300
       Restart=always
       RestartSec=0
       TimeoutStopSec=10
