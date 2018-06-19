@@ -142,11 +142,6 @@ variable "vpc_cidr" {
   default     = "10.0.0.0/16"
 }
 
-variable "vpc_guest_cidr" {
-  description = "CIDR for guest VMs internal virtual network."
-  default     = "10.1.0.0/16"
-}
-
 variable "calico_cidr" {
   description = "CIDR for Calico."
   default     = "192.168.0.0/16"
@@ -155,6 +150,12 @@ variable "calico_cidr" {
 variable "docker_cidr" {
   description = "CIDR for Docker."
   default     = "172.17.0.1/16"
+}
+
+variable "ipam_network_cidr" {
+  description = "CIDR for guest VMs internal virtual network."
+  type        = "string"
+  default     = "10.1.0.0/16"
 }
 
 variable "k8s_service_cidr" {

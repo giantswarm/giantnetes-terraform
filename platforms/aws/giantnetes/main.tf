@@ -134,7 +134,7 @@ module "vault" {
   vault_dns              = "${var.vault_dns}"
   vault_subnet_ids       = "${module.vpc.vault_subnet_ids}"
   vpc_cidr               = "${var.vpc_cidr}"
-  vpc_guest_cidr         = "${var.vpc_guest_cidr}"
+  ipam_network_cidr      = "${var.ipam_network_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"
   worker_subnet_ids      = "${module.vpc.worker_subnet_ids}"
 }

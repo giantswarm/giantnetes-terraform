@@ -82,7 +82,7 @@ resource "aws_security_group" "vault" {
     from_port   = 8200
     to_port     = 8200
     protocol    = "tcp"
-    cidr_blocks = ["${var.vpc_guest_cidr}"]
+    cidr_blocks = ["${var.ipam_network_cidr}"]
   }
 
   # Allow SSH from vpc

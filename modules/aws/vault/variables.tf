@@ -27,6 +27,11 @@ variable "dns_zone_id" {
   type = "string"
 }
 
+variable "ipam_network_cidr" {
+  description = "CIDR for guest VMs internal virtual network."
+type = "string"
+}
+
 variable "volume_size_etcd" {
   type    = "string"
   default = 10
@@ -56,10 +61,6 @@ variable "vault_subnet_ids" {
 }
 
 variable "vpc_cidr" {
-  type = "string"
-}
-
-variable "vpc_guest_cidr" {
   type = "string"
 }
 
