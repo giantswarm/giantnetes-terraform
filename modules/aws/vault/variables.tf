@@ -29,7 +29,7 @@ variable "dns_zone_id" {
 
 variable "ipam_network_cidr" {
   description = "CIDR for guest VMs internal virtual network."
-type = "string"
+  type        = "string"
 }
 
 variable "volume_size_etcd" {
