@@ -1,0 +1,30 @@
+passwd:
+  users:
+  - name: giantswarm
+    groups:
+      - "sudo"
+      - "docker"
+  - name: teemow
+    groups:
+      - "sudo"
+      - "docker"
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCvDv/5/bOgnuNXbxB7n8n8reDpRdAPeZvuCE3pJPVYJNfL0hoNzGhw4MBLRivSd9ViMM9X1CE7iVK6RFO46yt4GK5JWYi1UM88q6I+4bcnswUAWsIFX5a/U0LK0wIR3akDDyU9WEA7CXoJ7IxF7dtIYC9OIqrD6gXc4P/UI0jZQI5iZY3qNjlKVAwsNz8pD/BE2sPpNVHumzgcLJEveoc3WMCmfBAAWQAMfRlhlJ5LjM7Py/5k1/s5Myn4L/yoAvxMWev4k2ZYpumt752/r927K7AIrK/OYTfqLPKzZYSLWAj4g7L3/65sKpFm6g+HFgDmlScgf9P4bAoLn6+mWbYL teemow
+  - name: calvix
+    groups:
+      - "sudo"
+      - "docker"
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9IyAZvlEL7lrxDghpqWjs/z/q4E0OtEbmKW9oD0zhYfyHIaX33YYoj3iC7oEd6OEvY4+L4awjRZ2FrXerN/tTg9t1zrW7f7Tah/SnS9XYY9zyo4uzuq1Pa6spOkjpcjtXbQwdQSATD0eeLraBWWVBDIg1COAMsAhveP04UaXAKGSQst6df007dIS5pmcATASNNBc9zzBmJgFwPDLwVviYqoqcYTASka4fSQhQ+fSj9zO1pgrCvvsmA/QeHz2Cn5uFzjh8ftqkM10sjiYibknsBuvVKZ2KpeTY6XoTOT0d9YWoJpfqAEE00+RmYLqDTQGWm5pRuZSc9vbnnH2MiEKf calvix
+  - name: r7vme
+    groups:
+      - "sudo"
+      - "docker"
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDDntH7rGzQxvcxxOxsEP3scm+2e/hxKAoNjeilckuLbklMKRt+LR1M+sSKLJWgIbFTg0GITqnugk+7jPP2NbRsEiuYN7Scy0iRPWdRMbVjGbtMBHBshPp4J+uUS8n5YquMA2xA9cUa7K+VTo+Plv8pVx0LwgE7Rw5NQFqegaiClZJZapOw+LZkF/Kdrm9DAkuCH3jD543O76xx45dAIQZLWlLYNYeBdYT8ew1ewiSn8mY1F7rhLcjuoBGH1a2Z4iR3vgP36yqFDcrqD9gSG/5xupdKbss5vV4acMeTJu/DKoHCDj9GT5//PKVYjOnNlhEiQKO6Pft/aBgk8ND1ixY5 roman
+  - name: vol
+    groups:
+      - "sudo"
+      - "docker"
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDFGDg/p4JWewXAs8kExJnCaNXEN1v2LZf0YWWiblHFp1+i2bp8qSmAJT3i6Yw0kHY2/6MotBCKAsFtlqxuhKaFs3jDcmdOugmWz4Qj7oerQ/ypJE/wZ9PY79gbK75aEKyOdVf7dUT6Ah+oSfETgpY/3a9pVZ/dSF3WBFIBw5k4YarFzcELQE4Bo4dcsLHsNrkI9Bk6gkGbTY+1TtfJmOu0bEXxXHdEq+JfW0MFssjh3I5n0DT09qDnztAvRAjjqjlyNKNt8reErV0LlvsDM5c+426Bz9JgM5vP3sD5ai8lpuH0iCBHoo9678XTKKTYbbz0s7kgXUb0vGS+GbOcaKBKmZ8a0xDpsft9+/LbmnuUic8b4c4/cRw5wSV1IYqyDqARp/d9PaJlYa22ISGnDbYmXUTsef0PhUenK9gtYrGsVhQmkqeLYiIYqwsl7+uouFMpQDmdZjY/B4fKcRA3oRGCFuwzT1vrtJL41dw9WyzM+3xnHTMFZdko9TlgDiEeu6gdpsTGJf4VALUWgXeyW/egte2im86kjMxzQuCw/aOmiYMqwZH2YfI0dS9jLuZbxePKTUounct66SrNXBrbu2d0BiPj6bl1dG6oZhwtArRnbiG5+cTakDvLhFgahTQFAT1De7o3Nr+BfjNQkVlQNKaIPUOdypiDNJE/6q/GOHVRQw==
