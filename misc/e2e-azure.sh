@@ -118,6 +118,14 @@ stage-prepare-ssh(){
     ssh_pub_key=$(cat ${BUILDDIR}/${SSH_USER}.key.pub)
 
     # TODO Add after second line.
+    cat >> ${WORKDIR}/ignition/bastion-users.yaml << EOF
+  - name: ${SSH_USER}
+    groups:
+      - "sudo"
+      - "docker"
+    ssh_authorized_keys:
+      - $(cat ${BUILDDIR}/${SSH_USER}.key.pub)
+EOF
     cat >> ${WORKDIR}/ignition/users.yaml << EOF
   - name: ${SSH_USER}
     groups:
