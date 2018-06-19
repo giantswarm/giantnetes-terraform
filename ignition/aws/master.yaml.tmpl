@@ -1468,7 +1468,7 @@ storage:
                 - --tls-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
                 - --client-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
                 - --service-account-key-file=/etc/kubernetes/ssl/service-account-key.pem
-                - --feature-gates=AdvancedAuditing=false,ExpandPersistentVolumes=true
+                - --feature-gates=AdvancedAuditing=false,ExpandPersistentVolumes=true,CustomResourceSubresources=true
                 - --audit-log-path=/var/log/apiserver/audit.log
                 - --audit-log-maxage=30
                 - --audit-log-maxbackup=30
