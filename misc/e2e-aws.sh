@@ -199,10 +199,12 @@ EOF
 
     # Bootstrap secure Vault.
     export VAULT_TOKEN="${root_token}"
+    export ETCD_BACKUP_AWS_ACCESS_KEY="$E2E_AWS_ACCESS_KEY"
+    export ETCD_BACKUP_AWS_SECRET_KEY="$E2E_AWS_SECRET_KEY"
     export AWS_ACCESS_KEY="$E2E_AWS_ACCESS_KEY"
     export AWS_SECRET_KEY="$E2E_AWS_SECRET_KEY"
     ansible-playbook -i hosts_inventory/${CLUSTER} -e dc=${CLUSTER} bootstrap2.yml
-    unset AWS_ACCESS_KEY AWS_SECRET_KEY
+    unset ETCD_BACKUP_AWS_ACCESS_KEY ETCD_BACKUP_AWS_SECRET_KEY AWS_ACCESS_KEY AWS_SECRET_KEY
 
     exec_on vault1 vault operator unseal ${unseal_key}
 

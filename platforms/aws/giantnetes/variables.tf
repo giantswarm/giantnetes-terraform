@@ -152,6 +152,12 @@ variable "docker_cidr" {
   default     = "172.17.0.1/16"
 }
 
+variable "ipam_network_cidr" {
+  description = "CIDR for guest VMs internal virtual network."
+  type        = "string"
+  default     = "10.1.0.0/16"
+}
+
 variable "k8s_service_cidr" {
   description = "CIDR for k8s internal cluster network."
   default     = "172.31.0.0/16"
