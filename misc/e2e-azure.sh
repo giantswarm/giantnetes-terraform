@@ -213,6 +213,8 @@ EOF
 
     # Bootstrap secure Vault.
     export VAULT_TOKEN="${root_token}"
+    export ETCD_BACKUP_AWS_ACCESS_KEY="foo"
+    export ETCD_BACKUP_AWS_SECRET_KEY="bar"
     export AWS_ACCESS_KEY="foo"
     export AWS_SECRET_KEY="bar"
     # Skip etcd_backup step.
