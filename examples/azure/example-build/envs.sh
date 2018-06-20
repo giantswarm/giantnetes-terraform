@@ -38,4 +38,10 @@ export TF_VAR_base_domain=${TF_VAR_cluster_name}.${TF_VAR_azure_location}.azure.
 # hosted zone name, leave empty to setup DNS manually
 export TF_VAR_root_dns_zone_name="azure.gigantic.io"
 
+# To enable Site-To-Site IPSec uncomment following options. Make sure that bastion subnet is unique across installations.
+# export TF_VAR_vpn_enabled=1
+# export TF_VAR_vpn_right_gateway_address=<ip address of IPSec server>
+# export TF_VAR_vpn_right_subnet_cidr=<subnet that will be shared by IPSec server>
+# export TF_VAR_bastion_cidr=<bastion subnet>
+
 # Override here any option from platforms/azure/variables.tf
