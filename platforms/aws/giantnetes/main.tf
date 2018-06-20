@@ -116,7 +116,7 @@ data "template_file" "vault" {
 
 # Convert ignition config to raw json and merge users part.
 data "ct_config" "vault" {
-  content      = "${format("%s\n%s", local.users, data.template_file.vault.rendered)}"
+  content      = "${format("%s\n%s", local.bastion_users, data.template_file.vault.rendered)}"
   platform     = "ec2"
   pretty_print = false
 }
