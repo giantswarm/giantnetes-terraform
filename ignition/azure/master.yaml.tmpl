@@ -2251,6 +2251,10 @@ systemd:
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/
       ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
       ExecStartPre=/bin/bash -c '\
+        RETRY=3;\
+        while [ -z "$rsa_key"] && [ $RETRY -gt 0 ]; do\
+        sleep 2s; echo "trying to get g8s_sa_sign_key...";\
+        let RETRY=RETRY-1;\
         export rsa_key=$(\
         docker run --rm -i\
         -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt\
@@ -2261,6 +2265,7 @@ systemd:
         quay.io/giantswarm/vault:0.9.3\
         read -field=key secret/g8s_sa_sign_key 2>/dev/null\
        );\
+       done;\
        [ -z "$rsa_key" ] && echo "Failed to fetch g8s_sa_key" && exit 1 || echo "Sucesfully retrieved g8s_sa_key";\
         echo -e "-----BEGIN RSA PRIVATE KEY-----\n$rsa_key\n-----END RSA PRIVATE KEY-----" > /etc/kubernetes/ssl/service-account-key.pem'
       ExecStart=/usr/bin/docker run \
