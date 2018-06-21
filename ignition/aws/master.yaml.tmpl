@@ -1901,8 +1901,8 @@ systemd:
           --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
           --alt-names=localhost \
           --key-file=/etc/kubernetes/ssl/calico/client-key.pem \
-          --ca-file=/etc/kubernetes/ssl/calico/client-ca.pem);\
-        done;\
+          --ca-file=/etc/kubernetes/ssl/calico/client-ca.pem); \
+        done; \
         [ -z "$result" ] && echo "Failed to issue calico certs." && exit 1 || echo "Successfully issued calico certs.";'
       ExecStop=/usr/bin/rm -rf /etc/kubernetes/ssl/calico/
 
@@ -1945,8 +1945,8 @@ systemd:
           --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
           --alt-names=localhost \
           --key-file=/etc/kubernetes/ssl/etcd/server-key.pem \
-          --ca-file=/etc/kubernetes/ssl/etcd/server-ca.pem
-        done;\
+          --ca-file=/etc/kubernetes/ssl/etcd/server-ca.pem); \
+        done; \
         [ -z "$result" ] && echo "Failed to issue etcd certs." && exit 1 || echo "Successfully issued etcd certs.";'
       ExecStartPost=/bin/cp /etc/kubernetes/ssl/etcd/server-crt.pem /etc/kubernetes/ssl/etcd/client-crt.pem
       ExecStartPost=/bin/cp /etc/kubernetes/ssl/etcd/server-ca.pem /etc/kubernetes/ssl/etcd/client-ca.pem
