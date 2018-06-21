@@ -224,7 +224,7 @@ EOF
 
 stage-destroy() {
   cd ${BUILDDIR}
-  sleep 600
+
   source envs.sh
   terraform init ../platforms/aws/giantnetes
   terraform destroy -force ../platforms/aws/giantnetes
