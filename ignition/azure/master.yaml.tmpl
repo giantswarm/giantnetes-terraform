@@ -2005,22 +2005,30 @@ systemd:
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/calico/
       ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
-      ExecStart=/usr/bin/docker run \
-      --net=host \
-      -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
-      -v /etc/kubernetes/ssl/calico/:/etc/kubernetes/ssl/calico/ \
-      quay.io/giantswarm/certctl:b07d0913d5cb369a6b605394bdd4be4633451be9 \
-      issue \
-      --vault-addr=https://${VAULT_DOMAIN_NAME} \
-      --vault-token=$${VAULT_TOKEN} \
-      --cluster-id=g8s \
-      --common-name=${ETCD_DOMAIN_NAME} \
-      --ttl=8760h \
-      --crt-file=/etc/kubernetes/ssl/calico/client-crt.pem \
-      --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
-      --alt-names=localhost \
-      --key-file=/etc/kubernetes/ssl/calico/client-key.pem \
-      --ca-file=/etc/kubernetes/ssl/calico/client-ca.pem
+      ExecStart=/bin/bash -c '\
+        RETRY=3;\
+        while [ -z "$result"] && [ $RETRY -gt 0 ]; do\
+        sleep 2s; echo "Trying to issue calico certs...";\
+        let RETRY=$RETRY-1;\
+        export result=$(\
+          /usr/bin/docker run \
+          --net=host \
+          -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
+          -v /etc/kubernetes/ssl/calico/:/etc/kubernetes/ssl/calico/ \
+          quay.io/giantswarm/certctl:b07d0913d5cb369a6b605394bdd4be4633451be9 \
+          issue \
+          --vault-addr=https://${VAULT_DOMAIN_NAME} \
+          --vault-token=$${VAULT_TOKEN} \
+          --cluster-id=g8s \
+          --common-name=${ETCD_DOMAIN_NAME} \
+          --ttl=8760h \
+          --crt-file=/etc/kubernetes/ssl/calico/client-crt.pem \
+          --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
+          --alt-names=localhost \
+          --key-file=/etc/kubernetes/ssl/calico/client-key.pem \
+          --ca-file=/etc/kubernetes/ssl/calico/client-ca.pem
+        done;\
+        [ -z "$result" ] && echo "Failed to issue calico certs." && exit 1 || echo "Sucesfully issued calico certs.";'
       ExecStop=/usr/bin/rm -rf /etc/kubernetes/ssl/calico/
       [Install]
       WantedBy=multi-user.target
@@ -2040,22 +2048,30 @@ systemd:
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/etcd/
       ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
-      ExecStart=/usr/bin/docker run \
-      --net=host \
-      -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
-      -v /etc/kubernetes/ssl/etcd/:/etc/kubernetes/ssl/etcd/ \
-      quay.io/giantswarm/certctl:b07d0913d5cb369a6b605394bdd4be4633451be9 \
-      issue \
-      --vault-addr=https://${VAULT_DOMAIN_NAME} \
-      --vault-token=$${VAULT_TOKEN} \
-      --cluster-id=g8s \
-      --common-name=${ETCD_DOMAIN_NAME} \
-      --ttl=8760h \
-      --crt-file=/etc/kubernetes/ssl/etcd/server-crt.pem \
-      --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
-      --alt-names=localhost \
-      --key-file=/etc/kubernetes/ssl/etcd/server-key.pem \
-      --ca-file=/etc/kubernetes/ssl/etcd/server-ca.pem
+      ExecStart=/bin/bash -c '\
+        RETRY=3;\
+        while [ -z "$result"] && [ $RETRY -gt 0 ]; do\
+        sleep 2s; echo "Trying to issue etcd certs...";\
+        let RETRY=$RETRY-1;\
+        export result=$(\
+          /usr/bin/docker run \
+          --net=host \
+          -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
+          -v /etc/kubernetes/ssl/etcd/:/etc/kubernetes/ssl/etcd/ \
+          quay.io/giantswarm/certctl:b07d0913d5cb369a6b605394bdd4be4633451be9 \
+          issue \
+          --vault-addr=https://${VAULT_DOMAIN_NAME} \
+          --vault-token=$${VAULT_TOKEN} \
+          --cluster-id=g8s \
+          --common-name=${ETCD_DOMAIN_NAME} \
+          --ttl=8760h \
+          --crt-file=/etc/kubernetes/ssl/etcd/server-crt.pem \
+          --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
+          --alt-names=localhost \
+          --key-file=/etc/kubernetes/ssl/etcd/server-key.pem \
+          --ca-file=/etc/kubernetes/ssl/etcd/server-ca.pem
+        done;\
+        [ -z "$result" ] && echo "Failed to issue etcd certs." && exit 1 || echo "Successfully issued etcd certs.";'
       ExecStartPost=/bin/cp /etc/kubernetes/ssl/etcd/server-crt.pem /etc/kubernetes/ssl/etcd/client-crt.pem
       ExecStartPost=/bin/cp /etc/kubernetes/ssl/etcd/server-ca.pem /etc/kubernetes/ssl/etcd/client-ca.pem
       ExecStartPost=/bin/cp /etc/kubernetes/ssl/etcd/server-key.pem /etc/kubernetes/ssl/etcd/client-key.pem
@@ -2267,7 +2283,7 @@ systemd:
        );\
        done;\
        [ -z "$rsa_key" ] && echo "Failed to fetch g8s_sa_key" && exit 1 || echo "Sucesfully retrieved g8s_sa_key";\
-        echo -e "-----BEGIN RSA PRIVATE KEY-----\n$rsa_key\n-----END RSA PRIVATE KEY-----" > /etc/kubernetes/ssl/service-account-key.pem'
+       echo -e "-----BEGIN RSA PRIVATE KEY-----\n$rsa_key\n-----END RSA PRIVATE KEY-----" > /etc/kubernetes/ssl/service-account-key.pem'
       ExecStart=/usr/bin/docker run \
       --net=host \
       -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
