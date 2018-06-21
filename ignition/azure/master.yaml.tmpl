@@ -2254,7 +2254,7 @@ systemd:
         RETRY=3;\
         while [ -z "$rsa_key"] && [ $RETRY -gt 0 ]; do\
         sleep 2s; echo "trying to get g8s_sa_sign_key...";\
-        let RETRY=RETRY-1;\
+        let RETRY=$RETRY-1;\
         export rsa_key=$(\
         docker run --rm -i\
         -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt\
