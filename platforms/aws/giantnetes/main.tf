@@ -62,7 +62,8 @@ module "s3" {
 }
 
 locals {
-  ignition_users = "${file("${path.module}/../../../ignition/users.yaml")}"
+  bastion_users = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
+  users         = "${file("${path.module}/../../../ignition/users.yaml")}"
 }
 
 # Generate ignition config for bastions.
@@ -77,7 +78,7 @@ data "template_file" "bastion" {
 
 # Convert ignition config to raw json and merge users part.
 data "ct_config" "bastion" {
-  content      = "${format("%s\n%s", local.ignition_users, data.template_file.bastion.rendered)}"
+  content      = "${format("%s\n%s", local.bastion_users, data.template_file.bastion.rendered)}"
   platform     = "ec2"
   pretty_print = false
 }
@@ -115,7 +116,7 @@ data "template_file" "vault" {
 
 # Convert ignition config to raw json and merge users part.
 data "ct_config" "vault" {
-  content      = "${format("%s\n%s", local.ignition_users, data.template_file.vault.rendered)}"
+  content      = "${format("%s\n%s", local.bastion_users, data.template_file.vault.rendered)}"
   platform     = "ec2"
   pretty_print = false
 }
@@ -162,7 +163,7 @@ data "template_file" "master" {
 
 # Convert ignition config to raw json and merge users part.
 data "ct_config" "master" {
-  content      = "${format("%s\n%s", local.ignition_users, data.template_file.master.rendered)}"
+  content      = "${format("%s\n%s", local.users, data.template_file.master.rendered)}"
   platform     = "ec2"
   pretty_print = false
 }
@@ -209,7 +210,7 @@ data "template_file" "worker" {
 
 # Convert ignition config to raw json and merge users part.
 data "ct_config" "worker" {
-  content      = "${format("%s\n%s", local.ignition_users, data.template_file.worker.rendered)}"
+  content      = "${format("%s\n%s", local.users, data.template_file.worker.rendered)}"
   platform     = "ec2"
   pretty_print = false
 }
