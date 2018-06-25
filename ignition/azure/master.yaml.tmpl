@@ -2278,8 +2278,8 @@ systemd:
         --privileged=true\
         -e VAULT_ADDR\
         -e VAULT_TOKEN\
-        quay.io/giantswarm/vault:0.9.3\
-        read -field=key secret/g8s_sa_sign_key 2>/dev/null\
+        quay.io/giantswarm/vault:0.10.3\
+        kv get -field=key secret/g8s_sa_sign_key 2>/dev/null\
        );\
        done;\
        [ -z "$rsa_key" ] && echo "Failed to fetch g8s_sa_key" && exit 1 || echo "Sucesfully retrieved g8s_sa_key";\
