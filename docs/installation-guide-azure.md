@@ -81,6 +81,14 @@ export ARM_ENVIRONMENT="german"
 export TF_VAR_azure_cloud=AZUREGERMANCLOUD
 ```
 
+Optionally for VPN support add following variables. `bastion_cidr` should be unique and a part of `vnet_cidr` (10.0.0.0/16 by default). Recommended to use /28 subnets from range 10.0.4.0/22 (e.g. 10.0.4.0/28, 10.0.4.16/28, etc.).
+```
+export TF_VAR_vpn_enabled=1
+export TF_VAR_vpn_right_gateway_address=<ip address of IPSec server>
+export TF_VAR_vpn_right_subnet_cidr=<subnet that will be shared by IPSec server>
+export TF_VAR_bastion_cidr=<bastion subnet>
+```
+
 ```
 source envs.sh
 ```
@@ -111,6 +119,24 @@ terraform apply ../platforms/azure/giantnetes
 ```
 
 It should create all cluster resources. Please note master and worker vms are created, but will fail. This is expected behaviour.
+
+#### (Optional) Connect to VPN
+
+If VPN enabled, two additional manual steps are required:
+1. Create Azure VPN connection with shared key.
+2. Create new IPSec connection in onpremise VPN server.
+
+For step one execute following command.
+```
+az network vpn-connection create \
+  -g ${NAME} \
+  --name ${NAME}-vpn-connection \
+  --vnet-gateway1 ${NAME}-vpn-gateway \
+  --local-gateway2 ${NAME}-vpn-right-gateway \
+  --shared-key <put_your_shared_key_here>
+```
+
+Step two is individual and depends on your setup.
 
 #### Provision Vault with Ansible
 

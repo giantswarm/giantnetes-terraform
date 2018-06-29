@@ -40,21 +40,7 @@ resource "azurerm_dns_ns_record" "dns_zone_propagation" {
   resource_group_name = "${var.root_dns_zone_rg}"
   ttl                 = 300
 
-  record {
-    nsdname = "${azurerm_dns_zone.dns_zone.name_servers[0]}"
-  }
-
-  record {
-    nsdname = "${azurerm_dns_zone.dns_zone.name_servers[1]}"
-  }
-
-  record {
-    nsdname = "${azurerm_dns_zone.dns_zone.name_servers[2]}"
-  }
-
-  record {
-    nsdname = "${azurerm_dns_zone.dns_zone.name_servers[3]}"
-  }
+  records = ["${azurerm_dns_zone.dns_zone.name_servers}"]
 
   tags {
     GiantSwarmInstallation = "${var.cluster_name}"
