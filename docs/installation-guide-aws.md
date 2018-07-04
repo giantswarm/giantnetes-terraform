@@ -163,15 +163,13 @@ aws s3api put-bucket-logging --bucket $CLUSTER-state --bucket-logging-status fil
 ### Prepare variables and configuration.
 
 ```
+export INSTALLATION=cluster1
+
+rm -rf build
 mkdir build
 cd build
-```
 
-```
-export NAME=cluster1
-export INSTALLATIONS=<installations_repo_path>
-
-cp ${INSTALLATIONS}/${CLUSTER}/terraform/* .
+cp ${GOPATH}/src/github.com/giantswarm/installations/${INSTALLATION}/terraform/* .
 ```
 
 ```
