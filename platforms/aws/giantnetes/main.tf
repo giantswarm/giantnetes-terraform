@@ -177,6 +177,7 @@ module "master" {
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
+  etcd_dns               = "${var.etcd_dns}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
   instance_type          = "${var.master_instance["type"]}"
   route53_enabled        = "${var.route53_enabled}"
