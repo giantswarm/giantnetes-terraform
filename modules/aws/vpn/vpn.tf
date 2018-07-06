@@ -31,7 +31,7 @@ resource "aws_vpn_connection" "aws_vpn_conn_0" {
 
   tags {
     Name                         = "${var.aws_vpn_name}-0"
-    "giantswarm.io/installation" = "${var.aws_cluster_name}-0"
+    "giantswarm.io/installation" = "${var.aws_cluster_name}"
   }
 }
 
@@ -44,7 +44,7 @@ resource "aws_vpn_connection" "aws_vpn_conn_1" {
 
   tags {
     Name                         = "${var.aws_vpn_name}-1"
-    "giantswarm.io/installation" = "${var.aws_cluster_name}-1"
+    "giantswarm.io/installation" = "${var.aws_cluster_name}"
   }
 }
 
