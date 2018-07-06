@@ -256,7 +256,7 @@ module "vpn" "vpn_connection_0" {
   vpn_right_subnet_cidr     = "${var.vpn_right_subnet_cidr}"
 }
 
-module "vpn" "vpn_connection_1"{
+module "vpn" "vpn_connection_1" {
   source = "../../../modules/azure/vpn"
 
   cluster_name              = "${var.cluster_name}"
