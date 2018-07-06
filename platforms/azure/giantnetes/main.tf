@@ -253,7 +253,7 @@ module "vpn" "vpn_connection_0" {
   subnet_id                 = "${module.vnet.vpn_subnet_id}"
   vpn_enabled               = "${var.vpn_enabled}"
   vpn_right_gateway_address = "${var.vpn_right_gateway_address_0}"
-  vpn_right_subnet_cidr     = "${var.vpn_right_subnet_cidr}"
+  vpn_right_subnet_cidr     = "${var.vpn_right_subnet_cidr_0}"
 }
 
 module "vpn" "vpn_connection_1" {
@@ -265,5 +265,5 @@ module "vpn" "vpn_connection_1" {
   subnet_id                 = "${module.vnet.vpn_subnet_id}"
   vpn_enabled               = "${var.vpn_enabled}"
   vpn_right_gateway_address = "${var.vpn_right_gateway_address_1}"
-  vpn_right_subnet_cidr     = "${var.vpn_right_subnet_cidr}"
+  vpn_right_subnet_cidr     = "${var.vpn_right_subnet_cidr_1}"
 }
