@@ -2,7 +2,8 @@ locals {
   default_ssh_access_subnet = "0.0.0.0/0"
 
   # If behind VPN allow SSH access only from VPN subnet.
-  ssh_access_subnet = "${var.with_public_access == 0 ? var.external_ipsec_subnet : local.default_ssh_access_subnet}"
+  ssh_access_subnet_0 = "${var.with_public_access == 0 ? var.external_ipsec_subnet_0 : local.default_ssh_access_subnet}"
+  ssh_access_subnet_1 = "${var.with_public_access == 0 ? var.external_ipsec_subnet_1 : local.default_ssh_access_subnet}"
 
   # In China there is no tags for s3 buckets
   s3_ignition_bastion_key = "${element(concat(aws_s3_bucket_object.ignition_bastion_with_tags.*.key, aws_s3_bucket_object.ignition_bastion_without_tags.*.key), 0)}"
@@ -70,7 +71,15 @@ resource "aws_security_group" "bastion" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["${local.ssh_access_subnet}"]
+    cidr_blocks = ["${local.ssh_access_subnet_0}"]
+    self        = true
+  }
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["${local.ssh_access_subnet_1}"]
     self        = true
   }
 

@@ -220,9 +220,14 @@ variable "aws_customer_gateway_id_1" {
   default     = ""
 }
 
-variable "external_ipsec_subnet" {
+variable "external_ipsec_subnet_0" {
   description = "CIDR of peering IPSec network."
   default     = "172.18.0.0/30"
+}
+
+variable "external_ipsec_subnet_1" {
+  description = "CIDR of peering IPSec network."
+  default     = "172.18.0.4/30"
 }
 
 ### Kubernetes ###
