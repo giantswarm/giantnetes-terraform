@@ -210,7 +210,12 @@ variable "subnet_worker_1" {
 
 ### VPN ###
 
-variable "aws_customer_gateway_id" {
+variable "aws_customer_gateway_id_0" {
+  description = "AWS customer gateway ID. Should be created manually. Leave blank to disable VPN setup and enable public access for bastions."
+  default     = ""
+}
+
+variable "aws_customer_gateway_id_1" {
   description = "AWS customer gateway ID. Should be created manually. Leave blank to disable VPN setup and enable public access for bastions."
   default     = ""
 }

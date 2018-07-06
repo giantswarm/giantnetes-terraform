@@ -244,7 +244,7 @@ module "worker" {
   vm_size               = "${var.worker_vm_size}"
 }
 
-module "vpn" {
+module "vpn" "vpn_connection_0" {
   source = "../../../modules/azure/vpn"
 
   cluster_name              = "${var.cluster_name}"
@@ -252,6 +252,18 @@ module "vpn" {
   resource_group_name       = "${module.resource_group.name}"
   subnet_id                 = "${module.vnet.vpn_subnet_id}"
   vpn_enabled               = "${var.vpn_enabled}"
-  vpn_right_gateway_address = "${var.vpn_right_gateway_address}"
+  vpn_right_gateway_address = "${var.vpn_right_gateway_address_0}"
+  vpn_right_subnet_cidr     = "${var.vpn_right_subnet_cidr}"
+}
+
+module "vpn" "vpn_connection_1"{
+  source = "../../../modules/azure/vpn"
+
+  cluster_name              = "${var.cluster_name}"
+  location                  = "${var.azure_location}"
+  resource_group_name       = "${module.resource_group.name}"
+  subnet_id                 = "${module.vnet.vpn_subnet_id}"
+  vpn_enabled               = "${var.vpn_enabled}"
+  vpn_right_gateway_address = "${var.vpn_right_gateway_address_1}"
   vpn_right_subnet_cidr     = "${var.vpn_right_subnet_cidr}"
 }
