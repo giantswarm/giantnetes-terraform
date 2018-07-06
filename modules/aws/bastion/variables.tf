@@ -22,7 +22,11 @@ variable "cluster_name" {
   type = "string"
 }
 
-variable "external_ipsec_subnet" {
+variable "external_ipsec_subnet_0" {
+  type = "string"
+}
+
+variable "external_ipsec_subnet_1" {
   type = "string"
 }
 
