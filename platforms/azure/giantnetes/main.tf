@@ -247,11 +247,11 @@ module "worker" {
 module "vpn" {
   source = "../../../modules/azure/vpn"
 
-  cluster_name              = "${var.cluster_name}"
-  location                  = "${var.azure_location}"
-  resource_group_name       = "${module.resource_group.name}"
-  subnet_id                 = "${module.vnet.vpn_subnet_id}"
-  vpn_enabled               = "${var.vpn_enabled}"
+  cluster_name                = "${var.cluster_name}"
+  location                    = "${var.azure_location}"
+  resource_group_name         = "${module.resource_group.name}"
+  subnet_id                   = "${module.vnet.vpn_subnet_id}"
+  vpn_enabled                 = "${var.vpn_enabled}"
   vpn_right_gateway_address_0 = "${var.vpn_right_gateway_address_0}"
   vpn_right_subnet_cidr_0     = "${var.vpn_right_subnet_cidr_0}"
   vpn_right_gateway_address_1 = "${var.vpn_right_gateway_address_1}"
