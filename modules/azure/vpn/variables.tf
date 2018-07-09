@@ -19,10 +19,18 @@ variable "vpn_enabled" {
   type = "string"
 }
 
-variable "vpn_right_gateway_address" {
+variable "vpn_right_gateway_address_0" {
   type = "string"
 }
 
-variable "vpn_right_subnet_cidr" {
+variable "vpn_right_subnet_cidr_0" {
+  type = "string"
+}
+
+variable "vpn_right_gateway_address_1" {
+  type = "string"
+}
+
+variable "vpn_right_subnet_cidr_1" {
   type = "string"
 }
