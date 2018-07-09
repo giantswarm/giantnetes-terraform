@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/giantswarm/giantnetes-terraform.svg?style=svg)](https://circleci.com/gh/giantswarm/giantnetes-terraform)
+[![CircleCI](https://circleci.com/gh/giantswarm/giantnetes-terraform.svg?style=shield)](https://circleci.com/gh/giantswarm/giantnetes-terraform)
 
 # Giantnetes terraform for host cluster
 
