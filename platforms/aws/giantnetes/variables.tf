@@ -216,7 +216,7 @@ variable "aws_customer_gateway_id_0" {
 }
 
 variable "aws_customer_gateway_id_1" {
-  description = "AWS customer gateway ID. Should be created manually. Leave blank to disable VPN setup and enable public access for bastions."
+  description = "AWS customer gateway ID. Should be created manually."
   default     = ""
 }
 
