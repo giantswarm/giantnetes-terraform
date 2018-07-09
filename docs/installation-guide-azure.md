@@ -3,7 +3,7 @@
 ## Prerequisites
 
 Common:
-- az cli installed
+- `az` cli installed (See [azure docs](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest))
 - `az login` executed (To switch to German cloud `az cloud set --name AzureGermanCloud`)
 
 ### Create storage account for terraform state
@@ -69,7 +69,7 @@ Replace `<cluster_name>` in `backend.tf` and make sure backend configuration lin
 cat ../platforms/azure/giantnetes/backend.tf
 ```
 
-Edit `envs.sh`. DO NOT PUT passwords and keys into `envs.sh` as it will be stored as plain text. 
+Edit `envs.sh`. DO NOT PUT passwords and keys into `envs.sh` as it will be stored as plain text.
 
 Command below will ask for:
 - storage account access key
