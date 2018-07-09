@@ -210,14 +210,24 @@ variable "subnet_worker_1" {
 
 ### VPN ###
 
-variable "aws_customer_gateway_id" {
+variable "aws_customer_gateway_id_0" {
   description = "AWS customer gateway ID. Should be created manually. Leave blank to disable VPN setup and enable public access for bastions."
   default     = ""
 }
 
-variable "external_ipsec_subnet" {
+variable "aws_customer_gateway_id_1" {
+  description = "AWS customer gateway ID. Should be created manually."
+  default     = ""
+}
+
+variable "external_ipsec_subnet_0" {
   description = "CIDR of peering IPSec network."
   default     = "172.18.0.0/30"
+}
+
+variable "external_ipsec_subnet_1" {
+  description = "CIDR of peering IPSec network."
+  default     = "172.18.0.4/30"
 }
 
 ### Kubernetes ###

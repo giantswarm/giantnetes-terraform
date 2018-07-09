@@ -84,8 +84,8 @@ export TF_VAR_azure_cloud=AZUREGERMANCLOUD
 Optionally for VPN support add following variables. `bastion_cidr` should be unique and a part of `vnet_cidr` (10.0.0.0/16 by default). Recommended to use /28 subnets from range 10.0.4.0/22 (e.g. 10.0.4.0/28, 10.0.4.16/28, etc.).
 ```
 export TF_VAR_vpn_enabled=1
-export TF_VAR_vpn_right_gateway_address=<ip address of IPSec server>
-export TF_VAR_vpn_right_subnet_cidr=<subnet that will be shared by IPSec server>
+export TF_VAR_vpn_right_gateway_address_0=<ip address of first IPSec server>
+export TF_VAR_vpn_right_gateway_address_1=<ip address of second IPSec server>
 export TF_VAR_bastion_cidr=<bastion subnet>
 ```
 

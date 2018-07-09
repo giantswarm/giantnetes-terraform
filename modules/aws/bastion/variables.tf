@@ -23,7 +23,8 @@ variable "cluster_name" {
 }
 
 variable "external_ipsec_subnet" {
-  type = "string"
+  type    = "string"
+  default = "172.18.0.0/29"
 }
 
 variable "ignition_bucket_id" {

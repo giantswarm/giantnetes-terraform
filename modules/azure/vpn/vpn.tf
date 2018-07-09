@@ -30,11 +30,20 @@ resource "azurerm_virtual_network_gateway" "gateway" {
   }
 }
 
-resource "azurerm_local_network_gateway" "local_gateway" {
+resource "azurerm_local_network_gateway" "local_gateway_0" {
   count               = "${var.vpn_enabled}"
-  name                = "${var.cluster_name}-vpn-right-gateway"
+  name                = "${var.cluster_name}-vpn-right-gateway-0"
   location            = "${var.location}"
   resource_group_name = "${var.resource_group_name}"
-  gateway_address     = "${var.vpn_right_gateway_address}"
-  address_space       = ["${var.vpn_right_subnet_cidr}"]
+  gateway_address     = "${var.vpn_right_gateway_address_0}"
+  address_space       = ["${var.vpn_right_subnet_cidr_0}"]
+}
+
+resource "azurerm_local_network_gateway" "local_gateway_1" {
+  count               = "${var.vpn_enabled}"
+  name                = "${var.cluster_name}-vpn-right-gateway-1"
+  location            = "${var.location}"
+  resource_group_name = "${var.resource_group_name}"
+  gateway_address     = "${var.vpn_right_gateway_address_1}"
+  address_space       = ["${var.vpn_right_subnet_cidr_1}"]
 }

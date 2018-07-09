@@ -236,12 +236,22 @@ variable "vpn_enabled" {
   default     = "0"
 }
 
-variable "vpn_right_gateway_address" {
+variable "vpn_right_gateway_address_0" {
   description = "IP address of the remote IPSec endpoint."
   default     = ""
 }
 
-variable "vpn_right_subnet_cidr" {
+variable "vpn_right_gateway_address_1" {
+  description = "IP address of the remote IPSec endpoint."
+  default     = ""
+}
+
+variable "vpn_right_subnet_cidr_0" {
   description = "CIDR of the remote IPSec network."
   default     = "172.18.0.1/32"
+}
+
+variable "vpn_right_subnet_cidr_1" {
+  description = "CIDR of the remote IPSec network."
+  default     = "172.18.0.5/32"
 }
