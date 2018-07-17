@@ -42,6 +42,18 @@ output "vault_network_interface_ids" {
   value = ["${azurerm_network_interface.vault.id}"]
 }
 
+output "vpn_subnet_id" {
+  value = "${element(concat(azurerm_subnet.vpn_subnet.*.id, list("")), 0)}"
+}
+
+output "vpn_subnet_name" {
+  value = "${element(concat(azurerm_subnet.vpn_subnet.*.name, list("")), 0)}"
+}
+
+output "vpn_subnet_cidr" {
+  value = "${element(concat(azurerm_subnet.vpn_subnet.*.address_prefix, list("")), 0)}"
+}
+
 output "worker_subnet" {
   value = "${azurerm_subnet.worker_subnet.id}"
 }

@@ -152,6 +152,12 @@ variable "docker_cidr" {
   default     = "172.17.0.1/16"
 }
 
+variable "ipam_network_cidr" {
+  description = "CIDR for guest VMs internal virtual network."
+  type        = "string"
+  default     = "10.1.0.0/16"
+}
+
 variable "k8s_service_cidr" {
   description = "CIDR for k8s internal cluster network."
   default     = "172.31.0.0/16"
@@ -204,14 +210,24 @@ variable "subnet_worker_1" {
 
 ### VPN ###
 
-variable "aws_customer_gateway_id" {
+variable "aws_customer_gateway_id_0" {
   description = "AWS customer gateway ID. Should be created manually. Leave blank to disable VPN setup and enable public access for bastions."
   default     = ""
 }
 
-variable "external_ipsec_subnet" {
+variable "aws_customer_gateway_id_1" {
+  description = "AWS customer gateway ID. Should be created manually."
+  default     = ""
+}
+
+variable "external_ipsec_subnet_0" {
   description = "CIDR of peering IPSec network."
   default     = "172.18.0.0/30"
+}
+
+variable "external_ipsec_subnet_1" {
+  description = "CIDR of peering IPSec network."
+  default     = "172.18.0.4/30"
 }
 
 ### Kubernetes ###

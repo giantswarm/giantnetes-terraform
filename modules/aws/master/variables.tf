@@ -14,6 +14,10 @@ variable "elb_subnet_ids" {
   type = "list"
 }
 
+variable "etcd_dns" {
+  type = "string"
+}
+
 variable "container_linux_ami_id" {
   type = "string"
 }

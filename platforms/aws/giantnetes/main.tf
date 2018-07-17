@@ -62,7 +62,8 @@ module "s3" {
 }
 
 locals {
-  ignition_users = "${file("${path.module}/../../../ignition/users.yaml")}"
+  bastion_users = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
+  users         = "${file("${path.module}/../../../ignition/users.yaml")}"
 }
 
 # Generate ignition config for bastions.
@@ -77,7 +78,7 @@ data "template_file" "bastion" {
 
 # Convert ignition config to raw json and merge users part.
 data "ct_config" "bastion" {
-  content      = "${format("%s\n%s", local.ignition_users, data.template_file.bastion.rendered)}"
+  content      = "${format("%s\n%s", local.bastion_users, data.template_file.bastion.rendered)}"
   platform     = "ec2"
   pretty_print = false
 }
@@ -92,14 +93,13 @@ module "bastion" {
   cluster_name           = "${var.cluster_name}"
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
-  external_ipsec_subnet  = "${var.external_ipsec_subnet}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
   iam_region             = "${var.iam_region}"
   instance_type          = "${var.bastion_instance_type}"
   route53_enabled        = "${var.route53_enabled}"
   s3_bucket_tags         = "${var.s3_bucket_tags}"
   user_data              = "${data.ct_config.bastion.rendered}"
-  with_public_access     = "${var.aws_customer_gateway_id == "" ? 1 : 0 }"
+  with_public_access     = "${var.aws_customer_gateway_id_0 == "" ? 1 : 0 }"
   vpc_cidr               = "${var.vpc_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"
 }
@@ -115,7 +115,7 @@ data "template_file" "vault" {
 
 # Convert ignition config to raw json and merge users part.
 data "ct_config" "vault" {
-  content      = "${format("%s\n%s", local.ignition_users, data.template_file.vault.rendered)}"
+  content      = "${format("%s\n%s", local.bastion_users, data.template_file.vault.rendered)}"
   platform     = "ec2"
   pretty_print = false
 }
@@ -134,6 +134,7 @@ module "vault" {
   vault_dns              = "${var.vault_dns}"
   vault_subnet_ids       = "${module.vpc.vault_subnet_ids}"
   vpc_cidr               = "${var.vpc_cidr}"
+  ipam_network_cidr      = "${var.ipam_network_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"
   worker_subnet_ids      = "${module.vpc.worker_subnet_ids}"
 }
@@ -161,7 +162,7 @@ data "template_file" "master" {
 
 # Convert ignition config to raw json and merge users part.
 data "ct_config" "master" {
-  content      = "${format("%s\n%s", local.ignition_users, data.template_file.master.rendered)}"
+  content      = "${format("%s\n%s", local.users, data.template_file.master.rendered)}"
   platform     = "ec2"
   pretty_print = false
 }
@@ -175,6 +176,7 @@ module "master" {
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
+  etcd_dns               = "${var.etcd_dns}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
   instance_type          = "${var.master_instance["type"]}"
   route53_enabled        = "${var.route53_enabled}"
@@ -208,7 +210,7 @@ data "template_file" "worker" {
 
 # Convert ignition config to raw json and merge users part.
 data "ct_config" "worker" {
-  content      = "${format("%s\n%s", local.ignition_users, data.template_file.worker.rendered)}"
+  content      = "${format("%s\n%s", local.users, data.template_file.worker.rendered)}"
   platform     = "ec2"
   pretty_print = false
 }
@@ -239,11 +241,13 @@ module "worker" {
 module "vpn" {
   source = "../../../modules/aws/vpn"
 
-  # If aws_customer_gateway_id is not set, no vpn resources will be created.
-  aws_customer_gateway_id    = "${var.aws_customer_gateway_id}"
-  aws_cluster_name           = "${var.cluster_name}"
-  aws_external_ipsec_subnet  = "${var.external_ipsec_subnet}"
-  aws_public_route_table_ids = "${module.vpc.public_route_table_ids}"
-  aws_vpn_name               = "Giant Swarm <-> ${var.cluster_name}"
-  aws_vpn_vpc_id             = "${module.vpc.vpc_id}"
+  # If aws_customer_gateway_id_0 is not set, no vpn resources will be created.
+  aws_customer_gateway_id_0   = "${var.aws_customer_gateway_id_0}"
+  aws_customer_gateway_id_1   = "${var.aws_customer_gateway_id_1}"
+  aws_cluster_name            = "${var.cluster_name}"
+  aws_external_ipsec_subnet_0 = "${var.external_ipsec_subnet_0}"
+  aws_external_ipsec_subnet_1 = "${var.external_ipsec_subnet_1}"
+  aws_public_route_table_ids  = "${module.vpc.public_route_table_ids}"
+  aws_vpn_name                = "Giant Swarm <-> ${var.cluster_name}"
+  aws_vpn_vpc_id              = "${module.vpc.vpc_id}"
 }

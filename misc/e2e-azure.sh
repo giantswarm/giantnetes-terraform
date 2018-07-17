@@ -118,6 +118,14 @@ stage-prepare-ssh(){
     ssh_pub_key=$(cat ${BUILDDIR}/${SSH_USER}.key.pub)
 
     # TODO Add after second line.
+    cat >> ${WORKDIR}/ignition/bastion-users.yaml << EOF
+  - name: ${SSH_USER}
+    groups:
+      - "sudo"
+      - "docker"
+    ssh_authorized_keys:
+      - $(cat ${BUILDDIR}/${SSH_USER}.key.pub)
+EOF
     cat >> ${WORKDIR}/ignition/users.yaml << EOF
   - name: ${SSH_USER}
     groups:
@@ -205,6 +213,8 @@ EOF
 
     # Bootstrap secure Vault.
     export VAULT_TOKEN="${root_token}"
+    export ETCD_BACKUP_AWS_ACCESS_KEY="foo"
+    export ETCD_BACKUP_AWS_SECRET_KEY="bar"
     export AWS_ACCESS_KEY="foo"
     export AWS_SECRET_KEY="bar"
     # Skip etcd_backup step.

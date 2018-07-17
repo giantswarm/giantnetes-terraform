@@ -30,6 +30,7 @@ module "vnet" {
   api_dns             = "${var.api_dns}"
   base_domain         = "${var.base_domain}"
   bastion_count       = "2"
+  bastion_cidr        = "${var.bastion_cidr}"
   cluster_name        = "${var.cluster_name}"
   etcd_dns            = "${var.etcd_dns}"
   ingress_dns         = "${var.ingress_dns}"
@@ -39,6 +40,7 @@ module "vnet" {
   resource_group_name = "${module.resource_group.name}"
   vault_dns           = "${var.vault_dns}"
   vnet_cidr           = "${var.vnet_cidr}"
+  vpn_enabled         = "${var.vpn_enabled}"
 }
 
 module "blob" {
@@ -50,7 +52,8 @@ module "blob" {
 }
 
 locals {
-  ignition_users = "${file("${path.module}/../../../ignition/users.yaml")}"
+  bastion_users = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
+  users         = "${file("${path.module}/../../../ignition/users.yaml")}"
 }
 
 # Generate ignition config for bastions.
@@ -65,7 +68,7 @@ data "template_file" "bastion" {
 
 # Convert ignition config to raw json and merge users part.
 data "ct_config" "bastion" {
-  content      = "${format("%s\n%s", local.ignition_users, data.template_file.bastion.rendered)}"
+  content      = "${format("%s\n%s", local.bastion_users, data.template_file.bastion.rendered)}"
   platform     = "azure"
   pretty_print = false
 }
@@ -98,7 +101,7 @@ data "template_file" "vault" {
 
 # Convert ignition config to raw json and merge users part.
 data "ct_config" "vault" {
-  content      = "${format("%s\n%s", local.ignition_users, data.template_file.vault.rendered)}"
+  content      = "${format("%s\n%s", local.bastion_users, data.template_file.vault.rendered)}"
   platform     = "azure"
   pretty_print = false
 }
@@ -151,7 +154,7 @@ data "template_file" "master" {
 
 # Convert ignition config to raw json and merge users part.
 data "ct_config" "master" {
-  content      = "${format("%s\n%s", local.ignition_users, data.template_file.master.rendered)}"
+  content      = "${format("%s\n%s", local.users, data.template_file.master.rendered)}"
   platform     = "azure"
   pretty_print = false
 }
@@ -214,7 +217,7 @@ data "template_file" "worker" {
 
 # Convert ignition config to raw json and merge users part.
 data "ct_config" "worker" {
-  content      = "${format("%s\n%s", local.ignition_users, data.template_file.worker.rendered)}"
+  content      = "${format("%s\n%s", local.users, data.template_file.worker.rendered)}"
   platform     = "azure"
   pretty_print = false
 }
@@ -239,4 +242,18 @@ module "worker" {
 
   network_interface_ids = "${module.vnet.worker_network_interface_ids}"
   vm_size               = "${var.worker_vm_size}"
+}
+
+module "vpn" {
+  source = "../../../modules/azure/vpn"
+
+  cluster_name                = "${var.cluster_name}"
+  location                    = "${var.azure_location}"
+  resource_group_name         = "${module.resource_group.name}"
+  subnet_id                   = "${module.vnet.vpn_subnet_id}"
+  vpn_enabled                 = "${var.vpn_enabled}"
+  vpn_right_gateway_address_0 = "${var.vpn_right_gateway_address_0}"
+  vpn_right_subnet_cidr_0     = "${var.vpn_right_subnet_cidr_0}"
+  vpn_right_gateway_address_1 = "${var.vpn_right_gateway_address_1}"
+  vpn_right_subnet_cidr_1     = "${var.vpn_right_subnet_cidr_1}"
 }

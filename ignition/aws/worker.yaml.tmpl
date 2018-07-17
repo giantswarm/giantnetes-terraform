@@ -423,6 +423,10 @@ systemd:
       --feature-gates=ExpandPersistentVolumes=true \
       --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yaml \
       --node-labels="node-role.kubernetes.io/worker,role=worker,ip=${DEFAULT_IPV4}" \
+      --eviction-soft='memory.available<500Mi' \
+      --eviction-hard='memory.available<350Mi' \
+      --eviction-soft-grace-period='memory.available=5s' \
+      --eviction-max-pod-grace-period=60 \
       --v=2"
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
@@ -435,5 +439,5 @@ storage:
       mount:
         device: ${MOUNT_DOCKER}
         format: xfs
-        wipe_filesystem: false
+        wipe_filesystem: true
         label: docker

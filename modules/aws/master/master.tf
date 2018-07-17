@@ -140,7 +140,7 @@ resource "aws_route53_record" "master" {
 resource "aws_route53_record" "etcd" {
   count   = "${var.route53_enabled ? 1 : 0}"
   zone_id = "${var.dns_zone_id}"
-  name    = "etcd"
+  name    = "${var.etcd_dns}"
   type    = "CNAME"
   records = ["${aws_instance.master.0.private_dns}"]
   ttl     = "300"

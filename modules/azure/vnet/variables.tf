@@ -7,6 +7,10 @@ variable "bastion_count" {
   type = "string"
 }
 
+variable "bastion_cidr" {
+  type = "string"
+}
+
 variable "base_domain" {
   type = "string"
 }
@@ -47,5 +51,9 @@ variable "vault_dns" {
 }
 
 variable "vnet_cidr" {
+  type = "string"
+}
+
+variable "vpn_enabled" {
   type = "string"
 }

@@ -159,6 +159,15 @@ variable "vnet_cidr" {
   default     = "10.0.0.0/16"
 }
 
+# NOTE:
+# - bastion_cidr should be a part of vnet_cidr.
+# - bastion_cidr should be unique across all installations if VPN enabled.
+# - recommended to use /28 subnets from range 10.0.4.0/22 (for default 10.0.0.0/16 vnet_cidr).
+variable "bastion_cidr" {
+  description = "CIDR for bastions."
+  default     = "10.0.4.0/28"
+}
+
 variable "pod_cidr" {
   description = "CIDR for pods."
   default     = "10.0.128.0/17"
@@ -217,4 +226,32 @@ variable "subnet_worker_0" {
 variable "subnet_worker_1" {
   description = "CIDR for worker network 1."
   default     = "10.0.5.128/25"
+}
+
+### VPN ###
+
+# NOTE: VPN is disabled by default.
+variable "vpn_enabled" {
+  description = "Enable or disable VPN (1 - yes, 0 - no)."
+  default     = "0"
+}
+
+variable "vpn_right_gateway_address_0" {
+  description = "IP address of the remote IPSec endpoint."
+  default     = ""
+}
+
+variable "vpn_right_gateway_address_1" {
+  description = "IP address of the remote IPSec endpoint."
+  default     = ""
+}
+
+variable "vpn_right_subnet_cidr_0" {
+  description = "CIDR of the remote IPSec network."
+  default     = "172.18.0.1/32"
+}
+
+variable "vpn_right_subnet_cidr_1" {
+  description = "CIDR of the remote IPSec network."
+  default     = "172.18.0.5/32"
 }
