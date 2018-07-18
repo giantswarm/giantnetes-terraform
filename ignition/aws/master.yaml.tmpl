@@ -1357,6 +1357,29 @@ storage:
               user: proxy
             name: service-account-context
           current-context: service-account-context
+    - path: /etc/kubernetes/config/scheduler-config.yaml
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          kind: KubeSchedulerConfiguration
+          algorithmSource:
+            provider: DefaultProvider
+          apiVersion: componentconfig/v1alpha1
+          clientConnection:
+            acceptContentTypes: ""
+            burst: 100
+            contentType: application/vnd.kubernetes.protobuf
+            kubeconfig: /etc/kubernetes/config/scheduler-kubeconfig.yaml
+            qps: 50
+          disablePreemption: false
+          enableContentionProfiling: false
+          enableProfiling: false
+          failureDomains: kubernetes.io/hostname,failure-domain.beta.kubernetes.io/zone,failure-domain.beta.kubernetes.io/region
+          hardPodAffinitySymmetricWeight: 1
+          healthzBindAddress: 0.0.0.0:10251
+          metricsBindAddress: 0.0.0.0:10251
+          schedulerName: default-scheduler
     - path: /etc/kubernetes/config/kubelet-kubeconfig.yaml
       filesystem: root
       mode: 0644
@@ -1598,11 +1621,8 @@ storage:
                 command:
                 - /hyperkube
                 - scheduler
-                - --master=https://${API_DOMAIN_NAME}:443
-                - --logtostderr=true
+                - --config=/etc/kubernetes/config/scheduler-config.yaml
                 - --v=2
-                - --profiling=false
-                - --kubeconfig=/etc/kubernetes/config/scheduler-kubeconfig.yaml
                 resources:
                   requests:
                     cpu: 200m
