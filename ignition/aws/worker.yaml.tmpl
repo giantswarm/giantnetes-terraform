@@ -46,6 +46,29 @@ storage:
               user: kubelet
             name: service-account-context
           current-context: service-account-context
+    - path: /etc/kubernetes/config/kubelet-config.yaml.tmpl
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          kind: KubeletConfiguration
+          apiVersion: kubelet.config.k8s.io/v1beta1
+          address: $${DEFAULT_IPV4}
+          port: 10250
+          healthzBindAddress: $${DEFAULT_IPV4}
+          healthzPort: 10248
+          clusterDNS: ${K8S_DNS_IP}
+          clusterDomain: cluster.local
+          featureGates:
+            ExpandPersistentVolumes: true
+          podManifestPath: /etc/kubernetes/manifests
+          evictionSoft:
+            memory.available:  "500Mi"
+          evictionHard:
+            memory.available:  "200Mi"
+          evictionSoftGracePeriod:
+            memory.available:  "5s"
+          evictionMaxPodGracePeriod: 60
     - path: /etc/kubernetes/config/proxy-config.yaml
       filesystem: root
       mode: 0644
@@ -278,6 +301,20 @@ systemd:
          [ $? -ne 0 ] && echo "Failed to fetch CA ssh public key" && exit 1 || echo "Sucesfully retrieved CA ssh public key";'
       [Install]
       WantedBy=multi-user.target
+  - name: k8s-setup-kubelet-config.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=k8s-setup-kubelet-config Service
+      After=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service
+      Requires=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service
+
+      [Service]
+      EnvironmentFile=/etc/network-environment
+      ExecStart=/bin/bash -c '/usr/bin/envsubst </etc/kubernetes/config/kubelet-config.yaml.tmpl >/etc/kubernetes/config/kubelet-config.yaml'
+      
+      [Install]
+      WantedBy=multi-user.target
   - name: get-vault-ca.service
     enabled: true
     contents: |
@@ -408,8 +445,8 @@ systemd:
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service
-      Requires=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service
+      After=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service k8s-setup-kubelet-config.service
+      Requires=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service k8s-setup-kubelet-config.service
 
       [Service]
       TimeoutStartSec=300
@@ -445,30 +482,18 @@ systemd:
       --name $NAME \
       $IMAGE \
       /hyperkube kubelet \
-      --address=${DEFAULT_IPV4} \
-      --port=10250 \
+      --config=/etc/kubernetes/config/kubelet-config.yaml
       --node-ip=${DEFAULT_IPV4} \
       --containerized \
       --enable-server \
       --logtostderr=true \
       --cloud-provider=aws \
-      --machine-id-file=/rootfs/etc/machine-id \
-      --cadvisor-port=4194 \
-      --healthz-bind-address=${DEFAULT_IPV4} \
-      --healthz-port=10248 \
-      --cluster-dns=${K8S_DNS_IP} \
-      --cluster-domain=cluster.local \
       --network-plugin=cni \
       --pod-infra-container-image=${POD_INFRA_IMAGE} \
       --register-node=true \
-      --allow-privileged=true \
-      --feature-gates=ExpandPersistentVolumes=true \
+      --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
       --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yaml \
-      --node-labels="node-role.kubernetes.io/worker,role=worker,ip=${DEFAULT_IPV4}" \
-      --eviction-soft='memory.available<500Mi' \
-      --eviction-hard='memory.available<350Mi' \
-      --eviction-soft-grace-period='memory.available=5s' \
-      --eviction-max-pod-grace-period=60 \
+      --node-labels="node-role.kubernetes.io/master,role=master,ip=${DEFAULT_IPV4}" \
       --v=2"
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
