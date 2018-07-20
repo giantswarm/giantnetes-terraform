@@ -118,3 +118,9 @@ passwd:
       - "docker"
     ssh_authorized_keys:
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCzkt5Tls3jGFzHW/cj6kz3OPAYR+fINFlDFk7qEY98sjkAbKqTwntVLY7ghOdynmt+0qoQRHklLoxDTUsFoYUu2vOpdtKKCdzHR08uYS2RlvOdA+Ex0d0qEHyxX4H3b+ym+8BqCn9Bh5X4/thGWt3cqVtroqYeUAES5SneQ1rX420hN9MoZ+83vC5gwTr90GqZbsqweNTHPkhuYLylvphzxbXOitzLr61VRxjGb4gZiRD6kCXuW/uP0nrtYXkHjROXMvdj1ZZA+VLR4TAbIukApYa3JpRAApanNScgmZTsa/HhEfDVQtGesG+C6fsZVcStxuWMcpx1vZFZ6gkeIDw+R47250E3BzaDYhjGo6URuijcmepllHsU+KgpvawmgjN8hlLdbBfCDLNML23mPDIwZmUznVwL1qH0Vf744ioExKKLHx1RpiohQMCnE6K+x85tf/5NAy/VlNPxD4qeS62Bcr4DPNnn3My1h+1U1hDyclw/4SynAZXNlBh7q6ksjzaRZ68LsZhWsyOZMKuz+igkV509SYhjqZfCT34zRlxEmRaI05fVAst/mZOfsfWb1AhADNVNF172jfat0qeot/Hs/Fs4D6bpl0mwW2jQD3dB3OkytroM4TBSvG7weJwJWoDgLvy1gx6Nd4rIsUlnQKivzwmEgCaV448Y6sVpEWpCAw== tobiasrichter@giantswarm.io
+  - name: conveyor
+    groups:
+      - "sudo"
+      - "docker"
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDEOFko36JtPT0Q+U3tuto/9r/lhxY6o/VwS/goPVtgU2/HbtY99u0H7rcwhUAeV8b8ICjeYLL4yNJ/ptfTkI9qYtdX/U7q8IfTrHNmPfN9gd+lYOu7vbl/rvYSFocQODsu2bKkNSe8+nCEzi7M46MWkcjQs88uvegrLcYIBIKhQC+kv4kuIVLci7P2jlJrP2VKknE/4XK0xHz3c9RVDKk4oaYTWoF6RBCY8JFPkqVtvZOICyyS9QQp45pBW3dwwf2f4dES04V6onrJGgodboh+FbN4UO+3Ue5fAfF9ypBrmHcz6NXMXx/lgIfZbgrBQ9xdwzEObPnj+ZhiLteqyns/ conveyor
