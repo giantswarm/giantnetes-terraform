@@ -1955,7 +1955,7 @@ systemd:
       [Unit]
       Description=k8s-setup-kubelet-config Service
       After=k8s-setup-network-env.service docker.service wait-for-domains.service
-      Requires=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service
+      Requires=k8s-setup-network-env.service docker.service wait-for-domains.service
 
       [Service]
       EnvironmentFile=/etc/network-environment
@@ -2210,7 +2210,7 @@ systemd:
       --name $NAME \
       $IMAGE \
       /hyperkube kubelet \
-      --config=/etc/kubernetes/config/kubelet-config.yaml
+      --config=/etc/kubernetes/config/kubelet-config.yaml \
       --node-ip=${DEFAULT_IPV4} \
       --containerized \
       --enable-server \
