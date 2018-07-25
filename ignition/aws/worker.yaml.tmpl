@@ -62,7 +62,6 @@ storage:
           clusterDomain: cluster.local
           featureGates:
             ExpandPersistentVolumes: true
-          podManifestPath: /etc/kubernetes/manifests
           evictionSoft:
             memory.available:  "500Mi"
           evictionHard:
@@ -260,6 +259,7 @@ systemd:
     contents: |
       [Unit]
       Description=Wait for etcd and k8s API domains to be available
+      StartLimitInterval=0
 
       [Service]
       Type=oneshot
@@ -307,8 +307,8 @@ systemd:
     contents: |
       [Unit]
       Description=k8s-setup-kubelet-config Service
-      After=k8s-setup-network-env.service docker.service wait-for-domains.service
-      Requires=k8s-setup-network-env.service docker.service wait-for-domains.service
+      After=k8s-setup-network-env.service docker.service
+      Requires=k8s-setup-network-env.service docker.service
 
       [Service]
       EnvironmentFile=/etc/network-environment
