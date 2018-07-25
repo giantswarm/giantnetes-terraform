@@ -1997,7 +1997,7 @@ systemd:
       ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/bin/bash -c '\
         RETRY=3;\
-        while [ -z "$result"] && [ $RETRY -gt 0 ]; do\
+        while [ -z "$result" ] && [ $RETRY -gt 0 ]; do\
         sleep 2s; echo "Trying to issue calico certs...";\
         let RETRY=$RETRY-1;\
         export result=$(\
@@ -2041,7 +2041,7 @@ systemd:
       ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/bin/bash -c '\
         RETRY=3;\
-        while [ -z "$result"] && [ $RETRY -gt 0 ]; do\
+        while [ -z "$result" ] && [ $RETRY -gt 0 ]; do\
         sleep 2s; echo "Trying to issue etcd certs...";\
         let RETRY=$RETRY-1;\
         export result=$(\
@@ -2246,7 +2246,7 @@ systemd:
       ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
       ExecStartPre=/bin/bash -c '\
         RETRY=3;\
-        while [ -z "$rsa_key"] && [ $RETRY -gt 0 ]; do\
+        while [ -z "$rsa_key" ] && [ $RETRY -gt 0 ]; do\
         sleep 2s; echo "trying to get g8s_sa_sign_key...";\
         let RETRY=$RETRY-1;\
         export rsa_key=$(\
