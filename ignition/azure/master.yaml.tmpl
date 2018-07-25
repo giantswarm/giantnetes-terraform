@@ -1474,7 +1474,8 @@ storage:
           port: 10250
           healthzBindAddress: $${DEFAULT_IPV4}
           healthzPort: 10248
-          clusterDNS: ${K8S_DNS_IP}
+          clusterDNS:
+            - ${K8S_DNS_IP}
           clusterDomain: cluster.local
           featureGates:
             ExpandPersistentVolumes: true
