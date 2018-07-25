@@ -506,12 +506,12 @@ systemd:
       --name $NAME \
       $IMAGE \
       /hyperkube kubelet \
-      --config=/etc/kubernetes/config/kubelet-config.yaml
+      --config=/etc/kubernetes/config/kubelet-config.yaml \
       --node-ip=${DEFAULT_IPV4} \
       --containerized \
       --enable-server \
       --logtostderr=true \
-      --cloud-provider=aws \
+      --cloud-provider=azure \
       --network-plugin=cni \
       --pod-infra-container-image=${POD_INFRA_IMAGE} \
       --register-node=true \

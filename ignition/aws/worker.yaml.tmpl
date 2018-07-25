@@ -482,7 +482,7 @@ systemd:
       --name $NAME \
       $IMAGE \
       /hyperkube kubelet \
-      --config=/etc/kubernetes/config/kubelet-config.yaml
+      --config=/etc/kubernetes/config/kubelet-config.yaml \
       --node-ip=${DEFAULT_IPV4} \
       --containerized \
       --enable-server \
