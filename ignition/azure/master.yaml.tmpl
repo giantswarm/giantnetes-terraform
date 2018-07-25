@@ -2043,13 +2043,13 @@ systemd:
     contents: |
       [Unit]
       Description=k8s-setup-kubelet-config Service
-      After=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service
-      Requires=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service
+      After=k8s-setup-network-env.service docker.service wait-for-domains.service
+      Requires=k8s-setup-network-env.service docker.service wait-for-domains.service
 
       [Service]
       EnvironmentFile=/etc/network-environment
       ExecStart=/bin/bash -c '/usr/bin/envsubst </etc/kubernetes/config/kubelet-config.yaml.tmpl >/etc/kubernetes/config/kubelet-config.yaml'
-      
+
       [Install]
       WantedBy=multi-user.target
   - name: docker.service
