@@ -90,4 +90,6 @@ resource "azurerm_lb_probe" "ingress_30011_lb" {
   resource_group_name = "${var.resource_group_name}"
   protocol            = "tcp"
   port                = 30011
+  interval_in_seconds = 5
+  number_of_probes    = 2
 }

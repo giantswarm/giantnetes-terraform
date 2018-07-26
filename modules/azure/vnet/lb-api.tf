@@ -58,4 +58,6 @@ resource "azurerm_lb_probe" "api_lb" {
   resource_group_name = "${var.resource_group_name}"
   protocol            = "tcp"
   port                = 443
+  interval_in_seconds = 5
+  number_of_probes    = 2
 }
