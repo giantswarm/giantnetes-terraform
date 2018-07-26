@@ -1359,7 +1359,6 @@ storage:
         inline: |
           kind: KubeletConfiguration
           apiVersion: kubelet.config.k8s.io/v1beta1
-          port: 10250
           clusterDNS:
             - ${K8S_DNS_IP}
           clusterDomain: cluster.local
@@ -1383,61 +1382,20 @@ storage:
             provider: DefaultProvider
           apiVersion: componentconfig/v1alpha1
           clientConnection:
-            acceptContentTypes: ""
-            burst: 100
-            contentType: application/vnd.kubernetes.protobuf
             kubeconfig: /etc/kubernetes/config/scheduler-kubeconfig.yaml
-            qps: 50
-          disablePreemption: false
-          enableContentionProfiling: false
-          enableProfiling: false
           failureDomains: kubernetes.io/hostname,failure-domain.beta.kubernetes.io/zone,failure-domain.beta.kubernetes.io/region
           hardPodAffinitySymmetricWeight: 1
-          healthzBindAddress: 0.0.0.0:10251
-          metricsBindAddress: 0.0.0.0:10251
-          schedulerName: default-scheduler
     - path: /etc/kubernetes/config/proxy-config.yaml
       filesystem: root
       mode: 0644
       contents:
         inline: |
           apiVersion: kubeproxy.config.k8s.io/v1alpha1
-          bindAddress: 0.0.0.0
           clientConnection:
-            acceptContentTypes: ""
-            burst: 10
-            contentType: application/vnd.kubernetes.protobuf
             kubeconfig: /etc/kubernetes/config/proxy-kubeconfig.yaml
-            qps: 5
-          clusterCIDR: ""
-          configSyncPeriod: 15m0s
-          conntrack:
-            max: 0
-            maxPerCore: 32768
-            min: 131072
-            tcpCloseWaitTimeout: 1h0m0s
-            tcpEstablishedTimeout: 24h0m0s
-          enableProfiling: false
-          healthzBindAddress: 0.0.0.0:10256
-          hostnameOverride: ""
-          iptables:
-            masqueradeAll: false
-            masqueradeBit: 14
-            minSyncPeriod: 0s
-            syncPeriod: 30s
-          ipvs:
-            excludeCIDRs: null
-            minSyncPeriod: 0s
-            scheduler: ""
-            syncPeriod: 30s
           kind: KubeProxyConfiguration
-          metricsBindAddress: 127.0.0.1:10249
           mode: iptables
-          nodePortAddresses: null
-          oomScoreAdj: -999
-          portRange: ""
           resourceContainer: /kube-proxy
-          udpIdleTimeout: 250ms
     - path: /etc/kubernetes/config/kubelet-kubeconfig.yaml
       filesystem: root
       mode: 0644
