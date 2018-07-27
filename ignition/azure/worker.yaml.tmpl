@@ -484,7 +484,6 @@ systemd:
       --cloud-provider=azure \
       --cloud-config=/etc/kubernetes/config/azure.yaml \
       --network-plugin=cni \
-      --pod-infra-container-image=${POD_INFRA_IMAGE} \
       --register-node=true \
       --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yaml \
       --node-labels="node-role.kubernetes.io/worker,role=worker,ip=${DEFAULT_IPV4}" \

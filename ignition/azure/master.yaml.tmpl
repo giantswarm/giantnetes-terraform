@@ -2305,7 +2305,6 @@ systemd:
       --cloud-provider=azure \
       --cloud-config=/etc/kubernetes/config/azure.yaml \
       --network-plugin=cni \
-      --pod-infra-container-image=${POD_INFRA_IMAGE} \
       --register-node=true \
       --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
       --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yaml \
