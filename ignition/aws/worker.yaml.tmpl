@@ -268,6 +268,20 @@ systemd:
          [ $? -ne 0 ] && echo "Failed to fetch CA ssh public key" && exit 1 || echo "Sucesfully retrieved CA ssh public key";'
       [Install]
       WantedBy=multi-user.target
+  - name: k8s-setup-kubelet-config.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=k8s-setup-kubelet-config Service
+      After=k8s-setup-network-env.service docker.service
+      Requires=k8s-setup-network-env.service docker.service
+
+      [Service]
+      EnvironmentFile=/etc/network-environment
+      ExecStart=/bin/bash -c '/usr/bin/envsubst </etc/kubernetes/config/kubelet-config.yaml.tmpl >/etc/kubernetes/config/kubelet-config.yaml'
+
+      [Install]
+      WantedBy=multi-user.target
   - name: get-vault-ca.service
     enabled: true
     contents: |
@@ -398,8 +412,8 @@ systemd:
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service
-      Requires=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service
+      After=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service k8s-setup-kubelet-config.service
+      Requires=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service k8s-setup-kubelet-config.service
 
       [Service]
       TimeoutStartSec=300
@@ -436,8 +450,6 @@ systemd:
       $IMAGE \
       /hyperkube kubelet \
       --config=/etc/kubernetes/config/kubelet-config.yaml \
-      --address=${DEFAULT_IPV4} \
-      --healthz-bind-address=${DEFAULT_IPV4} \
       --node-ip=${DEFAULT_IPV4} \
       --containerized \
       --enable-server \

@@ -1358,13 +1358,17 @@ storage:
               user: proxy
             name: service-account-context
           current-context: service-account-context
-    - path: /etc/kubernetes/config/kubelet-config.yaml
+    - path: /etc/kubernetes/config/kubelet-config.yaml.tmpl
       filesystem: root
       mode: 0644
       contents:
         inline: |
           kind: KubeletConfiguration
           apiVersion: kubelet.config.k8s.io/v1beta1
+          address: $${DEFAULT_IPV4}
+          port: 10250
+          healthzBindAddress: $${DEFAULT_IPV4}
+          healthzPort: 10248
           clusterDNS:
             - ${K8S_DNS_IP}
           clusterDomain: cluster.local
@@ -1911,6 +1915,20 @@ systemd:
 
       [Install]
       WantedBy=multi-user.target
+  - name: k8s-setup-kubelet-config.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=k8s-setup-kubelet-config Service
+      After=k8s-setup-network-env.service docker.service
+      Requires=k8s-setup-network-env.service docker.service
+
+      [Service]
+      EnvironmentFile=/etc/network-environment
+      ExecStart=/bin/bash -c '/usr/bin/envsubst </etc/kubernetes/config/kubelet-config.yaml.tmpl >/etc/kubernetes/config/kubelet-config.yaml'
+
+      [Install]
+      WantedBy=multi-user.target
   - name: get-vault-ca.service
     enabled: true
     contents: |
@@ -2120,8 +2138,8 @@ systemd:
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      Requires=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service
-      After=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service
+      Requires=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service k8s-setup-kubelet-config.service
+      After=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service k8s-setup-kubelet-config.service
 
       [Service]
       TimeoutStartSec=300
@@ -2159,8 +2177,6 @@ systemd:
       $IMAGE \
       /hyperkube kubelet \
       --config=/etc/kubernetes/config/kubelet-config.yaml \
-      --address=${DEFAULT_IPV4} \
-      --healthz-bind-address=${DEFAULT_IPV4} \
       --node-ip=${DEFAULT_IPV4} \
       --containerized \
       --enable-server \
