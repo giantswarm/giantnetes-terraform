@@ -825,12 +825,15 @@ storage:
                   component: kube-proxy
                   k8s-app: kube-proxy
                   kubernetes.io/cluster-service: "true"
+                annotations:
+                  scheduler.alpha.kubernetes.io/critical-pod: ''
               spec:
                 tolerations:
                 - key: node-role.kubernetes.io/master
                   operator: Exists
                   effect: NoSchedule
                 hostNetwork: true
+                priorityClassName: system-node-critical
                 serviceAccountName: kube-proxy
                 containers:
                 - name: kube-proxy
