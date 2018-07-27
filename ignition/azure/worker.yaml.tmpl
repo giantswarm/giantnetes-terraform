@@ -466,6 +466,7 @@ systemd:
       --enable-server \
       --logtostderr=true \
       --cloud-provider=azure \
+      --cloud-config=/etc/kubernetes/config/azure.yaml \
       --network-plugin=cni \
       --register-node=true \
       --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yaml \
