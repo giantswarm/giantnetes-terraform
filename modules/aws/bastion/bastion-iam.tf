@@ -39,6 +39,18 @@ resource "aws_iam_role_policy" "bastion" {
             "Effect": "Allow",
             "Action": "s3:GetObject",
             "Resource": "arn:${var.arn_region}:s3:::${var.aws_account}-${var.cluster_name}-ignition/*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+                "logs:DescribeLogStreams"
+            ],
+            "Resource": [
+                "arn:${var.arn_region}:logs:*:*:log-group:${var.cluster_name}",
+                "arn:${var.arn_region}:logs:*:*:log-group:${var.cluster_name}:log-stream:${var.cluster_name}_bastion_logs"
+            ]
         }
     ]
 }
