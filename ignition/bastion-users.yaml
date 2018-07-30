@@ -1,10 +1,1 @@
-passwd:
-  users:
-  # Add your user here.
-  #
-  #- name: user1
-  #  groups:
-  #    - "sudo"
-  #    - "docker"
-  #  ssh_authorized_keys:
-  #    - ssh-rsa XXXXX
+../build/bastion-users.yaml
