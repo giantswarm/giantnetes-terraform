@@ -56,6 +56,10 @@ source envs.sh
 
 NOTE: Reexecute `source envs.sh` in every new console.
 
+### Configure ssh users
+
+Add bastion users to `igntion/bastion-users.yaml`. All other vms take users configuration from `ignition/users.yaml`, so please modify it too.
+
 ### Route53 DNS zone setup
 
 Giantnetes requires real DNS domain, so it's mandatory to have existing DNS zone.
