@@ -58,7 +58,7 @@ locals {
 
 # Generate ignition config for bastions.
 data "template_file" "bastion" {
-  template = "${file("${path.module}/../../../ignition/bastion.yaml.tmpl")}"
+  template = "${file("${path.module}/../../../ignition/azure/bastion.yaml.tmpl")}"
 
   vars {
     "VAULT_DOMAIN_NAME" = "${var.vault_dns}.${var.base_domain}"
