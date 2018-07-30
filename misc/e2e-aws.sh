@@ -115,7 +115,9 @@ stage-prepare-ssh(){
 
     ssh_pub_key=$(cat ${BUILDDIR}/${SSH_USER}.key.pub)
 
-    cat >> ${WORKDIR}/ignition/bastion-users.yaml << EOF
+    cat > ${WORKDIR}/ignition/bastion-users.yaml << EOF
+passwd:
+  users:
   - name: ${SSH_USER}
     groups:
       - "sudo"
@@ -123,7 +125,9 @@ stage-prepare-ssh(){
     ssh_authorized_keys:
       - $(cat ${BUILDDIR}/${SSH_USER}.key.pub)
 EOF
-    cat >> ${WORKDIR}/ignition/users.yaml << EOF
+    cat > ${WORKDIR}/ignition/users.yaml << EOF
+passwd:
+  users:
   - name: ${SSH_USER}
     groups:
       - "sudo"
