@@ -545,8 +545,11 @@ storage:
               metadata:
                 labels:
                   k8s-app: coredns
+                annotations:
+                  scheduler.alpha.kubernetes.io/critical-pod: ''
               spec:
                 serviceAccountName: coredns
+                priorityClassName: system-cluster-critical
                 tolerations:
                   - key: "CriticalAddonsOnly"
                     operator: "Exists"
@@ -703,6 +706,8 @@ storage:
               metadata:
                 labels:
                   k8s-app: nginx-ingress-controller
+                annotations:
+                  scheduler.alpha.kubernetes.io/critical-pod: ''
               spec:
                 affinity:
                   podAntiAffinity:
@@ -717,6 +722,7 @@ storage:
                               - nginx-ingress-controller
                         topologyKey: kubernetes.io/hostname
                 serviceAccountName: nginx-ingress-controller
+                priorityClassName: system-cluster-critical
                 containers:
                 - name: nginx-ingress-controller
                   image: quay.io/giantswarm/nginx-ingress-controller:0.16.2
@@ -819,23 +825,23 @@ storage:
                   component: kube-proxy
                   k8s-app: kube-proxy
                   kubernetes.io/cluster-service: "true"
+                annotations:
+                  scheduler.alpha.kubernetes.io/critical-pod: ''
               spec:
                 tolerations:
                 - key: node-role.kubernetes.io/master
                   operator: Exists
                   effect: NoSchedule
                 hostNetwork: true
+                priorityClassName: system-node-critical
                 serviceAccountName: kube-proxy
                 containers:
                 - name: kube-proxy
-                  image: quay.io/giantswarm/hyperkube:v1.10.2
+                  image: quay.io/giantswarm/hyperkube:v1.11.1
                   command:
                   - /hyperkube
                   - proxy
-                  - --master=https://${API_DOMAIN_NAME}
-                  - --proxy-mode=iptables
-                  - --logtostderr=true
-                  - --kubeconfig=/etc/kubernetes/config/proxy-kubeconfig.yaml
+                  - --config=/etc/kubernetes/config/proxy-config.yaml
                   - --v=2
                   livenessProbe:
                     httpGet:
@@ -1460,6 +1466,62 @@ storage:
               user: proxy
             name: service-account-context
           current-context: service-account-context
+    - path: /etc/kubernetes/config/kubelet-config.yaml.tmpl
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          kind: KubeletConfiguration
+          apiVersion: kubelet.config.k8s.io/v1beta1
+          address: $${DEFAULT_IPV4}
+          port: 10250
+          healthzBindAddress: $${DEFAULT_IPV4}
+          healthzPort: 10248
+          clusterDNS:
+            - ${K8S_DNS_IP}
+          clusterDomain: cluster.local
+          featureGates:
+            ExpandPersistentVolumes: true
+          staticPodPath: /etc/kubernetes/manifests
+          evictionSoft:
+            memory.available:  "500Mi"
+          evictionHard:
+            memory.available:  "200Mi"
+          evictionSoftGracePeriod:
+            memory.available:  "5s"
+          evictionMaxPodGracePeriod: 60
+          authentication:
+            anonymous:
+              enabled: true # Defaults to false as of 1.10
+            webhook:
+              enabled: false # Deafults to true as of 1.10
+          authorization:
+            mode: AlwaysAllow # Deafults to webhook as of 1.10
+          readOnlyPort: 10255 # Used by heapster. Defaults to 0 (disabled) as of 1.10. Needed for metrics.
+    - path: /etc/kubernetes/config/scheduler-config.yaml
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          kind: KubeSchedulerConfiguration
+          algorithmSource:
+            provider: DefaultProvider
+          apiVersion: componentconfig/v1alpha1
+          clientConnection:
+            kubeconfig: /etc/kubernetes/config/scheduler-kubeconfig.yaml
+          failureDomains: kubernetes.io/hostname,failure-domain.beta.kubernetes.io/zone,failure-domain.beta.kubernetes.io/region
+          hardPodAffinitySymmetricWeight: 1
+    - path: /etc/kubernetes/config/proxy-config.yaml
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          apiVersion: kubeproxy.config.k8s.io/v1alpha1
+          clientConnection:
+            kubeconfig: /etc/kubernetes/config/proxy-kubeconfig.yaml
+          kind: KubeProxyConfiguration
+          mode: iptables
+          resourceContainer: /kube-proxy
     - path: /etc/kubernetes/config/kubelet-kubeconfig.yaml
       filesystem: root
       mode: 0644
@@ -1547,11 +1609,14 @@ storage:
           metadata:
             name: k8s-api-server
             namespace: kube-system
+            annotations:
+              scheduler.alpha.kubernetes.io/critical-pod: ''
           spec:
             hostNetwork: true
+            priorityClassName: system-node-critical
             containers:
               - name: k8s-api-server
-                image: quay.io/giantswarm/hyperkube:v1.10.2
+                image: quay.io/giantswarm/hyperkube:v1.11.1
                 env:
                 - name: HOST_IP
                   valueFrom:
@@ -1633,11 +1698,14 @@ storage:
           metadata:
             name: k8s-controller-manager
             namespace: kube-system
+            annotations:
+              scheduler.alpha.kubernetes.io/critical-pod: ''
           spec:
             hostNetwork: true
+            priorityClassName: system-node-critical
             containers:
               - name: k8s-controller-manager
-                image: quay.io/giantswarm/hyperkube:v1.10.2
+                image: quay.io/giantswarm/hyperkube:v1.11.1
                 command:
                 - /hyperkube
                 - controller-manager
@@ -1696,19 +1764,19 @@ storage:
           metadata:
             name: k8s-scheduler
             namespace: kube-system
+            annotations:
+              scheduler.alpha.kubernetes.io/critical-pod: ''
           spec:
             hostNetwork: true
+            priorityClassName: system-node-critical
             containers:
               - name: k8s-scheduler
-                image: quay.io/giantswarm/hyperkube:v1.10.2
+                image: quay.io/giantswarm/hyperkube:v1.11.1
                 command:
                 - /hyperkube
                 - scheduler
-                - --master=https://${API_DOMAIN_NAME}:443
-                - --logtostderr=true
                 - --v=2
-                - --profiling=false
-                - --kubeconfig=/etc/kubernetes/config/scheduler-kubeconfig.yaml
+                - --config=/etc/kubernetes/config/scheduler-config.yaml
                 resources:
                   requests:
                     cpu: 200m
@@ -1899,6 +1967,7 @@ systemd:
     contents: |
       [Unit]
       Description=Wait for etcd, k8s API and vault  domains to be available
+      StartLimitInterval=0
 
       [Service]
       Type=oneshot
@@ -1939,6 +2008,20 @@ systemd:
                    --header "X-Vault-Token: $VAULT_TOKEN" \
                    $VAULT_ADDR/v1/ssh-client-signer/public_key);\
          [ $? -ne 0 ] && echo "Failed to fetch CA ssh public key" && exit 1 || echo "Sucesfully retrieved CA ssh public key";'
+      [Install]
+      WantedBy=multi-user.target
+  - name: k8s-setup-kubelet-config.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=k8s-setup-kubelet-config Service
+      After=k8s-setup-network-env.service docker.service
+      Requires=k8s-setup-network-env.service docker.service
+
+      [Service]
+      EnvironmentFile=/etc/network-environment
+      ExecStart=/bin/bash -c '/usr/bin/envsubst </etc/kubernetes/config/kubelet-config.yaml.tmpl >/etc/kubernetes/config/kubelet-config.yaml'
+
       [Install]
       WantedBy=multi-user.target
   - name: docker.service
@@ -2009,10 +2092,10 @@ systemd:
       Type=oneshot
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/calico/
-      ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
+      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/bin/bash -c '\
         RETRY=3;\
-        while [ -z "$result"] && [ $RETRY -gt 0 ]; do\
+        while [ -z "$result" ] && [ $RETRY -gt 0 ]; do\
         sleep 2s; echo "Trying to issue calico certs...";\
         let RETRY=$RETRY-1;\
         export result=$(\
@@ -2052,10 +2135,10 @@ systemd:
       Type=oneshot
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/etcd/
-      ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
+      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/bin/bash -c '\
         RETRY=3;\
-        while [ -z "$result"] && [ $RETRY -gt 0 ]; do\
+        while [ -z "$result" ] && [ $RETRY -gt 0 ]; do\
         sleep 2s; echo "Trying to issue etcd certs...";\
         let RETRY=$RETRY-1;\
         export result=$(\
@@ -2184,8 +2267,8 @@ systemd:
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service
-      Requires=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service
+      After=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service k8s-setup-kubelet-config.service
+      Requires=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service k8s-setup-kubelet-config.service
 
       [Service]
       TimeoutStartSec=300
@@ -2193,7 +2276,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.10.2"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.11.1"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -2222,32 +2305,19 @@ systemd:
       --name $NAME \
       $IMAGE \
       /hyperkube kubelet \
-      --address=${DEFAULT_IPV4} \
-      --port=10250 \
+      --config=/etc/kubernetes/config/kubelet-config.yaml \
       --node-ip=${DEFAULT_IPV4} \
+      --cadvisor-port=4194 \
       --containerized \
       --enable-server \
       --logtostderr=true \
       --cloud-provider=azure \
       --cloud-config=/etc/kubernetes/config/azure.yaml \
-      --machine-id-file=/rootfs/etc/machine-id \
-      --cadvisor-port=4194 \
-      --healthz-bind-address=${DEFAULT_IPV4} \
-      --healthz-port=10248 \
-      --cluster-dns=${K8S_DNS_IP} \
-      --cluster-domain=cluster.local \
       --network-plugin=cni \
-      --feature-gates=ExpandPersistentVolumes=true \
-      --pod-manifest-path=/etc/kubernetes/manifests \
       --register-node=true \
       --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
-      --allow-privileged=true \
       --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yaml \
       --node-labels="node-role.kubernetes.io/master,role=master,ip=${DEFAULT_IPV4}" \
-      --eviction-soft='memory.available<500Mi' \
-      --eviction-hard='memory.available<350Mi' \
-      --eviction-soft-grace-period='memory.available=5s' \
-      --eviction-max-pod-grace-period=60 \
       --v=2"
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
@@ -2270,10 +2340,10 @@ systemd:
       Type=oneshot
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/
-      ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
+      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
       ExecStartPre=/bin/bash -c '\
         RETRY=3;\
-        while [ -z "$rsa_key"] && [ $RETRY -gt 0 ]; do\
+        while [ -z "$rsa_key" ] && [ $RETRY -gt 0 ]; do\
         sleep 2s; echo "trying to get g8s_sa_sign_key...";\
         let RETRY=$RETRY-1;\
         export rsa_key=$(\

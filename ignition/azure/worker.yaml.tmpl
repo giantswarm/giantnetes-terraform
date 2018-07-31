@@ -16,6 +16,48 @@ storage:
           securityGroupName: ${AZURE_SECGROUPNAME}
           vnetName: ${AZURE_VNETNAME}
           routeTableName: ${AZURE_ROUTETABLE}
+    - path: /etc/kubernetes/config/kubelet-config.yaml.tmpl
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          kind: KubeletConfiguration
+          apiVersion: kubelet.config.k8s.io/v1beta1
+          address: $${DEFAULT_IPV4}
+          port: 10250
+          healthzBindAddress: $${DEFAULT_IPV4}
+          healthzPort: 10248
+          clusterDNS:
+            - ${K8S_DNS_IP}
+          clusterDomain: cluster.local
+          featureGates:
+            ExpandPersistentVolumes: true
+          evictionSoft:
+            memory.available:  "500Mi"
+          evictionHard:
+            memory.available:  "200Mi"
+          evictionSoftGracePeriod:
+            memory.available:  "5s"
+          evictionMaxPodGracePeriod: 60
+          authentication:
+            anonymous:
+              enabled: true # Defaults to false as of 1.10
+            webhook:
+              enabled: false # Deafults to true as of 1.10
+          authorization:
+            mode: AlwaysAllow # Deafults to webhook as of 1.10
+          readOnlyPort: 10255 # Used by heapster. Defaults to 0 (disabled) as of 1.10. Needed for metrics.
+    - path: /etc/kubernetes/config/proxy-config.yaml
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          apiVersion: kubeproxy.config.k8s.io/v1alpha1
+          clientConnection:
+            kubeconfig: /etc/kubernetes/config/proxy-kubeconfig.yaml
+          kind: KubeProxyConfiguration
+          mode: iptables
+          resourceContainer: /kube-proxy
     - path: /etc/kubernetes/config/proxy-kubeconfig.yaml
       filesystem: root
       mode: 0644
@@ -210,7 +252,7 @@ systemd:
       What=/dev/disk/by-label/docker
       Where=/var/lib/docker
       Type=xfs
-   
+
       [Install]
       WantedBy=local-fs.targer
   - name: wait-for-domains.service
@@ -218,6 +260,7 @@ systemd:
     contents: |
       [Unit]
       Description=Wait for etcd and k8s API domains to be available
+      StartLimitInterval=0
 
       [Service]
       Type=oneshot
@@ -258,6 +301,20 @@ systemd:
                    --header "X-Vault-Token: $VAULT_TOKEN" \
                    $VAULT_ADDR/v1/ssh-client-signer/public_key);\
          [ $? -ne 0 ] && echo "Failed to fetch CA ssh public key" && exit 1 || echo "Sucesfully retrieved CA ssh public key";'
+      [Install]
+      WantedBy=multi-user.target
+  - name: k8s-setup-kubelet-config.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=k8s-setup-kubelet-config Service
+      After=k8s-setup-network-env.service docker.service
+      Requires=k8s-setup-network-env.service docker.service
+
+      [Service]
+      EnvironmentFile=/etc/network-environment
+      ExecStart=/bin/bash -c '/usr/bin/envsubst </etc/kubernetes/config/kubelet-config.yaml.tmpl >/etc/kubernetes/config/kubelet-config.yaml'
+
       [Install]
       WantedBy=multi-user.target
   - name: get-vault-ca.service
@@ -330,7 +387,7 @@ systemd:
       Type=oneshot
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/etcd/
-      ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
+      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/usr/bin/docker run \
       --net=host \
       -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
@@ -366,7 +423,7 @@ systemd:
       Type=oneshot
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/
-      ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
+      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/usr/bin/docker run \
       --net=host \
       -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
@@ -390,8 +447,8 @@ systemd:
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=kubelet-certs.service calico-certs.service
-      Requires=kubelet-certs.service calico-certs.service
+      After=kubelet-certs.service calico-certs.service k8s-setup-kubelet-config.service
+      Requires=kubelet-certs.service calico-certs.service k8s-setup-kubelet-config.service
 
       [Service]
       TimeoutStartSec=300
@@ -399,7 +456,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.10.2"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.11.1"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -427,30 +484,18 @@ systemd:
       --name $NAME \
       $IMAGE \
       /hyperkube kubelet \
-      --address=${DEFAULT_IPV4} \
-      --port=10250 \
+      --config=/etc/kubernetes/config/kubelet-config.yaml \
       --node-ip=${DEFAULT_IPV4} \
+      --cadvisor-port=4194 \
       --containerized \
       --enable-server \
       --logtostderr=true \
       --cloud-provider=azure \
       --cloud-config=/etc/kubernetes/config/azure.yaml \
-      --machine-id-file=/rootfs/etc/machine-id \
-      --cadvisor-port=4194 \
-      --healthz-bind-address=${DEFAULT_IPV4} \
-      --healthz-port=10248 \
-      --cluster-dns=${K8S_DNS_IP} \
-      --cluster-domain=cluster.local \
-      --feature-gates=ExpandPersistentVolumes=true \
       --network-plugin=cni \
       --register-node=true \
-      --allow-privileged=true \
       --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yaml \
       --node-labels="node-role.kubernetes.io/worker,role=worker,ip=${DEFAULT_IPV4}" \
-      --eviction-soft='memory.available<500Mi' \
-      --eviction-hard='memory.available<350Mi' \
-      --eviction-soft-grace-period='memory.available=5s' \
-      --eviction-max-pod-grace-period=60 \
       --v=2"
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
