@@ -2186,6 +2186,7 @@ systemd:
       /hyperkube kubelet \
       --config=/etc/kubernetes/config/kubelet-config.yaml \
       --node-ip=${DEFAULT_IPV4} \
+      --cadvisor-port=4194 \
       --containerized \
       --enable-server \
       --logtostderr=true \
