@@ -95,6 +95,10 @@ source envs.sh
 
 NOTE: Reexecute `source envs.sh` everytime if opening new console.
 
+### Configure ssh users
+
+Add bastion users to `build/bastion-users.yaml`. All other vms take users configuration from `build/users.yaml`, so please modify it too.
+
 ## Install
 
 Terraform has one manifest:
