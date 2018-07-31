@@ -48,8 +48,8 @@ resource "aws_iam_role_policy" "bastion" {
                 "logs:DescribeLogStreams"
             ],
             "Resource": [
-                "arn:${var.arn_region}:logs:*:*:log-group:${var.cluster_name}",
-                "arn:${var.arn_region}:logs:*:*:log-group:${var.cluster_name}:log-stream:${var.cluster_name}_bastion_logs"
+                "arn:${var.arn_region}:logs:*:*:log-group:${var.cluster_name}_bastion",
+                "arn:${var.arn_region}:logs:*:*:log-group:${var.cluster_name}_bastion:log-stream:${var.cluster_name}_bastion"
             ]
         }
     ]
