@@ -26,10 +26,10 @@ resource "aws_subnet" "bastion_1" {
 
 resource "aws_route_table_association" "bastion_0" {
   subnet_id      = "${aws_subnet.bastion_0.id}"
-  route_table_id = "${aws_route_table.cluster_vpc_private_0.id}"
+  route_table_id = "${var.with_public_access == 0 ? aws_route_table.cluster_vpc_private_0.id : aws_route_table.cluster_vpc_public_0.id}"
 }
 
 resource "aws_route_table_association" "bastion_1" {
   subnet_id      = "${aws_subnet.bastion_1.id}"
-  route_table_id = "${aws_route_table.cluster_vpc_private_1.id}"
+  route_table_id = "${var.with_public_access == 0 ? aws_route_table.cluster_vpc_private_1.id : aws_route_table.cluster_vpc_public_1.id}"
 }

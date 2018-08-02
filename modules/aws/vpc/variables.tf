@@ -46,3 +46,8 @@ variable "subnet_worker_1" {
 variable "vpc_cidr" {
   type = "string"
 }
+
+variable "with_public_access" {
+  type    = "string"
+  default = ""
+}
