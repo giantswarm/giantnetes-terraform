@@ -39,17 +39,18 @@ module "dns" {
 module "vpc" {
   source = "../../../modules/aws/vpc"
 
-  arn_region       = "${var.arn_region}"
-  aws_account      = "${var.aws_account}"
-  cluster_name     = "${var.cluster_name}"
-  subnet_bastion_0 = "${var.subnet_bastion_0}"
-  subnet_bastion_1 = "${var.subnet_bastion_1}"
-  subnet_elb_0     = "${var.subnet_elb_0}"
-  subnet_elb_1     = "${var.subnet_elb_1}"
-  subnet_worker_0  = "${var.subnet_worker_0}"
-  subnet_worker_1  = "${var.subnet_worker_1}"
-  subnet_vault_0   = "${var.subnet_vault_0}"
-  vpc_cidr         = "${var.vpc_cidr}"
+  arn_region         = "${var.arn_region}"
+  aws_account        = "${var.aws_account}"
+  cluster_name       = "${var.cluster_name}"
+  subnet_bastion_0   = "${var.subnet_bastion_0}"
+  subnet_bastion_1   = "${var.subnet_bastion_1}"
+  subnet_elb_0       = "${var.subnet_elb_0}"
+  subnet_elb_1       = "${var.subnet_elb_1}"
+  subnet_worker_0    = "${var.subnet_worker_0}"
+  subnet_worker_1    = "${var.subnet_worker_1}"
+  subnet_vault_0     = "${var.subnet_vault_0}"
+  vpc_cidr           = "${var.vpc_cidr}"
+  with_public_access = "${var.aws_customer_gateway_id_0 == "" ? 1 : 0 }"
 }
 
 # Create S3 bucket for ignition configs.
@@ -247,7 +248,7 @@ module "vpn" {
   aws_cluster_name            = "${var.cluster_name}"
   aws_external_ipsec_subnet_0 = "${var.external_ipsec_subnet_0}"
   aws_external_ipsec_subnet_1 = "${var.external_ipsec_subnet_1}"
-  aws_public_route_table_ids  = "${module.vpc.public_route_table_ids}"
+  aws_private_route_table_ids = "${module.vpc.private_route_table_ids}"
   aws_vpn_name                = "Giant Swarm <-> ${var.cluster_name}"
   aws_vpn_vpc_id              = "${module.vpc.vpc_id}"
 }
