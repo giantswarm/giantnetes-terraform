@@ -63,14 +63,14 @@ resource "aws_vpn_connection_route" "customer_network_1" {
 # Add vpc routes that point to VPN gateways.
 resource "aws_route" "vpc_route_0" {
   count                  = "${var.aws_customer_gateway_id_0 == "" ? 0 : 2}"
-  route_table_id         = "${var.aws_public_route_table_ids[count.index]}"
+  route_table_id         = "${var.aws_private_route_table_ids[count.index]}"
   destination_cidr_block = "${var.aws_external_ipsec_subnet_0}"
   gateway_id             = "${aws_vpn_gateway.vpn_gw.id}"
 }
 
 resource "aws_route" "vpc_route_1" {
   count                  = "${var.aws_customer_gateway_id_1 == "" ? 0 : 2}"
-  route_table_id         = "${var.aws_public_route_table_ids[count.index]}"
+  route_table_id         = "${var.aws_private_route_table_ids[count.index]}"
   destination_cidr_block = "${var.aws_external_ipsec_subnet_1}"
   gateway_id             = "${aws_vpn_gateway.vpn_gw.id}"
 }

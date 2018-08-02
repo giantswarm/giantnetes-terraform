@@ -2,9 +2,9 @@
 #
 #   * a public route table with the internet gateway as a default route
 #   * a private route table with the private nat gateway as a default route
-#   * bastion and elb subnets are using the public route table
-#   * vault and worker subnets are using the private route table
-#   * the private nat gateway is in the bastion subnet as well (needs to be in a public subnet)
+#   * elb subnets are using the public route table
+#   * bastion, vault and worker subnets are using the private route table
+#   * the private nat gateway is in the elb subnet as well (needs to be in a public subnet)
 
 locals {
   common_tags = "${map(
@@ -44,12 +44,12 @@ resource "aws_internet_gateway" "cluster_vpc" {
 
 resource "aws_nat_gateway" "private_nat_gateway_0" {
   allocation_id = "${aws_eip.private_nat_gateway_0.id}"
-  subnet_id     = "${aws_subnet.bastion_0.id}"
+  subnet_id     = "${aws_subnet.elb_0.id}"
 }
 
 resource "aws_nat_gateway" "private_nat_gateway_1" {
   allocation_id = "${aws_eip.private_nat_gateway_1.id}"
-  subnet_id     = "${aws_subnet.bastion_1.id}"
+  subnet_id     = "${aws_subnet.elb_1.id}"
 }
 
 resource "aws_eip" "private_nat_gateway_0" {
