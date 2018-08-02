@@ -14,6 +14,10 @@ output "worker_subnet_ids" {
   value = ["${aws_subnet.worker_0.id}", "${aws_subnet.worker_1.id}"]
 }
 
+output "private_route_table_ids" {
+  value = ["${aws_route_table.cluster_vpc_private_0.id}", "${aws_route_table.cluster_vpc_private_1.id}"]
+}
+
 output "public_route_table_ids" {
   value = ["${aws_route_table.cluster_vpc_public_0.id}", "${aws_route_table.cluster_vpc_public_1.id}"]
 }
