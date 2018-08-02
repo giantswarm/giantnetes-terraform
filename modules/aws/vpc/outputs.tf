@@ -18,10 +18,6 @@ output "private_route_table_ids" {
   value = ["${aws_route_table.cluster_vpc_private_0.id}", "${aws_route_table.cluster_vpc_private_1.id}"]
 }
 
-output "public_route_table_ids" {
-  value = ["${aws_route_table.cluster_vpc_public_0.id}", "${aws_route_table.cluster_vpc_public_1.id}"]
-}
-
 output "vpc_id" {
   value = "${aws_vpc.cluster_vpc.id}"
 }

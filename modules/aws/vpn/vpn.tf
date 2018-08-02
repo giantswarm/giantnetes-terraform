@@ -8,7 +8,7 @@ variable "aws_external_ipsec_subnet_1" {}
 variable "aws_vpn_name" {}
 variable "aws_vpn_vpc_id" {}
 
-variable "aws_public_route_table_ids" {
+variable "aws_private_route_table_ids" {
   type = "list"
 }
 

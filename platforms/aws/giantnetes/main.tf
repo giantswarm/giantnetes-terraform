@@ -247,7 +247,7 @@ module "vpn" {
   aws_cluster_name            = "${var.cluster_name}"
   aws_external_ipsec_subnet_0 = "${var.external_ipsec_subnet_0}"
   aws_external_ipsec_subnet_1 = "${var.external_ipsec_subnet_1}"
-  aws_public_route_table_ids  = "${module.vpc.public_route_table_ids}"
+  aws_private_route_table_ids = "${module.vpc.private_route_table_ids}"
   aws_vpn_name                = "Giant Swarm <-> ${var.cluster_name}"
   aws_vpn_vpc_id              = "${module.vpc.vpc_id}"
 }
