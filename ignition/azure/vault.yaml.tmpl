@@ -55,8 +55,7 @@ storage:
   filesystems:
     - name: etcd
       mount:
-        device: /dev/sdc
+        device: /dev/disk/azure/scsi1/lun0
         format: ext4
         wipe_filesystem: false
         label: var-lib-etcd
-
