@@ -24,6 +24,12 @@ variable "ami_owner" {
   description = "ID of the ami owner for CoreOS images."
 }
 
+variable "bastion_log_priority" {
+  type        = "string"
+  default     = "none"
+  description = "Default log priority for exported logs (based on journalctl priorities)"
+}
+
 variable "iam_region" {
   type    = "string"
   default = "ec2.amazonaws.com"

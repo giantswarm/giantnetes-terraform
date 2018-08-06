@@ -69,11 +69,14 @@ locals {
 
 # Generate ignition config for bastions.
 data "template_file" "bastion" {
-  template = "${file("${path.module}/../../../ignition/bastion.yaml.tmpl")}"
+  template = "${file("${path.module}/../../../ignition/aws/bastion.yaml.tmpl")}"
 
   vars {
-    "VAULT_DOMAIN_NAME" = "${var.vault_dns}.${var.base_domain}"
-    "G8S_VAULT_TOKEN"   = "${var.nodes_vault_token}"
+    "VAULT_DOMAIN_NAME"            = "${var.vault_dns}.${var.base_domain}"
+    "G8S_VAULT_TOKEN"              = "${var.nodes_vault_token}"
+    "CLUSTER_NAME"                 = "${var.cluster_name}"
+    "CLOUDWATCH_FORWARDER_ENABLED" = "${var.bastion_log_priority != "none" ? "true" : "false" }"
+    "BASTION_LOG_PRIORITY"         = "${var.bastion_log_priority}"
   }
 }
 

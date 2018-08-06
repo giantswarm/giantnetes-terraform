@@ -13,6 +13,8 @@ locals {
   )}"
 }
 
+data "aws_region" "current" {}
+
 resource "aws_instance" "bastion" {
   count                = "${var.bastion_count}"
   ami                  = "${var.container_linux_ami_id}"
@@ -125,4 +127,12 @@ data "ignition_config" "s3" {
     source       = "${format("s3://%s/%s", var.ignition_bucket_id, local.s3_ignition_bastion_key)}"
     verification = "sha512-${sha512(var.user_data)}"
   }
+}
+
+resource "aws_vpc_endpoint" "cloudwatch" {
+  vpc_id             = "${var.vpc_id}"
+  service_name       = "com.amazonaws.${data.aws_region.current.name}.logs"
+  vpc_endpoint_type  = "Interface"
+  security_group_ids = ["${aws_security_group.bastion.id}"]
+  subnet_ids         = ["${var.bastion_subnet_ids[0]}", "${var.bastion_subnet_ids[1]}"]
 }
