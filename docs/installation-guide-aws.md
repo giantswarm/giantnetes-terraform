@@ -207,3 +207,9 @@ TBD
 go get -u github.com/coreos/terraform-provider-ct
 cp $GOPATH/bin/terraform-provider-ct ~/.terraform.d/plugins/linux_amd64/terraform-provider-ct
 ```
+
+## Appendix B
+
+Host cluster AWS VPC setup
+
+![Giant Swarm AWS VPC setup](https://github.com/giantswarm/giantnetes-terraform/blob/master/docs/media/aws-vpc-setup.png?raw=true)
