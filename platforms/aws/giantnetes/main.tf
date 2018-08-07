@@ -67,9 +67,21 @@ locals {
   users         = "${file("${path.module}/../../../ignition/users.yaml")}"
 }
 
+resource "null_resource" "generate_bastion_ignition" {
+  triggers {
+    rerun = "${sha1(file("../templates/bastion.yaml.tmpl"))}"
+  }
+
+  provisioner "local-exec" {
+    working_dir = "../"
+    command     = "aws"
+    interpreter = ["tools/ignition-renderer", "-in", "templates/bastion.yaml.tmpl", "-out", "ignition/bastion.yaml.tmpl", "-provider"]
+  }
+}
+
 # Generate ignition config for bastions.
 data "template_file" "bastion" {
-  template = "${file("${path.module}/../../../ignition/aws/bastion.yaml.tmpl")}"
+  template = "${file("${path.module}/../../../ignition/bastion.yaml.tmpl")}"
 
   vars {
     "VAULT_DOMAIN_NAME"            = "${var.vault_dns}.${var.base_domain}"
@@ -77,6 +89,7 @@ data "template_file" "bastion" {
     "CLUSTER_NAME"                 = "${var.cluster_name}"
     "CLOUDWATCH_FORWARDER_ENABLED" = "${var.bastion_log_priority != "none" ? "true" : "false" }"
     "BASTION_LOG_PRIORITY"         = "${var.bastion_log_priority}"
+    "TRIGGER_UPDATE"               = "${sha1(file("../templates/bastion.yaml.tmpl"))}"
   }
 }
 

@@ -74,6 +74,33 @@ systemd:
 
         [Install]
         WantedBy=multi-user.target
+    {{if eq .Provider "aws" -}}
+    - name: journald-cloudwatch-logs.service
+      enabled: ${CLOUDWATCH_FORWARDER_ENABLED}
+      contents: |
+        [Unit]
+        Description=journald cloudwatch forwarder
+        Requires=docker.service
+        After=docker.service
+
+        [Service]
+        Environment="NAME=%p.service"
+        Environment="IMAGE=quay.io/giantswarm/journald-cloudwatch-logs"
+        Restart=always
+        RestartSec=10
+        TimeoutStopSec=10
+        ExecStartPre=/usr/bin/mkdir -p /var/lib/cloudwatch-logs
+        ExecStartPre=/usr/bin/docker pull $IMAGE
+        ExecStart=/usr/bin/docker run --rm --net=host \
+                  -v /etc/journald-cloudwatch.conf:/etc/journald-cloudwatch.conf \
+                  -v /var/log/journal/:/var/log/journal/ \
+                  -v /var/lib/cloudwatch-logs/:/var/lib/cloudwatch-logs/ \
+                  --name $NAME $IMAGE /etc/journald-cloudwatch.conf
+        ExecStop=-/usr/bin/docker stop -t 10 $NAME
+
+        [Install]
+        WantedBy=multi-user.target
+    {{end }}
 storage:
   files:
     - path: /etc/tokens/node
@@ -151,3 +178,15 @@ storage:
 
             echo "Successfully resolved domain $domain"
           done
+    {{if eq .Provider "aws" -}}
+    - path: /etc/journald-cloudwatch.conf
+      filesystem: root
+      mode: 0544
+      contents:
+        inline: |
+          log_group = "${CLUSTER_NAME}_bastion"
+          state_file = "/var/lib/cloudwatch-logs/state"
+          log_stream = "${CLUSTER_NAME}_bastion"
+          journal_dir = "/var/log/journal"
+          log_priority = "${BASTION_LOG_PRIORITY}"
+    {{end -}}
