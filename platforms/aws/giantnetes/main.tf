@@ -69,11 +69,11 @@ locals {
 
 resource "null_resource" "generate_bastion_ignition" {
   triggers {
-    rerun = "${sha1(file("../templates/bastion.yaml.tmpl"))}"
+    rerun = "${sha1(file("${path.module}/../../../templates/bastion.yaml.tmpl"))}"
   }
 
   provisioner "local-exec" {
-    working_dir = "../"
+    working_dir = "${path.module}/../../../"
     command     = "aws"
     interpreter = ["tools/ignition-renderer", "-in", "templates/bastion.yaml.tmpl", "-out", "ignition/bastion.yaml.tmpl", "-provider"]
   }
@@ -84,12 +84,12 @@ data "template_file" "bastion" {
   template = "${file("${path.module}/../../../ignition/bastion.yaml.tmpl")}"
 
   vars {
-    "VAULT_DOMAIN_NAME"            = "${var.vault_dns}.${var.base_domain}"
-    "G8S_VAULT_TOKEN"              = "${var.nodes_vault_token}"
-    "CLUSTER_NAME"                 = "${var.cluster_name}"
-    "CLOUDWATCH_FORWARDER_ENABLED" = "${var.bastion_log_priority != "none" ? "true" : "false" }"
     "BASTION_LOG_PRIORITY"         = "${var.bastion_log_priority}"
-    "TRIGGER_UPDATE"               = "${sha1(file("../templates/bastion.yaml.tmpl"))}"
+    "CLOUDWATCH_FORWARDER_ENABLED" = "${var.bastion_log_priority != "none" ? "true" : "false" }"
+    "CLUSTER_NAME"                 = "${var.cluster_name}"
+    "G8S_VAULT_TOKEN"              = "${var.nodes_vault_token}"
+    "TRIGGER_UPDATE"               = "${sha1(file("${path.module}/../../../templates/bastion.yaml.tmpl"))}"
+    "VAULT_DOMAIN_NAME"            = "${var.vault_dns}.${var.base_domain}"
   }
 }
 
@@ -121,12 +121,25 @@ module "bastion" {
   vpc_id                 = "${module.vpc.vpc_id}"
 }
 
+resource "null_resource" "generate_vault_ignition" {
+  triggers {
+    rerun = "${sha1(file("${path.module}/../../../templates/vault.yaml.tmpl"))}"
+  }
+
+  provisioner "local-exec" {
+    working_dir = "${path.module}/../../../"
+    command     = "aws"
+    interpreter = ["tools/ignition-renderer", "-in", "templates/vault.yaml.tmpl", "-out", "ignition/vault.yaml.tmpl", "-provider"]
+  }
+}
+
 # Generate ignition config for Vault.
 data "template_file" "vault" {
-  template = "${file("${path.module}/../../../ignition/aws/vault.yaml.tmpl")}"
+  template = "${file("${path.module}/../../../ignition/vault.yaml.tmpl")}"
 
   vars {
-    "DOCKER_CIDR" = "${var.docker_cidr}"
+    "DOCKER_CIDR"    = "${var.docker_cidr}"
+    "TRIGGER_UPDATE" = "${sha1(file("${path.module}/../../../templates/vault.yaml.tmpl"))}"
   }
 }
 
@@ -156,9 +169,21 @@ module "vault" {
   worker_subnet_ids      = "${module.vpc.worker_subnet_ids}"
 }
 
+resource "null_resource" "generate_master_ignition" {
+  triggers {
+    rerun = "${sha1(file("${path.module}/../../../templates/master.yaml.tmpl"))}"
+  }
+
+  provisioner "local-exec" {
+    working_dir = "${path.module}/../../../"
+    command     = "aws"
+    interpreter = ["tools/ignition-renderer", "-in", "templates/master.yaml.tmpl", "-out", "ignition/master.yaml.tmpl", "-provider"]
+  }
+}
+
 # Generate ignition config for master.
 data "template_file" "master" {
-  template = "${file("${path.module}/../../../ignition/aws/master.yaml.tmpl")}"
+  template = "${file("${path.module}/../../../ignition/master.yaml.tmpl")}"
 
   vars {
     "API_DOMAIN_NAME"   = "${var.api_dns}.${var.base_domain}"
@@ -173,6 +198,7 @@ data "template_file" "master" {
     "MOUNT_DOCKER"      = "${var.master_instance["mount_docker"]}"
     "MOUNT_ETCD"        = "${var.master_instance["mount_etcd"]}"
     "POD_INFRA_IMAGE"   = "${var.pod_infra_image}"
+    "TRIGGER_UPDATE"    = "${sha1(file("${path.module}/../../../templates/master.yaml.tmpl"))}"
     "VAULT_DOMAIN_NAME" = "${var.vault_dns}.${var.base_domain}"
   }
 }
@@ -207,9 +233,21 @@ module "master" {
   arn_region             = "${var.arn_region}"
 }
 
+resource "null_resource" "generate_worker_ignition" {
+  triggers {
+    rerun = "${sha1(file("${path.module}/../../../templates/worker.yaml.tmpl"))}"
+  }
+
+  provisioner "local-exec" {
+    working_dir = "${path.module}/../../../"
+    command     = "aws"
+    interpreter = ["tools/ignition-renderer", "-in", "templates/worker.yaml.tmpl", "-out", "ignition/worker.yaml.tmpl", "-provider"]
+  }
+}
+
 # Generate ignition config for worker.
 data "template_file" "worker" {
-  template = "${file("${path.module}/../../../ignition/aws/worker.yaml.tmpl")}"
+  template = "${file("${path.module}/../../../ignition/worker.yaml.tmpl")}"
 
   vars {
     "API_DOMAIN_NAME"   = "${var.api_dns}.${var.base_domain}"
@@ -221,6 +259,7 @@ data "template_file" "worker" {
     "K8S_DNS_IP"        = "${var.k8s_dns_ip}"
     "MOUNT_DOCKER"      = "${var.worker_instance["mount_docker"]}"
     "POD_INFRA_IMAGE"   = "${var.pod_infra_image}"
+    "TRIGGER_UPDATE"    = "${sha1(file("${path.module}/../../../templates/worker.yaml.tmpl"))}"
     "VAULT_DOMAIN_NAME" = "${var.vault_dns}.${var.base_domain}"
   }
 }

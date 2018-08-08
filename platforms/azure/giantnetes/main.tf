@@ -56,13 +56,26 @@ locals {
   users         = "${file("${path.module}/../../../ignition/users.yaml")}"
 }
 
+resource "null_resource" "generate_bastion_ignition" {
+  triggers {
+    rerun = "${sha1(file("${path.module}/../../../templates/bastion.yaml.tmpl"))}"
+  }
+
+  provisioner "local-exec" {
+    working_dir = "${path.module}/../../../"
+    command     = "aws"
+    interpreter = ["tools/ignition-renderer", "-in", "templates/bastion.yaml.tmpl", "-out", "ignition/bastion.yaml.tmpl", "-provider"]
+  }
+}
+
 # Generate ignition config for bastions.
 data "template_file" "bastion" {
   template = "${file("${path.module}/../../../ignition/azure/bastion.yaml.tmpl")}"
 
   vars {
-    "VAULT_DOMAIN_NAME" = "${var.vault_dns}.${var.base_domain}"
     "G8S_VAULT_TOKEN"   = "${var.nodes_vault_token}"
+    "TRIGGER_UPDATE"    = "${sha1(file("${path.module}/../../../templates/bastion.yaml.tmpl"))}"
+    "VAULT_DOMAIN_NAME" = "${var.vault_dns}.${var.base_domain}"
   }
 }
 
@@ -90,12 +103,25 @@ module "bastion" {
   vm_size                     = "${var.bastion_vm_size}"
 }
 
+resource "null_resource" "generate_vault_ignition" {
+  triggers {
+    rerun = "${sha1(file("${path.module}/../../../templates/vault.yaml.tmpl"))}"
+  }
+
+  provisioner "local-exec" {
+    working_dir = "${path.module}/../../../"
+    command     = "aws"
+    interpreter = ["tools/ignition-renderer", "-in", "templates/vault.yaml.tmpl", "-out", "ignition/vault.yaml.tmpl", "-provider"]
+  }
+}
+
 # Generate ignition config for Vault.
 data "template_file" "vault" {
   template = "${file("${path.module}/../../../ignition/azure/vault.yaml.tmpl")}"
 
   vars {
-    "DOCKER_CIDR" = "${var.docker_cidr}"
+    "DOCKER_CIDR"    = "${var.docker_cidr}"
+    "TRIGGER_UPDATE" = "${sha1(file("${path.module}/../../../templates/vault.yaml.tmpl"))}"
   }
 }
 
@@ -120,6 +146,18 @@ module "vault" {
   storage_type            = "${var.vault_storage_type}"
   user_data               = "${data.ct_config.vault.rendered}"
   vm_size                 = "${var.vault_vm_size}"
+}
+
+resource "null_resource" "generate_master_ignition" {
+  triggers {
+    rerun = "${sha1(file("${path.module}/../../../templates/master.yaml.tmpl"))}"
+  }
+
+  provisioner "local-exec" {
+    working_dir = "${path.module}/../../../"
+    command     = "aws"
+    interpreter = ["tools/ignition-renderer", "-in", "templates/master.yaml.tmpl", "-out", "ignition/master.yaml.tmpl", "-provider"]
+  }
 }
 
 # Generate ignition config for master.
@@ -148,6 +186,7 @@ data "template_file" "master" {
     "ETCD_DOMAIN_NAME"         = "${var.etcd_dns}.${var.base_domain}"
     "G8S_VAULT_TOKEN"          = "${var.nodes_vault_token}"
     "K8S_DNS_IP"               = "${var.k8s_dns_ip}"
+    "TRIGGER_UPDATE"           = "${sha1(file("${path.module}/../../../templates/master.yaml.tmpl"))}"
     "VAULT_DOMAIN_NAME"        = "${var.vault_dns}.${var.base_domain}"
   }
 }
@@ -187,6 +226,18 @@ module "master" {
   storage_container = "${module.blob.storage_container}"
 }
 
+resource "null_resource" "generate_worker_ignition" {
+  triggers {
+    rerun = "${sha1(file("${path.module}/../../../templates/worker.yaml.tmpl"))}"
+  }
+
+  provisioner "local-exec" {
+    working_dir = "${path.module}/../../../"
+    command     = "aws"
+    interpreter = ["tools/ignition-renderer", "-in", "templates/worker.yaml.tmpl", "-out", "ignition/worker.yaml.tmpl", "-provider"]
+  }
+}
+
 # Generate ignition config for worker.
 data "template_file" "worker" {
   template = "${file("${path.module}/../../../ignition/azure/worker.yaml.tmpl")}"
@@ -211,6 +262,7 @@ data "template_file" "worker" {
     "ETCD_DOMAIN_NAME"         = "${var.etcd_dns}.${var.base_domain}"
     "G8S_VAULT_TOKEN"          = "${var.nodes_vault_token}"
     "K8S_DNS_IP"               = "${var.k8s_dns_ip}"
+    "TRIGGER_UPDATE"           = "${sha1(file("${path.module}/../../../templates/worker.yaml.tmpl"))}"
     "VAULT_DOMAIN_NAME"        = "${var.vault_dns}.${var.base_domain}"
   }
 }
