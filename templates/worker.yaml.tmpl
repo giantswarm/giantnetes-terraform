@@ -1,0 +1,520 @@
+storage:
+  files:
+    {{if eq .Provider "azure" -}}
+    - path: /etc/kubernetes/config/azure.yaml
+      filesystem: root
+      mode: 0600
+      contents: 
+        inline: |
+          cloud: ${AZURE_CLOUD}
+          tenantId: ${AZURE_SP_TENANTID}
+          subscriptionId: ${AZURE_SP_SUBSCRIPTIONID}
+          aadClientId: ${AZURE_SP_AADCLIENTID}
+          aadClientSecret: ${AZURE_SP_AADCLIENTSECRET}
+          resourceGroup: ${AZURE_RESOURCEGROUP}
+          location: ${AZURE_LOCATION}
+          subnetName: ${AZURE_SUBNETNAME}
+          securityGroupName: ${AZURE_SECGROUPNAME}
+          vnetName: ${AZURE_VNETNAME}
+          routeTableName: ${AZURE_ROUTETABLE}
+    {{ end -}}
+    - path: /etc/kubernetes/config/kubelet-config.yaml.tmpl
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          kind: KubeletConfiguration
+          apiVersion: kubelet.config.k8s.io/v1beta1
+          address: $${DEFAULT_IPV4}
+          port: 10250
+          healthzBindAddress: $${DEFAULT_IPV4}
+          healthzPort: 10248
+          clusterDNS:
+            - ${K8S_DNS_IP}
+          clusterDomain: cluster.local
+          featureGates:
+            ExpandPersistentVolumes: true
+          staticPodPath: /etc/kubernetes/manifests
+          evictionSoft:
+            memory.available:  "500Mi"
+          evictionHard:
+            memory.available:  "200Mi"
+          evictionSoftGracePeriod:
+            memory.available:  "5s"
+          evictionMaxPodGracePeriod: 60
+          authentication:
+            anonymous:
+              enabled: true # Defaults to false as of 1.10
+            webhook:
+              enabled: false # Deafults to true as of 1.10
+          authorization:
+            mode: AlwaysAllow # Deafults to webhook as of 1.10
+          readOnlyPort: 10255 # Used by heapster. Defaults to 0 (disabled) as of 1.10. Needed for metrics.
+    - path: /etc/kubernetes/config/proxy-config.yaml
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          apiVersion: kubeproxy.config.k8s.io/v1alpha1
+          clientConnection:
+            kubeconfig: /etc/kubernetes/config/proxy-kubeconfig.yaml
+          kind: KubeProxyConfiguration
+          mode: iptables
+          resourceContainer: /kube-proxy
+    - path: /etc/kubernetes/config/proxy-kubeconfig.yaml
+      filesystem: root
+      mode: 0644
+      contents:
+        inline:  |
+          apiVersion: v1
+          kind: Config
+          users:
+          - name: proxy
+            user:
+              client-certificate: /etc/kubernetes/ssl/worker-crt.pem
+              client-key: /etc/kubernetes/ssl/worker-key.pem
+          clusters:
+          - name: local
+            cluster:
+              certificate-authority: /etc/kubernetes/ssl/worker-ca.pem
+              server: https://${API_DOMAIN_NAME}
+          contexts:
+          - context:
+              cluster: local
+              user: proxy
+            name: service-account-context
+          current-context: service-account-context
+    - path: /etc/kubernetes/config/kubelet-kubeconfig.yaml
+      filesystem: root
+      mode: 0644
+      contents: 
+        inline: |
+          apiVersion: v1
+          kind: Config
+          users:
+          - name: kubelet
+            user:
+              client-certificate: /etc/kubernetes/ssl/worker-crt.pem
+              client-key: /etc/kubernetes/ssl/worker-key.pem
+          clusters:
+          - name: local
+            cluster:
+              certificate-authority: /etc/kubernetes/ssl/worker-ca.pem
+              server: https://${API_DOMAIN_NAME}
+          contexts:
+          - context:
+              cluster: local
+              user: kubelet
+            name: service-account-context
+          current-context: service-account-context
+    - path: /opt/wait-for-domains
+      filesystem: root
+      mode: 0544
+      contents: 
+        inline: |
+          #!/bin/bash
+          domains="${ETCD_DOMAIN_NAME} ${API_DOMAIN_NAME} ${VAULT_DOMAIN_NAME}"
+
+          for domain in $domains; do
+            until nslookup $domain; do
+                echo "Waiting for domain $domain to be available"
+                sleep 5
+            done
+
+            echo "Successfully resolved domain $domain"
+          done
+
+    - path: /etc/tokens/node
+      filesystem: root
+      owner: root
+      mode: 0400
+      contents:
+        inline:  |
+          VAULT_TOKEN=${G8S_VAULT_TOKEN}
+
+    - path: /etc/ssh/sshd_config
+      filesystem: root
+      mode: 0600
+      contents:
+        inline:  |
+          # Use most defaults for sshd configuration.
+          UsePrivilegeSeparation sandbox
+          Subsystem sftp internal-sftp
+          ClientAliveInterval 180
+          UseDNS no
+          UsePAM yes
+          PrintLastLog no # handled by PAM
+          PrintMotd no # handled by PAM
+          # Non defaults (#100)
+          ClientAliveCountMax 2
+          PasswordAuthentication no
+          TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem
+
+    - path: /opt/get-ca.sh
+      filesystem: root
+      mode: 0770
+      contents:
+        inline:  |
+          #!/bin/bash
+
+          if [ -z "$1" ] || [ -z "$2" ]
+          then
+                  echo "Insufficient number of args"
+                  echo "$0 <ive_ip_address>:<port> <output_file>"
+                  exit
+          fi
+          echo Connecting to $1
+          echo -n | openssl s_client -showcerts -connect $1 2>err.txt 1>out.txt
+          if [ "$?" -ne "0" ]
+          then
+                  cat err.txt
+                  exit
+          fi
+          echo -n Generating Certificate
+          grep -in "\-----.*CERTIFICATE-----"  out.txt | cut -f 1 -d ":" 1> out1.txt
+          let start_line=`tail -n 2 out1.txt | head -n 1`
+          let end_line=`tail -n 1 out1.txt`
+          if [ -z "$start_line" ]
+          then
+                  echo "error"
+                  exit
+          fi
+          let nof_lines=$end_line-$start_line+1
+          #echo "from $start_line to $end_line total lines $nof_lines"
+          echo -n " .... "
+          head -n $end_line out.txt | tail -n $nof_lines 1> out1.txt
+          openssl x509 -in out1.txt -outform pem -out $2
+          echo done.
+          rm out.txt out1.txt err.txt
+
+    - path: /etc/sysctl.d/hardening.conf
+      filesystem: root
+      mode: 0600
+      contents: 
+        inline: |
+          kernel.kptr_restrict = 2
+          kernel.sysrq = 0
+          net.ipv4.conf.all.send_redirects = 0
+          net.ipv4.conf.default.accept_redirects = 0
+          net.ipv4.tcp_timestamps = 0
+          net.ipv6.conf.all.accept_redirects = 0
+          net.ipv6.conf.default.accept_redirects = 0
+
+    - path: /etc/audit/rules.d/10-docker.rules
+      filesystem: root
+      mode: 0644
+      contents:
+        inline:  |
+          -w /usr/bin/docker -k docker
+          -w /var/lib/docker -k docker
+          -w /etc/docker -k docker
+          -w /etc/systemd/system/docker.service.d/10-giantswarm-extra-args.conf -k docker
+          -w /etc/systemd/system/docker.service.d/01-wait-docker.conf -k docker
+          -w /usr/lib/systemd/system/docker.service -k docker
+          -w /usr/lib/systemd/system/docker.socket -k docker
+
+    - path: /etc/systemd/system/audit-rules.service.d/10-Wait-For-Docker.conf
+      filesystem: root
+      mode: 0644
+      contents:
+        inline:  |
+          [Service]
+          ExecStartPre=/bin/bash -c "while [ ! -f /etc/audit/rules.d/10-docker.rules ]; do echo 'Waiting for /etc/audit/rules.d/10-docker.rules to be written' && sleep 1; done"
+
+systemd:
+  units:
+  - name: update-engine.service
+    enabled: false
+    mask: true
+  - name: locksmithd.service
+    enabled: false
+    mask: true
+  - name: etcd2.service
+    enabled: false
+    mask: true
+  - name: fleet.service
+    enabled: false
+    mask: true
+  - name: fleet.socket
+    enabled: false
+    mask: true
+  - name: flanneld.service
+    enabled: false
+    mask: true
+  - name: systemd-networkd-wait-online.service
+    enabled: false
+    mask: true
+  - name: var-lib-docker.mount
+    enabled: true
+    contents: |
+      [Unit]
+      Description=Mount disk to /var/lib/docker
+      Before=docker.service
+
+      [Mount]
+      What=/dev/disk/by-label/docker
+      Where=/var/lib/docker
+      Type=xfs
+
+      [Install]
+      WantedBy=local-fs.targer
+  - name: wait-for-domains.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=Wait for etcd and k8s API domains to be available
+      StartLimitInterval=0
+
+      [Service]
+      Type=oneshot
+      ExecStart=/opt/wait-for-domains
+
+      [Install]
+      WantedBy=multi-user.target
+  - name: os-hardening.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=Apply os hardening
+
+      [Service]
+      Type=oneshot
+      ExecStartPre=-/bin/bash -c "gpasswd -d core rkt; gpasswd -d core docker; gpasswd -d core wheel"
+      ExecStartPre=/bin/bash -c "until [ -f '/etc/sysctl.d/hardening.conf' ]; do echo Waiting for sysctl file; sleep 1s;done;"
+      ExecStart=/usr/sbin/sysctl -p /etc/sysctl.d/hardening.conf
+
+      [Install]
+      WantedBy=multi-user.target
+  - name: get-vault-ssh-ca.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=get-vault-ssh-ca
+      Requires=docker.service get-vault-ca.service
+      After=docker.service get-vault-ca.service
+
+      [Service]
+      EnvironmentFile=/etc/tokens/node
+      Environment=VAULT_ADDR=https://${VAULT_DOMAIN_NAME}:443
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
+      ExecStart=/bin/bash -c '\
+         result=$(curl -o /etc/ssh/trusted-user-ca-keys.pem \
+                   --header "X-Vault-Token: $VAULT_TOKEN" \
+                   $VAULT_ADDR/v1/ssh-client-signer/public_key);\
+         [ $? -ne 0 ] && echo "Failed to fetch CA ssh public key" && exit 1 || echo "Sucesfully retrieved CA ssh public key";'
+      [Install]
+      WantedBy=multi-user.target
+  - name: k8s-setup-kubelet-config.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=k8s-setup-kubelet-config Service
+      After=k8s-setup-network-env.service docker.service
+      Requires=k8s-setup-network-env.service docker.service
+
+      [Service]
+      EnvironmentFile=/etc/network-environment
+      ExecStart=/bin/bash -c '/usr/bin/envsubst </etc/kubernetes/config/kubelet-config.yaml.tmpl >/etc/kubernetes/config/kubelet-config.yaml'
+
+      [Install]
+      WantedBy=multi-user.target
+  - name: get-vault-ca.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=get vault-ca into trusted certs
+      Before=calico-certs.service kubelet-certs.service
+      After=wait-for-domains.service
+      Requires=wait-for-domains.service
+
+      [Service]
+      Type=oneshot
+      ExecStartPre=/bin/bash -c "while ! curl -k -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
+      ExecStartPre=/opt/get-ca.sh ${VAULT_DOMAIN_NAME}:443 /etc/ssl/certs/gs-ca.pem
+      ExecStart=/sbin/update-ca-certificates
+      RemainAfterExit=yes
+
+      [Install]
+      WantedBy=multi-user.target
+  - name: docker.service
+    enabled: true
+    dropins:
+    - name: 10-giantswarm-extra-args.conf
+      contents: |
+        [Unit]
+        Requires=var-lib-docker.mount
+        After=var-lib-docker.mount
+
+        [Service]
+        Environment="DOCKER_CGROUPS=--exec-opt native.cgroupdriver=cgroupfs --log-opt max-size=50m --log-opt max-file=2 --log-opt labels=io.kubernetes.container.hash,io.kubernetes.container.name,io.kubernetes.pod.name,io.kubernetes.pod.namespace,io.kubernetes.pod.uid"
+        Environment="DOCKER_OPT_BIP=--bip=${DOCKER_CIDR}"
+        Environment="DOCKER_OPTS=--live-restore --userland-proxy=false --icc=false"
+  - name: k8s-setup-network-env.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=k8s-setup-network-env Service
+      Wants=network.target docker.service
+      After=network.target docker.service
+
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      TimeoutStartSec=0
+      Environment="IMAGE=quay.io/giantswarm/k8s-setup-network-environment:1f4ffc52095ac368847ce3428ea99b257003d9b9"
+      Environment="NAME=%p.service"
+      Environment="NETWORK_CONFIG_CONTAINER="
+      ExecStartPre=/usr/bin/docker pull $IMAGE
+      ExecStartPre=-/usr/bin/docker stop -t 10 $NAME
+      ExecStartPre=-/usr/bin/docker rm -f $NAME
+      ExecStart=/usr/bin/docker run --rm --net=host -v /etc:/etc --name $NAME $IMAGE
+      ExecStop=-/usr/bin/docker stop -t 10 $NAME
+      ExecStopPost=-/usr/bin/docker rm -f $NAME
+
+      [Install]
+      WantedBy=multi-user.target
+  - name: calico-certs.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=gen etcd client certs for calico
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service{{if eq .Provider "azure" }} waagent.service{{ end }}
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service{{if eq .Provider "azure" }} waagent.service{{end}}
+
+      [Service]
+      EnvironmentFile=/etc/environment
+      EnvironmentFile=/etc/network-environment
+      EnvironmentFile=/etc/tokens/node
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/etcd/
+      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
+      ExecStart=/usr/bin/docker run \
+      --net=host \
+      -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
+      -v /etc/kubernetes/ssl/etcd/:/etc/kubernetes/ssl/etcd/ \
+      quay.io/giantswarm/certctl:b07d0913d5cb369a6b605394bdd4be4633451be9 \
+      issue \
+      --vault-addr=https://${VAULT_DOMAIN_NAME} \
+      --vault-token=$${VAULT_TOKEN} \
+      --cluster-id=g8s \
+      --common-name=${ETCD_DOMAIN_NAME} \
+      --ttl=8760h \
+      --crt-file=/etc/kubernetes/ssl/etcd/client-crt.pem \
+      --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
+      --alt-names=localhost \
+      --key-file=/etc/kubernetes/ssl/etcd/client-key.pem \
+      --ca-file=/etc/kubernetes/ssl/etcd/client-ca.pem
+      ExecStop=/usr/bin/rm -rf /etc/kubernetes/ssl/etcd/
+
+      [Install]
+      WantedBy=multi-user.target
+  - name: kubelet-certs.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=api-certs
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service{{if eq .Provider "azure" }}  waagent.service{{end}}
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service{{if eq .Provider "azure" }}  waagent.service{{end}}
+
+      [Service]
+      EnvironmentFile=/etc/environment
+      EnvironmentFile=/etc/network-environment
+      EnvironmentFile=/etc/tokens/node
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/
+      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
+      ExecStart=/usr/bin/docker run \
+      --net=host \
+      -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
+      -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
+      quay.io/giantswarm/certctl:b07d0913d5cb369a6b605394bdd4be4633451be9 \
+      issue \
+      --vault-addr=https://${VAULT_DOMAIN_NAME} \
+      --vault-token=$${VAULT_TOKEN} \
+      --cluster-id=g8s \
+      --common-name=${API_DOMAIN_NAME} \
+      --ttl=8760h \
+      --crt-file=/etc/kubernetes/ssl/worker-crt.pem \
+      --key-file=/etc/kubernetes/ssl/worker-key.pem \
+      --ca-file=/etc/kubernetes/ssl/worker-ca.pem
+
+      [Install]
+      WantedBy=multi-user.target
+  - name: k8s-kubelet.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=k8s-kubelet
+      StartLimitIntervalSec=0
+      After=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service k8s-setup-kubelet-config.service
+      Requires=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service k8s-setup-kubelet-config.service
+
+      [Service]
+      TimeoutStartSec=300
+      Restart=always
+      RestartSec=0
+      TimeoutStopSec=10
+      EnvironmentFile=/etc/network-environment
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.11.1"
+      Environment="NAME=%p.service"
+      Environment="NETWORK_CONFIG_CONTAINER="
+      ExecStartPre=/usr/bin/docker pull $IMAGE
+      ExecStartPre=-/usr/bin/docker stop -t 10 $NAME
+      ExecStartPre=-/usr/bin/docker rm -f $NAME
+      ExecStart=/bin/sh -c "/usr/bin/docker run --rm --pid=host --net=host --privileged=true \
+      -v /:/rootfs:ro,rshared \
+      -v /sys:/sys:ro \
+      -v /dev:/dev:rw \
+      -v /run/calico/:/run/calico/:rw \
+      -v /run/docker/:/run/docker/:rw \
+      -v /run/docker.sock:/run/docker.sock:rw \
+      -v /usr/lib/os-release:/etc/os-release \
+      -v /usr/share/ca-certificates/:/etc/ssl/certs \
+      -v /var/lib/docker/:/var/lib/docker:rw,rshared \
+      -v /var/lib/kubelet/:/var/lib/kubelet:rw,rshared \
+      -v /var/log:/var/log:rw \
+      -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
+      -v /etc/kubernetes/config/:/etc/kubernetes/config/ \
+      -v /etc/cni/net.d/:/etc/cni/net.d/ \
+      -v /opt/cni/bin/:/opt/cni/bin/ \
+      -e ETCD_CA_CERT_FILE=/etc/kubernetes/ssl/etcd/client-ca.pem \
+      -e ETCD_CERT_FILE=/etc/kubernetes/ssl/etcd/client-crt.pem \
+      -e ETCD_KEY_FILE=/etc/kubernetes/ssl/etcd/client-key.pem \
+      --name $NAME \
+      $IMAGE \
+      /hyperkube kubelet \
+      --config=/etc/kubernetes/config/kubelet-config.yaml \
+      --node-ip=${DEFAULT_IPV4} \
+      --cadvisor-port=4194 \
+      --containerized \
+      --enable-server \
+      --logtostderr=true \
+      {{if eq .Provider "azure" -}}
+      --cloud-provider=azure \
+      --cloud-config=/etc/kubernetes/config/azure.yaml \
+      {{ else -}}
+      --cloud-provider=aws \
+      --pod-infra-container-image=${POD_INFRA_IMAGE} \
+      {{ end -}}
+      --network-plugin=cni \
+      --register-node=true \
+      --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yaml \
+      --node-labels="node-role.kubernetes.io/worker,role=worker,ip=${DEFAULT_IPV4}" \
+      --v=2"
+      ExecStop=-/usr/bin/docker stop -t 10 $NAME
+      ExecStopPost=-/usr/bin/docker rm -f $NAME
+
+      [Install]
+      WantedBy=multi-user.target
+storage:
+  filesystems:
+    - name: docker
+      mount:
+        device: {{if eq .Provider "azure" }}/dev/sdc{{else}}${MOUNT_DOCKER}{{end}}
+        format: xfs
+        wipe_filesystem: true
+        label: docker
