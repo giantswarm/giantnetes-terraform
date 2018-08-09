@@ -64,32 +64,32 @@ module "s3" {
 
 locals {
   ignition_data = {
-    "APIDomainName" = "${var.api_dns}.${var.base_domain}"
-    "BastionUsers" = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
-    "BastionLogPriority" = "${var.bastion_log_priority}"
-    "CalicoCIDR" = "${var.calico_cidr}"
+    "APIDomainName"              = "${var.api_dns}.${var.base_domain}"
+    "BastionUsers"               = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
+    "BastionLogPriority"         = "${var.bastion_log_priority}"
+    "CalicoCIDR"                 = "${var.calico_cidr}"
     "CloudwatchForwarderEnabled" = "${var.bastion_log_priority != "none" ? "true" : "false" }"
-    "ClusterName" = "${var.cluster_name}"
-    "DockerCIDR"    = "${var.docker_cidr}"
-    "ETCDDomainName" = "${var.etcd_dns}.${var.base_domain}"
-    "G8SVaultToken" = "${var.nodes_vault_token}"
-    "K8SAPI" = "${var.k8s_api_ip}"
-    "K8SDNSIP" = "${var.k8s_dns_ip}"
-    "K8SServiceCIDR" = "${var.k8s_service_cidr}"
-    "MasterMountDocker" = "${var.master_instance["mount_docker"]}"
-    "MasterMountETCD" = "${var.master_instance["mount_etcd"]}"
-    "PodInfraImage" = "${var.pod_infra_image}"
-    "Provider" = "aws"
-    "Users" = "${file("${path.module}/../../../ignition/users.yaml")}"
-    "VaultDomainName" = "${var.vault_dns}.${var.base_domain}"
-    "WorkerMountDocker" = "${var.worker_instance["mount_docker"]}"
+    "ClusterName"                = "${var.cluster_name}"
+    "DockerCIDR"                 = "${var.docker_cidr}"
+    "ETCDDomainName"             = "${var.etcd_dns}.${var.base_domain}"
+    "G8SVaultToken"              = "${var.nodes_vault_token}"
+    "K8SAPIIP"                   = "${var.k8s_api_ip}"
+    "K8SDNSIP"                   = "${var.k8s_dns_ip}"
+    "K8SServiceCIDR"             = "${var.k8s_service_cidr}"
+    "MasterMountDocker"          = "${var.master_instance["mount_docker"]}"
+    "MasterMountETCD"            = "${var.master_instance["mount_etcd"]}"
+    "PodInfraImage"              = "${var.pod_infra_image}"
+    "Provider"                   = "aws"
+    "Users"                      = "${file("${path.module}/../../../ignition/users.yaml")}"
+    "VaultDomainName"            = "${var.vault_dns}.${var.base_domain}"
+    "WorkerMountDocker"          = "${var.worker_instance["mount_docker"]}"
   }
 }
 
 # Generate ignition config.
 data "gotemplate" "bastion" {
   template = "${path.module}/../../../templates/bastion.yaml.tmpl"
-  data = "${jsonencode(local.ignition_data)}"
+  data     = "${jsonencode(local.ignition_data)}"
 }
 
 # Convert ignition config to raw json.
@@ -123,7 +123,7 @@ module "bastion" {
 # Generate ignition config.
 data "gotemplate" "vault" {
   template = "${path.module}/../../../templates/vault.yaml.tmpl"
-  data = "${jsonencode(local.ignition_data)}"
+  data     = "${jsonencode(local.ignition_data)}"
 }
 
 # Convert ignition config to raw json.
@@ -155,7 +155,7 @@ module "vault" {
 # Generate ignition config.
 data "gotemplate" "master" {
   template = "${path.module}/../../../templates/master.yaml.tmpl"
-  data = "${jsonencode(local.ignition_data)}"
+  data     = "${jsonencode(local.ignition_data)}"
 }
 
 # Convert ignition config to raw json.
@@ -191,7 +191,7 @@ module "master" {
 # Generate ignition config.
 data "gotemplate" "worker" {
   template = "${path.module}/../../../templates/worker.yaml.tmpl"
-  data = "${jsonencode(local.ignition_data)}"
+  data     = "${jsonencode(local.ignition_data)}"
 }
 
 # Convert ignition config to raw json.
