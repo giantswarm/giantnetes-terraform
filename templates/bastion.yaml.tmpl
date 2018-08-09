@@ -48,7 +48,7 @@ systemd:
 
         [Service]
         EnvironmentFile=/etc/tokens/node
-        Environment=VAULT_ADDR=https://${VAULT_DOMAIN_NAME}:443
+        Environment=VAULT_ADDR=https://{{ .VaultDomainName }}:443
         Type=oneshot
         RemainAfterExit=yes
         ExecStart=/bin/bash -c '\
@@ -68,7 +68,7 @@ systemd:
 
         [Service]
         Type=oneshot
-        ExecStartPre=/opt/get-ca.sh ${VAULT_DOMAIN_NAME}:443 /etc/ssl/certs/gs-ca.pem
+        ExecStartPre=/opt/get-ca.sh {{ .VaultDomainName }}:443 /etc/ssl/certs/gs-ca.pem
         ExecStart=/sbin/update-ca-certificates
         RemainAfterExit=yes
 
@@ -76,7 +76,7 @@ systemd:
         WantedBy=multi-user.target
     {{if eq .Provider "aws" -}}
     - name: journald-cloudwatch-logs.service
-      enabled: ${CLOUDWATCH_FORWARDER_ENABLED}
+      enabled: {{ .CloudwatchForwarderEnabled }}
       contents: |
         [Unit]
         Description=journald cloudwatch forwarder
@@ -108,7 +108,7 @@ storage:
       mode: 0400
       contents:
         inline: |
-          VAULT_TOKEN=${G8S_VAULT_TOKEN}
+          VAULT_TOKEN={{ .G8SVaultToken }}
     - path: /etc/ssh/sshd_config
       filesystem: root
       mode: 0600
@@ -168,7 +168,7 @@ storage:
       contents:
         inline: |
           #!/bin/bash
-          domains="${VAULT_DOMAIN_NAME}"
+          domains="{{ .VaultDomainName }}"
 
           for domain in $domains; do
             until nslookup $domain; do
@@ -184,9 +184,10 @@ storage:
       mode: 0544
       contents:
         inline: |
-          log_group = "${CLUSTER_NAME}_bastion"
+          log_group = "{{ .ClusterName }}_bastion"
           state_file = "/var/lib/cloudwatch-logs/state"
-          log_stream = "${CLUSTER_NAME}_bastion"
+          log_stream = "{{ .ClusterName }}_bastion"
           journal_dir = "/var/log/journal"
-          log_priority = "${BASTION_LOG_PRIORITY}"
-    {{end -}}
+          log_priority = "{{ .BastionLogPriority }}"
+    {{- end }}
+{{ .BastionUsers }}

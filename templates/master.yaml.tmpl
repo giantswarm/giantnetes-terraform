@@ -247,7 +247,7 @@ storage:
                       # chosen from this range. Changing this value after installation will have
                       # no effect. This should fall within `--cluster-cidr`.
                       - name: CALICO_IPV4POOL_CIDR
-                        value: "${POD_CIDR}"
+                        value: "{{ .PodCIDR }}"
                       # Enable IPIP
                       - name: CALICO_IPV4POOL_IPIP
                         value: "off"
@@ -445,7 +445,7 @@ storage:
             namespace: kube-system
           data:
             # Configure this with the location of your etcd cluster.
-            etcd_endpoints: "https://${ETCD_DOMAIN_NAME}:2379"
+            etcd_endpoints: "https://{{ .ETCDDomainName }}:2379"
 
             # Configure the Calico backend to use.
             calico_backend: "bird"
@@ -569,7 +569,7 @@ storage:
                         value: "ACCEPT"
                       # Configure the IP Pool from which Pod IPs will be chosen.
                       - name: CALICO_IPV4POOL_CIDR
-                        value: "${CALICO_CIDR}"
+                        value: "{{ .CalicoCIDR }}"
                       - name: CALICO_IPV4POOL_IPIP
                         value: "Always"
                       # Disable IPv6 on Kubernetes.
@@ -838,7 +838,7 @@ storage:
           spec:
             selector:
               k8s-app: coredns
-            clusterIP: ${K8S_DNS_IP}
+            clusterIP: {{ .K8SDNSIP }}
             ports:
             - name: dns
               port: 53
@@ -863,7 +863,7 @@ storage:
               .:53 {
                   errors
                   health
-                  kubernetes cluster.local ${K8S_SERVICE_CIDR} {{ if eq .Provider "aws"}}${CALICO_CIDR}{{ else }}${POD_CIDR}{{ end }} {
+                  kubernetes cluster.local {{ .K8SServiceCIDR }} {{ if eq .Provider "aws"}}{{ .CalicoCIDR }}{{ else }}{{ .PodCIDR }}{{ end }} {
                     pods insecure
                     upstream
                     fallthrough in-addr.arpa ip6.arpa
@@ -1482,7 +1482,7 @@ storage:
             name: giantswarm-admin
           subjects:
           - kind: User
-            name: ${API_DOMAIN_NAME}
+            name: {{ .APIDomainName }}
             apiGroup: rbac.authorization.k8s.io
           roleRef:
             kind: ClusterRole
@@ -1496,7 +1496,7 @@ storage:
             name: kubelet
           subjects:
           - kind: User
-            name: ${API_DOMAIN_NAME}
+            name: {{ .APIDomainName }}
             apiGroup: rbac.authorization.k8s.io
           roleRef:
             kind: ClusterRole
@@ -1509,7 +1509,7 @@ storage:
             name: proxy
           subjects:
           - kind: User
-            name: ${API_DOMAIN_NAME}
+            name: {{ .APIDomainName }}
             apiGroup: rbac.authorization.k8s.io
           roleRef:
             kind: ClusterRole
@@ -1523,7 +1523,7 @@ storage:
             name: kube-controller-manager
           subjects:
           - kind: User
-            name: ${API_DOMAIN_NAME}
+            name: {{ .APIDomainName }}
             apiGroup: rbac.authorization.k8s.io
           roleRef:
             kind: ClusterRole
@@ -1536,7 +1536,7 @@ storage:
             name: kube-scheduler
           subjects:
           - kind: User
-            name: ${API_DOMAIN_NAME}
+            name: {{ .APIDomainName }}
             apiGroup: rbac.authorization.k8s.io
           roleRef:
             kind: ClusterRole
@@ -1770,7 +1770,7 @@ storage:
       contents:
         inline: |
             #!/bin/bash
-            domains="${ETCD_DOMAIN_NAME} ${API_DOMAIN_NAME} ${VAULT_DOMAIN_NAME}"
+            domains="{{ .ETCDDomainName }} {{ .APIDomainName }} {{ .VaultDomainName }}"
 
             for domain in $domains; do
               until nslookup $domain; do
@@ -1855,17 +1855,17 @@ storage:
       mode: 0600
       contents:
         inline: |
-          cloud: ${AZURE_CLOUD}
-          tenantId: ${AZURE_SP_TENANTID}
-          subscriptionId: ${AZURE_SP_SUBSCRIPTIONID}
-          aadClientId: ${AZURE_SP_AADCLIENTID}
-          aadClientSecret: ${AZURE_SP_AADCLIENTSECRET}
-          resourceGroup: ${AZURE_RESOURCEGROUP}
-          location: ${AZURE_LOCATION}
-          subnetName: ${AZURE_SUBNETNAME}
-          securityGroupName: ${AZURE_SECGROUPNAME}
-          vnetName: ${AZURE_VNETNAME}
-          routeTableName: ${AZURE_ROUTETABLE}
+          cloud: {{ .AzureCloud }}
+          tenantId: {{ .AzureSPTenantID }}
+          subscriptionId: {{ .AzureSPSubscriptionID }}
+          aadClientId: {{ .AzureSPAADClientID }}
+          aadClientSecret: {{ .AzureSPAADClientSecret }}
+          resourceGroup: {{ .AzureResourceGroup }}
+          location: {{ .AzureLocation }}
+          subnetName: {{ .AzureSubnetName }}
+          securityGroupName: {{ .AzureSecGroupName }}
+          vnetName: {{ .AzureVnetName }}
+          routeTableName: {{ .AzureRoutable }}
     {{- end }}
     - path: /etc/kubernetes/config/proxy-kubeconfig.yaml
       filesystem: root
@@ -1883,7 +1883,7 @@ storage:
           - name: local
             cluster:
               certificate-authority: /etc/kubernetes/ssl/apiserver-ca.pem
-              server: https://${API_DOMAIN_NAME}
+              server: https://{{ .APIDomainName }}
           contexts:
           - context:
               cluster: local
@@ -1897,12 +1897,12 @@ storage:
         inline: |
           kind: KubeletConfiguration
           apiVersion: kubelet.config.k8s.io/v1beta1
-          address: $${DEFAULT_IPV4}
+          address: ${DEFAULT_IPV4}
           port: 10250
-          healthzBindAddress: $${DEFAULT_IPV4}
+          healthzBindAddress: ${DEFAULT_IPV4}
           healthzPort: 10248
           clusterDNS:
-            - ${K8S_DNS_IP}
+            - {{ .K8SDNSIP }}
           clusterDomain: cluster.local
           featureGates:
             ExpandPersistentVolumes: true
@@ -1962,7 +1962,7 @@ storage:
           - name: local
             cluster:
               certificate-authority: /etc/kubernetes/ssl/apiserver-ca.pem
-              server: https://${API_DOMAIN_NAME}
+              server: https://{{ .APIDomainName }}
           contexts:
           - context:
               cluster: local
@@ -1985,7 +1985,7 @@ storage:
           - name: local
             cluster:
               certificate-authority: /etc/kubernetes/ssl/apiserver-ca.pem
-              server: https://${API_DOMAIN_NAME}
+              server: https://{{ .APIDomainName }}
           contexts:
           - context:
               cluster: local
@@ -2008,7 +2008,7 @@ storage:
           - name: local
             cluster:
               certificate-authority: /etc/kubernetes/ssl/apiserver-ca.pem
-              server: https://${API_DOMAIN_NAME}
+              server: https://{{ .APIDomainName }}
           contexts:
           - context:
               cluster: local
@@ -2020,7 +2020,7 @@ storage:
       mode: 0400
       contents:
         inline: |
-          VAULT_TOKEN=${G8S_VAULT_TOKEN}
+          VAULT_TOKEN={{ .G8SVaultToken }}
     - path: /etc/kubernetes/manifests/k8s-api-server.yaml
       filesystem: root
       mode: 0600
@@ -2062,8 +2062,8 @@ storage:
                 - --etcd-prefix=giantswarm.io
                 - --authorization-mode=RBAC
                 - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,PodSecurityPolicy,PersistentVolumeClaimResize,DefaultStorageClass,Priority
-                - --service-cluster-ip-range=${K8S_SERVICE_CIDR}
-                - --etcd-servers=https://${ETCD_DOMAIN_NAME}:2379
+                - --service-cluster-ip-range={{ .K8SServiceCIDR }}
+                - --etcd-servers=https://{{ .ETCDDomainName }}:2379
                 - --etcd-cafile=/etc/kubernetes/ssl/etcd/server-ca.pem
                 - --etcd-certfile=/etc/kubernetes/ssl/etcd/server-crt.pem
                 - --etcd-keyfile=/etc/kubernetes/ssl/etcd/server-key.pem
@@ -2135,7 +2135,7 @@ storage:
                 command:
                 - /hyperkube
                 - controller-manager
-                - --master=https://${API_DOMAIN_NAME}:443
+                - --master=https://{{ .APIDomainName }}:443
                 - --logtostderr=true
                 - --v=2
                 {{ if eq .Provider "aws" -}}
@@ -2144,7 +2144,7 @@ storage:
                 - --cloud-provider=azure
                 - --cloud-config=/etc/kubernetes/config/azure.yaml
                 - --allocate-node-cidrs=true
-                - --cluster-cidr=${POD_CIDR}
+                - --cluster-cidr={{ .PodCIDR }}
                 {{ end -}}
                 - --profiling=false
                 - --terminated-pod-gc-threshold=10
@@ -2298,7 +2298,7 @@ storage:
           SUBSYSTEM=="block", KERNEL=="sdd", TAG+="systemd"
           SUBSYSTEM=="block", KERNEL=="sdc", TAG+="systemd"
           SUBSYSTEM=="block", KERNEL=="sda6", TAG+="systemd"
-    {{ end -}}
+    {{- end }}
 systemd:
   units:
   - name: etcd2.service
@@ -2396,10 +2396,10 @@ systemd:
 
       [Service]
       EnvironmentFile=/etc/tokens/node
-      Environment=VAULT_ADDR=https://${VAULT_DOMAIN_NAME}:443
+      Environment=VAULT_ADDR=https://{{ .VaultDomainName }}:443
       Type=oneshot
       RemainAfterExit=yes
-      ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
+      ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/bin/bash -c '\
          result=$(curl -o /etc/ssh/trusted-user-ca-keys.pem \
                    --header "X-Vault-Token: $VAULT_TOKEN" \
@@ -2432,7 +2432,7 @@ systemd:
 
         [Service]
         Environment="DOCKER_CGROUPS=--exec-opt native.cgroupdriver=cgroupfs --log-opt max-size=50m --log-opt max-file=2 --log-opt labels=io.kubernetes.container.hash,io.kubernetes.container.name,io.kubernetes.pod.name,io.kubernetes.pod.namespace,io.kubernetes.pod.uid"
-        Environment="DOCKER_OPT_BIP=--bip=${DOCKER_CIDR}"
+        Environment="DOCKER_OPT_BIP=--bip={{ .DockerCIDR }}"
         Environment="DOCKER_OPTS=--live-restore --userland-proxy=false --icc=false"
   - name: k8s-setup-network-env.service
     enabled: true
@@ -2469,7 +2469,7 @@ systemd:
 
       [Service]
       Type=oneshot
-      ExecStartPre=/opt/get-ca.sh ${VAULT_DOMAIN_NAME}:443 /etc/ssl/certs/gs-ca.pem
+      ExecStartPre=/opt/get-ca.sh {{ .VaultDomainName }}:443 /etc/ssl/certs/gs-ca.pem
       ExecStart=/sbin/update-ca-certificates
       RemainAfterExit=yes
       [Install]
@@ -2489,7 +2489,7 @@ systemd:
       Type=oneshot
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/calico/
-      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
+      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/bin/bash -c '\
         RETRY=3;\
         while [ -z "$result" ] && [ $RETRY -gt 0 ]; do\
@@ -2502,10 +2502,10 @@ systemd:
           -v /etc/kubernetes/ssl/calico/:/etc/kubernetes/ssl/calico/ \
           quay.io/giantswarm/certctl:b07d0913d5cb369a6b605394bdd4be4633451be9 \
           issue \
-          --vault-addr=https://${VAULT_DOMAIN_NAME} \
-          --vault-token=$${VAULT_TOKEN} \
+          --vault-addr=https://{{ .VaultDomainName }} \
+          --vault-token=${VAULT_TOKEN} \
           --cluster-id=g8s \
-          --common-name=${ETCD_DOMAIN_NAME} \
+          --common-name={{ .ETCDDomainName }} \
           --ttl=8760h \
           --crt-file=/etc/kubernetes/ssl/calico/client-crt.pem \
           --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
@@ -2532,7 +2532,7 @@ systemd:
       Type=oneshot
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/etcd/
-      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
+      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/bin/bash -c '\
         RETRY=3;\
         while [ -z "$result" ] && [ $RETRY -gt 0 ]; do\
@@ -2545,10 +2545,10 @@ systemd:
           -v /etc/kubernetes/ssl/etcd/:/etc/kubernetes/ssl/etcd/ \
           quay.io/giantswarm/certctl:b07d0913d5cb369a6b605394bdd4be4633451be9 \
           issue \
-          --vault-addr=https://${VAULT_DOMAIN_NAME} \
-          --vault-token=$${VAULT_TOKEN} \
+          --vault-addr=https://{{ .VaultDomainName }} \
+          --vault-token=${VAULT_TOKEN} \
           --cluster-id=g8s \
-          --common-name=${ETCD_DOMAIN_NAME} \
+          --common-name={{ .ETCDDomainName }} \
           --ttl=8760h \
           --crt-file=/etc/kubernetes/ssl/etcd/server-crt.pem \
           --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
@@ -2604,7 +2604,7 @@ systemd:
           --peer-cert-file /etc/etcd/server-crt.pem \
           --peer-key-file /etc/etcd/server-key.pem \
           --peer-client-cert-auth=true \
-          --advertise-client-urls=https://${ETCD_DOMAIN_NAME}:2379 \
+          --advertise-client-urls=https://{{ .ETCDDomainName }}:2379 \
           --initial-advertise-peer-urls=https://127.0.0.1:2380 \
           --listen-client-urls=https://0.0.0.0:2379 \
           --listen-peer-urls=https://${DEFAULT_IPV4}:2380 \
@@ -2639,7 +2639,7 @@ systemd:
         --name $NAME \
         $IMAGE \
         etcdctl \
-        --endpoints https://${ETCD_DOMAIN_NAME}:2379 \
+        --endpoints https://{{ .ETCDDomainName }}:2379 \
         --cacert /etc/etcd/server-ca.pem \
         --cert /etc/etcd/server-crt.pem \
         --key /etc/etcd/server-key.pem \
@@ -2737,11 +2737,11 @@ systemd:
       EnvironmentFile=/etc/environment
       EnvironmentFile=/etc/network-environment
       EnvironmentFile=/etc/tokens/node
-      Environment=VAULT_ADDR=https://${VAULT_DOMAIN_NAME}
+      Environment=VAULT_ADDR=https://{{ .VaultDomainName }}
       Type=oneshot
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/
-      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
+      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
       ExecStartPre=/bin/bash -c '\
         RETRY=3;\
         while [ -z "$rsa_key" ] && [ $RETRY -gt 0 ]; do\
@@ -2766,13 +2766,13 @@ systemd:
       -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
       quay.io/giantswarm/certctl:b07d0913d5cb369a6b605394bdd4be4633451be9 \
       issue \
-      --vault-addr=$${VAULT_ADDR} \
-      --vault-token=$${VAULT_TOKEN} \
+      --vault-addr=${VAULT_ADDR} \
+      --vault-token=${VAULT_TOKEN} \
       --cluster-id=g8s \
-      --common-name=${API_DOMAIN_NAME} \
+      --common-name={{ .APIDomainName }} \
       --ttl=8760h \
       --crt-file=/etc/kubernetes/ssl/apiserver-crt.pem \
-      --ip-sans=127.0.0.1,${DEFAULT_IPV4},${K8S_API_IP} \
+      --ip-sans=127.0.0.1,${DEFAULT_IPV4},{{ .K8SAPIIP }} \
       --alt-names=localhost,kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.local\
       --key-file=/etc/kubernetes/ssl/apiserver-key.pem \
       --ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
@@ -2795,13 +2795,15 @@ storage:
   filesystems:
     - name: docker
       mount:
-        device: {{if eq .Provider "azure" }}/dev/sdc{{else}}${MOUNT_DOCKER}{{end}}
+        device: {{if eq .Provider "azure" }}/dev/sdc{{else}}{{ .MasterMountDocker }}{{end}}
         format: xfs
         wipe_filesystem: false
         label: docker
     - name: etcd
       mount:
-        device: {{if eq .Provider "azure" }}/dev/sdd{{else}}${MOUNT_ETCD}{{end}}
+        device: {{if eq .Provider "azure" }}/dev/sdd{{else}}{{ .MasterMountETCD }}{{end}}
         format: ext4
         wipe_filesystem: false
         label: var-lib-etcd
+
+{{ .Users }}

@@ -6,17 +6,17 @@ storage:
       mode: 0600
       contents: 
         inline: |
-          cloud: ${AZURE_CLOUD}
-          tenantId: ${AZURE_SP_TENANTID}
-          subscriptionId: ${AZURE_SP_SUBSCRIPTIONID}
-          aadClientId: ${AZURE_SP_AADCLIENTID}
-          aadClientSecret: ${AZURE_SP_AADCLIENTSECRET}
-          resourceGroup: ${AZURE_RESOURCEGROUP}
-          location: ${AZURE_LOCATION}
-          subnetName: ${AZURE_SUBNETNAME}
-          securityGroupName: ${AZURE_SECGROUPNAME}
-          vnetName: ${AZURE_VNETNAME}
-          routeTableName: ${AZURE_ROUTETABLE}
+          cloud: {{ .AzureCloud }}
+          tenantId: {{ .AzureSPTenantID }}
+          subscriptionId: {{ .AzureSPSubscriptionID }}
+          aadClientId: {{ .AzureSPAADClientID }}
+          aadClientSecret: {{ .AzureSPAADClientSecret }}
+          resourceGroup: {{ .AzureResourceGroup }}
+          location: {{ .AzureLocation }}
+          subnetName: {{ .AzureSubnetName }}
+          securityGroupName: {{ .AzureSecGroupName }}
+          vnetName: {{ .AzureVnetName }}
+          routeTableName: {{ .AzureRoutable }}
     {{ end -}}
     - path: /etc/kubernetes/config/kubelet-config.yaml.tmpl
       filesystem: root
@@ -25,12 +25,12 @@ storage:
         inline: |
           kind: KubeletConfiguration
           apiVersion: kubelet.config.k8s.io/v1beta1
-          address: $${DEFAULT_IPV4}
+          address: ${DEFAULT_IPV4}
           port: 10250
-          healthzBindAddress: $${DEFAULT_IPV4}
+          healthzBindAddress: ${DEFAULT_IPV4}
           healthzPort: 10248
           clusterDNS:
-            - ${K8S_DNS_IP}
+            - {{ .K8SDNSIP }}
           clusterDomain: cluster.local
           featureGates:
             ExpandPersistentVolumes: true
@@ -77,7 +77,7 @@ storage:
           - name: local
             cluster:
               certificate-authority: /etc/kubernetes/ssl/worker-ca.pem
-              server: https://${API_DOMAIN_NAME}
+              server: https://{{ .APIDomainName }}
           contexts:
           - context:
               cluster: local
@@ -100,7 +100,7 @@ storage:
           - name: local
             cluster:
               certificate-authority: /etc/kubernetes/ssl/worker-ca.pem
-              server: https://${API_DOMAIN_NAME}
+              server: https://{{ .APIDomainName }}
           contexts:
           - context:
               cluster: local
@@ -113,7 +113,7 @@ storage:
       contents: 
         inline: |
           #!/bin/bash
-          domains="${ETCD_DOMAIN_NAME} ${API_DOMAIN_NAME} ${VAULT_DOMAIN_NAME}"
+          domains="{{ .ETCDDomainName }} {{ .APIDomainName }} {{ .VaultDomainName }}"
 
           for domain in $domains; do
             until nslookup $domain; do
@@ -130,7 +130,7 @@ storage:
       mode: 0400
       contents:
         inline:  |
-          VAULT_TOKEN=${G8S_VAULT_TOKEN}
+          VAULT_TOKEN={{ .G8SVaultToken }}
 
     - path: /etc/ssh/sshd_config
       filesystem: root
@@ -295,10 +295,10 @@ systemd:
 
       [Service]
       EnvironmentFile=/etc/tokens/node
-      Environment=VAULT_ADDR=https://${VAULT_DOMAIN_NAME}:443
+      Environment=VAULT_ADDR=https://{{ .VaultDomainName }}:443
       Type=oneshot
       RemainAfterExit=yes
-      ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
+      ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/bin/bash -c '\
          result=$(curl -o /etc/ssh/trusted-user-ca-keys.pem \
                    --header "X-Vault-Token: $VAULT_TOKEN" \
@@ -331,8 +331,8 @@ systemd:
 
       [Service]
       Type=oneshot
-      ExecStartPre=/bin/bash -c "while ! curl -k -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
-      ExecStartPre=/opt/get-ca.sh ${VAULT_DOMAIN_NAME}:443 /etc/ssl/certs/gs-ca.pem
+      ExecStartPre=/bin/bash -c "while ! curl -k -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
+      ExecStartPre=/opt/get-ca.sh {{ .VaultDomainName }}:443 /etc/ssl/certs/gs-ca.pem
       ExecStart=/sbin/update-ca-certificates
       RemainAfterExit=yes
 
@@ -349,7 +349,7 @@ systemd:
 
         [Service]
         Environment="DOCKER_CGROUPS=--exec-opt native.cgroupdriver=cgroupfs --log-opt max-size=50m --log-opt max-file=2 --log-opt labels=io.kubernetes.container.hash,io.kubernetes.container.name,io.kubernetes.pod.name,io.kubernetes.pod.namespace,io.kubernetes.pod.uid"
-        Environment="DOCKER_OPT_BIP=--bip=${DOCKER_CIDR}"
+        Environment="DOCKER_OPT_BIP=--bip={{ .DockerCIDR }}"
         Environment="DOCKER_OPTS=--live-restore --userland-proxy=false --icc=false"
   - name: k8s-setup-network-env.service
     enabled: true
@@ -390,17 +390,17 @@ systemd:
       Type=oneshot
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/etcd/
-      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
+      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/usr/bin/docker run \
       --net=host \
       -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
       -v /etc/kubernetes/ssl/etcd/:/etc/kubernetes/ssl/etcd/ \
       quay.io/giantswarm/certctl:b07d0913d5cb369a6b605394bdd4be4633451be9 \
       issue \
-      --vault-addr=https://${VAULT_DOMAIN_NAME} \
-      --vault-token=$${VAULT_TOKEN} \
+      --vault-addr=https://{{ .VaultDomainName }} \
+      --vault-token=${VAULT_TOKEN} \
       --cluster-id=g8s \
-      --common-name=${ETCD_DOMAIN_NAME} \
+      --common-name={{ .ETCDDomainName }} \
       --ttl=8760h \
       --crt-file=/etc/kubernetes/ssl/etcd/client-crt.pem \
       --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
@@ -426,17 +426,17 @@ systemd:
       Type=oneshot
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/
-      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://${VAULT_DOMAIN_NAME};  do sleep 2s;echo wait for Vault;done;"
+      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/usr/bin/docker run \
       --net=host \
       -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
       -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
       quay.io/giantswarm/certctl:b07d0913d5cb369a6b605394bdd4be4633451be9 \
       issue \
-      --vault-addr=https://${VAULT_DOMAIN_NAME} \
-      --vault-token=$${VAULT_TOKEN} \
+      --vault-addr=https://{{ .VaultDomainName }} \
+      --vault-token=${VAULT_TOKEN} \
       --cluster-id=g8s \
-      --common-name=${API_DOMAIN_NAME} \
+      --common-name={{ .APIDomainName }} \
       --ttl=8760h \
       --crt-file=/etc/kubernetes/ssl/worker-crt.pem \
       --key-file=/etc/kubernetes/ssl/worker-key.pem \
@@ -498,7 +498,7 @@ systemd:
       --cloud-config=/etc/kubernetes/config/azure.yaml \
       {{ else -}}
       --cloud-provider=aws \
-      --pod-infra-container-image=${POD_INFRA_IMAGE} \
+      --pod-infra-container-image={{ .PodInfraImage }} \
       {{ end -}}
       --network-plugin=cni \
       --register-node=true \
@@ -514,7 +514,9 @@ storage:
   filesystems:
     - name: docker
       mount:
-        device: {{if eq .Provider "azure" }}/dev/sdc{{else}}${MOUNT_DOCKER}{{end}}
+        device: {{if eq .Provider "azure" }}/dev/sdc{{else}}{{ .WorkerMountDocker }}{{end}}
         format: xfs
         wipe_filesystem: true
         label: docker
+
+{{ .Users }}
