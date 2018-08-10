@@ -66,7 +66,6 @@ locals {
     "AzureRoutable"          = "${var.cluster_name}_worker_rt"
     "APIDomainName"          = "${var.api_dns}.${var.base_domain}"
     "BastionUsers"           = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
-    "CalicoCIDR"             = "${var.calico_cidr}"
     "ClusterName"            = "${var.cluster_name}"
     "DockerCIDR"             = "${var.docker_cidr}"
     "ETCDDomainName"         = "${var.etcd_dns}.${var.base_domain}"
