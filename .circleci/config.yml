@@ -24,7 +24,7 @@ jobs:
 
   e2eTestAWS: &e2eTestAWS
     docker:
-      - image: quay.io/giantswarm/docker-terraform-and-stuff:latest
+      - image: quay.io/giantswarm/docker-terraform-and-stuff:gotemplate
     steps:
     - checkout
     - run: ./misc/e2e-aws.sh
@@ -36,7 +36,7 @@ jobs:
 
   e2eTestAzure: &e2eTestAzure
     docker:
-      - image: quay.io/giantswarm/docker-terraform-and-stuff:latest
+      - image: quay.io/giantswarm/docker-terraform-and-stuff:gotemplate
     steps:
     - checkout
     - run: ./misc/e2e-azure.sh
