@@ -147,7 +147,7 @@ data "gotemplate" "master" {
 
 # Convert ignition config to raw json and merge users part.
 data "ct_config" "master" {
-  content      = "${data.gotemplate.master.rendered)}"
+  content      = "${data.gotemplate.master.rendered}"
   platform     = "azure"
   pretty_print = false
 }
