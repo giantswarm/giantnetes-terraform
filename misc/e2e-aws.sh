@@ -67,7 +67,7 @@ stage-preflight() {
   # TODO: move this to e2e-Dockerfile
   pip install ansible -q -q -q --upgrade
 
-  PROGS=( git terraform terraform-provider-ct aws az ansible-playbook ssh-keygen )
+  PROGS=( git terraform terraform-provider-ct terraform-provider-gotemplate aws az ansible-playbook ssh-keygen )
   for prog in ${PROGS[@]}; do
     msg "Checking $prog"
     which $prog &>/dev/null || fail "$prog not installed"
