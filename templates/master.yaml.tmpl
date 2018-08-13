@@ -10,6 +10,7 @@ storage:
           metadata:
             name: calico-node
             namespace: kube-system
+          ---
           {{if eq .Provider "azure" -}}
           #
           # Source: https://docs.projectcalico.org/v3.0/getting-started/kubernetes/installation/hosted/kubernetes-datastore/policy-only/1.7/calico.yaml
@@ -489,12 +490,6 @@ storage:
             etcd_ca: "/etc/kubernetes/ssl/etcd/client-ca.pem"
             etcd_cert: "/etc/kubernetes/ssl/etcd/client-crt.pem"
             etcd_key: "/etc/kubernetes/ssl/etcd/client-key.pem"
-          ---
-          apiVersion: v1
-          kind: ServiceAccount
-          metadata:
-            name: calico-kube-controllers
-            namespace: kube-system
           ---
           # This manifest installs the calico/node container, as well
           # as the Calico CNI plugins and network config on
