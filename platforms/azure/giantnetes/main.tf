@@ -73,6 +73,7 @@ locals {
     "K8SAPIIP"               = "${var.k8s_api_ip}"
     "K8SDNSIP"               = "${var.k8s_dns_ip}"
     "K8SServiceCIDR"         = "${var.k8s_service_cidr}"
+    "PodCIDR"                = "${var.pod_cidr}"
     "Provider"               = "azure"
     "Users"                  = "${file("${path.module}/../../../ignition/users.yaml")}"
     "VaultDomainName"        = "${var.vault_dns}.${var.base_domain}"
