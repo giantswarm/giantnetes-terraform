@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: busybox:1.27
+      - image: alpine:3.8
     steps:
       - checkout
       - run:
