@@ -63,26 +63,38 @@ module "s3" {
 }
 
 locals {
-  bastion_users = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
-  users         = "${file("${path.module}/../../../ignition/users.yaml")}"
-}
-
-# Generate ignition config for bastions.
-data "template_file" "bastion" {
-  template = "${file("${path.module}/../../../ignition/aws/bastion.yaml.tmpl")}"
-
-  vars {
-    "VAULT_DOMAIN_NAME"            = "${var.vault_dns}.${var.base_domain}"
-    "G8S_VAULT_TOKEN"              = "${var.nodes_vault_token}"
-    "CLUSTER_NAME"                 = "${var.cluster_name}"
-    "CLOUDWATCH_FORWARDER_ENABLED" = "${var.bastion_log_priority != "none" ? "true" : "false" }"
-    "BASTION_LOG_PRIORITY"         = "${var.bastion_log_priority}"
+  ignition_data = {
+    "APIDomainName"              = "${var.api_dns}.${var.base_domain}"
+    "BastionUsers"               = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
+    "BastionLogPriority"         = "${var.bastion_log_priority}"
+    "CalicoCIDR"                 = "${var.calico_cidr}"
+    "CloudwatchForwarderEnabled" = "${var.bastion_log_priority != "none" ? "true" : "false" }"
+    "ClusterName"                = "${var.cluster_name}"
+    "DockerCIDR"                 = "${var.docker_cidr}"
+    "ETCDDomainName"             = "${var.etcd_dns}.${var.base_domain}"
+    "G8SVaultToken"              = "${var.nodes_vault_token}"
+    "K8SAPIIP"                   = "${var.k8s_api_ip}"
+    "K8SDNSIP"                   = "${var.k8s_dns_ip}"
+    "K8SServiceCIDR"             = "${var.k8s_service_cidr}"
+    "MasterMountDocker"          = "${var.master_instance["mount_docker"]}"
+    "MasterMountETCD"            = "${var.master_instance["mount_etcd"]}"
+    "PodInfraImage"              = "${var.pod_infra_image}"
+    "Provider"                   = "aws"
+    "Users"                      = "${file("${path.module}/../../../ignition/users.yaml")}"
+    "VaultDomainName"            = "${var.vault_dns}.${var.base_domain}"
+    "WorkerMountDocker"          = "${var.worker_instance["mount_docker"]}"
   }
 }
 
-# Convert ignition config to raw json and merge users part.
+# Generate ignition config.
+data "gotemplate" "bastion" {
+  template = "${path.module}/../../../templates/bastion.yaml.tmpl"
+  data     = "${jsonencode(local.ignition_data)}"
+}
+
+# Convert ignition config to raw json.
 data "ct_config" "bastion" {
-  content      = "${format("%s\n%s", local.bastion_users, data.template_file.bastion.rendered)}"
+  content      = "${data.gotemplate.bastion.rendered}"
   platform     = "ec2"
   pretty_print = false
 }
@@ -108,18 +120,15 @@ module "bastion" {
   vpc_id                 = "${module.vpc.vpc_id}"
 }
 
-# Generate ignition config for Vault.
-data "template_file" "vault" {
-  template = "${file("${path.module}/../../../ignition/aws/vault.yaml.tmpl")}"
-
-  vars {
-    "DOCKER_CIDR" = "${var.docker_cidr}"
-  }
+# Generate ignition config.
+data "gotemplate" "vault" {
+  template = "${path.module}/../../../templates/vault.yaml.tmpl"
+  data     = "${jsonencode(local.ignition_data)}"
 }
 
-# Convert ignition config to raw json and merge users part.
+# Convert ignition config to raw json.
 data "ct_config" "vault" {
-  content      = "${format("%s\n%s", local.bastion_users, data.template_file.vault.rendered)}"
+  content      = "${data.gotemplate.vault.rendered}"
   platform     = "ec2"
   pretty_print = false
 }
@@ -143,30 +152,15 @@ module "vault" {
   worker_subnet_ids      = "${module.vpc.worker_subnet_ids}"
 }
 
-# Generate ignition config for master.
-data "template_file" "master" {
-  template = "${file("${path.module}/../../../ignition/aws/master.yaml.tmpl")}"
-
-  vars {
-    "API_DOMAIN_NAME"   = "${var.api_dns}.${var.base_domain}"
-    "CALICO_CIDR"       = "${var.calico_cidr}"
-    "DEFAULT_IPV4"      = "$${DEFAULT_IPV4}"
-    "DOCKER_CIDR"       = "${var.docker_cidr}"
-    "ETCD_DOMAIN_NAME"  = "${var.etcd_dns}.${var.base_domain}"
-    "G8S_VAULT_TOKEN"   = "${var.nodes_vault_token}"
-    "K8S_SERVICE_CIDR"  = "${var.k8s_service_cidr}"
-    "K8S_DNS_IP"        = "${var.k8s_dns_ip}"
-    "K8S_API_IP"        = "${var.k8s_api_ip}"
-    "MOUNT_DOCKER"      = "${var.master_instance["mount_docker"]}"
-    "MOUNT_ETCD"        = "${var.master_instance["mount_etcd"]}"
-    "POD_INFRA_IMAGE"   = "${var.pod_infra_image}"
-    "VAULT_DOMAIN_NAME" = "${var.vault_dns}.${var.base_domain}"
-  }
+# Generate ignition config.
+data "gotemplate" "master" {
+  template = "${path.module}/../../../templates/master.yaml.tmpl"
+  data     = "${jsonencode(local.ignition_data)}"
 }
 
-# Convert ignition config to raw json and merge users part.
+# Convert ignition config to raw json.
 data "ct_config" "master" {
-  content      = "${format("%s\n%s", local.users, data.template_file.master.rendered)}"
+  content      = "${data.gotemplate.master.rendered}"
   platform     = "ec2"
   pretty_print = false
 }
@@ -194,27 +188,15 @@ module "master" {
   arn_region             = "${var.arn_region}"
 }
 
-# Generate ignition config for worker.
-data "template_file" "worker" {
-  template = "${file("${path.module}/../../../ignition/aws/worker.yaml.tmpl")}"
-
-  vars {
-    "API_DOMAIN_NAME"   = "${var.api_dns}.${var.base_domain}"
-    "CALICO_CIDR"       = "${var.calico_cidr}"
-    "DEFAULT_IPV4"      = "$${DEFAULT_IPV4}"
-    "DOCKER_CIDR"       = "${var.docker_cidr}"
-    "ETCD_DOMAIN_NAME"  = "${var.etcd_dns}.${var.base_domain}"
-    "G8S_VAULT_TOKEN"   = "${var.nodes_vault_token}"
-    "K8S_DNS_IP"        = "${var.k8s_dns_ip}"
-    "MOUNT_DOCKER"      = "${var.worker_instance["mount_docker"]}"
-    "POD_INFRA_IMAGE"   = "${var.pod_infra_image}"
-    "VAULT_DOMAIN_NAME" = "${var.vault_dns}.${var.base_domain}"
-  }
+# Generate ignition config.
+data "gotemplate" "worker" {
+  template = "${path.module}/../../../templates/worker.yaml.tmpl"
+  data     = "${jsonencode(local.ignition_data)}"
 }
 
-# Convert ignition config to raw json and merge users part.
+# Convert ignition config to raw json.
 data "ct_config" "worker" {
-  content      = "${format("%s\n%s", local.users, data.template_file.worker.rendered)}"
+  content      = "${data.gotemplate.worker.rendered}"
   platform     = "ec2"
   pretty_print = false
 }

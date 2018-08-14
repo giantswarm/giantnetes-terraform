@@ -52,23 +52,43 @@ module "blob" {
 }
 
 locals {
-  bastion_users = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
-  users         = "${file("${path.module}/../../../ignition/users.yaml")}"
+  ignition_data = {
+    "AzureCloud"             = "${var.azure_cloud}"
+    "AzureLocation"          = "${var.azure_location}"
+    "AzureSPTenantID"        = "${var.azure_sp_tenantid}"
+    "AzureSPSubscriptionID"  = "${var.azure_sp_subscriptionid}"
+    "AzureSPAADClientID"     = "${var.azure_sp_aadclientid}"
+    "AzureSPAADClientSecret" = "${var.azure_sp_aadclientsecret}"
+    "AzureResourceGroup"     = "${var.cluster_name}"
+    "AzureSubnetName"        = "${var.cluster_name}_worker_subnet"
+    "AzureSecGroupName"      = "${var.cluster_name}-worker"
+    "AzureVnetName"          = "${var.cluster_name}"
+    "AzureRoutable"          = "${var.cluster_name}_worker_rt"
+    "APIDomainName"          = "${var.api_dns}.${var.base_domain}"
+    "BastionUsers"           = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
+    "ClusterName"            = "${var.cluster_name}"
+    "DockerCIDR"             = "${var.docker_cidr}"
+    "ETCDDomainName"         = "${var.etcd_dns}.${var.base_domain}"
+    "G8SVaultToken"          = "${var.nodes_vault_token}"
+    "K8SAPIIP"               = "${var.k8s_api_ip}"
+    "K8SDNSIP"               = "${var.k8s_dns_ip}"
+    "K8SServiceCIDR"         = "${var.k8s_service_cidr}"
+    "PodCIDR"                = "${var.pod_cidr}"
+    "Provider"               = "azure"
+    "Users"                  = "${file("${path.module}/../../../ignition/users.yaml")}"
+    "VaultDomainName"        = "${var.vault_dns}.${var.base_domain}"
+  }
 }
 
-# Generate ignition config for bastions.
-data "template_file" "bastion" {
-  template = "${file("${path.module}/../../../ignition/azure/bastion.yaml.tmpl")}"
-
-  vars {
-    "VAULT_DOMAIN_NAME" = "${var.vault_dns}.${var.base_domain}"
-    "G8S_VAULT_TOKEN"   = "${var.nodes_vault_token}"
-  }
+# Generate ignition config.
+data "gotemplate" "bastion" {
+  template = "${path.module}/../../../templates/bastion.yaml.tmpl"
+  data     = "${jsonencode(local.ignition_data)}"
 }
 
 # Convert ignition config to raw json and merge users part.
 data "ct_config" "bastion" {
-  content      = "${format("%s\n%s", local.bastion_users, data.template_file.bastion.rendered)}"
+  content      = "${data.gotemplate.bastion.rendered}"
   platform     = "azure"
   pretty_print = false
 }
@@ -90,18 +110,15 @@ module "bastion" {
   vm_size                     = "${var.bastion_vm_size}"
 }
 
-# Generate ignition config for Vault.
-data "template_file" "vault" {
-  template = "${file("${path.module}/../../../ignition/azure/vault.yaml.tmpl")}"
-
-  vars {
-    "DOCKER_CIDR" = "${var.docker_cidr}"
-  }
+# Generate ignition config.
+data "gotemplate" "vault" {
+  template = "${path.module}/../../../templates/vault.yaml.tmpl"
+  data     = "${jsonencode(local.ignition_data)}"
 }
 
 # Convert ignition config to raw json and merge users part.
 data "ct_config" "vault" {
-  content      = "${format("%s\n%s", local.bastion_users, data.template_file.vault.rendered)}"
+  content      = "${data.gotemplate.vault.rendered}"
   platform     = "azure"
   pretty_print = false
 }
@@ -122,39 +139,15 @@ module "vault" {
   vm_size                 = "${var.vault_vm_size}"
 }
 
-# Generate ignition config for master.
-data "template_file" "master" {
-  template = "${file("${path.module}/../../../ignition/azure/master.yaml.tmpl")}"
-
-  vars {
-    "API_DOMAIN_NAME"          = "${var.api_dns}.${var.base_domain}"
-    "AZURE_CLOUD"              = "${var.azure_cloud}"
-    "AZURE_LOCATION"           = "${var.azure_location}"
-    "AZURE_SP_TENANTID"        = "${var.azure_sp_tenantid}"
-    "AZURE_SP_SUBSCRIPTIONID"  = "${var.azure_sp_subscriptionid}"
-    "AZURE_SP_AADCLIENTID"     = "${var.azure_sp_aadclientid}"
-    "AZURE_SP_AADCLIENTSECRET" = "${var.azure_sp_aadclientsecret}"
-    "AZURE_RESOURCEGROUP"      = "${var.cluster_name}"
-    "AZURE_SUBNETNAME"         = "${var.cluster_name}_worker_subnet"
-    "AZURE_SECGROUPNAME"       = "${var.cluster_name}-worker"
-    "AZURE_VNETNAME"           = "${var.cluster_name}"
-    "AZURE_ROUTETABLE"         = "${var.cluster_name}_worker_rt"
-    "POD_CIDR"                 = "${var.pod_cidr}"
-    "K8S_SERVICE_CIDR"         = "${var.k8s_service_cidr}"
-    "K8S_API_IP"               = "${var.k8s_api_ip}"
-    "CLUSTER_NAME"             = "${var.cluster_name}"
-    "DEFAULT_IPV4"             = "$${DEFAULT_IPV4}"
-    "DOCKER_CIDR"              = "${var.docker_cidr}"
-    "ETCD_DOMAIN_NAME"         = "${var.etcd_dns}.${var.base_domain}"
-    "G8S_VAULT_TOKEN"          = "${var.nodes_vault_token}"
-    "K8S_DNS_IP"               = "${var.k8s_dns_ip}"
-    "VAULT_DOMAIN_NAME"        = "${var.vault_dns}.${var.base_domain}"
-  }
+# Generate ignition config.
+data "gotemplate" "master" {
+  template = "${path.module}/../../../templates/master.yaml.tmpl"
+  data     = "${jsonencode(local.ignition_data)}"
 }
 
 # Convert ignition config to raw json and merge users part.
 data "ct_config" "master" {
-  content      = "${format("%s\n%s", local.users, data.template_file.master.rendered)}"
+  content      = "${data.gotemplate.master.rendered}"
   platform     = "azure"
   pretty_print = false
 }
@@ -187,37 +180,15 @@ module "master" {
   storage_container = "${module.blob.storage_container}"
 }
 
-# Generate ignition config for worker.
-data "template_file" "worker" {
-  template = "${file("${path.module}/../../../ignition/azure/worker.yaml.tmpl")}"
-
-  vars {
-    "API_DOMAIN_NAME"          = "${var.api_dns}.${var.base_domain}"
-    "AZURE_CLOUD"              = "${var.azure_cloud}"
-    "AZURE_LOCATION"           = "${var.azure_location}"
-    "AZURE_SP_TENANTID"        = "${var.azure_sp_tenantid}"
-    "AZURE_SP_SUBSCRIPTIONID"  = "${var.azure_sp_subscriptionid}"
-    "AZURE_SP_AADCLIENTID"     = "${var.azure_sp_aadclientid}"
-    "AZURE_SP_AADCLIENTSECRET" = "${var.azure_sp_aadclientsecret}"
-    "AZURE_RESOURCEGROUP"      = "${var.cluster_name}"
-    "AZURE_SUBNETNAME"         = "${var.cluster_name}_worker_subnet"
-    "AZURE_SECGROUPNAME"       = "${var.cluster_name}-worker"
-    "AZURE_VNETNAME"           = "${var.cluster_name}"
-    "AZURE_ROUTETABLE"         = "${var.cluster_name}_worker_rt"
-    "POD_CIDR"                 = "${var.pod_cidr}"
-    "CLUSTER_NAME"             = "${var.cluster_name}"
-    "DEFAULT_IPV4"             = "$${DEFAULT_IPV4}"
-    "DOCKER_CIDR"              = "${var.docker_cidr}"
-    "ETCD_DOMAIN_NAME"         = "${var.etcd_dns}.${var.base_domain}"
-    "G8S_VAULT_TOKEN"          = "${var.nodes_vault_token}"
-    "K8S_DNS_IP"               = "${var.k8s_dns_ip}"
-    "VAULT_DOMAIN_NAME"        = "${var.vault_dns}.${var.base_domain}"
-  }
+# Generate ignition config.
+data "gotemplate" "worker" {
+  template = "${path.module}/../../../templates/worker.yaml.tmpl"
+  data     = "${jsonencode(local.ignition_data)}"
 }
 
 # Convert ignition config to raw json and merge users part.
 data "ct_config" "worker" {
-  content      = "${format("%s\n%s", local.users, data.template_file.worker.rendered)}"
+  content      = "${data.gotemplate.worker.rendered}"
   platform     = "azure"
   pretty_print = false
 }

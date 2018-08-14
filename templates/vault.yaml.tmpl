@@ -44,7 +44,7 @@ systemd:
       - name: 10-giantswarm-extra-args.conf
         contents: |
           [Service]
-          Environment="DOCKER_OPT_BIP=--bip=${DOCKER_CIDR}"
+          Environment="DOCKER_OPT_BIP=--bip={{ .DockerCidr }}
       - name: 60-docker-restart-always.conf
         contents: |
           [Service]
@@ -55,7 +55,8 @@ storage:
   filesystems:
     - name: etcd
       mount:
-        device: /dev/xvdc
+        device: {{if eq .Provider "azure" }}/dev/sdc{{else}}/dev/xvdc{{end}}
         format: ext4
         wipe_filesystem: false
         label: var-lib-etcd
+{{ .BastionUsers }}

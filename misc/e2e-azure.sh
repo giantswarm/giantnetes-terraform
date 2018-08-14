@@ -68,7 +68,7 @@ stage-preflight() {
   pip install ansible -q -q -q --upgrade
   apt update && apt -y install
 
-  PROGS=( git terraform terraform-provider-ct az ansible-playbook ssh-keygen )
+  PROGS=( git terraform terraform-provider-ct terraform-provider-gotemplate az ansible-playbook ssh-keygen )
   for prog in ${PROGS[@]}; do
     msg "Checking $prog"
     which $prog &>/dev/null || fail "$prog not installed"
@@ -236,7 +236,6 @@ EOF
 
 stage-destroy() {
   cd ${BUILDDIR}
-
   source envs.sh
   terraform init ../platforms/azure/giantnetes
   terraform destroy -force ../platforms/azure/giantnetes
