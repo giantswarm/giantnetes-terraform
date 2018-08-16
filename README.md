@@ -1,8 +1,8 @@
 [![CircleCI](https://circleci.com/gh/giantswarm/giantnetes-terraform.svg?style=shield)](https://circleci.com/gh/giantswarm/giantnetes-terraform)
 
-# Giantnetes terraform for host cluster
+# Giant Swarm control plane terraform manifests
 
-Terraform manifests for Giantnetes host cluster installation.
+Terraform manifests for installing Giant Swarm's control plane.
 
 ## Installation
 
