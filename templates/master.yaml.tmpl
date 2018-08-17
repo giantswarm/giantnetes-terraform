@@ -2705,6 +2705,7 @@ systemd:
       --logtostderr=true \
       {{if eq .Provider "aws" -}}
       --cloud-provider=aws \
+      --pod-infra-container-image={{ .PodInfraImage }} \
       {{ else -}}
       --cloud-provider=azure \
       --cloud-config=/etc/kubernetes/config/azure.yaml \
