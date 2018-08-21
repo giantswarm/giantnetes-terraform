@@ -30,7 +30,7 @@ WORKER_COUNT=1
 E2E_ENABLE_CONFORMANCE=${E2E_ENABLE_CONFORMANCE:-""}
 
 # Which files concerned by AWS.
-AWS_FILES_REGEX="^modules/aws|^modules/container-linux|^platforms/aws|^ignition|^misc/e2e-aws.sh|^misc/e2e.sh|^\.circleci"
+AWS_FILES_REGEX="^modules/aws|^modules/container-linux|^platforms/aws|^templates|^misc/e2e-aws.sh|^misc/e2e.sh|^\.circleci"
 
 fail() {
   printf "\033[1;31merror: %s: %s\033[0m\n" ${FUNCNAME[1]} "${1:-"Unknown error"}"
