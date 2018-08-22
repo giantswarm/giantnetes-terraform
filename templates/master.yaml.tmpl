@@ -2294,6 +2294,16 @@ storage:
           SUBSYSTEM=="block", KERNEL=="sdc", TAG+="systemd"
           SUBSYSTEM=="block", KERNEL=="sda6", TAG+="systemd"
     {{- end }}
+    - path : /etc/modules-load.d/ipvs.conf
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          ip_vs
+          ip_vs_rr
+          ip_vs_wrr
+          ip_vs_sh
+          nf_conntrack_ipv4
 systemd:
   units:
   - name: etcd2.service
@@ -2314,6 +2324,8 @@ systemd:
   - name: locksmithd.service
     enabled: false
     mask: true
+  - name: systemd-modules-load.service
+    enabled: true
   - name: systemd-networkd-wait-online.service
     enabled: false
     mask: true
