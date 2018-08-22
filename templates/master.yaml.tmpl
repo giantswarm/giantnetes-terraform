@@ -129,7 +129,7 @@ storage:
                 # as a host-networked pod.
                 serviceAccountName: calico-node
                 containers:
-                - image: quay.io/calico/typha:v3.2.0
+                - image: quay.io/giantswarm/typha:v3.2.0
                   name: calico-typha
                   ports:
                   - containerPort: 5473
@@ -224,7 +224,7 @@ storage:
                   # container programs network policy and routes on each
                   # host.
                   - name: calico-node
-                    image: quay.io/calico/node:v3.2.0
+                    image: quay.io/giantswarm/node:v3.2.0
                     env:
                       # Use Kubernetes API as the backing datastore.
                       - name: DATASTORE_TYPE
@@ -300,7 +300,7 @@ storage:
                   # This container installs the Calico CNI binaries
                   # and CNI network config file on each node.
                   - name: install-cni
-                    image: quay.io/calico/cni:v3.2.0
+                    image: quay.io/giantswarm/cni:v3.2.0
                     command: ["/install-cni.sh"]
                     env:
                       # Name of the CNI config file to create.
@@ -603,7 +603,7 @@ storage:
                   # container programs network policy and routes on each
                   # host.
                   - name: calico-node
-                    image: quay.io/calico/node:v3.2.0
+                    image: quay.io/giantswarm/node:v3.2.0
                     env:
                       # The location of the Calico etcd cluster.
                       - name: ETCD_ENDPOINTS
@@ -709,7 +709,7 @@ storage:
                   # This container installs the Calico CNI binaries
                   # and CNI network config file on each node.
                   - name: install-cni
-                    image: quay.io/calico/cni:v3.2.0
+                    image: quay.io/giantswarm/cni:v3.2.0
                     command: ["/install-cni.sh"]
                     env:
                       # Name of the CNI config file to create.
@@ -807,7 +807,7 @@ storage:
                 serviceAccountName: calico-kube-controllers
                 containers:
                   - name: calico-kube-controllers
-                    image: quay.io/calico/kube-controllers:v3.2.0
+                    image: quay.io/giantswarm/kube-controllers:v3.2.0
                     env:
                       # The location of the Calico etcd cluster.
                       - name: ETCD_ENDPOINTS
