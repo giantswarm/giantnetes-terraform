@@ -30,7 +30,7 @@ WORKER_COUNT=1
 E2E_ENABLE_CONFORMANCE=${E2E_ENABLE_CONFORMANCE:-""}
 
 # Which files concerned by Azure.
-AZURE_FILES_REGEX="^modules/azure|^modules/container-linux|^platforms/azure|^templates/azure|^misc/e2e-azure.sh|^\.circleci"
+AZURE_FILES_REGEX="^modules/azure|^modules/container-linux|^platforms/azure|^templates|^misc/e2e-azure.sh|^\.circleci"
 
 fail() {
   printf "\033[1;31merror: %s: %s\033[0m\n" ${FUNCNAME[1]} "${1:-"Unknown error"}"
