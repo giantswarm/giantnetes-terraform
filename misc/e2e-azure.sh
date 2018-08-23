@@ -260,6 +260,14 @@ stage-wait-kubernetes-nodes(){
     msg "Kubernetes nodes are ready."
 }
 
+stage-logs(){
+    exec_on master1 systemctl list-units --failed \
+        | awk '{print $2}' \
+        | tail -n+2 \
+        | head -n -7 \
+        | xargs -i sh -c 'echo logs for {}; journalctl -u {}'
+}
+
 stage-e2e(){
     local url="https://raw.githubusercontent.com/giantswarm/giantnetes-terraform/${CIRCLE_SHA1}/misc/e2e-conformance-pod.yaml"
 
@@ -298,6 +306,9 @@ main() {
 
   # Wait for kubernetes nodes.
   stage-wait-kubernetes-nodes
+
+  # Output logs for failed units
+  stage-logs
 
   # Finally run tests if enabled.
   [ ! ${E2E_ENABLE_CONFORMANCE} ] || stage-e2e
