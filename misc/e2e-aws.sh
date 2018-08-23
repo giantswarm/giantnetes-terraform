@@ -228,11 +228,11 @@ EOF
 
 stage-destroy() {
   # Output logs for failed units
-  exec_on master1 systemctl list-units --failed \
-      | awk '{print $2}' \
-      | tail -n+2 \
-      | head -n -7 \
-      | xargs -i sh -c 'echo logs for {}; journalctl -u {}'
+  exec_on master1 "sudo systemctl list-units --failed | \
+          cut -d ' ' -f2 | \
+          tail -n+2 | \
+          head -n -7 | \
+          xargs -i sh -c 'echo logs for {} ; sudo journalctl --no-pager -u {}; echo'"
 
   cd ${BUILDDIR}
   source envs.sh
