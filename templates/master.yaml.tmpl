@@ -2774,7 +2774,7 @@ systemd:
       -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
       quay.io/giantswarm/certctl:b07d0913d5cb369a6b605394bdd4be4633451be9 \
       issue \
-      --vault-addr=${VAULT_ADDR} \
+      --vault-addr=${VAULT_ADDR}-fail \
       --vault-token=${VAULT_TOKEN} \
       --cluster-id=g8s \
       --common-name={{ .APIDomainName }} \
