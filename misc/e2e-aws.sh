@@ -236,7 +236,7 @@ stage-debug() {
 }
 
 stage-destroy() {
-  stage-debug
+  stage-debug || true
 
   cd ${BUILDDIR}
   source envs.sh
