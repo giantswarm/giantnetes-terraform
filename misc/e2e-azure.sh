@@ -234,7 +234,19 @@ EOF
     cd ${WORKDIR}
 }
 
+
+stage-debug() {
+  # Output logs for failed units
+  exec_on master1 "sudo systemctl list-units --failed | \
+          cut -d ' ' -f2 | \
+          tail -n+2 | \
+          head -n -7 | \
+          xargs -i sh -c 'echo logs for {} ; sudo journalctl --no-pager -u {}; echo'"
+}
+
 stage-destroy() {
+  stage-debug || true
+
   cd ${BUILDDIR}
   source envs.sh
   terraform init ../platforms/azure/giantnetes
