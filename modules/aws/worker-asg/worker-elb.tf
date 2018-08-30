@@ -1,3 +1,4 @@
+# TODO: Remove ELB creation from here in favor managing it from Kubernetes.
 resource "aws_elb" "worker" {
   name                      = "${var.cluster_name}-worker"
   cross_zone_load_balancing = true
