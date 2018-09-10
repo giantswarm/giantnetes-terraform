@@ -160,11 +160,6 @@ stage-terraform() {
 
   source envs.sh
   terraform init ../platforms/azure/giantnetes
-
-  # taint bastions for setting up ssh CA public key (requires vault node token)
-  terraform taint -module="bastion" "azurerm_virtual_machine.bastion.0"
-  terraform taint -module="bastion" "azurerm_virtual_machine.bastion.1"
-
   terraform apply -auto-approve ../platforms/azure/giantnetes
 
   cd -
