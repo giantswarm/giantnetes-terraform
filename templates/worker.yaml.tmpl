@@ -517,7 +517,6 @@ systemd:
       --cloud-config=/etc/kubernetes/config/azure.yaml \
       {{ else -}}
       --cloud-provider=aws \
-      --image-pull-progress-deadline={{ .ImagePullProgressDeadline }} \  
       --pod-infra-container-image={{ .PodInfraImage }} \
       {{ end -}}
       --network-plugin=cni \
