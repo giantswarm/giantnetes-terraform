@@ -237,6 +237,10 @@ variable "external_ipsec_subnet_1" {
 }
 
 ### Kubernetes ###
+variable "image_pull_progress_deadline" {
+  default = "1m"
+}
+
 variable "pod_infra_image" {
   default = "gcr.io/google_containers/pause-amd64:3.1"
 }

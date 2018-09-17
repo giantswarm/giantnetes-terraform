@@ -512,12 +512,13 @@ systemd:
       --containerized \
       --enable-server \
       --logtostderr=true \
-      {{if eq .Provider "azure" -}}
+      {{if eq .Provider "aws" -}}
+      --cloud-provider=aws \
+      --image-pull-progress-deadline={{ .ImagePullProgressDeadline }} \
+      --pod-infra-container-image={{ .PodInfraImage }} \
+      {{ else -}}
       --cloud-provider=azure \
       --cloud-config=/etc/kubernetes/config/azure.yaml \
-      {{ else -}}
-      --cloud-provider=aws \
-      --pod-infra-container-image={{ .PodInfraImage }} \
       {{ end -}}
       --network-plugin=cni \
       --register-node=true \
