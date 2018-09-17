@@ -24,8 +24,9 @@ resource "aws_cloudformation_stack" "worker_asg" {
         "LoadBalancerNames": [
           "${var.cluster_name}-worker"
         ],
-        "MaxSize": "${var.worker_count}",
-        "MinSize": "1",
+        "MaxSize": "${var.worker_count + 1}",
+        "DesiredCapacity": "${var.worker_count}",
+        "MinSize": "${var.worker_count}",
         "Tags": [
           {
             "Key": "Name",
@@ -47,7 +48,7 @@ resource "aws_cloudformation_stack" "worker_asg" {
       },
       "UpdatePolicy": {
         "AutoScalingRollingUpdate": {
-          "MinInstancesInService": "${var.worker_count - 1}",
+          "MinInstancesInService": "${var.worker_count}",
           "MaxBatchSize": "1",
           "PauseTime": "PT5M"
         }

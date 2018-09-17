@@ -101,6 +101,14 @@ resource "aws_security_group" "vault" {
     cidr_blocks = ["${data.aws_subnet.worker_subnets.*.cidr_block}"]
   }
 
+  # Allow cert-exporter from worker nodes.
+  ingress {
+    from_port   = 9005
+    to_port     = 9005
+    protocol    = "tcp"
+    cidr_blocks = ["${data.aws_subnet.worker_subnets.*.cidr_block}"]
+  }
+
   tags {
     Name                         = "${var.cluster_name}-vault"
     "giantswarm.io/installation" = "${var.cluster_name}"
