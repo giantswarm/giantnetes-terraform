@@ -512,7 +512,7 @@ systemd:
       --containerized \
       --enable-server \
       --logtostderr=true \
-      {{if eq .Provider "azure" -}}
+      {{if eq .Provider "aws" -}}
       --cloud-provider=aws \
       --image-pull-progress-deadline={{ .ImagePullProgressDeadline }} \
       --pod-infra-container-image={{ .PodInfraImage }} \
