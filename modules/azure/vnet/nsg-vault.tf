@@ -53,6 +53,21 @@ resource "azurerm_network_security_rule" "vault_ingress_node-exporter" {
   network_security_group_name = "${azurerm_network_security_group.vault.name}"
 }
 
+resource "azurerm_network_security_rule" "vault_ingress_cert-exporter" {
+  name                        = "${var.cluster_name}-vault-cert-exporter"
+  description                 = "${var.cluster_name} vault - cert-exporter"
+  priority                    = 800
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "TCP"
+  source_port_range           = "*"
+  destination_port_range      = "9005"
+  source_address_prefix       = "${azurerm_subnet.worker_subnet.address_prefix}"
+  destination_address_prefix  = "${var.vnet_cidr}"
+  resource_group_name         = "${var.resource_group_name}"
+  network_security_group_name = "${azurerm_network_security_group.vault.name}"
+}
+
 resource "azurerm_network_security_rule" "vault_egress" {
   name                   = "${var.cluster_name}-vault-out"
   description            = "${var.cluster_name} vault - Outbound"
