@@ -590,6 +590,9 @@ storage:
 
             # If you're using TLS enabled etcd uncomment the following.
             # You must also populate the Secret below with these files.
+
+            # TODO(r7vme): replace with "etcd-ca", "etcd-cert" and "etcd-key"
+            # after all clusters will have them.
             etcd_ca: "/calico-secrets/client-ca.pem"
             etcd_cert: "/calico-secrets/client-crt.pem"
             etcd_key: "/calico-secrets/client-key.pem"
@@ -859,6 +862,7 @@ storage:
                     hostPath:
                       path: /etc/cni/net.d
                   # Mount in the etcd TLS secrets.
+                  # TODO(r7vme): replace with /etc/kubernetes/ssl/calico
                   - name: etcd-certs
                     hostPath:
                       path: /etc/kubernetes/ssl/etcd
@@ -947,6 +951,7 @@ storage:
                         - -r
                 volumes:
                   # Mount in the etcd TLS secrets.
+                  # TODO(r7vme): replace with /etc/kubernetes/ssl/calico
                   - name: etcd-certs
                     hostPath:
                       path: /etc/kubernetes/ssl/etcd
@@ -2659,11 +2664,11 @@ systemd:
           --cluster-id=g8s \
           --common-name={{ .ETCDDomainName }} \
           --ttl=8760h \
-          --crt-file=/etc/kubernetes/ssl/calico/client-crt.pem \
           --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
           --alt-names=localhost \
-          --key-file=/etc/kubernetes/ssl/calico/client-key.pem \
-          --ca-file=/etc/kubernetes/ssl/calico/client-ca.pem); \
+          --ca-file=/etc/kubernetes/ssl/calico/etcd-ca \
+          --crt-file=/etc/kubernetes/ssl/calico/etcd-cert \
+          --key-file=/etc/kubernetes/ssl/calico/etcd-key); \
         done; \
         [ -z "$result" ] && echo "Failed to issue calico certs." && exit 1 || echo "Successfully issued calico certs.";'
       ExecStop=/usr/bin/rm -rf /etc/kubernetes/ssl/calico/

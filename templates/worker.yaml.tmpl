@@ -401,12 +401,12 @@ systemd:
       EnvironmentFile=/etc/tokens/node
       Type=oneshot
       RemainAfterExit=yes
-      ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/etcd/
+      ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/calico/
       ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/usr/bin/docker run \
       --net=host \
       -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
-      -v /etc/kubernetes/ssl/etcd/:/etc/kubernetes/ssl/etcd/ \
+      -v /etc/kubernetes/ssl/calico/:/etc/kubernetes/ssl/calico/ \
       quay.io/giantswarm/certctl:b07d0913d5cb369a6b605394bdd4be4633451be9 \
       issue \
       --vault-addr=https://{{ .VaultDomainName }} \
@@ -414,11 +414,17 @@ systemd:
       --cluster-id=g8s \
       --common-name={{ .ETCDDomainName }} \
       --ttl=8760h \
-      --crt-file=/etc/kubernetes/ssl/etcd/client-crt.pem \
       --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
       --alt-names=localhost \
-      --key-file=/etc/kubernetes/ssl/etcd/client-key.pem \
-      --ca-file=/etc/kubernetes/ssl/etcd/client-ca.pem
+      --ca-file=/etc/kubernetes/ssl/calico/etcd-ca \
+      --crt-file=/etc/kubernetes/ssl/calico/etcd-cert \
+      --key-file=/etc/kubernetes/ssl/calico/etcd-key
+      # TODO(r7vme): Remove steps below after all clusters will have certificates.
+      ExecStartPost=/usr/bin/mkdir -p /etc/kubernetes/ssl/etcd/
+      ExecStartPost=/bin/cp /etc/kubernetes/ssl/calico/etcd-cert /etc/kubernetes/ssl/etcd/client-crt.pem
+      ExecStartPost=/bin/cp /etc/kubernetes/ssl/calico/etcd-ca /etc/kubernetes/ssl/etcd/client-ca.pem
+      ExecStartPost=/bin/cp /etc/kubernetes/ssl/calico/etcd-key /etc/kubernetes/ssl/etcd/client-key.pem
+      ExecStop=/usr/bin/rm -rf /etc/kubernetes/ssl/calico/
       ExecStop=/usr/bin/rm -rf /etc/kubernetes/ssl/etcd/
 
       [Install]
