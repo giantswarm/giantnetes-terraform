@@ -2193,8 +2193,6 @@ storage:
                 - /hyperkube
                 - apiserver
                 - --allow-privileged=true
-                - --insecure-bind-address=127.0.0.1
-                - --insecure-port=8080
                 - --kubelet-https=true
                 - --secure-port=443
                 {{ if eq .Provider "aws" -}}
@@ -2206,7 +2204,7 @@ storage:
                 - --bind-address=$(HOST_IP)
                 - --etcd-prefix=giantswarm.io
                 - --authorization-mode=RBAC
-                - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,PodSecurityPolicy,PersistentVolumeClaimResize,DefaultStorageClass,Priority
+                - --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,PodSecurityPolicy,PersistentVolumeClaimResize,DefaultStorageClass,Priority,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook
                 - --service-cluster-ip-range={{ .K8SServiceCIDR }}
                 - --etcd-servers=https://{{ .ETCDDomainName }}:2379
                 - --etcd-cafile=/etc/kubernetes/ssl/etcd/server-ca.pem
