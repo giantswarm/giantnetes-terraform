@@ -1273,7 +1273,7 @@ storage:
                 serviceAccountName: kube-proxy
                 containers:
                 - name: kube-proxy
-                  image: quay.io/giantswarm/hyperkube:v1.11.1
+                  image: quay.io/giantswarm/hyperkube:v1.11.1-cec4fb8023db783fbf26fb056bf6c76abfcd96cf-giantswarm
                   command:
                   - /hyperkube
                   - proxy
@@ -2183,7 +2183,7 @@ storage:
             priorityClassName: system-node-critical
             containers:
               - name: k8s-api-server
-                image: quay.io/giantswarm/hyperkube:v1.11.1
+                image: quay.io/giantswarm/hyperkube:v1.11.1-cec4fb8023db783fbf26fb056bf6c76abfcd96cf-giantswarm
                 env:
                 - name: HOST_IP
                   valueFrom:
@@ -2274,7 +2274,7 @@ storage:
             priorityClassName: system-node-critical
             containers:
               - name: k8s-controller-manager
-                image: quay.io/giantswarm/hyperkube:v1.11.1
+                image: quay.io/giantswarm/hyperkube:v1.11.1-cec4fb8023db783fbf26fb056bf6c76abfcd96cf-giantswarm
                 command:
                 - /hyperkube
                 - controller-manager
@@ -2344,7 +2344,7 @@ storage:
             priorityClassName: system-node-critical
             containers:
               - name: k8s-scheduler
-                image: quay.io/giantswarm/hyperkube:v1.11.1
+                image: quay.io/giantswarm/hyperkube:v1.11.1-cec4fb8023db783fbf26fb056bf6c76abfcd96cf-giantswarm
                 command:
                 - /hyperkube
                 - scheduler
@@ -2828,7 +2828,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.11.1"
+      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.11.1-cec4fb8023db783fbf26fb056bf6c76abfcd96cf-giantswarm"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
