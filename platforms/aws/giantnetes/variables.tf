@@ -30,6 +30,11 @@ variable "bastion_log_priority" {
   description = "Default log priority for exported logs (based on journalctl priorities)"
 }
 
+variable "bastion_forward_logs_enabled" {
+  default     = true
+  description = "Enable forwarding bastions logs to cloudwatch."
+}
+
 variable "iam_region" {
   type    = "string"
   default = "ec2.amazonaws.com"

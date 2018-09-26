@@ -110,6 +110,7 @@ module "bastion" {
   cluster_name           = "${var.cluster_name}"
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
+  forward_logs_enabled   = "${var.bastion_forward_logs_enabled}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
   iam_region             = "${var.iam_region}"
   instance_type          = "${var.bastion_instance_type}"

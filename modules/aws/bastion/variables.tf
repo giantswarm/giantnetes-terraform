@@ -74,4 +74,8 @@ variable "route53_enabled" {
   default = true
 }
 
+variable "forward_logs_enabled" {
+  default = true
+}
+
 variable "s3_bucket_tags" {}
