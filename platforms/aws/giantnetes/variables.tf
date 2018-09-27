@@ -61,6 +61,11 @@ variable "s3_bucket_tags" {
   default = true
 }
 
+variable "docker_registry" {
+  type    = "string"
+  default = "quay.io"
+}
+
 ### Compute and Storage ###
 
 variable "bastion_instance_type" {

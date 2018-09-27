@@ -6,12 +6,17 @@ variable "root_dns_zone_id" {
   type = "string"
 }
 
+variable "route53_enabled" {
+  default = true
+}
+
 variable "zone_name" {
   type = "string"
 }
 
 resource "aws_route53_zone" "public" {
-  name = "${var.zone_name}"
+  count = "${var.route53_enabled ? 1 : 0}"
+  name  = "${var.zone_name}"
 
   tags {
     Name                         = "${var.zone_name}"
@@ -29,5 +34,5 @@ resource "aws_route53_record" "delegation" {
 }
 
 output "public_dns_zone_id" {
-  value = "${aws_route53_zone.public.id}"
+  value = "${ join(" ", aws_route53_zone.public.*.id) }"
 }

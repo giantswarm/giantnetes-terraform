@@ -129,7 +129,7 @@ storage:
                 # as a host-networked pod.
                 serviceAccountName: calico-node
                 containers:
-                - image: quay.io/giantswarm/typha:v3.2.0
+                - image: {{.DockerRegistry}}/giantswarm/typha:v3.2.0
                   name: calico-typha
                   ports:
                   - containerPort: 5473
@@ -224,7 +224,7 @@ storage:
                   # container programs network policy and routes on each
                   # host.
                   - name: calico-node
-                    image: quay.io/giantswarm/node:v3.2.0
+                    image: {{.DockerRegistry}}/giantswarm/node:v3.2.0
                     env:
                       # Use Kubernetes API as the backing datastore.
                       - name: DATASTORE_TYPE
@@ -300,7 +300,7 @@ storage:
                   # This container installs the Calico CNI binaries
                   # and CNI network config file on each node.
                   - name: install-cni
-                    image: quay.io/giantswarm/cni:v3.2.0
+                    image: {{.DockerRegistry}}/giantswarm/cni:v3.2.0
                     command: ["/install-cni.sh"]
                     env:
                       # Name of the CNI config file to create.
@@ -706,7 +706,7 @@ storage:
                   # container programs network policy and routes on each
                   # host.
                   - name: calico-node
-                    image: quay.io/giantswarm/node:v3.2.0
+                    image: {{.DockerRegistry}}/giantswarm/node:v3.2.0
                     env:
                       # The location of the Calico etcd cluster.
                       - name: ETCD_ENDPOINTS
@@ -812,7 +812,7 @@ storage:
                   # This container installs the Calico CNI binaries
                   # and CNI network config file on each node.
                   - name: install-cni
-                    image: quay.io/giantswarm/cni:v3.2.0
+                    image: {{.DockerRegistry}}/giantswarm/cni:v3.2.0
                     command: ["/install-cni.sh"]
                     env:
                       # Name of the CNI config file to create.
@@ -911,7 +911,7 @@ storage:
                 serviceAccountName: calico-kube-controllers
                 containers:
                   - name: calico-kube-controllers
-                    image: quay.io/giantswarm/kube-controllers:v3.2.0
+                    image: {{.DockerRegistry}}/giantswarm/kube-controllers:v3.2.0
                     env:
                       # The location of the Calico etcd cluster.
                       - name: ETCD_ENDPOINTS
@@ -1193,7 +1193,7 @@ storage:
                         topologyKey: kubernetes.io/hostname
                 containers:
                 - name: coredns
-                  image: quay.io/giantswarm/coredns:1.1.1
+                  image: {{.DockerRegistry}}/giantswarm/coredns:1.1.1
                   imagePullPolicy: IfNotPresent
                   args: [ "-conf", "/etc/coredns/Corefile" ]
                   volumeMounts:
@@ -1273,7 +1273,7 @@ storage:
                 serviceAccountName: kube-proxy
                 containers:
                 - name: kube-proxy
-                  image: quay.io/giantswarm/hyperkube:v1.11.1
+                  image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.11.1
                   command:
                   - /hyperkube
                   - proxy
@@ -1352,7 +1352,7 @@ storage:
               spec:
                 containers:
                 - name: default-http-backend
-                  image: quay.io/giantswarm/defaultbackend:1.0
+                  image: {{.DockerRegistry}}/giantswarm/defaultbackend:1.0
                   livenessProbe:
                     httpGet:
                       path: /healthz
@@ -1463,7 +1463,7 @@ storage:
                 priorityClassName: system-cluster-critical
                 containers:
                 - name: nginx-ingress-controller
-                  image: quay.io/giantswarm/nginx-ingress-controller:0.16.2
+                  image: {{.DockerRegistry}}/giantswarm/nginx-ingress-controller:0.16.2
                   args:
                   - /nginx-ingress-controller
                   - --default-backend-service=$(POD_NAMESPACE)/default-http-backend
@@ -2183,7 +2183,7 @@ storage:
             priorityClassName: system-node-critical
             containers:
               - name: k8s-api-server
-                image: quay.io/giantswarm/hyperkube:v1.11.1
+                image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.11.1
                 env:
                 - name: HOST_IP
                   valueFrom:
@@ -2274,7 +2274,7 @@ storage:
             priorityClassName: system-node-critical
             containers:
               - name: k8s-controller-manager
-                image: quay.io/giantswarm/hyperkube:v1.11.1
+                image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.11.1
                 command:
                 - /hyperkube
                 - controller-manager
@@ -2344,7 +2344,7 @@ storage:
             priorityClassName: system-node-critical
             containers:
               - name: k8s-scheduler
-                image: quay.io/giantswarm/hyperkube:v1.11.1
+                image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.11.1
                 command:
                 - /hyperkube
                 - scheduler
@@ -2733,7 +2733,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       LimitNOFILE=40000
-      Environment=IMAGE=quay.io/giantswarm/etcd:v3.3.1
+      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.3.9
       Environment=NAME=%p.service
       EnvironmentFile=/etc/network-environment
       ExecStartPre=-/usr/bin/docker stop  $NAME
@@ -2782,7 +2782,7 @@ systemd:
       [Service]
       Type=oneshot
       EnvironmentFile=/etc/environment
-      Environment=IMAGE=quay.io/giantswarm/etcd:v3.3.1
+      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.3.9
       Environment=NAME=%p.service
       ExecStartPre=-/usr/bin/docker stop  $NAME
       ExecStartPre=-/usr/bin/docker rm  $NAME
@@ -2828,7 +2828,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE=quay.io/giantswarm/hyperkube:v1.11.1"
+      Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:v1.11.1"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -2867,7 +2867,7 @@ systemd:
       {{if eq .Provider "aws" -}}
       --cloud-provider=aws \
       --image-pull-progress-deadline={{ .ImagePullProgressDeadline }} \
-      --pod-infra-container-image={{ .PodInfraImage }} \
+      --pod-infra-container-image={{.DockerRegistry}}/{{ .PodInfraImage }} \
       {{ else -}}
       --cloud-provider=azure \
       --cloud-config=/etc/kubernetes/config/azure.yaml \
@@ -2912,7 +2912,7 @@ systemd:
         --privileged=true\
         -e VAULT_ADDR\
         -e VAULT_TOKEN\
-        quay.io/giantswarm/vault:0.10.3\
+        {{.DockerRegistry}}/giantswarm/vault:0.10.3\
         kv get -field=key secret/g8s_sa_sign_key 2>/dev/null\
        );\
        done;\
