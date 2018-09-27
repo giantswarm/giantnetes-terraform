@@ -17,12 +17,13 @@ storage:
           #
           # Changed values:
           #   - CALICO_IPV4POOL_CIDR = parameterized
+          #   - Added resource limits
           #
-          # Calico Version v3.2.0
-          # https://docs.projectcalico.org/v3.2/releases#v3.2.0
+          # Calico Version v3.2.2
+          # https://docs.projectcalico.org/v3.2/releases#v3.2.2
           # This manifest includes the following component versions:
-          #   calico/node:v3.2.0
-          #   calico/cni:v3.2.0
+          #   calico/node:v3.2.2
+          #   calico/cni:v3.2.2
 
           # This ConfigMap is used to configure a self-hosted Calico installation.
           kind: ConfigMap
@@ -120,6 +121,8 @@ storage:
                   # if it ever gets evicted.
                   scheduler.alpha.kubernetes.io/critical-pod: ''
               spec:
+                nodeSelector:
+                  beta.kubernetes.io/os: linux
                 hostNetwork: true
                 tolerations:
                   # Mark the pod as a critical add-on for rescheduling.
@@ -129,7 +132,7 @@ storage:
                 # as a host-networked pod.
                 serviceAccountName: calico-node
                 containers:
-                - image: quay.io/giantswarm/typha:v3.2.0
+                - image: quay.io/giantswarm/typha:v3.2.2
                   name: calico-typha
                   ports:
                   - containerPort: 5473
@@ -205,6 +208,8 @@ storage:
                   # if it ever gets evicted.
                   scheduler.alpha.kubernetes.io/critical-pod: ''
               spec:
+                nodeSelector:
+                  beta.kubernetes.io/os: linux
                 hostNetwork: true
                 tolerations:
                   # Make sure calico-node gets scheduled on all nodes.
@@ -224,7 +229,7 @@ storage:
                   # container programs network policy and routes on each
                   # host.
                   - name: calico-node
-                    image: quay.io/giantswarm/node:v3.2.0
+                    image: quay.io/giantswarm/node:v3.2.2
                     env:
                       # Use Kubernetes API as the backing datastore.
                       - name: DATASTORE_TYPE
@@ -273,6 +278,10 @@ storage:
                     resources:
                       requests:
                         cpu: 250m
+                        memory: 150Mi
+                      limits:
+                        cpu: 250m
+                        memory: 150Mi
                     livenessProbe:
                       httpGet:
                         path: /liveness
@@ -300,7 +309,7 @@ storage:
                   # This container installs the Calico CNI binaries
                   # and CNI network config file on each node.
                   - name: install-cni
-                    image: quay.io/giantswarm/cni:v3.2.0
+                    image: quay.io/giantswarm/cni:v3.2.2
                     command: ["/install-cni.sh"]
                     env:
                       # Name of the CNI config file to create.
@@ -472,8 +481,8 @@ storage:
 
           ---
 
-          # Calico Version v3.2.0
-          # https://docs.projectcalico.org/v3.2/releases#v3.2.0
+          # Calico Version v3.2.2
+          # https://docs.projectcalico.org/v3.2/releases#v3.2.2
           kind: ClusterRole
           apiVersion: rbac.authorization.k8s.io/v1beta1
           metadata:
@@ -569,14 +578,14 @@ storage:
 
           {{ if eq .Provider "aws" -}}
           # Extra changes:
-          #  - added "nodename_file_optional" set to true (can be removed on the next upgrade)
+          #  - Added resource limits
           #
-          # Calico Version v3.2.0
-          # https://docs.projectcalico.org/v3.2/releases#v3.2.0
+          # Calico Version v3.2.2
+          # https://docs.projectcalico.org/v3.2/releases#v3.2.2
           # This manifest includes the following component versions:
-          #   calico/node:v3.2.0
-          #   calico/cni:v3.2.0
-          #   calico/kube-controllers:v3.2.0
+          #   calico/node:v3.2.2
+          #   calico/cni:v3.2.2
+          #   calico/kube-controllers:v3.2.2
 
           # This ConfigMap is used to configure a self-hosted Calico installation.
           kind: ConfigMap
@@ -593,9 +602,9 @@ storage:
 
             # TODO(r7vme): replace with "etcd-ca", "etcd-cert" and "etcd-key"
             # after all clusters will have them.
-            etcd_ca: "/calico-secrets/client-ca.pem"
-            etcd_cert: "/calico-secrets/client-crt.pem"
-            etcd_key: "/calico-secrets/client-key.pem"
+            etcd_ca: "/calico-secrets/etcd-ca"
+            etcd_cert: "/calico-secrets/etcd-cert"
+            etcd_key: "/calico-secrets/etcd-key"
             # Configure the Calico backend to use.
             calico_backend: "bird"
 
@@ -617,7 +626,6 @@ storage:
                     "etcd_cert_file": "__ETCD_CERT_FILE__",
                     "etcd_ca_cert_file": "__ETCD_CA_CERT_FILE__",
                     "mtu": __CNI_MTU__,
-                    "nodename_file_optional": true,
                     "ipam": {
                         "type": "calico-ipam"
                     },
@@ -687,6 +695,8 @@ storage:
                   # if it ever gets evicted.
                   scheduler.alpha.kubernetes.io/critical-pod: ''
               spec:
+                nodeSelector:
+                  beta.kubernetes.io/os: linux
                 hostNetwork: true
                 tolerations:
                   # Make sure calico-node gets scheduled on all nodes.
@@ -706,7 +716,7 @@ storage:
                   # container programs network policy and routes on each
                   # host.
                   - name: calico-node
-                    image: quay.io/giantswarm/node:v3.2.0
+                    image: quay.io/giantswarm/node:v3.2.2
                     env:
                       # The location of the Calico etcd cluster.
                       - name: ETCD_ENDPOINTS
@@ -782,6 +792,10 @@ storage:
                     resources:
                       requests:
                         cpu: 250m
+                        memory: 150Mi
+                      limits:
+                        cpu: 250m
+                        memory: 150Mi
                     livenessProbe:
                       httpGet:
                         path: /liveness
@@ -812,7 +826,7 @@ storage:
                   # This container installs the Calico CNI binaries
                   # and CNI network config file on each node.
                   - name: install-cni
-                    image: quay.io/giantswarm/cni:v3.2.0
+                    image: quay.io/giantswarm/cni:v3.2.2
                     command: ["/install-cni.sh"]
                     env:
                       # Name of the CNI config file to create.
@@ -862,10 +876,9 @@ storage:
                     hostPath:
                       path: /etc/cni/net.d
                   # Mount in the etcd TLS secrets.
-                  # TODO(r7vme): replace with /etc/kubernetes/ssl/calico
                   - name: etcd-certs
                     hostPath:
-                      path: /etc/kubernetes/ssl/etcd
+                      path: /etc/kubernetes/ssl/calico
           ---
 
           apiVersion: v1
@@ -911,7 +924,7 @@ storage:
                 serviceAccountName: calico-kube-controllers
                 containers:
                   - name: calico-kube-controllers
-                    image: quay.io/giantswarm/kube-controllers:v3.2.0
+                    image: quay.io/giantswarm/kube-controllers:v3.2.2
                     env:
                       # The location of the Calico etcd cluster.
                       - name: ETCD_ENDPOINTS
@@ -944,6 +957,13 @@ storage:
                       # Mount in the etcd TLS secrets.
                       - mountPath: /calico-secrets
                         name: etcd-certs
+                    resources:
+                      requests:
+                        cpu: 250m
+                        memory: 100Mi
+                      limits:
+                        cpu: 250m
+                        memory: 100Mi
                     readinessProbe:
                       exec:
                         command:
@@ -951,10 +971,9 @@ storage:
                         - -r
                 volumes:
                   # Mount in the etcd TLS secrets.
-                  # TODO(r7vme): replace with /etc/kubernetes/ssl/calico
                   - name: etcd-certs
                     hostPath:
-                      path: /etc/kubernetes/ssl/etcd
+                      path: /etc/kubernetes/ssl/calico
 
           ---
 
@@ -966,8 +985,8 @@ storage:
 
           ---
 
-          # Calico Version v3.2.0
-          # https://docs.projectcalico.org/v3.2/releases#v3.2.0
+          # Calico Version v3.2.2
+          # https://docs.projectcalico.org/v3.2/releases#v3.2.2
 
           ---
 
