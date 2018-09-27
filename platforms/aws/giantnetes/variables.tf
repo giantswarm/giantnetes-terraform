@@ -252,5 +252,5 @@ variable "image_pull_progress_deadline" {
 }
 
 variable "pod_infra_image" {
-  default = "gcr.io/google_containers/pause-amd64:3.1"
+  default = "giantswarm/pause-amd64:3.1"
 }
