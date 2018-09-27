@@ -68,6 +68,7 @@ locals {
     "BastionUsers"           = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
     "ClusterName"            = "${var.cluster_name}"
     "DockerCIDR"             = "${var.docker_cidr}"
+    "DockerRegistry"         = "${var.docker_registry}"
     "ETCDDomainName"         = "${var.etcd_dns}.${var.base_domain}"
     "G8SVaultToken"          = "${var.nodes_vault_token}"
     "K8SAPIIP"               = "${var.k8s_api_ip}"
