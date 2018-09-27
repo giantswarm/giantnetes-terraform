@@ -34,5 +34,5 @@ resource "aws_route53_record" "delegation" {
 }
 
 output "public_dns_zone_id" {
-  value = "${ join(" ", aws_route53_zone.public.*.id) }"
+  value = "${join(" ", aws_route53_zone.public.*.id)}"
 }
