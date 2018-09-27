@@ -202,14 +202,6 @@ TBD
 
 ## Appendix A
 
-`terraform-provider-ct` should be build from source code, because latest version 0.2 does not work properly with `passwd` section of ignition.
-```
-go get -u github.com/coreos/terraform-provider-ct
-cp $GOPATH/bin/terraform-provider-ct ~/.terraform.d/plugins/linux_amd64/terraform-provider-ct
-```
-
-## Appendix B
-
 Host cluster AWS VPC setup
 
 ![Giant Swarm AWS VPC setup](https://github.com/giantswarm/giantnetes-terraform/blob/master/docs/media/aws-vpc-setup.png?raw=true)
