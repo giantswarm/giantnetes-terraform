@@ -207,6 +207,8 @@ bare_metal: False
 EOF
 
     # Bootstrap insecure Vault.
+    echo "waiting for vault node 6min"
+    sleep 6m
     export ANSIBLE_HOST_KEY_CHECKING=False
     ansible-playbook -i hosts_inventory/${CLUSTER} -e dc=${CLUSTER} bootstrap1.yml
 
@@ -254,7 +256,7 @@ stage-debug() {
 
 stage-destroy() {
   stage-debug || true
-  sleep 8m
+  
   cd ${BUILDDIR}
   source envs.sh
   terraform init ../platforms/azure/giantnetes
