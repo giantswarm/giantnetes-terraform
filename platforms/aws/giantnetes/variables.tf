@@ -30,6 +30,11 @@ variable "bastion_log_priority" {
   description = "Default log priority for exported logs (based on journalctl priorities)"
 }
 
+variable "bastion_forward_logs_enabled" {
+  default     = true
+  description = "Enable forwarding bastions logs to cloudwatch."
+}
+
 variable "iam_region" {
   type    = "string"
   default = "ec2.amazonaws.com"
@@ -99,6 +104,11 @@ variable "container_linux_channel" {
 variable "container_linux_version" {
   description = "Container linux version."
   default     = "latest"
+}
+
+variable "docker_registry" {
+  type    = "string"
+  default = "quay.io"
 }
 
 ### DNS ###
@@ -242,5 +252,5 @@ variable "image_pull_progress_deadline" {
 }
 
 variable "pod_infra_image" {
-  default = "gcr.io/google_containers/pause-amd64:3.1"
+  default = "giantswarm/pause-amd64:3.1"
 }

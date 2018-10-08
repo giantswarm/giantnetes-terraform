@@ -130,6 +130,7 @@ data "ignition_config" "s3" {
 }
 
 resource "aws_vpc_endpoint" "cloudwatch" {
+  count              = "${var.forward_logs_enabled ? 1 : 0}"
   vpc_id             = "${var.vpc_id}"
   service_name       = "com.amazonaws.${data.aws_region.current.name}.logs"
   vpc_endpoint_type  = "Interface"

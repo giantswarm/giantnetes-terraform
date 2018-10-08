@@ -33,6 +33,7 @@ module "dns" {
 
   cluster_name     = "${var.cluster_name}"
   root_dns_zone_id = "${var.root_dns_zone_id}"
+  route53_enabled  = "${var.route53_enabled}"
   zone_name        = "${var.base_domain}"
 }
 
@@ -71,6 +72,7 @@ locals {
     "CloudwatchForwarderEnabled" = "${var.bastion_log_priority != "none" ? "true" : "false" }"
     "ClusterName"                = "${var.cluster_name}"
     "DockerCIDR"                 = "${var.docker_cidr}"
+    "DockerRegistry"             = "${var.docker_registry}"
     "ETCDDomainName"             = "${var.etcd_dns}.${var.base_domain}"
     "G8SVaultToken"              = "${var.nodes_vault_token}"
     "ImagePullProgressDeadline"  = "${var.image_pull_progress_deadline}"
@@ -110,6 +112,7 @@ module "bastion" {
   cluster_name           = "${var.cluster_name}"
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
+  forward_logs_enabled   = "${var.bastion_forward_logs_enabled}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
   iam_region             = "${var.iam_region}"
   instance_type          = "${var.bastion_instance_type}"

@@ -116,7 +116,6 @@ stage-prepare-ssh(){
     ssh-keygen -t rsa -N "" -f ${BUILDDIR}/${SSH_USER}.key
 
     ssh_pub_key=$(cat ${BUILDDIR}/${SSH_USER}.key.pub)
-
     # TODO Add after second line.
     cat > ${WORKDIR}/ignition/bastion-users.yaml << EOF
 passwd:
@@ -194,6 +193,8 @@ bare_metal: False
 EOF
 
     # Bootstrap insecure Vault.
+    echo "waiting for vault node 6min"
+    sleep 6m
     export ANSIBLE_HOST_KEY_CHECKING=False
     ansible-playbook -i hosts_inventory/${CLUSTER} -e dc=${CLUSTER} bootstrap1.yml
 
@@ -241,7 +242,7 @@ stage-debug() {
 
 stage-destroy() {
   stage-debug || true
-
+  
   cd ${BUILDDIR}
   source envs.sh
   terraform init ../platforms/azure/giantnetes

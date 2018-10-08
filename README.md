@@ -21,6 +21,7 @@ ln -sf ${GOPATH}/bin/terraform-provider-gotemplate ${HOME}/.terraform.d/plugins/
 
 ## Installation
 
+
 Please follow:
 - [installation guide for AWS](docs/installation-guide-aws.md).
 - [installation guide for Azure](docs/installation-guide-azure.md).
