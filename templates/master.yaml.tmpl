@@ -326,6 +326,13 @@ storage:
                           configMapKeyRef:
                             name: calico-config
                             key: cni_network_config
+                    resources:
+                      requests:
+                        cpu: 10m
+                        memory: 10Mi
+                      limits:
+                        cpu: 10m
+                        memory: 10Mi
                     volumeMounts:
                       - mountPath: /host/opt/cni/bin
                         name: cni-bin-dir
@@ -850,6 +857,13 @@ storage:
                           configMapKeyRef:
                             name: calico-config
                             key: veth_mtu
+                    resources:
+                      requests:
+                        cpu: 10m
+                        memory: 10Mi
+                      limits:
+                        cpu: 10m
+                        memory: 10Mi
                     volumeMounts:
                       - mountPath: /host/opt/cni/bin
                         name: cni-bin-dir
