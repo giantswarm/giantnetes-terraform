@@ -1296,6 +1296,7 @@ storage:
                   command:
                   - /hyperkube
                   - proxy
+                  - --proxy-mode=iptables
                   - --config=/etc/kubernetes/config/proxy-config.yaml
                   - --v=2
                   livenessProbe:
@@ -2108,7 +2109,7 @@ storage:
           clientConnection:
             kubeconfig: /etc/kubernetes/config/proxy-kubeconfig.yaml
           kind: KubeProxyConfiguration
-          mode: iptables
+          mode: ipvs
           resourceContainer: /kube-proxy
     - path: /etc/kubernetes/config/kubelet-kubeconfig.yaml
       filesystem: root
