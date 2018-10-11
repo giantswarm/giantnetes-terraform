@@ -19,11 +19,11 @@ storage:
           #   - CALICO_IPV4POOL_CIDR = parameterized
           #   - Added resource limits
           #
-          # Calico Version v3.2.2
-          # https://docs.projectcalico.org/v3.2/releases#v3.2.2
+          # Calico Version v3.2.3
+          # https://docs.projectcalico.org/v3.2/releases#v3.2.3
           # This manifest includes the following component versions:
-          #   calico/node:v3.2.2
-          #   calico/cni:v3.2.2
+          #   calico/node:v3.2.3
+          #   calico/cni:v3.2.3
 
           # This ConfigMap is used to configure a self-hosted Calico installation.
           kind: ConfigMap
@@ -132,7 +132,7 @@ storage:
                 # as a host-networked pod.
                 serviceAccountName: calico-node
                 containers:
-                - image: {{.DockerRegistry}}/giantswarm/typha:v3.2.2
+                - image: {{.DockerRegistry}}/giantswarm/typha:v3.2.3
                   name: calico-typha
                   ports:
                   - containerPort: 5473
@@ -229,7 +229,7 @@ storage:
                   # container programs network policy and routes on each
                   # host.
                   - name: calico-node
-                    image: {{.DockerRegistry}}/giantswarm/node:v3.2.2
+                    image: {{.DockerRegistry}}/giantswarm/node:v3.2.3
                     env:
                       # Use Kubernetes API as the backing datastore.
                       - name: DATASTORE_TYPE
@@ -309,7 +309,7 @@ storage:
                   # This container installs the Calico CNI binaries
                   # and CNI network config file on each node.
                   - name: install-cni
-                    image: {{.DockerRegistry}}/giantswarm/cni:v3.2.2
+                    image: {{.DockerRegistry}}/giantswarm/cni:v3.2.3
                     command: ["/install-cni.sh"]
                     env:
                       # Name of the CNI config file to create.
@@ -481,8 +481,8 @@ storage:
 
           ---
 
-          # Calico Version v3.2.2
-          # https://docs.projectcalico.org/v3.2/releases#v3.2.2
+          # Calico Version v3.2.3
+          # https://docs.projectcalico.org/v3.2/releases#v3.2.3
           kind: ClusterRole
           apiVersion: rbac.authorization.k8s.io/v1beta1
           metadata:
@@ -580,12 +580,12 @@ storage:
           # Extra changes:
           #  - Added resource limits
           #
-          # Calico Version v3.2.2
-          # https://docs.projectcalico.org/v3.2/releases#v3.2.2
+          # Calico Version v3.2.3
+          # https://docs.projectcalico.org/v3.2/releases#v3.2.3
           # This manifest includes the following component versions:
-          #   calico/node:v3.2.2
-          #   calico/cni:v3.2.2
-          #   calico/kube-controllers:v3.2.2
+          #   calico/node:v3.2.3
+          #   calico/cni:v3.2.3
+          #   calico/kube-controllers:v3.2.3
 
           # This ConfigMap is used to configure a self-hosted Calico installation.
           kind: ConfigMap
@@ -716,7 +716,7 @@ storage:
                   # container programs network policy and routes on each
                   # host.
                   - name: calico-node
-                    image: {{.DockerRegistry}}/giantswarm/node:v3.2.2
+                    image: {{.DockerRegistry}}/giantswarm/node:v3.2.3
                     env:
                       # The location of the Calico etcd cluster.
                       - name: ETCD_ENDPOINTS
@@ -826,7 +826,7 @@ storage:
                   # This container installs the Calico CNI binaries
                   # and CNI network config file on each node.
                   - name: install-cni
-                    image: {{.DockerRegistry}}/giantswarm/cni:v3.2.2
+                    image: {{.DockerRegistry}}/giantswarm/cni:v3.2.3
                     command: ["/install-cni.sh"]
                     env:
                       # Name of the CNI config file to create.
@@ -924,7 +924,7 @@ storage:
                 serviceAccountName: calico-kube-controllers
                 containers:
                   - name: calico-kube-controllers
-                    image: {{.DockerRegistry}}/giantswarm/kube-controllers:v3.2.2
+                    image: {{.DockerRegistry}}/giantswarm/kube-controllers:v3.2.3
                     env:
                       # The location of the Calico etcd cluster.
                       - name: ETCD_ENDPOINTS
@@ -985,8 +985,8 @@ storage:
 
           ---
 
-          # Calico Version v3.2.2
-          # https://docs.projectcalico.org/v3.2/releases#v3.2.2
+          # Calico Version v3.2.3
+          # https://docs.projectcalico.org/v3.2/releases#v3.2.3
 
           ---
 
