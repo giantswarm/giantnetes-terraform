@@ -23,6 +23,10 @@ resource "aws_route53_zone" "public" {
     Name                         = "${var.zone_name}"
     "giantswarm.io/installation" = "${var.cluster_name}"
   }
+
+  lifecycle {
+    ignore_changes = ["comment"]
+  }
 }
 
 resource "aws_route53_record" "delegation" {
