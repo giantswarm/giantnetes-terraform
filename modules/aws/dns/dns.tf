@@ -15,12 +15,17 @@ variable "zone_name" {
 }
 
 resource "aws_route53_zone" "public" {
-  count = "${var.route53_enabled ? 1 : 0}"
-  name  = "${var.zone_name}"
+  count   = "${var.route53_enabled ? 1 : 0}"
+  comment = "{\"last_updated\":\"${timestamp()}\",\"managed_by\":\"terraform\"}"
+  name    = "${var.zone_name}"
 
   tags {
     Name                         = "${var.zone_name}"
     "giantswarm.io/installation" = "${var.cluster_name}"
+  }
+
+  lifecycle {
+    ignore_changes = ["comment"]
   }
 }
 
