@@ -1,9 +1,15 @@
 data "aws_availability_zones" "available" {}
 
+# Workaround for a bug that claimed to be addressed by 0.12 version.
+# https://github.com/hashicorp/terraform/issues/12570
+locals {
+  worker_subnet_count = "${length(var.worker_subnet_ids)}"
+}
+
 # "Recreate" worker subnets in order to lookup CIDR blocks for security group
 # node-exporter ruler.
 data "aws_subnet" "worker_subnets" {
-  count = "${length(var.worker_subnet_ids)}"
+  count = "${local.worker_subnet_count}"
   id    = "${var.worker_subnet_ids[count.index]}"
 }
 
