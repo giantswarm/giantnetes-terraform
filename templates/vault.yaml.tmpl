@@ -52,30 +52,6 @@ systemd:
           RestartSec=5
 
 storage:
-  files:
-    - path: /etc/profile.d/confirm-shutdown.sh
-      filesystem: root
-      mode: 0444
-      contents:
-        inline: |
-          alias shutdown="/usr/local/bin/confirm /usr/sbin/shutdown"
-          alias reboot="/usr/local/bin/confirm /usr/sbin/reboot"
-    - path: /usr/local/bin/confirm
-      filesystem: root
-      mode: 0555
-      contents:
-        inline: |
-          #!/usr/bin/env bash
-          echo "About to execute $1 command"
-          echo -n "Would you like to proceed y/n? "
-          read reply
-
-          if [ "$reply" = y -o "$reply" = Y ]
-          then
-            $1 "${@:2}"
-          else
-            echo "$1 ${@:2} cancelled"
-          fi
   filesystems:
     - name: etcd
       mount:
