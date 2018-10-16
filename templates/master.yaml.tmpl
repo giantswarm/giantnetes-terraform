@@ -2395,6 +2395,12 @@ storage:
             - hostPath:
                 path: /etc/kubernetes/config
               name: k8s-config
+    - path: /etc/profile.d/setup-terminal.sh
+      filesystem: root
+      mode: 0600
+      contents:
+        inline: |
+          export PS1="WARNING: CONTROL-PLANE MASTER | $PS1"
     - path: /etc/ssh/sshd_config
       filesystem: root
       mode: 0600

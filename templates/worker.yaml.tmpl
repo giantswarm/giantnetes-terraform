@@ -132,6 +132,13 @@ storage:
         inline:  |
           VAULT_TOKEN={{ .G8SVaultToken }}
 
+    - path: /etc/profile.d/setup-terminal.sh
+      filesystem: root
+      mode: 0600
+      contents:
+        inline: |
+          export PS1="WARNING: CONTROL-PLANE WORKER | $PS1"
+
     - path: /etc/ssh/sshd_config
       filesystem: root
       mode: 0600
