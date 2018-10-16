@@ -52,6 +52,18 @@ systemd:
           RestartSec=5
 
 storage:
+  files:
+    - path: /etc/docker/daemon.json
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          {
+            "log-driver": "json-file",
+            "log-opts": {
+              "max-size": "5m"
+            }
+          }
   filesystems:
     - name: etcd
       mount:
