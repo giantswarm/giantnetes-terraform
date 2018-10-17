@@ -137,8 +137,8 @@ storage:
       mode: 0444
       contents:
         inline: |
-          alias shutdown="/usr/local/bin/confirm /usr/sbin/shutdown"
-          alias reboot="/usr/local/bin/confirm /usr/sbin/reboot"
+          alias shutdown="/opt/bin/confirm /usr/sbin/shutdown"
+          alias reboot="/opt/bin/confirm /usr/sbin/reboot"
 
     - path: /etc/profile.d/setup-terminal.sh
       filesystem: root
@@ -147,7 +147,7 @@ storage:
         inline: |
           export PS1="WARNING: CONTROL-PLANE WORKER | $PS1"
 
-    - path: /usr/local/bin/confirm
+    - path: /opt/bin/confirm
       filesystem: root
       mode: 0555
       contents:
