@@ -2395,6 +2395,36 @@ storage:
             - hostPath:
                 path: /etc/kubernetes/config
               name: k8s-config
+    - path: /etc/profile.d/confirm-shutdown.sh
+      filesystem: root
+      mode: 0444
+      contents:
+        inline: |
+          alias sudo="sudo "
+          alias shutdown="/opt/bin/confirm /usr/sbin/shutdown"
+          alias reboot="/opt/bin/confirm /usr/sbin/reboot"
+    - path: /etc/profile.d/setup-terminal.sh
+      filesystem: root
+      mode: 0444
+      contents:
+        inline: |
+          export PS1="WARNING: CONTROL-PLANE MASTER | $PS1"
+    - path: /opt/bin/confirm
+      filesystem: root
+      mode: 0555
+      contents:
+        inline: |
+          #!/usr/bin/env bash
+          echo "About to execute $1 command"
+          echo -n "Would you like to proceed y/N? "
+          read reply
+
+          if [ "$reply" = y -o "$reply" = Y ]
+          then
+            $1 "${@:2}"
+          else
+            echo "$1 ${@:2} cancelled"
+          fi
     - path: /etc/ssh/sshd_config
       filesystem: root
       mode: 0600
