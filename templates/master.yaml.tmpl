@@ -351,14 +351,6 @@ storage:
                       path: /etc/cni/net.d
           ---
 
-          apiVersion: v1
-          kind: ServiceAccount
-          metadata:
-            name: calico-node
-            namespace: kube-system
-
-          ---
-
           # Create all the CustomResourceDefinitions needed for
           # Calico policy-only mode.
 
