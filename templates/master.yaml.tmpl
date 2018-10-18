@@ -1304,7 +1304,7 @@ storage:
                   command:
                   - /hyperkube
                   - proxy
-                  - --proxy-mode=iptables
+                  - --proxy-mode=ipvs
                   - --config=/etc/kubernetes/config/proxy-config.yaml
                   - --v=2
                   livenessProbe:
