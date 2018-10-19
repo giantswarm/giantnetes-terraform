@@ -5,12 +5,6 @@ storage:
       mode: 0644
       contents:
         inline: |
-          apiVersion: v1
-          kind: ServiceAccount
-          metadata:
-            name: calico-node
-            namespace: kube-system
-          ---
           {{if eq .Provider "azure" -}}
           #
           # Source: https://docs.projectcalico.org/v3.0/getting-started/kubernetes/installation/hosted/kubernetes-datastore/policy-only/1.7/calico.yaml
@@ -349,6 +343,14 @@ storage:
                   - name: cni-net-dir
                     hostPath:
                       path: /etc/cni/net.d
+          ---
+
+          apiVersion: v1
+          kind: ServiceAccount
+          metadata:
+            name: calico-node
+            namespace: kube-system
+
           ---
 
           # Create all the CustomResourceDefinitions needed for
