@@ -300,6 +300,9 @@ storage:
                       - mountPath: /lib/modules
                         name: lib-modules
                         readOnly: true
+                      - mountPath: /run/xtables.lock
+                        name: xtables-lock
+                        readOnly: false
                       - mountPath: /var/run/calico
                         name: var-run-calico
                         readOnly: false
@@ -349,6 +352,10 @@ storage:
                   - name: cni-net-dir
                     hostPath:
                       path: /etc/cni/net.d
+                  - name: xtables-lock
+                    hostPath:
+                      path: /run/xtables.lock
+                      type: FileOrCreate
           ---
 
           # Create all the CustomResourceDefinitions needed for
@@ -807,6 +814,9 @@ storage:
                       - mountPath: /lib/modules
                         name: lib-modules
                         readOnly: true
+                      - mountPath: /run/xtables.lock
+                        name: xtables-lock
+                        readOnly: false
                       - mountPath: /var/run/calico
                         name: var-run-calico
                         readOnly: false
@@ -871,6 +881,10 @@ storage:
                   - name: etcd-certs
                     hostPath:
                       path: /etc/kubernetes/ssl/calico
+                  - name: xtables-lock
+                    hostPath:
+                      path: /run/xtables.lock
+                      type: FileOrCreate
           ---
 
           apiVersion: v1
