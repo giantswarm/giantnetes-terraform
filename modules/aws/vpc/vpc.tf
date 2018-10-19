@@ -145,6 +145,11 @@ resource "aws_route" "private_nat_gateway_1" {
 }
 
 resource "aws_vpc_endpoint" "s3" {
+  # Disable S3 vpc_endpoint for us-east-1. Problem that github, bitbucket
+  # and quay are hosted in us-east-1 (other US?) and accessing these resources thru
+  # endpoint results into 403 errors.
+  count = "${data.aws_region.current.name == "us-east-1" ? 0 : 1}"
+
   vpc_id       = "${aws_vpc.cluster_vpc.id}"
   service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
 
