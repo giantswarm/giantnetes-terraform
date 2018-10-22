@@ -1329,6 +1329,9 @@ storage:
                   - mountPath: /etc/kubernetes/ssl
                     name: ssl-certs-kubernetes
                     readOnly: true
+                  - mountPath: /lib/modules
+                    name: lib-modules
+                    readOnly: true
                 volumes:
                 - hostPath:
                     path: /etc/kubernetes/config/
@@ -1339,6 +1342,9 @@ storage:
                 - hostPath:
                     path: /usr/share/ca-certificates
                   name: ssl-certs-host
+                - hostPath:
+                    path: /lib/modules
+                  name: lib-modules
     {{ if eq .Provider "aws" -}}
     - path: /srv/network-policy.json
       filesystem: root
