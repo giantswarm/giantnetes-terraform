@@ -2259,6 +2259,11 @@ storage:
                 - --audit-log-maxage=30
                 - --audit-log-maxbackup=30
                 - --audit-log-maxsize=100
+                - --requestheader-client-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
+                - --requestheader-allowed-names=aggregator
+                - --requestheader-extra-headers-prefix=X-Remote-Extra-
+                - --requestheader-group-headers=X-Remote-Group
+                - --requestheader-username-headers=X-Remote-User
                 resources:
                   requests:
                     cpu: 300m
@@ -2607,6 +2612,10 @@ storage:
                 containers:
                 - name: metrics-server
                   image: {{.DockerRegistry}}/giantswarm/metrics-server-amd64:v0.3.1
+                  command:
+                    - /metrics-server
+                    - --kubelet-insecure-tls
+                    - --logtostderr
                   imagePullPolicy: Always
                   volumeMounts:
                   - name: tmp-dir
