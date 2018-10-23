@@ -2260,7 +2260,7 @@ storage:
                 - --audit-log-maxbackup=30
                 - --audit-log-maxsize=100
                 - --requestheader-client-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
-                - --requestheader-allowed-names=aggregator
+                - --requestheader-allowed-names=aggregator,{{ .APIDomainName }}
                 - --requestheader-extra-headers-prefix=X-Remote-Extra-
                 - --requestheader-group-headers=X-Remote-Group
                 - --requestheader-username-headers=X-Remote-User
