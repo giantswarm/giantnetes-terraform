@@ -2606,7 +2606,7 @@ storage:
                   emptyDir: {}
                 containers:
                 - name: metrics-server
-                  image: {{.DockerRegistry}}/metrics-server-amd64:v0.3.1
+                  image: {{.DockerRegistry}}/giantswarm/metrics-server-amd64:v0.3.1
                   imagePullPolicy: Always
                   volumeMounts:
                   - name: tmp-dir
