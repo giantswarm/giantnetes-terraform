@@ -11,6 +11,50 @@ locals {
     "giantswarm.io/installation", "${var.cluster_name}",
     "kubernetes.io/cluster/${var.cluster_name}", "owned"
   )}"
+
+  policy_allow = <<EOF
+{
+  "Version": "2008-10-17",
+  "Statement": [
+    {
+      "Sid": "Allow-All-Rule",
+      "Principal": "*",
+      "Action": "*",
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+
+  policy_strict = <<EOF
+{
+  "Version": "2008-10-17",
+  "Statement": [
+    {
+      "Sid": "Host-Cluster-Rule",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Effect": "Allow",
+      "Resource": "arn:${var.arn_region}:s3:::${var.aws_account}-${var.cluster_name}-ignition/*"
+    },
+    {
+      "Sid": "Etcd-Backup-Rule",
+      "Principal": "*",
+      "Action": "*",
+      "Effect": "Allow",
+      "Resource": "arn:${var.arn_region}:s3:::etcd-backups.giantswarm.io/*"
+    },
+    {
+      "Sid": "AWS-Operator-Rule",
+      "Principal": "*",
+      "Action": "*",
+      "Effect": "Allow",
+      "Resource": "arn:${var.arn_region}:s3:::*-g8s-*"
+    }
+  ]
+}
+EOF
 }
 
 data "aws_availability_zones" "available" {}
@@ -155,34 +199,10 @@ resource "aws_vpc_endpoint" "s3" {
     "${aws_route_table.cluster_vpc_public_1.id}",
   ]
 
-  policy = <<EOF
-{
-  "Version": "2008-10-17",
-  "Statement": [
-    {
-      "Sid": "Host-Cluster-Rule",
-      "Principal": "*",
-      "Action": "s3:GetObject",
-      "Effect": "Allow",
-      "Resource": "arn:${var.arn_region}:s3:::${var.aws_account}-${var.cluster_name}-ignition/*"
-    },
-    {
-      "Sid": "Etcd-Backup-Rule",
-      "Principal": "*",
-      "Action": "*",
-      "Effect": "Allow",
-      "Resource": "arn:${var.arn_region}:s3:::etcd-backups.giantswarm.io/*"
-    },
-    {
-      "Sid": "AWS-Operator-Rule",
-      "Principal": "*",
-      "Action": "*",
-      "Effect": "Allow",
-      "Resource": "arn:${var.arn_region}:s3:::*-g8s-*"
-    }
-  ]
-}
-EOF
+  # Use allow all policy for for us-east-1. Problem that github, bitbucket
+  # and quay are hosted in us-east-1 (other US?) and accessing these resources thru
+  # endpoint results into 403 errors.
+  policy = "${data.aws_region.current.name == "us-east-1" ? local.policy_allow : local.policy_strict}"
 }
 
 # Deny all traffic in default sec.group.
