@@ -64,8 +64,6 @@ exec_on(){
 }
 
 stage-preflight() {
-  apt update && apt -y install
-
   PROGS=( git terraform terraform-provider-ct terraform-provider-gotemplate az ansible-playbook ssh-keygen )
   for prog in ${PROGS[@]}; do
     msg "Checking $prog"
