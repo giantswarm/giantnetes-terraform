@@ -171,7 +171,7 @@ stage-vault() {
     # Download Ansible playbooks for Vault bootstrap.
     local tmp=$(mktemp -d)
     cd $tmp
-    git clone --depth 1 --quiet https://taylorbot:${E2E_GITHUB_TOKEN}@github.com/giantswarm/hive.git
+    git clone -b r1 --depth 1 --quiet https://taylorbot:${E2E_GITHUB_TOKEN}@github.com/giantswarm/hive.git
     cd hive
 
     # Prepare configuration for Ansible.
