@@ -65,27 +65,35 @@ module "s3" {
 
 locals {
   ignition_data = {
-    "APIDomainName"              = "${var.api_dns}.${var.base_domain}"
-    "BastionUsers"               = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
-    "BastionLogPriority"         = "${var.bastion_log_priority}"
-    "CalicoCIDR"                 = "${var.calico_cidr}"
-    "CloudwatchForwarderEnabled" = "${var.bastion_log_priority != "none" ? "true" : "false" }"
-    "ClusterName"                = "${var.cluster_name}"
-    "DockerCIDR"                 = "${var.docker_cidr}"
-    "DockerRegistry"             = "${var.docker_registry}"
-    "ETCDDomainName"             = "${var.etcd_dns}.${var.base_domain}"
-    "G8SVaultToken"              = "${var.nodes_vault_token}"
-    "ImagePullProgressDeadline"  = "${var.image_pull_progress_deadline}"
-    "K8SAPIIP"                   = "${var.k8s_api_ip}"
-    "K8SDNSIP"                   = "${var.k8s_dns_ip}"
-    "K8SServiceCIDR"             = "${var.k8s_service_cidr}"
-    "MasterMountDocker"          = "${var.master_instance["mount_docker"]}"
-    "MasterMountETCD"            = "${var.master_instance["mount_etcd"]}"
-    "PodInfraImage"              = "${var.pod_infra_image}"
-    "Provider"                   = "aws"
-    "Users"                      = "${file("${path.module}/../../../ignition/users.yaml")}"
-    "VaultDomainName"            = "${var.vault_dns}.${var.base_domain}"
-    "WorkerMountDocker"          = "${var.worker_instance["mount_docker"]}"
+    "APIDomainName"                = "${var.api_dns}.${var.base_domain}"
+    "BastionUsers"                 = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
+    "BastionLogPriority"           = "${var.bastion_log_priority}"
+    "CalicoCIDR"                   = "${var.calico_cidr}"
+    "CloudwatchForwarderEnabled"   = "${var.bastion_log_priority != "none" ? "true" : "false" }"
+    "ClusterName"                  = "${var.cluster_name}"
+    "DockerCIDR"                   = "${var.docker_cidr}"
+    "DockerRegistry"               = "${var.docker_registry}"
+    "ETCDDomainName"               = "${var.etcd_dns}.${var.base_domain}"
+    "ExternalVpnGridscaleIp"       = ""
+    "ExternalVpnGridscalePassword" = ""
+    "ExternalVpnGridscaleSubnet"   = ""
+    "ExternalVpnGridscaleSourceIp" = ""
+    "ExternalVpnVultrIp"           = ""
+    "ExternalVpnVultrPassword"     = ""
+    "ExternalVpnVultrSubnet"       = ""
+    "ExternalVpnVultrSourceIp"     = ""
+    "G8SVaultToken"                = "${var.nodes_vault_token}"
+    "ImagePullProgressDeadline"    = "${var.image_pull_progress_deadline}"
+    "K8SAPIIP"                     = "${var.k8s_api_ip}"
+    "K8SDNSIP"                     = "${var.k8s_dns_ip}"
+    "K8SServiceCIDR"               = "${var.k8s_service_cidr}"
+    "MasterMountDocker"            = "${var.master_instance["mount_docker"]}"
+    "MasterMountETCD"              = "${var.master_instance["mount_etcd"]}"
+    "PodInfraImage"                = "${var.pod_infra_image}"
+    "Provider"                     = "aws"
+    "Users"                        = "${file("${path.module}/../../../ignition/users.yaml")}"
+    "VaultDomainName"              = "${var.vault_dns}.${var.base_domain}"
+    "WorkerMountDocker"            = "${var.worker_instance["mount_docker"]}"
   }
 }
 
@@ -120,6 +128,42 @@ module "bastion" {
   s3_bucket_tags         = "${var.s3_bucket_tags}"
   user_data              = "${data.ct_config.bastion.rendered}"
   with_public_access     = "${var.aws_customer_gateway_id_0 == "" ? 1 : 0 }"
+  vpc_cidr               = "${var.vpc_cidr}"
+  vpc_id                 = "${module.vpc.vpc_id}"
+}
+
+# Generate ignition config.
+data "gotemplate" "vpn_instance" {
+  template = "${path.module}/../../../templates/vpn_instance.yaml.tmpl"
+  data     = "${jsonencode(local.ignition_data)}"
+}
+
+# Convert ignition config to raw json.
+data "ct_config" "vpn_instance" {
+  content      = "${data.gotemplate.vpn_instance.rendered}"
+  platform     = "ec2"
+  pretty_print = false
+}
+
+module "vpn_instance" {
+  source = "../../../modules/aws/vpn_instance"
+
+  vpn_instance_enabled = "${var.vpn_instance_enabled}"
+
+  arn_region             = "${var.arn_region}"
+  aws_account            = "${var.aws_account}"
+  bastion_subnet_ids     = "${module.vpc.bastion_subnet_ids}"
+  cluster_name           = "${var.cluster_name}"
+  container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
+  dns_zone_id            = "${module.dns.public_dns_zone_id}"
+  external_vpn_cidr_0    = "${var.external_vpn_cidr_0}"
+  external_vpn_cidr_1    = "${var.external_vpn_cidr_1}"
+  ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
+  iam_region             = "${var.iam_region}"
+  instance_type          = "${var.bastion_instance_type}"
+  route53_enabled        = "${var.route53_enabled}"
+  s3_bucket_tags         = "${var.s3_bucket_tags}"
+  user_data              = "${data.ct_config.vpn_instance.rendered}"
   vpc_cidr               = "${var.vpc_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"
 }

@@ -246,6 +246,25 @@ variable "external_ipsec_subnet_1" {
   default     = "172.18.0.4/30"
 }
 
+### VPN with custom instance 
+variable "vpn_instance_enabled" {
+  default = false
+}
+
+## Gridscale
+variable "external_ipsec_public_ip_0" {
+  description = "External public ip from VPN 0 - Gridscale"
+  type        = "string"
+}
+
+## Vultr
+variable "external_ipsec_public_ip_1" {
+  description = "External public cidr from VPN 1 - Vultr"
+  type        = "string"
+}
+
+
+
 ### Kubernetes ###
 variable "image_pull_progress_deadline" {
   default = "1m"
