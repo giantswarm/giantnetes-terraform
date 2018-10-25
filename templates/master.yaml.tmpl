@@ -10,8 +10,10 @@ storage:
           # Source: https://docs.projectcalico.org/v3.0/getting-started/kubernetes/installation/hosted/kubernetes-datastore/policy-only/1.7/calico.yaml
           #
           # Changed values:
-          #   - CALICO_IPV4POOL_CIDR = parameterized
-          #   - Added resource limits
+          #   - CALICO_IPV4POOL_CIDR = parameterized.
+          #   - Added resource limits calico-node.
+          #   - Added resource limits to install-cni.
+          #   - Made install-cni initContainer.
           #
           # Calico Version v3.2.3
           # https://docs.projectcalico.org/v3.2/releases#v3.2.3
@@ -303,6 +305,7 @@ storage:
                       - mountPath: /var/lib/calico
                         name: var-lib-calico
                         readOnly: false
+                initContainers:
                   # This container installs the Calico CNI binaries
                   # and CNI network config file on each node.
                   - name: install-cni
@@ -323,6 +326,16 @@ storage:
                           configMapKeyRef:
                             name: calico-config
                             key: cni_network_config
+                      # Prevents the container from sleeping forever.
+                      - name: SLEEP
+                        value: "false"
+                    resources:
+                      requests:
+                        cpu: 50m
+                        memory: 100Mi
+                      limits:
+                        cpu: 50m
+                        memory: 100Mi
                     volumeMounts:
                       - mountPath: /host/opt/cni/bin
                         name: cni-bin-dir
@@ -579,7 +592,8 @@ storage:
 
           {{ if eq .Provider "aws" -}}
           # Extra changes:
-          #  - Added resource limits
+          #  - Added resource limits to calico-node and calico-kube-controllers.
+          #  - Added resource limits to install-cni.
           #
           # Calico Version v3.2.3
           # https://docs.projectcalico.org/v3.2/releases#v3.2.3
@@ -854,6 +868,15 @@ storage:
                           configMapKeyRef:
                             name: calico-config
                             key: veth_mtu
+                    # install-cni also monitors etcd connection,
+                    # so use reasonable resource limits.
+                    resources:
+                      requests:
+                        cpu: 50m
+                        memory: 100Mi
+                      limits:
+                        cpu: 50m
+                        memory: 100Mi
                     volumeMounts:
                       - mountPath: /host/opt/cni/bin
                         name: cni-bin-dir
