@@ -235,6 +235,15 @@ stage-debug() {
 stage-destroy() {
   stage-debug || true
 
+  sleep 300
+  echo '.'
+  sleep 300
+  echo '.'
+  sleep 300
+  echo '.'
+  sleep 300
+  echo '.'
+
   cd ${BUILDDIR}
   source envs.sh
   terraform init ../platforms/aws/giantnetes
