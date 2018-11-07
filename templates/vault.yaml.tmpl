@@ -44,8 +44,8 @@ systemd:
       - name: 10-giantswarm-extra-args.conf
         contents: |
           [Service]
-          Environment="DOCKER_OPTS=--log-opt max-size=50m --log-opt max-file=2"
-          Environment="DOCKER_OPT_BIP=--bip={{ .DockerCidr }}"
+          Environment=DOCKER_OPTS="--log-opt max-size=50m --log-opt max-file=2"
+          Environment=DOCKER_OPT_BIP=--bip={{ .DockerCIDR }}
       - name: 60-docker-restart-always.conf
         contents: |
           [Service]
