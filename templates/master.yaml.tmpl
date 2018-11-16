@@ -1346,7 +1346,7 @@ storage:
                   - /hyperkube
                   - proxy
                   - --proxy-mode=ipvs
-                  - --config=/etc/kubernetes/config/proxy-config.yaml
+                  - --config=/etc/kubernetes/config/kube-proxy-config.yaml
                   - --v=2
                   livenessProbe:
                     httpGet:
@@ -1380,10 +1380,9 @@ storage:
                 - name: kube-proxy-config
                   configMap:
                     name: kube-proxy
-                    namespace: kube-system
                     items:
                     - key: kube-proxy-config.yaml
-                      key: kube-proxy-config.yaml
+                      path: kube-proxy-config.yaml
                 - hostPath:
                     path: /etc/kubernetes/config/kube-proxy-kubeconfig.yaml
                     type: File
