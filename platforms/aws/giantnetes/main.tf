@@ -67,6 +67,8 @@ locals {
   ignition_data = {
     "APIDomainName"                = "${var.api_dns}.${var.base_domain}"
     "BastionUsers"                 = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
+    "BastionSubnet0"               = "${var.subnet_bastion_0}"
+    "BastionSubnet1"               = "${var.subnet_bastion_1}"
     "BastionLogPriority"           = "${var.bastion_log_priority}"
     "CalicoCIDR"                   = "${var.calico_cidr}"
     "CloudwatchForwarderEnabled"   = "${var.bastion_log_priority != "none" ? "true" : "false" }"
@@ -74,14 +76,14 @@ locals {
     "DockerCIDR"                   = "${var.docker_cidr}"
     "DockerRegistry"               = "${var.docker_registry}"
     "ETCDDomainName"               = "${var.etcd_dns}.${var.base_domain}"
-    "ExternalVpnGridscaleIp"       = ""
-    "ExternalVpnGridscalePassword" = ""
-    "ExternalVpnGridscaleSubnet"   = ""
-    "ExternalVpnGridscaleSourceIp" = ""
-    "ExternalVpnVultrIp"           = ""
-    "ExternalVpnVultrPassword"     = ""
-    "ExternalVpnVultrSubnet"       = ""
-    "ExternalVpnVultrSourceIp"     = ""
+    "ExternalVpnGridscaleIp"       = "${var.external_ipsec_public_ip_0}"
+    "ExternalVpnGridscalePassword" = "${var.external_ipsec_password}"
+    "ExternalVpnGridscaleSubnet"   = "${var.external_ipsec_subnet_0}"
+    "ExternalVpnGridscaleSourceIp" = "${cidrhost("${var.external_ipsec_subnet_0}",1)}"
+    "ExternalVpnVultrIp"           = "${var.external_ipsec_public_ip_1}"
+    "ExternalVpnVultrPassword"     = "${var.external_ipsec_password}"
+    "ExternalVpnVultrSubnet"       = "${var.external_ipsec_subnet_1}"
+    "ExternalVpnVultrSourceIp"     = "${cidrhost("${var.external_ipsec_subnet_1}",1)}"
     "G8SVaultToken"                = "${var.nodes_vault_token}"
     "ImagePullProgressDeadline"    = "${var.image_pull_progress_deadline}"
     "K8SAPIIP"                     = "${var.k8s_api_ip}"
@@ -134,7 +136,7 @@ module "bastion" {
 
 # Generate ignition config.
 data "gotemplate" "vpn_instance" {
-  template = "${path.module}/../../../templates/vpn_instance.yaml.tmpl"
+  template = "${path.module}/../../../templates/vpn.yaml.tmpl"
   data     = "${jsonencode(local.ignition_data)}"
 }
 
@@ -156,8 +158,8 @@ module "vpn_instance" {
   cluster_name           = "${var.cluster_name}"
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
-  external_vpn_cidr_0    = "${var.external_vpn_cidr_0}"
-  external_vpn_cidr_1    = "${var.external_vpn_cidr_1}"
+  external_vpn_cidr_0    = "${var.external_ipsec_public_ip_0}/32"
+  external_vpn_cidr_1    = "${var.external_ipsec_public_ip_1}/32"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
   iam_region             = "${var.iam_region}"
   instance_type          = "${var.bastion_instance_type}"

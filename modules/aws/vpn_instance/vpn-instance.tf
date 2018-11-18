@@ -14,12 +14,12 @@ resource "aws_instance" "vpn_instance" {
   count                = "${var.vpn_instance_enabled ? 1 : 0}"
   ami                  = "${var.container_linux_ami_id}"
   instance_type        = "${var.instance_type}"
-  iam_instance_profile = "${aws_iam_instance_profile.vpn-instance.name}"
+  iam_instance_profile = "${aws_iam_instance_profile.vpn_instance.name}"
 
-  associate_public_ip_address = "${var.with_public_access}"
+  associate_public_ip_address = true
   source_dest_check           = false
   subnet_id                   = "${var.bastion_subnet_ids[count.index]}"
-  vpc_security_group_ids      = ["${aws_security_group.vpn-instance.id}"]
+  vpc_security_group_ids      = ["${aws_security_group.vpn_instance.id}"]
 
   root_block_device = {
     volume_type = "${var.volume_type}"

@@ -39,7 +39,7 @@ resource "aws_iam_role_policy" "vpn_instance" {
             "Effect": "Allow",
             "Action": "s3:GetObject",
             "Resource": "arn:${var.arn_region}:s3:::${var.aws_account}-${var.cluster_name}-ignition/*"
-        },
+        }
     ]
 }
 EOF

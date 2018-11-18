@@ -12,12 +12,12 @@ variable "vpn_instance_enabled" {
 
 # gridscale
 variable "external_vpn_cidr_0" {
-  default = "185.102.95.188/32"
+  type = "string"
 }
 
 # vultr
 variable "external_vpn_cidr_1" {
-  default = "95.179.153.65/32"
+  type = "string"
 }
 
 variable "bastion_subnet_ids" {

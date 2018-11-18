@@ -61,16 +61,17 @@ systemd:
 
         [Service]
         Environment="NAME=%p.service"
-        Environment="IMAGE={{.DockerRegistry}}/giantswarm/docker-strongswan"
+        Environment="IMAGE={{.DockerRegistry}}/giantswarm/docker-strongswan:d432793577e07bfe6856d3739e6bca3d91db71e4"
         Restart=always
         RestartSec=10
         TimeoutStopSec=10
         ExecStartPre=/usr/bin/docker pull $IMAGE
         ExecStartPre=/bin/bash -c "touch /var/log/charon.log"
         ExecStart=/usr/bin/docker run --rm --net=host --privileged \
-                  -v /etc/strongswan/vpn-config.conf:/etc/strongswan/ipsec.d/vpn-config.conf \
+                  -v /etc/strongswan/vpn-config.conf:/etc/strongswan/ipsec.d/connections/vpn-config.conf \
                   -v /etc/strongswan/ipsec.secrets:/etc/strongswan/ipsec.secrets \
                   -v /var/log/charon.log:/var/log/charon.log \
+                  -v /usr/sbin/modprobe:/usr/sbin/modprobe \
                   --name $NAME $IMAGE 
         ExecStop=-/usr/bin/docker stop -t 10 $NAME
 
@@ -99,6 +100,7 @@ storage:
       mode: 0700
       contents:
         inline: |
+          #!/bin/bash
           iptables -t nat -A POSTROUTING -d {{.ExternalVpnGridscaleSourceIp}}/32 -j SNAT --to-source __PRIVATE_IP__
           iptables -t nat -A POSTROUTING -j MASQUERADE -s {{.ExternalVpnGridscaleSourceIp}}
           iptables -t nat -A POSTROUTING -d {{.ExternalVpnVultrSourceIp}}/32 -j SNAT --to-source __PRIVATE_IP__
@@ -112,7 +114,7 @@ storage:
           conn gridscale
              left=__PRIVATE_IP__
              leftid=__PUBLIC_IP__
-             leftsubnet=172.19.4.0/28
+             leftsubnet={{.BastionSubnet0}}
              right={{.ExternalVpnGridscaleIp}}
              rightsubnet={{.ExternalVpnGridscaleSubnet}}
              keyexchange=ikev2
@@ -121,7 +123,7 @@ storage:
           conn vultr
              left=__PRIVATE_IP__
              leftid=__PUBLIC_IP__
-             leftsubnet=172.19.4.0/28
+             leftsubnet={{.BastionSubnet1}}
              right={{.ExternalVpnVultrIp}}
              rightsubnet={{.ExternalVpnVultrSubnet}}
              keyexchange=ikev2

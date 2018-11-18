@@ -255,15 +255,23 @@ variable "vpn_instance_enabled" {
 variable "external_ipsec_public_ip_0" {
   description = "External public ip from VPN 0 - Gridscale"
   type        = "string"
+  default     = "185.102.95.187"
 }
 
 ## Vultr
 variable "external_ipsec_public_ip_1" {
   description = "External public cidr from VPN 1 - Vultr"
   type        = "string"
+  default     = "95.179.153.65"
 }
 
-
+## generation needs to be set somewhere else
+## for now just test password
+variable "external_ipsec_password" {
+  description = "shared password for ipsec connection"
+  type        = "string"
+  default     = "XHJYW67%45#0KJU(*56dvgyH(*$%$#TRi*G^^rxWEY"
+}
 
 ### Kubernetes ###
 variable "image_pull_progress_deadline" {
