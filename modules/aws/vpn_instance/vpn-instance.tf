@@ -35,7 +35,7 @@ resource "aws_instance" "vpn_instance" {
 }
 
 resource "aws_eip" "vpn_eip" {
-  vpc      = true
+  vpc = true
 }
 
 resource "aws_eip_association" "vpn_eip" {
