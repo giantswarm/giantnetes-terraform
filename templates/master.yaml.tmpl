@@ -1294,7 +1294,7 @@ storage:
             name: kube-proxy
             namespace: kube-system
           data:
-            kube-proxy-config.yaml: |
+            kube-proxy.yaml: |
               apiVersion: kubeproxy.config.k8s.io/v1alpha1
               clientConnection:
                 kubeconfig: /etc/kubernetes/kubeconfig/kube-proxy.yaml
@@ -1346,7 +1346,7 @@ storage:
                   - /hyperkube
                   - proxy
                   - --proxy-mode=ipvs
-                  - --config=/etc/kubernetes/config/kube-proxy-config.yaml
+                  - --config=/etc/kubernetes/config/kube-proxy.yaml
                   - --v=2
                   livenessProbe:
                     httpGet:
@@ -1361,8 +1361,8 @@ storage:
                   securityContext:
                     privileged: true
                   volumeMounts:
-                  - name: kube-proxy-config
-                    mountPath: /etc/kubernetes/config/kube-proxy-config.yaml
+                  - name: k8s-config
+                    mountPath: /etc/kubernetes/config
                     readOnly: true
                   - mountPath: /etc/ssl/certs
                     name: ssl-certs-host
@@ -1377,12 +1377,9 @@ storage:
                     name: lib-modules
                     readOnly: true
                 volumes:
-                - name: kube-proxy-config
+                - name: k8s-config
                   configMap:
                     name: kube-proxy
-                    items:
-                    - key: kube-proxy-config.yaml
-                      path: kube-proxy-config.yaml
                 - hostPath:
                     path: /etc/kubernetes/kubeconfig/
                   name: k8s-kubeconfig
