@@ -112,7 +112,7 @@ resource "aws_route53_record" "vpn_instance" {
 # To avoid 16kb user_data limit upload CoreOS ignition config to a s3 bucket.
 # Ignition supports s3 out-of-the-box.
 resource "aws_s3_bucket_object" "ignition_vpn_instance_with_tags" {
-  count   = "${var.s3_bucket_tags && var.vpn_instance_enabled ? 1 : 0}"
+  count   = "${var.s3_bucket_tags && !var.vpn_instance_enabled ? 1 : 0}"
   bucket  = "${var.ignition_bucket_id}"
   key     = "${var.cluster_name}-ignition-vpn-instance.json"
   content = "${var.user_data}"
