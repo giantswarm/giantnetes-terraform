@@ -119,7 +119,6 @@ storage:
              rightsubnet={{.ExternalVpnGridscaleSubnet}}
              keyexchange=ikev2
              forceencaps=yes
-             auto=start
           conn vultr
              left=__PRIVATE_IP__
              leftid=__PUBLIC_IP__
@@ -128,7 +127,6 @@ storage:
              rightsubnet={{.ExternalVpnVultrSubnet}}
              keyexchange=ikev2
              forceencaps=yes
-             auto=start
           
     - path: /etc/strongswan/ipsec.secrets
       filesystem: root

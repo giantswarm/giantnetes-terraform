@@ -34,6 +34,15 @@ resource "aws_instance" "vpn_instance" {
   }
 }
 
+resource "aws_eip" "vpn_eip" {
+  vpc      = true
+}
+
+resource "aws_eip_association" "vpn_eip" {
+  instance_id   = "${aws_instance.vpn_instance.id}"
+  allocation_id = "${aws_eip.vpn_eip.id}"
+}
+
 resource "aws_security_group" "vpn_instance" {
   name   = "${var.cluster_name}-vpn-instance"
   vpc_id = "${var.vpc_id}"
