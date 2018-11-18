@@ -40,18 +40,20 @@ module "dns" {
 module "vpc" {
   source = "../../../modules/aws/vpc"
 
-  arn_region         = "${var.arn_region}"
-  aws_account        = "${var.aws_account}"
-  cluster_name       = "${var.cluster_name}"
-  subnet_bastion_0   = "${var.subnet_bastion_0}"
-  subnet_bastion_1   = "${var.subnet_bastion_1}"
-  subnet_elb_0       = "${var.subnet_elb_0}"
-  subnet_elb_1       = "${var.subnet_elb_1}"
-  subnet_worker_0    = "${var.subnet_worker_0}"
-  subnet_worker_1    = "${var.subnet_worker_1}"
-  subnet_vault_0     = "${var.subnet_vault_0}"
-  vpc_cidr           = "${var.vpc_cidr}"
-  with_public_access = "${var.aws_customer_gateway_id_0 == "" ? 1 : 0 }"
+  arn_region       = "${var.arn_region}"
+  aws_account      = "${var.aws_account}"
+  cluster_name     = "${var.cluster_name}"
+  subnet_bastion_0 = "${var.subnet_bastion_0}"
+  subnet_bastion_1 = "${var.subnet_bastion_1}"
+  subnet_elb_0     = "${var.subnet_elb_0}"
+  subnet_elb_1     = "${var.subnet_elb_1}"
+  subnet_worker_0  = "${var.subnet_worker_0}"
+  subnet_worker_1  = "${var.subnet_worker_1}"
+  subnet_vault_0   = "${var.subnet_vault_0}"
+  vpc_cidr         = "${var.vpc_cidr}"
+
+  ## signum(boolA + boolB) is little trick to achieve (boolA || boolB) in terraform
+  with_public_access = "${(var.aws_customer_gateway_id_0 == "")*(var.var.vpn_instance_enabled == 0) ? 1 : 0 }"
 }
 
 # Create S3 bucket for ignition configs.
@@ -129,9 +131,11 @@ module "bastion" {
   route53_enabled        = "${var.route53_enabled}"
   s3_bucket_tags         = "${var.s3_bucket_tags}"
   user_data              = "${data.ct_config.bastion.rendered}"
-  with_public_access     = "${var.aws_customer_gateway_id_0 == "" ? 1 : 0 }"
-  vpc_cidr               = "${var.vpc_cidr}"
-  vpc_id                 = "${module.vpc.vpc_id}"
+
+  ## '(boolA * boolB)' is little trick to achieve (boolA && boolB) in terraform
+  with_public_access = "${(var.aws_customer_gateway_id_0 == "")*(var.var.vpn_instance_enabled == 0) ? 1 : 0 }"
+  vpc_cidr           = "${var.vpc_cidr}"
+  vpc_id             = "${module.vpc.vpc_id}"
 }
 
 # Generate ignition config.

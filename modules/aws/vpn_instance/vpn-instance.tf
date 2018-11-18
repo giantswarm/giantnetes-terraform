@@ -35,15 +35,18 @@ resource "aws_instance" "vpn_instance" {
 }
 
 resource "aws_eip" "vpn_eip" {
-  vpc = true
+  count = "${var.vpn_instance_enabled ? 1 : 0}"
+  vpc   = true
 }
 
 resource "aws_eip_association" "vpn_eip" {
+  count         = "${var.vpn_instance_enabled ? 1 : 0}"
   instance_id   = "${aws_instance.vpn_instance.id}"
   allocation_id = "${aws_eip.vpn_eip.id}"
 }
 
 resource "aws_security_group" "vpn_instance" {
+  count  = "${var.vpn_instance_enabled ? 1 : 0}"
   name   = "${var.cluster_name}-vpn-instance"
   vpc_id = "${var.vpc_id}"
 
@@ -96,7 +99,7 @@ resource "aws_security_group" "vpn_instance" {
 }
 
 resource "aws_route53_record" "vpn_instance" {
-  count   = "${var.route53_enabled ? 1 : 0}"
+  count   = "${var.route53_enabled*var.vpn_instance_enabled ? 1 : 0}"
   zone_id = "${var.dns_zone_id}"
   name    = "vpn-instance${count.index + 1}"
   type    = "A"
@@ -106,10 +109,12 @@ resource "aws_route53_record" "vpn_instance" {
   ttl     = "300"
 }
 
+count = "${var.vpn_instance_enabled ? 1 : 0}"
+
 # To avoid 16kb user_data limit upload CoreOS ignition config to a s3 bucket.
 # Ignition supports s3 out-of-the-box.
 resource "aws_s3_bucket_object" "ignition_vpn_instance_with_tags" {
-  count   = "${var.s3_bucket_tags ? 1 : 0}"
+  count   = "${var.s3_bucket_tags*vpn_instance_enabled ? 1 : 0}"
   bucket  = "${var.ignition_bucket_id}"
   key     = "${var.cluster_name}-ignition-vpn-instance.json"
   content = "${var.user_data}"
@@ -126,7 +131,7 @@ resource "aws_s3_bucket_object" "ignition_vpn_instance_with_tags" {
 }
 
 resource "aws_s3_bucket_object" "ignition_vpn_instance_without_tags" {
-  count   = "${var.s3_bucket_tags ? 0 : 1}"
+  count   = "${var.s3_bucket_tags*vpn_instance_enabled ? 0 : 1}"
   bucket  = "${var.ignition_bucket_id}"
   key     = "${var.cluster_name}-ignition-vpn-instance.json"
   content = "${var.user_data}"
@@ -136,6 +141,8 @@ resource "aws_s3_bucket_object" "ignition_vpn_instance_without_tags" {
 }
 
 data "ignition_config" "s3" {
+  count = "${var.vpn_instance_enabled ? 1 : 0}"
+
   replace {
     source       = "${format("s3://%s/%s", var.ignition_bucket_id, local.s3_ignition_vpn_instance_key)}"
     verification = "sha512-${sha512(var.user_data)}"
