@@ -64,9 +64,6 @@ exec_on(){
 }
 
 stage-preflight() {
-  # TODO: move this to e2e-Dockerfile
-  pip install ansible -q -q -q --upgrade
-
   PROGS=( git terraform terraform-provider-ct terraform-provider-gotemplate aws az ansible-playbook ssh-keygen )
   for prog in ${PROGS[@]}; do
     msg "Checking $prog"
@@ -296,6 +293,9 @@ main() {
   stage-prepare-ssh
   trap "stage-destroy" EXIT
   stage-terraform-only-vault
+  # Let Vault VM start.
+  # In Azure we don't have this issue, because terraform actually wait when OS is ready.
+  sleep 60
   stage-vault
   stage-terraform
 
