@@ -2136,7 +2136,7 @@ storage:
               user: proxy
             name: service-account-context
           current-context: service-account-context
-    - path: /etc/kubernetes/config/kubelet-config.yaml.tmpl
+    - path: /etc/kubernetes/config/kubelet.yaml.tmpl
       filesystem: root
       mode: 0644
       contents:
@@ -2704,7 +2704,7 @@ systemd:
 
       [Service]
       EnvironmentFile=/etc/network-environment
-      ExecStart=/bin/bash -c '/usr/bin/envsubst </etc/kubernetes/config/kubelet-config.yaml.tmpl >/etc/kubernetes/config/kubelet-config.yaml'
+      ExecStart=/bin/bash -c '/usr/bin/envsubst </etc/kubernetes/config/kubelet.yaml.tmpl >/etc/kubernetes/config/kubelet.yaml'
 
       [Install]
       WantedBy=multi-user.target
@@ -2991,7 +2991,7 @@ systemd:
       --name $NAME \
       $IMAGE \
       /hyperkube kubelet \
-      --config=/etc/kubernetes/config/kubelet-config.yaml \
+      --config=/etc/kubernetes/config/kubelet.yaml \
       --node-ip=${DEFAULT_IPV4} \
       --cadvisor-port=4194 \
       --containerized \
