@@ -2032,8 +2032,8 @@ storage:
 
             # create kube-proxy configmap
             while
-                /usr/bin/docker run --net=host --rm -v /srv:/srv $KUBECTL create configmap kube-proxy --from-file=kube-proxy.yaml=/srv/kube-proxy-config.yaml -n kube-system -o yaml --dry-run \
-                | /usr/bin/docker run -i --log-driver=none -a stdin -a stdout -a stderr --net=host --rm $KUBECTL apply -f -
+                /usr/bin/docker run --net=host --rm -v /srv:/srv $KUBECTL create configmap kube-proxy --from-file=kube-proxy.yaml=/srv/kube-proxy-config.yaml -o yaml --dry-run \
+                | /usr/bin/docker run -i --log-driver=none -a stdin -a stdout -a stderr --net=host --rm $KUBECTL apply -n kube-system -f -
                 [ "$?" -ne "0" ]
             do
                 echo "failed to configure kube-proxy from /srv/kube-proxy-confg.yaml, retrying in 5 sec"
