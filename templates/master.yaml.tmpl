@@ -1283,24 +1283,17 @@ storage:
           metadata:
             name: kube-proxy
             namespace: kube-system
-    - path: /srv/kube-proxy-cm.yaml
+    - path: /srv/kube-proxy-config.yaml
       filesystem: root
       mode: 0644
       contents:
         inline: |
-          kind: ConfigMap
-          apiVersion: v1
-          metadata:
-            name: kube-proxy
-            namespace: kube-system
-          data:
-            kube-proxy.yaml: |
-              apiVersion: kubeproxy.config.k8s.io/v1alpha1
-              clientConnection:
-                kubeconfig: /etc/kubernetes/kubeconfig/kube-proxy.yaml
-              kind: KubeProxyConfiguration
-              mode: ipvs
-              resourceContainer: /kube-proxy
+          apiVersion: kubeproxy.config.k8s.io/v1alpha1
+          clientConnection:
+            kubeconfig: /etc/kubernetes/kubeconfig/kube-proxy.yaml
+          kind: KubeProxyConfiguration
+          mode: ipvs
+          resourceContainer: /kube-proxy
     - path: /srv/kube-proxy-ds.yaml
       filesystem: root
       mode: 0644
@@ -2037,8 +2030,18 @@ storage:
                 done
             done
 
+            # create kube-proxy configmap
+            while
+                /usr/bin/docker run --net=host --rm -v /srv:/srv $KUBECTL create configmap kube-proxy --from-file=kube-proxy.yaml=/srv/kube-proxy-config.yaml -n kube-system -o yaml --dry-run \
+                | /usr/bin/docker run --net=host --rm $KUBECTL apply -f -
+                [ "$?" -ne "0" ]
+            do
+                echo "failed to configure kube-proxy from /srv/kube-proxy-confg.yaml, retrying in 5 sec"
+                sleep 5s
+            done
+
             # apply kube-proxy
-            KUBE_PROXY_MANIFESTS="kube-proxy-sa.yaml kube-proxy-cm.yaml kube-proxy-ds.yaml"
+            KUBE_PROXY_MANIFESTS="kube-proxy-sa.yaml kube-proxy-ds.yaml"
 
             for manifest in $KUBE_PROXY_MANIFESTS
             do
@@ -2050,6 +2053,9 @@ storage:
                     sleep 5s
                 done
             done
+
+            # restart ds to apply config from configmap
+            /usr/bin/docker run --net=host --rm -v /srv:/srv $KUBECTL delete pods -l k8s-app=kube-proxy -n kube-system
 
             # apply calico CNI
             CALICO_FILE="calico-all.yaml"
