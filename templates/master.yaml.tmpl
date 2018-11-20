@@ -1283,6 +1283,17 @@ storage:
           metadata:
             name: kube-proxy
             namespace: kube-system
+    - path: /srv/kube-proxy-config.yaml
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          apiVersion: kubeproxy.config.k8s.io/v1alpha1
+          clientConnection:
+            kubeconfig: /etc/kubernetes/kubeconfig/kube-proxy.yaml
+          kind: KubeProxyConfiguration
+          mode: ipvs
+          resourceContainer: /kube-proxy
     - path: /srv/kube-proxy-ds.yaml
       filesystem: root
       mode: 0644
@@ -1328,7 +1339,7 @@ storage:
                   - /hyperkube
                   - proxy
                   - --proxy-mode=ipvs
-                  - --config=/etc/kubernetes/config/proxy-config.yaml
+                  - --config=/etc/kubernetes/config/kube-proxy.yaml
                   - --v=2
                   livenessProbe:
                     httpGet:
@@ -1343,11 +1354,14 @@ storage:
                   securityContext:
                     privileged: true
                   volumeMounts:
+                  - name: k8s-config
+                    mountPath: /etc/kubernetes/config
+                    readOnly: true
                   - mountPath: /etc/ssl/certs
                     name: ssl-certs-host
                     readOnly: true
-                  - mountPath: /etc/kubernetes/config/
-                    name: config-kubernetes
+                  - mountPath: /etc/kubernetes/kubeconfig
+                    name: k8s-kubeconfig
                     readOnly: true
                   - mountPath: /etc/kubernetes/ssl
                     name: ssl-certs-kubernetes
@@ -1356,9 +1370,12 @@ storage:
                     name: lib-modules
                     readOnly: true
                 volumes:
+                - name: k8s-config
+                  configMap:
+                    name: kube-proxy
                 - hostPath:
-                    path: /etc/kubernetes/config/
-                  name: config-kubernetes
+                    path: /etc/kubernetes/kubeconfig/
+                  name: k8s-kubeconfig
                 - hostPath:
                     path: /etc/kubernetes/ssl/
                   name: ssl-certs-kubernetes
@@ -2013,6 +2030,33 @@ storage:
                 done
             done
 
+            # create kube-proxy configmap
+            while
+                /usr/bin/docker run --net=host --rm -v /srv:/srv $KUBECTL create configmap kube-proxy --from-file=kube-proxy.yaml=/srv/kube-proxy-config.yaml -o yaml --dry-run \
+                | /usr/bin/docker run -i --log-driver=none -a stdin -a stdout -a stderr --net=host --rm $KUBECTL apply -n kube-system -f -
+                [ "$?" -ne "0" ]
+            do
+                echo "failed to configure kube-proxy from /srv/kube-proxy-confg.yaml, retrying in 5 sec"
+                sleep 5s
+            done
+
+            # apply kube-proxy
+            KUBE_PROXY_MANIFESTS="kube-proxy-sa.yaml kube-proxy-ds.yaml"
+
+            for manifest in $KUBE_PROXY_MANIFESTS
+            do
+                while
+                    /usr/bin/docker run --net=host --rm -v /srv:/srv $KUBECTL apply -f /srv/$manifest
+                    [ "$?" -ne "0" ]
+                do
+                    echo "failed to apply /srv/$manifest, retrying in 5 sec"
+                    sleep 5s
+                done
+            done
+
+            # restart ds to apply config from configmap
+            /usr/bin/docker run --net=host --rm -v /srv:/srv $KUBECTL delete pods -l k8s-app=kube-proxy -n kube-system
+
             # apply calico CNI
             CALICO_FILE="calico-all.yaml"
 
@@ -2038,7 +2082,7 @@ storage:
             done
 
             # apply k8s addons
-            MANIFESTS="kube-proxy-sa.yaml kube-proxy-ds.yaml default-storage-class.yaml coredns-all.yaml default-backend-dep.yaml default-backend-svc.yaml ingress-controller-cm.yaml ingress-controller-sa.yaml ingress-controller-dep.yaml ingress-controller-svc.yaml"
+            MANIFESTS="default-storage-class.yaml coredns-all.yaml default-backend-dep.yaml default-backend-svc.yaml ingress-controller-cm.yaml ingress-controller-sa.yaml ingress-controller-dep.yaml ingress-controller-svc.yaml"
 
             for manifest in $MANIFESTS
             do
@@ -2069,7 +2113,7 @@ storage:
           vnetName: {{ .AzureVnetName }}
           routeTableName: {{ .AzureRoutable }}
     {{- end }}
-    - path: /etc/kubernetes/config/proxy-kubeconfig.yaml
+    - path: /etc/kubernetes/kubeconfig/kube-proxy.yaml
       filesystem: root
       mode: 0644
       contents:
@@ -2092,7 +2136,7 @@ storage:
               user: proxy
             name: service-account-context
           current-context: service-account-context
-    - path: /etc/kubernetes/config/kubelet-config.yaml.tmpl
+    - path: /etc/kubernetes/config/kubelet.yaml.tmpl
       filesystem: root
       mode: 0644
       contents:
@@ -2134,21 +2178,10 @@ storage:
             provider: DefaultProvider
           apiVersion: componentconfig/v1alpha1
           clientConnection:
-            kubeconfig: /etc/kubernetes/config/scheduler-kubeconfig.yaml
+            kubeconfig: /etc/kubernetes/kubeconfig/scheduler.yaml
           failureDomains: kubernetes.io/hostname,failure-domain.beta.kubernetes.io/zone,failure-domain.beta.kubernetes.io/region
           hardPodAffinitySymmetricWeight: 1
-    - path: /etc/kubernetes/config/proxy-config.yaml
-      filesystem: root
-      mode: 0644
-      contents:
-        inline: |
-          apiVersion: kubeproxy.config.k8s.io/v1alpha1
-          clientConnection:
-            kubeconfig: /etc/kubernetes/config/proxy-kubeconfig.yaml
-          kind: KubeProxyConfiguration
-          mode: ipvs
-          resourceContainer: /kube-proxy
-    - path: /etc/kubernetes/config/kubelet-kubeconfig.yaml
+    - path: /etc/kubernetes/kubeconfig/kubelet.yaml
       filesystem: root
       mode: 0644
       contents:
@@ -2171,7 +2204,7 @@ storage:
               user: kubelet
             name: service-account-context
           current-context: service-account-context
-    - path: /etc/kubernetes/config/controller-manager-kubeconfig.yaml
+    - path: /etc/kubernetes/kubeconfig/controller-manager.yaml
       filesystem: root
       mode: 0644
       contents:
@@ -2194,7 +2227,7 @@ storage:
               user: controller-manager
             name: service-account-context
           current-context: service-account-context
-    - path: /etc/kubernetes/config/scheduler-kubeconfig.yaml
+    - path: /etc/kubernetes/kubeconfig/scheduler.yaml
       filesystem: root
       mode: 0644
       contents:
@@ -2350,7 +2383,7 @@ storage:
                 - --terminated-pod-gc-threshold=10
                 - --use-service-account-credentials=true
                 - --feature-gates=ExpandPersistentVolumes=true
-                - --kubeconfig=/etc/kubernetes/config/controller-manager-kubeconfig.yaml
+                - --kubeconfig=/etc/kubernetes/kubeconfig/controller-manager.yaml
                 - --root-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
                 - --service-account-private-key-file=/etc/kubernetes/ssl/service-account-key.pem
                 resources:
@@ -2374,6 +2407,9 @@ storage:
                 - mountPath: /etc/kubernetes/config/
                   name: k8s-config
                   readOnly: true
+                - mountPath: /etc/kubernetes/kubeconfig/
+                  name: k8s-kubeconfig
+                  readOnly: true
             volumes:
             - hostPath:
                 path: /etc/kubernetes/ssl
@@ -2381,6 +2417,9 @@ storage:
             - hostPath:
                 path: /etc/kubernetes/config
               name: k8s-config
+            - hostPath:
+                path: /etc/kubernetes/kubeconfig
+              name: k8s-kubeconfig
             - hostPath:
                 path: /etc/kubernetes/secrets
               name: k8s-secrets
@@ -2425,6 +2464,9 @@ storage:
                 - mountPath: /etc/kubernetes/config/
                   name: k8s-config
                   readOnly: true
+                - mountPath: /etc/kubernetes/kubeconfig/
+                  name: k8s-kubeconfig
+                  readOnly: true
             volumes:
             - hostPath:
                 path: /etc/kubernetes/ssl
@@ -2432,6 +2474,9 @@ storage:
             - hostPath:
                 path: /etc/kubernetes/config
               name: k8s-config
+            - hostPath:
+                path: /etc/kubernetes/kubeconfig
+              name: k8s-kubeconfig
     - path: /etc/profile.d/confirm-shutdown.sh
       filesystem: root
       mode: 0444
@@ -2659,7 +2704,7 @@ systemd:
 
       [Service]
       EnvironmentFile=/etc/network-environment
-      ExecStart=/bin/bash -c '/usr/bin/envsubst </etc/kubernetes/config/kubelet-config.yaml.tmpl >/etc/kubernetes/config/kubelet-config.yaml'
+      ExecStart=/bin/bash -c '/usr/bin/envsubst </etc/kubernetes/config/kubelet.yaml.tmpl >/etc/kubernetes/config/kubelet.yaml'
 
       [Install]
       WantedBy=multi-user.target
@@ -2936,6 +2981,7 @@ systemd:
       -v /var/lib/kubelet/:/var/lib/kubelet:rw,rshared \
       -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
       -v /etc/kubernetes/config/:/etc/kubernetes/config/ \
+      -v /etc/kubernetes/kubeconfig/:/etc/kubernetes/kubeconfig/ \
       -v /etc/kubernetes/manifests/:/etc/kubernetes/manifests/ \
       -v /etc/cni/net.d/:/etc/cni/net.d/ \
       -v /opt/cni/bin/:/opt/cni/bin/ \
@@ -2945,7 +2991,7 @@ systemd:
       --name $NAME \
       $IMAGE \
       /hyperkube kubelet \
-      --config=/etc/kubernetes/config/kubelet-config.yaml \
+      --config=/etc/kubernetes/config/kubelet.yaml \
       --node-ip=${DEFAULT_IPV4} \
       --cadvisor-port=4194 \
       --containerized \
@@ -2962,7 +3008,7 @@ systemd:
       --network-plugin=cni \
       --register-node=true \
       --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
-      --kubeconfig=/etc/kubernetes/config/kubelet-kubeconfig.yaml \
+      --kubeconfig=/etc/kubernetes/kubeconfig/kubelet.yaml \
       --node-labels="node-role.kubernetes.io/master,role=master,ip=${DEFAULT_IPV4}" \
       --v=2"
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
@@ -3018,7 +3064,7 @@ systemd:
       --ttl=8760h \
       --crt-file=/etc/kubernetes/ssl/apiserver-crt.pem \
       --ip-sans=127.0.0.1,${DEFAULT_IPV4},{{ .K8SAPIIP }} \
-      --alt-names=localhost,kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.local\
+      --alt-names=localhost,kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.local \
       --key-file=/etc/kubernetes/ssl/apiserver-key.pem \
       --ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
       [Install]
