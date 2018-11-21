@@ -269,6 +269,7 @@ variable "external_ipsec_public_ip_1" {
 variable "external_ipsec_password" {
   description = "shared password for ipsec connection"
   type        = "string"
+  default     = "_none_"
 }
 
 ### Kubernetes ###
