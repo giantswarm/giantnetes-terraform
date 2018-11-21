@@ -53,18 +53,18 @@ resource "aws_cloudformation_stack" "worker_asg" {
           "PauseTime": "PT5M"
         }
       }
-    }
-  },
-  "LifeCycleHook": {
-    "Type": "AWS::AutoScaling::LifecycleHook",
-    "Properties": {
-      "AutoScalingGroupName": {
-        "Ref": "!AutoScalingGroup"
-      },
-      "DefaultResult": "CONTINUE",
-      "HeartbeatTimeout": 60,
-      "LifecycleHookName": "${var.cluster_name}-asg-lifecycle-hook",
-      "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING"
+    },
+    "LifeCycleHook": {
+      "Type": "AWS::AutoScaling::LifecycleHook",
+      "Properties": {
+        "AutoScalingGroupName": {
+          "Ref": "!AutoScalingGroup"
+        },
+        "DefaultResult": "CONTINUE",
+        "HeartbeatTimeout": 60,
+        "LifecycleHookName": "${var.cluster_name}-asg-lifecycle-hook",
+        "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING"
+      }
     }
   },
   "Outputs": {
