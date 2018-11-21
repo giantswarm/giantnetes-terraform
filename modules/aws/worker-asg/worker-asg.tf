@@ -58,7 +58,7 @@ resource "aws_cloudformation_stack" "worker_asg" {
       "Type": "AWS::AutoScaling::LifecycleHook",
       "Properties": {
         "AutoScalingGroupName": {
-          "Ref": "!AutoScalingGroup"
+          "Ref": "AutoScalingGroup"
         },
         "DefaultResult": "CONTINUE",
         "HeartbeatTimeout": 60,
