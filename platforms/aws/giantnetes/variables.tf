@@ -265,12 +265,10 @@ variable "external_ipsec_public_ip_1" {
   default     = "95.179.153.65"
 }
 
-## generation needs to be set somewhere else
-## for now just test password
+## vpn password
 variable "external_ipsec_password" {
   description = "shared password for ipsec connection"
   type        = "string"
-  default     = "XHJYW67%45#0KJU(*56dvgyH(*$%$#TRi*G^^rxWEY"
 }
 
 ### Kubernetes ###
