@@ -59,13 +59,13 @@ resource "aws_cloudformation_stack" "worker_asg" {
     "Type": "AWS::AutoScaling::LifecycleHook",
     "Properties": {
       "AutoScalingGroupName": {
-        "Ref": "!AutoScalingGroup",
+        "Ref": "!AutoScalingGroup"
       },
       "DefaultResult": "CONTINUE",
       "HeartbeatTimeout": 60,
       "LifecycleHookName": "${var.cluster_name}-asg-lifecycle-hook",
-      "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
-    },
+      "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING"
+    }
   },
   "Outputs": {
     "AsgName": {
