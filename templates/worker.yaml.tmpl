@@ -317,10 +317,6 @@ systemd:
       [Unit]
       Description=Wait for etcd and k8s API domains to be available
       StartLimitInterval=0
-      {{if eq .Provider "azure" }}
-      Requires=waagent.service
-      After=waagent.service
-      {{end}}
 
       [Service]
       Type=oneshot
