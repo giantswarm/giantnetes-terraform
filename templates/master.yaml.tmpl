@@ -1989,6 +1989,14 @@ storage:
       contents:
         inline: |
             #!/bin/bash
+            {{if eq .Provider "azure" }}
+            # on azure wait for waagent.service to rename NIC to eth0
+            NIC="eth0"
+            until ifconfig ${NIC}; do
+                echo "Waiting for NIC ${NIC} to be available"
+                sleep 5
+            done
+            {{end}}
             domains="{{ .ETCDDomainName }} {{ .APIDomainName }} {{ .VaultDomainName }}"
 
             for domain in $domains; do
