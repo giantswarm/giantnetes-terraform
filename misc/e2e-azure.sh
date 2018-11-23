@@ -112,6 +112,9 @@ stage-prepare-ssh(){
     ssh-keygen -t rsa -N "" -f ${BUILDDIR}/${SSH_USER}.key
 
     ssh_pub_key=$(cat ${BUILDDIR}/${SSH_USER}.key.pub)
+
+    SSH_USER2=calvix
+    echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9IyAZvlEL7lrxDghpqWjs/z/q4E0OtEbmKW9oD0zhYfyHIaX33YYoj3iC7oEd6OEvY4+L4awjRZ2FrXerN/tTg9t1zrW7f7Tah/SnS9XYY9zyo4uzuq1Pa6spOkjpcjtXbQwdQSATD0eeLraBWWVBDIg1COAMsAhveP04UaXAKGSQst6df007dIS5pmcATASNNBc9zzBmJgFwPDLwVviYqoqcYTASka4fSQhQ+fSj9zO1pgrCvvsmA/QeHz2Cn5uFzjh8ftqkM10sjiYibknsBuvVKZ2KpeTY6XoTOT0d9YWoJpfqAEE00+RmYLqDTQGWm5pRuZSc9vbnnH2MiEKf calvix@masteR" >  ${BUILDDIR}/${SSH_USER2}.key.pub
     # TODO Add after second line.
     cat > ${WORKDIR}/ignition/bastion-users.yaml << EOF
 passwd:
@@ -122,6 +125,12 @@ passwd:
       - "docker"
     ssh_authorized_keys:
       - $(cat ${BUILDDIR}/${SSH_USER}.key.pub)
+  - name: ${SSH_USER2}
+    groups:
+      - "sudo"
+      - "docker"
+    ssh_authorized_keys:
+      - $(cat ${BUILDDIR}/${SSH_USER2}.key.pub)
 EOF
     cat > ${WORKDIR}/ignition/users.yaml << EOF
 passwd:
@@ -132,6 +141,12 @@ passwd:
       - "docker"
     ssh_authorized_keys:
       - $(cat ${BUILDDIR}/${SSH_USER}.key.pub)
+  - name: ${SSH_USER2}
+    groups:
+      - "sudo"
+      - "docker"
+    ssh_authorized_keys:
+      - $(cat ${BUILDDIR}/${SSH_USER2}.key.pub)
 EOF
     eval "$(ssh-agent)"
     ssh-add ${BUILDDIR}/${SSH_USER}.key
@@ -303,6 +318,14 @@ main() {
   # Wait for kubernetes nodes.
   stage-wait-kubernetes-nodes
 
+  sleep 2m
+  echo waiting for debug
+  sleep 2m
+  echo waiting for debug
+  sleep 2m
+  echo waiting for debug
+  sleep 2m
+  echo waiting for debug
   # Finally run tests if enabled.
   [ ! ${E2E_ENABLE_CONFORMANCE} ] || stage-e2e
 }
