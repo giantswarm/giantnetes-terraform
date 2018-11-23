@@ -326,6 +326,30 @@ main() {
   echo waiting for debug
   sleep 2m
   echo waiting for debug
+  sleep 2m
+  echo waiting for debug
+  sleep 2m
+  echo waiting for debug
+  sleep 2m
+  echo waiting for debug
+  sleep 2m
+  echo waiting for debug
+  sleep 2m
+  echo waiting for debug
+  sleep 2m
+  echo waiting for debug
+  sleep 2m
+  echo waiting for debug
+  sleep 2m
+  echo waiting for debug
+  sleep 2m
+  echo waiting for debug
+  sleep 2m
+  echo waiting for debug
+  sleep 2m
+  echo waiting for debug
+  sleep 2m
+  echo waiting for debug
   # Finally run tests if enabled.
   [ ! ${E2E_ENABLE_CONFORMANCE} ] || stage-e2e
 }
