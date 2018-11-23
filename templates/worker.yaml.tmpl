@@ -114,10 +114,10 @@ storage:
         inline: |
           #!/bin/bash
           {{if eq .Provider "azure" }}
-          # on azure wait for waagent.service to rename NIC to eth0
-          NIC="eth0"
-          until ifconfig ${NIC}; do
-              echo "Waiting for NIC ${NIC} to be available"
+          # On Azure wait for waagent.service to finish provisioning.
+          WAA_FILE="/var/lib/waagent/provisioned"
+          until test -f ${WAA_FILE}; do
+              echo "Waiting for waagent.service to finish provisioning."
               sleep 5
           done
           {{end}}
