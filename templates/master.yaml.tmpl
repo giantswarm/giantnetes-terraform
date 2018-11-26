@@ -1996,6 +1996,7 @@ storage:
                 echo "Waiting for waagent.service to finish provisioning."
                 sleep 5
             done
+            sleep 30s
             {{end}}
             domains="{{ .ETCDDomainName }} {{ .APIDomainName }} {{ .VaultDomainName }}"
 
