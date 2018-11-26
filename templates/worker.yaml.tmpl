@@ -113,6 +113,15 @@ storage:
       contents: 
         inline: |
           #!/bin/bash
+          {{if eq .Provider "azure" }}
+          # On Azure wait for waagent.service to finish provisioning.
+          WAA_FILE="/var/lib/waagent/provisioned"
+          until test -f ${WAA_FILE}; do
+              echo "Waiting for waagent.service to finish provisioning."
+              sleep 5
+          done
+          sleep 30s
+          {{end}}
           domains="{{ .ETCDDomainName }} {{ .APIDomainName }} {{ .VaultDomainName }}"
 
           for domain in $domains; do
