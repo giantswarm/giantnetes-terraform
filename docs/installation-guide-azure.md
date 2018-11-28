@@ -50,7 +50,7 @@ Create service principal with permissions limited to resource group.
 
 ```
 export SUBSCRIPTION_ID=$(az account list | jq '.[0].id' | sed 's/\"//g')
-az ad sp create-for-rbac --name=${NAME}-sp --role="Contributor" --scopes="/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${NAME}"
+az ad sp create-for-rbac --name=${NAME}-sp --role="Contributor" --scopes="/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${NAME}" --years 10
 ```
 
 Please save these and storage credentials above in keepass (e.g. "<cluster name> azure host cluster credentials"). They will be needed in next step.
@@ -130,14 +130,21 @@ If VPN enabled, two additional manual steps are required:
 1. Create Azure VPN connection with shared key.
 2. Create new IPSec connection in onpremise VPN server.
 
-For step one execute following command.
+For step one execute following commands.
 ```
 az network vpn-connection create \
   -g ${NAME} \
-  --name ${NAME}-vpn-connection \
+  --name ${NAME}-vpn-connection-0 \
   --vnet-gateway1 ${NAME}-vpn-gateway \
-  --local-gateway2 ${NAME}-vpn-right-gateway \
-  --shared-key <put_your_shared_key_here>
+  --local-gateway2 ${NAME}-vpn-right-gateway-0 \
+  --shared-key <put_your_shared_key1_here>
+
+az network vpn-connection create \
+  -g ${NAME} \
+  --name ${NAME}-vpn-connection-1 \
+  --vnet-gateway1 ${NAME}-vpn-gateway \
+  --local-gateway2 ${NAME}-vpn-right-gateway-1 \
+  --shared-key <put_your_shared_key2_here>
 ```
 
 Step two is individual and depends on your setup.
