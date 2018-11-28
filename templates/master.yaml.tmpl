@@ -14,6 +14,7 @@ storage:
           #   - Added resource limits calico-node.
           #   - Added resource limits to install-cni.
           #   - Made install-cni initContainer.
+          #   - Added critical pod priority to calico-node daemonSet and calico-kube-controllers 'priorityClassName: system-cluster-critical'.
           #
           # Calico Version v3.2.3
           # https://docs.projectcalico.org/v3.2/releases#v3.2.3
@@ -127,6 +128,7 @@ storage:
                 # Since Calico can't network a pod until Typha is up, we need to run Typha itself
                 # as a host-networked pod.
                 serviceAccountName: calico-node
+                priorityClassName: system-cluster-critical
                 containers:
                 - image: {{.DockerRegistry}}/giantswarm/typha:v3.2.3
                   name: calico-typha
@@ -217,6 +219,7 @@ storage:
                   - effect: NoExecute
                     operator: Exists
                 serviceAccountName: calico-node
+                priorityClassName: system-cluster-critical
                 # Minimize downtime during a rolling upgrade or deletion; tell Kubernetes to do a "force
                 # deletion": https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods.
                 terminationGracePeriodSeconds: 0
@@ -498,7 +501,7 @@ storage:
           # Calico Version v3.2.3
           # https://docs.projectcalico.org/v3.2/releases#v3.2.3
           kind: ClusterRole
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           metadata:
             name: calico-node
           rules:
@@ -576,7 +579,7 @@ storage:
 
           ---
 
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRoleBinding
           metadata:
             name: calico-node
@@ -594,6 +597,7 @@ storage:
           # Extra changes:
           #  - Added resource limits to calico-node and calico-kube-controllers.
           #  - Added resource limits to install-cni.
+          #  - Added critical pod priority to calico-node daemonSet and calico-kube-controllers 'priorityClassName: system-cluster-critical'.
           #
           # Calico Version v3.2.3
           # https://docs.projectcalico.org/v3.2/releases#v3.2.3
@@ -723,6 +727,7 @@ storage:
                   - effect: NoExecute
                     operator: Exists
                 serviceAccountName: calico-node
+                priorityClassName: system-cluster-critical
                 # Minimize downtime during a rolling upgrade or deletion; tell Kubernetes to do a "force
                 # deletion": https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods.
                 terminationGracePeriodSeconds: 0
@@ -953,6 +958,7 @@ storage:
                   - key: node-role.kubernetes.io/master
                     effect: NoSchedule
                 serviceAccountName: calico-kube-controllers
+                priorityClassName: system-cluster-critical
                 containers:
                   - name: calico-kube-controllers
                     image: {{.DockerRegistry}}/giantswarm/kube-controllers:v3.2.3
@@ -1022,7 +1028,7 @@ storage:
           ---
 
           kind: ClusterRole
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           metadata:
             name: calico-kube-controllers
           rules:
@@ -1047,7 +1053,7 @@ storage:
                 - list
           ---
           kind: ClusterRoleBinding
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           metadata:
             name: calico-kube-controllers
           roleRef:
@@ -1062,7 +1068,7 @@ storage:
           ---
 
           kind: ClusterRole
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           metadata:
             name: calico-node
           rules:
@@ -1075,7 +1081,7 @@ storage:
 
           ---
 
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRoleBinding
           metadata:
             name: calico-node
@@ -1294,6 +1300,7 @@ storage:
           kind: KubeProxyConfiguration
           mode: ipvs
           resourceContainer: /kube-proxy
+          clusterCIDR: {{ .CalicoCIDR }}
     - path: /srv/kube-proxy-ds.yaml
       filesystem: root
       mode: 0644
@@ -1334,7 +1341,7 @@ storage:
                 serviceAccountName: kube-proxy
                 containers:
                 - name: kube-proxy
-                  image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.11.1-cec4fb8023db783fbf26fb056bf6c76abfcd96cf-giantswarm
+                  image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.12.3
                   command:
                   - /hyperkube
                   - proxy
@@ -1360,6 +1367,8 @@ storage:
                   - mountPath: /etc/ssl/certs
                     name: ssl-certs-host
                     readOnly: true
+                  - mountPath: /var/run/dbus/system_bus_socket
+                    name: dbus
                   - mountPath: /etc/kubernetes/kubeconfig
                     name: k8s-kubeconfig
                     readOnly: true
@@ -1373,6 +1382,9 @@ storage:
                 - name: k8s-config
                   configMap:
                     name: kube-proxy
+                - hostPath:
+                    path: /var/run/dbus/system_bus_socket
+                  name: dbus
                 - hostPath:
                     path: /etc/kubernetes/kubeconfig/
                   name: k8s-kubeconfig
@@ -1605,7 +1617,7 @@ storage:
       contents:
         inline: |
           ## CoreDNS
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRole
           metadata:
             labels:
@@ -1624,7 +1636,7 @@ storage:
             - watch
           ---
           ## IC
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRole
           metadata:
             name: nginx-ingress-controller
@@ -1676,7 +1688,7 @@ storage:
               verbs:
                 - update
           ---
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           kind: Role
           metadata:
             name: nginx-ingress-role
@@ -1725,7 +1737,7 @@ storage:
         inline: |
           ## User
           kind: ClusterRoleBinding
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           metadata:
             name: giantswarm-admin
           subjects:
@@ -1739,7 +1751,7 @@ storage:
           ---
           ## Worker
           kind: ClusterRoleBinding
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           metadata:
             name: kubelet
           subjects:
@@ -1752,7 +1764,7 @@ storage:
             apiGroup: rbac.authorization.k8s.io
           ---
           kind: ClusterRoleBinding
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           metadata:
             name: proxy
           subjects:
@@ -1766,7 +1778,7 @@ storage:
           ---
           ## Master
           kind: ClusterRoleBinding
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           metadata:
             name: kube-controller-manager
           subjects:
@@ -1779,7 +1791,7 @@ storage:
             apiGroup: rbac.authorization.k8s.io
           ---
           kind: ClusterRoleBinding
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           metadata:
             name: kube-scheduler
           subjects:
@@ -1791,7 +1803,7 @@ storage:
             name: system:kube-scheduler
             apiGroup: rbac.authorization.k8s.io
           ---
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRoleBinding
           metadata:
             annotations:
@@ -1810,7 +1822,7 @@ storage:
           ---
           ## IC
           kind: ClusterRoleBinding
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           metadata:
             name: nginx-ingress-controller
           subjects:
@@ -1823,7 +1835,7 @@ storage:
             apiGroup: rbac.authorization.k8s.io
           ---
           kind: RoleBinding
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           metadata:
             name: nginx-ingress-controller
             namespace: kube-system
@@ -1838,7 +1850,7 @@ storage:
           ---
           ## kube-proxy
           kind: ClusterRoleBinding
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           metadata:
             name: system:kube-proxy
           subjects:
@@ -1908,7 +1920,7 @@ storage:
         inline: |
           # restrictedPSP grants access to use
           # the restricted PSP.
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRole
           metadata:
             name: restricted-psp-user
@@ -1924,7 +1936,7 @@ storage:
           ---
           # privilegedPSP grants access to use the privileged
           # PSP.
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRole
           metadata:
             name: privileged-psp-user
@@ -1942,7 +1954,7 @@ storage:
       mode: 0644
       contents:
         inline: |
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRoleBinding
           metadata:
               name: privileged-psp-users
@@ -1971,7 +1983,7 @@ storage:
           ---
           # grants the restricted PSP role to
           # the all authenticated users.
-          apiVersion: rbac.authorization.k8s.io/v1beta1
+          apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRoleBinding
           metadata:
               name: restricted-psp-users
@@ -2014,7 +2026,8 @@ storage:
       contents:
         inline: |
             #!/bin/bash
-            KUBECTL=quay.io/giantswarm/docker-kubectl:f51f93c30d27927d2b33122994c0929b3e6f2432
+            # kubectl 1.12.2
+            KUBECTL=quay.io/giantswarm/docker-kubectl:f5cae44c480bd797dc770dd5f62d40b74063c0d7
 
             /usr/bin/docker pull $KUBECTL
 
@@ -2176,7 +2189,6 @@ storage:
               enabled: false # Deafults to true as of 1.10
           authorization:
             mode: AlwaysAllow # Deafults to webhook as of 1.10
-          readOnlyPort: 10255 # Used by heapster. Defaults to 0 (disabled) as of 1.10. Needed for metrics.
     - path: /etc/kubernetes/config/scheduler-config.yaml
       filesystem: root
       mode: 0644
@@ -2282,7 +2294,7 @@ storage:
             priorityClassName: system-node-critical
             containers:
               - name: k8s-api-server
-                image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.11.1-cec4fb8023db783fbf26fb056bf6c76abfcd96cf-giantswarm
+                image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.12.3
                 env:
                 - name: HOST_IP
                   valueFrom:
@@ -2373,7 +2385,7 @@ storage:
             priorityClassName: system-node-critical
             containers:
               - name: k8s-controller-manager
-                image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.11.1-cec4fb8023db783fbf26fb056bf6c76abfcd96cf-giantswarm
+                image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.12.3
                 command:
                 - /hyperkube
                 - controller-manager
@@ -2449,7 +2461,7 @@ storage:
             priorityClassName: system-node-critical
             containers:
               - name: k8s-scheduler
-                image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.11.1-cec4fb8023db783fbf26fb056bf6c76abfcd96cf-giantswarm
+                image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.12.3
                 command:
                 - /hyperkube
                 - scheduler
@@ -2969,7 +2981,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:v1.11.1-cec4fb8023db783fbf26fb056bf6c76abfcd96cf-giantswarm"
+      Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:v1.12.3"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -3002,7 +3014,6 @@ systemd:
       /hyperkube kubelet \
       --config=/etc/kubernetes/config/kubelet.yaml \
       --node-ip=${DEFAULT_IPV4} \
-      --cadvisor-port=4194 \
       --containerized \
       --enable-server \
       --logtostderr=true \
