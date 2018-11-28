@@ -61,7 +61,7 @@ storage:
           kind: KubeProxyConfiguration
           mode: ipvs
           resourceContainer: /kube-proxy
-          clusterCIDR: {{ index .TemplatesEnv "calico_g8s_subnet" }}
+          clusterCIDR: {{ .CalicoCIDR }}
     - path: /etc/kubernetes/kubeconfig/kube-proxy.yaml
       filesystem: root
       mode: 0644
