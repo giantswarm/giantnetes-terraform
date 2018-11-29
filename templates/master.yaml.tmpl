@@ -1300,7 +1300,7 @@ storage:
           kind: KubeProxyConfiguration
           mode: ipvs
           resourceContainer: /kube-proxy
-          clusterCIDR: {{ .CalicoCIDR }}
+          clusterCIDR: {{ .K8SServiceCIDR }}
     - path: /srv/kube-proxy-ds.yaml
       filesystem: root
       mode: 0644
