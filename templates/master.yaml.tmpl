@@ -1204,6 +1204,7 @@ storage:
                   prometheus :9153
                   proxy . /etc/resolv.conf
                   cache 30
+                  autopath @kubernetes
               }
           ---
           apiVersion: extensions/v1beta1
@@ -1262,6 +1263,13 @@ storage:
                   - containerPort: 53
                     name: dns-tcp
                     protocol: TCP
+                  resources:
+                    limits:
+                      cpu: 250m
+                      memory: 192Mi
+                    requests:
+                      cpu: 250m
+                      memory: 192Mi
                   livenessProbe:
                     httpGet:
                       path: /health
