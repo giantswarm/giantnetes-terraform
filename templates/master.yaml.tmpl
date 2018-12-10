@@ -1584,6 +1584,11 @@ storage:
                       scheme: HTTP
                     initialDelaySeconds: 10
                     timeoutSeconds: 1
+                  ports:
+                  - containerPort: 80
+                    protocol: TCP
+                  - containerPort: 443
+                    protocol: TCP
     - path: /srv/ingress-controller-svc.yaml
       filesystem: root
       mode: 0644
