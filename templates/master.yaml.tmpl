@@ -2344,6 +2344,7 @@ storage:
                 - --audit-log-maxage=30
                 - --audit-log-maxbackup=30
                 - --audit-log-maxsize=100
+                - --audit-policy-file=/etc/kubernetes/config/audit-policy.yaml
                 resources:
                   requests:
                     cpu: 300m
@@ -2506,6 +2507,21 @@ storage:
             - hostPath:
                 path: /etc/kubernetes/kubeconfig
               name: k8s-kubeconfig
+    - path: /etc/kubernetes/config/audit-policy.yaml
+      filesystem: root
+      mode: 0444
+      contents:
+        inline: |
+          apiVersion: audit.k8s.io/v1beta1
+          kind: Policy
+          rules:
+            # TODO: Filter safe system requests.
+            # A catch-all rule to log all requests at the Metadata level.
+            - level: Metadata
+              # Long-running requests like watches that fall under this rule will not
+              # generate an audit event in RequestReceived.
+              omitStages:
+                - "RequestReceived"
     - path: /etc/profile.d/confirm-shutdown.sh
       filesystem: root
       mode: 0444
