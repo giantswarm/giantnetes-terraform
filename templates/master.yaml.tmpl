@@ -3130,13 +3130,13 @@ storage:
   filesystems:
     - name: docker
       mount:
-        device: {{if eq .Provider "azure" }}/dev/sdc{{else}}{{ .MasterMountDocker }}{{end}}
+        device: {{if eq .Provider "azure" }}/dev/disk/azure/scsi1/lun0{{else}}{{ .MasterMountDocker }}{{end}}
         format: xfs
         wipe_filesystem: false
         label: docker
     - name: etcd
       mount:
-        device: {{if eq .Provider "azure" }}/dev/sdd{{else}}{{ .MasterMountETCD }}{{end}}
+        device: {{if eq .Provider "azure" }}/dev/disk/azure/scsi1/lun1{{else}}{{ .MasterMountETCD }}{{end}}
         format: ext4
         wipe_filesystem: false
         label: var-lib-etcd
