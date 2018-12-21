@@ -3132,7 +3132,7 @@ storage:
       mount:
         device: {{if eq .Provider "azure" }}/dev/disk/azure/scsi1/lun0{{else}}{{ .MasterMountDocker }}{{end}}
         format: xfs
-        wipe_filesystem: false
+        wipe_filesystem: true
         label: docker
     - name: etcd
       mount:

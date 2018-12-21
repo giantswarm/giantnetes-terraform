@@ -38,7 +38,6 @@ resource "aws_instance" "master" {
 
 resource "aws_ebs_volume" "master_docker" {
   availability_zone = "${data.aws_availability_zones.available.names[0]}"
-  device_name       = "${var.volume_docker}"
   size              = "${var.volume_size_docker}"
   type              = "${var.volume_type}"
 
@@ -51,7 +50,7 @@ resource "aws_ebs_volume" "master_docker" {
 }
 
 resource "aws_volume_attachment" "master_docker" {
-  device_name = "/dev/xvdc"
+  device_name = "${var.volume_docker}"
   volume_id   = "${aws_ebs_volume.master_docker.id}"
   instance_id = "${aws_instance.master.id}"
 
