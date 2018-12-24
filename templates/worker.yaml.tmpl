@@ -578,7 +578,7 @@ storage:
   filesystems:
     - name: docker
       mount:
-        device: {{if eq .Provider "azure" }}/dev/sdc{{else}}{{ .WorkerMountDocker }}{{end}}
+        device: {{if eq .Provider "azure" }}/dev/disk/azure/scsi1/lun0{{else}}{{ .WorkerMountDocker }}{{end}}
         format: xfs
         wipe_filesystem: true
         label: docker

@@ -80,6 +80,10 @@ variable "volume_size_root" {
   default = 8
 }
 
+variable "volume_docker" {
+  type = "string"
+}
+
 variable "volume_etcd" {
   type = "string"
 }

@@ -50,7 +50,7 @@ resource "aws_ebs_volume" "master_docker" {
 }
 
 resource "aws_volume_attachment" "master_docker" {
-  device_name = "/dev/xvdc"
+  device_name = "${var.volume_docker}"
   volume_id   = "${aws_ebs_volume.master_docker.id}"
   instance_id = "${aws_instance.master.id}"
 

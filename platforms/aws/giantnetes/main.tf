@@ -89,13 +89,13 @@ locals {
     "K8SAPIIP"                     = "${var.k8s_api_ip}"
     "K8SDNSIP"                     = "${var.k8s_dns_ip}"
     "K8SServiceCIDR"               = "${var.k8s_service_cidr}"
-    "MasterMountDocker"            = "${var.master_instance["mount_docker"]}"
-    "MasterMountETCD"              = "${var.master_instance["mount_etcd"]}"
+    "MasterMountDocker"            = "${var.master_instance["volume_docker"]}"
+    "MasterMountETCD"              = "${var.master_instance["volume_etcd"]}"
     "PodInfraImage"                = "${var.pod_infra_image}"
     "Provider"                     = "aws"
     "Users"                        = "${file("${path.module}/../../../ignition/users.yaml")}"
     "VaultDomainName"              = "${var.vault_dns}.${var.base_domain}"
-    "WorkerMountDocker"            = "${var.worker_instance["mount_docker"]}"
+    "WorkerMountDocker"            = "${var.worker_instance["volume_docker"]}"
   }
 }
 
@@ -230,6 +230,7 @@ module "master" {
   route53_enabled        = "${var.route53_enabled}"
   user_data              = "${data.ct_config.master.rendered}"
   master_subnet_ids      = "${module.vpc.worker_subnet_ids}"
+  volume_docker          = "${var.master_instance["volume_docker"]}"
   volume_etcd            = "${var.master_instance["volume_etcd"]}"
   vpc_cidr               = "${var.vpc_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"
