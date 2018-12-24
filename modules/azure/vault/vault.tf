@@ -16,8 +16,8 @@ resource "azurerm_virtual_machine" "vault" {
 
   lifecycle {
     # Vault provisioned also by Ansible,
-    # so prevent recreation if user_data or ami changed.
-    ignore_changes = ["ami", "user_data"]
+    # so prevent recreation if os_profile or storage_image_reference changed.
+    ignore_changes = ["os_profile", "storage_image_reference"]
   }
 
   delete_os_disk_on_termination = true
