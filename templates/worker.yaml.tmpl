@@ -523,7 +523,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:v1.12.3"
+      Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:v1.13.1"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -580,7 +580,7 @@ storage:
   filesystems:
     - name: docker
       mount:
-        device: {{if eq .Provider "azure" }}/dev/sdc{{else}}{{ .WorkerMountDocker }}{{end}}
+        device: {{if eq .Provider "azure" }}/dev/disk/azure/scsi1/lun0{{else}}{{ .WorkerMountDocker }}{{end}}
         format: xfs
         wipe_filesystem: true
         label: docker

@@ -59,7 +59,7 @@ resource "aws_ebs_volume" "master_docker" {
 
 resource "aws_volume_attachment" "master_docker" {
   count       = "${var.master_count}"
-  device_name = "/dev/xvdc"
+  device_name = "${var.volume_docker}"
   volume_id   = "${element(aws_ebs_volume.master_docker.*.id, count.index)}"
   instance_id = "${element(aws_instance.master.*.id, count.index)}"
 

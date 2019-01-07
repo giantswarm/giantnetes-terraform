@@ -77,10 +77,9 @@ variable "master_instance" {
   type = "map"
 
   default = {
-    type         = "m5.large"
-    mount_docker = "/dev/nvme1n1"
-    mount_etcd   = "/dev/nvme2n1"
-    volume_etcd  = "/dev/xvdh"
+    type          = "m5.large"
+    volume_docker = "/dev/xvdc"
+    volume_etcd   = "/dev/xvdh"
   }
 }
 
@@ -89,7 +88,6 @@ variable "worker_instance" {
 
   default = {
     type          = "m5.xlarge"
-    mount_docker  = "/dev/nvme1n1"
     volume_docker = "/dev/xvdc"
   }
 }
