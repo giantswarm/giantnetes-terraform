@@ -123,7 +123,7 @@ storage:
           done
           sleep 30s
           {{end}}
-          domains="{{ .ETCDDomainName }} {{ .APIDomainName }} {{ .VaultDomainName }}"
+          domains="{{ .APIDomainName }} {{ .VaultDomainName }}"
 
           for domain in $domains; do
             until nslookup $domain; do
@@ -448,6 +448,7 @@ systemd:
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/calico/
       ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/usr/bin/docker run \
+      --rm \
       --net=host \
       -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
       -v /etc/kubernetes/ssl/calico/:/etc/kubernetes/ssl/calico/ \
@@ -456,7 +457,7 @@ systemd:
       --vault-addr=https://{{ .VaultDomainName }} \
       --vault-token=${VAULT_TOKEN} \
       --cluster-id=g8s \
-      --common-name={{ .ETCDDomainName }} \
+      --common-name=calico.{{ .BaseDomain }} \
       --ttl=8760h \
       --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
       --alt-names=localhost \
@@ -490,6 +491,7 @@ systemd:
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/
       ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/usr/bin/docker run \
+      --rm \
       --net=host \
       -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
       -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \

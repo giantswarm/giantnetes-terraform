@@ -1,10 +1,10 @@
-resource "aws_elb" "master" {
-  name                      = "${var.cluster_name}-master"
+resource "aws_elb" "master_api" {
+  name                      = "${var.cluster_name}-master-api"
   cross_zone_load_balancing = true
   idle_timeout              = 3600
   internal                  = true
   subnets                   = ["${var.elb_subnet_ids}"]
-  security_groups           = ["${aws_security_group.master_elb.id}"]
+  security_groups           = ["${aws_security_group.master_elb_api.id}"]
 
   listener {
     instance_port     = 443
@@ -24,18 +24,44 @@ resource "aws_elb" "master" {
   tags = "${merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}-master"
+      "Name", "${var.cluster_name}-master-api"
     )
   )}"
 }
 
-resource "aws_elb_attachment" "master" {
-  elb      = "${aws_elb.master.id}"
-  instance = "${aws_instance.master.id}"
+resource "aws_elb" "master_etcd" {
+  name                      = "${var.cluster_name}-master-etcd"
+  cross_zone_load_balancing = true
+  idle_timeout              = 3600
+  internal                  = true
+  subnets                   = ["${var.elb_subnet_ids}"]
+  security_groups           = ["${aws_security_group.master_elb_etcd.id}"]
+
+  listener {
+    instance_port     = 2379
+    instance_protocol = "tcp"
+    lb_port           = 2379
+    lb_protocol       = "tcp"
+  }
+
+  health_check {
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout             = 4
+    target              = "TCP:2379"
+    interval            = 5
+  }
+
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-master-etcd"
+    )
+  )}"
 }
 
-resource "aws_security_group" "master_elb" {
-  name   = "${var.cluster_name}-master-elb"
+resource "aws_security_group" "master_elb_api" {
+  name   = "${var.cluster_name}-master-elb-api"
   vpc_id = "${var.vpc_id}"
 
   egress {
@@ -55,20 +81,71 @@ resource "aws_security_group" "master_elb" {
   tags = "${merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}-master-elb"
+      "Name", "${var.cluster_name}-master-elb-api"
     )
   )}"
 }
 
-resource "aws_route53_record" "master-api" {
+resource "aws_security_group" "master_elb_etcd" {
+  name   = "${var.cluster_name}-master-elb-etcd"
+  vpc_id = "${var.vpc_id}"
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 2379
+    to_port     = 2379
+    protocol    = "tcp"
+    cidr_blocks = ["${var.vpc_cidr}"]
+  }
+
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-master-elb-etcd"
+    )
+  )}"
+}
+
+resource "aws_elb_attachment" "master_api" {
+  count    = "${var.master_count}"
+  elb      = "${aws_elb.master_api.id}"
+  instance = "${element(aws_instance.master.*.id, count.index)}"
+}
+
+resource "aws_elb_attachment" "master_etcd" {
+  count    = "${var.master_count}"
+  elb      = "${aws_elb.master_etcd.id}"
+  instance = "${element(aws_instance.master.*.id, count.index)}"
+}
+
+resource "aws_route53_record" "master_api" {
   count   = "${var.route53_enabled ? 1 : 0}"
   zone_id = "${var.dns_zone_id}"
   name    = "${var.api_dns}"
   type    = "A"
 
   alias {
-    name                   = "${aws_elb.master.dns_name}"
-    zone_id                = "${aws_elb.master.zone_id}"
+    name                   = "${aws_elb.master_api.dns_name}"
+    zone_id                = "${aws_elb.master_api.zone_id}"
+    evaluate_target_health = false
+  }
+}
+
+resource "aws_route53_record" "master_etcd" {
+  count   = "${var.route53_enabled ? 1 : 0}"
+  zone_id = "${var.dns_zone_id}"
+  name    = "etcd"
+  type    = "A"
+
+  alias {
+    name                   = "${aws_elb.master_etcd.dns_name}"
+    zone_id                = "${aws_elb.master_etcd.zone_id}"
     evaluate_target_health = false
   }
 }

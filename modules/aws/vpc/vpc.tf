@@ -96,6 +96,11 @@ resource "aws_nat_gateway" "private_nat_gateway_1" {
   subnet_id     = "${aws_subnet.elb_1.id}"
 }
 
+resource "aws_nat_gateway" "private_nat_gateway_2" {
+  allocation_id = "${aws_eip.private_nat_gateway_2.id}"
+  subnet_id     = "${aws_subnet.elb_2.id}"
+}
+
 resource "aws_eip" "private_nat_gateway_0" {
   vpc = true
 
@@ -114,6 +119,17 @@ resource "aws_eip" "private_nat_gateway_1" {
     local.common_tags,
     map(
       "Name", "${var.cluster_name}-private-nat-gateway1"
+    )
+  )}"
+}
+
+resource "aws_eip" "private_nat_gateway_2" {
+  vpc = true
+
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-private-nat-gateway2"
     )
   )}"
 }
@@ -140,6 +156,17 @@ resource "aws_route_table" "cluster_vpc_private_1" {
   )}"
 }
 
+resource "aws_route_table" "cluster_vpc_private_2" {
+  vpc_id = "${aws_vpc.cluster_vpc.id}"
+
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}_private_2"
+    )
+  )}"
+}
+
 resource "aws_route_table" "cluster_vpc_public_0" {
   vpc_id = "${aws_vpc.cluster_vpc.id}"
 
@@ -162,6 +189,17 @@ resource "aws_route_table" "cluster_vpc_public_1" {
   )}"
 }
 
+resource "aws_route_table" "cluster_vpc_public_2" {
+  vpc_id = "${aws_vpc.cluster_vpc.id}"
+
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-public2"
+    )
+  )}"
+}
+
 resource "aws_route" "vpc_local_route_0" {
   route_table_id         = "${aws_route_table.cluster_vpc_public_0.id}"
   destination_cidr_block = "0.0.0.0/0"
@@ -176,6 +214,13 @@ resource "aws_route" "vpc_local_route_1" {
   depends_on             = ["aws_route_table.cluster_vpc_public_1"]
 }
 
+resource "aws_route" "vpc_local_route_2" {
+  route_table_id         = "${aws_route_table.cluster_vpc_public_2.id}"
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = "${aws_internet_gateway.cluster_vpc.id}"
+  depends_on             = ["aws_route_table.cluster_vpc_public_2"]
+}
+
 resource "aws_route" "private_nat_gateway_0" {
   route_table_id         = "${aws_route_table.cluster_vpc_private_0.id}"
   destination_cidr_block = "0.0.0.0/0"
@@ -188,6 +233,12 @@ resource "aws_route" "private_nat_gateway_1" {
   nat_gateway_id         = "${aws_nat_gateway.private_nat_gateway_1.id}"
 }
 
+resource "aws_route" "private_nat_gateway_2" {
+  route_table_id         = "${aws_route_table.cluster_vpc_private_2.id}"
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = "${aws_nat_gateway.private_nat_gateway_2.id}"
+}
+
 resource "aws_vpc_endpoint" "s3" {
   vpc_id       = "${aws_vpc.cluster_vpc.id}"
   service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
@@ -195,8 +246,10 @@ resource "aws_vpc_endpoint" "s3" {
   route_table_ids = [
     "${aws_route_table.cluster_vpc_private_0.id}",
     "${aws_route_table.cluster_vpc_private_1.id}",
+    "${aws_route_table.cluster_vpc_private_2.id}",
     "${aws_route_table.cluster_vpc_public_0.id}",
     "${aws_route_table.cluster_vpc_public_1.id}",
+    "${aws_route_table.cluster_vpc_public_2.id}",
   ]
 
   # Use allow all policy for for us-east-1. Problem that github, bitbucket

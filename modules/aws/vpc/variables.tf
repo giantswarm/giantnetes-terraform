@@ -31,6 +31,10 @@ variable "subnet_elb_1" {
   type = "string"
 }
 
+variable "subnet_elb_2" {
+  type = "string"
+}
+
 variable "subnet_vault_0" {
   type = "string"
 }
@@ -40,6 +44,10 @@ variable "subnet_worker_0" {
 }
 
 variable "subnet_worker_1" {
+  type = "string"
+}
+
+variable "subnet_worker_2" {
   type = "string"
 }
 

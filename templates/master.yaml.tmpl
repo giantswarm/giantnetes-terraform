@@ -614,7 +614,7 @@ storage:
             namespace: kube-system
           data:
             # Configure this with the location of your etcd cluster.
-            etcd_endpoints: "https://{{ .ETCDDomainName }}:2379"
+            etcd_endpoints: "https://etcd.{{ .BaseDomain }}:2379"
 
             # If you're using TLS enabled etcd uncomment the following.
             # You must also populate the Secret below with these files.
@@ -2829,6 +2829,7 @@ systemd:
         let RETRY=$RETRY-1;\
         export result=$(\
           /usr/bin/docker run \
+          --rm \
           --net=host \
           -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
           -v /etc/kubernetes/ssl/calico/:/etc/kubernetes/ssl/calico/ \
@@ -2872,6 +2873,7 @@ systemd:
         let RETRY=$RETRY-1;\
         export result=$(\
           /usr/bin/docker run \
+          --rm \
           --net=host \
           -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
           -v /etc/kubernetes/ssl/etcd/:/etc/kubernetes/ssl/etcd/ \
@@ -2884,7 +2886,7 @@ systemd:
           --ttl=8760h \
           --crt-file=/etc/kubernetes/ssl/etcd/server-crt.pem \
           --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
-          --alt-names=localhost \
+          --alt-names=localhost,etcd.{{ .BaseDomain }} \
           --key-file=/etc/kubernetes/ssl/etcd/server-key.pem \
           --ca-file=/etc/kubernetes/ssl/etcd/server-ca.pem); \
         done; \
@@ -2927,7 +2929,7 @@ systemd:
           --name $NAME \
           $IMAGE \
           etcd \
-          --name etcd0 \
+          --name etcd{{ .MasterID }} \
           --trusted-ca-file /etc/etcd/server-ca.pem \
           --cert-file /etc/etcd/server-crt.pem \
           --key-file /etc/etcd/server-key.pem \
@@ -2937,11 +2939,11 @@ systemd:
           --peer-key-file /etc/etcd/server-key.pem \
           --peer-client-cert-auth=true \
           --advertise-client-urls=https://{{ .ETCDDomainName }}:2379 \
-          --initial-advertise-peer-urls=https://127.0.0.1:2380 \
+          --initial-advertise-peer-urls=https://{{ .ETCDDomainName }}:2380 \
           --listen-client-urls=https://0.0.0.0:2379 \
           --listen-peer-urls=https://${DEFAULT_IPV4}:2380 \
-          --initial-cluster-token k8s-etcd-cluster \
-          --initial-cluster etcd0=https://127.0.0.1:2380 \
+          --initial-cluster-token=k8s-etcd-cluster \
+          --initial-cluster={{ .ETCDInitialCluster }} \
           --initial-cluster-state new \
           --data-dir=/var/lib/etcd \
           --enable-v2
@@ -3096,6 +3098,7 @@ systemd:
        [ -z "$rsa_key" ] && echo "Failed to fetch g8s_sa_key" && exit 1 || echo "Successfully retrieved g8s_sa_key";\
        echo -e "-----BEGIN RSA PRIVATE KEY-----\n$rsa_key\n-----END RSA PRIVATE KEY-----" > /etc/kubernetes/ssl/service-account-key.pem'
       ExecStart=/usr/bin/docker run \
+      --rm \
       --net=host \
       -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
       -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
