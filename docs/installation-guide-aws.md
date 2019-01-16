@@ -4,7 +4,7 @@
 
 Common:
 - `aws` cli
-- `terraform-provider-ct`. See [Appendix A](#appendix-a) for installation.
+- `terraform-provider-ct`. See [README.md](https://github.com/giantswarm/giantnetes-terraform/blob/master/README.md) for installation.
 
 ### Create S3 bucket and DynamoDB table for terraform state
 
@@ -48,12 +48,18 @@ Put proper values in `backend.tf` and make sure backend configuration linked pro
 cat ../platforms/aws/giantnetes/backend.tf
 ```
 
+Put proper values in `provider.tf` and make sure provider configuration linked properly.
+
+```
+cat ../platforms/aws/giantnetes/provider.tf
+```
+
 Edit `envs.sh`.
 
 ```
 source envs.sh
 ```
-
+Useful links to avoid possible network overlapping [VPN subnets](https://github.com/giantswarm/giantswarm/wiki/Giant-Swarm-VPN)
 NOTE: Reexecute `source envs.sh` in every new console.
 
 ### Configure ssh users
@@ -205,3 +211,4 @@ TBD
 Host cluster AWS VPC setup
 
 ![Giant Swarm AWS VPC setup](https://github.com/giantswarm/giantnetes-terraform/blob/master/docs/media/aws-vpc-setup.png?raw=true)
+
