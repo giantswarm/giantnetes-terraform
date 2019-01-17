@@ -14,10 +14,11 @@ export TF_VAR_cluster_name=<cluster name>
 # will be added within the installation process
 export TF_VAR_nodes_vault_token=
 
-# Precreated AWS customer gateway. Leave blank to disable VPN setup (bastions with public ips).
-export TF_VAR_aws_customer_gateway_id=<e.g. cgw-xxxxxxx>
+# Precreated AWS customers gateways. Leave blank to disable VPN setup (bastions with public ips).
+export TF_VAR_aws_customer_gateway_id_0=<e.g. cgw-xxxxxxx>
+export TF_VAR_aws_customer_gateway_id_1=<e.g. cgw-xxxxxxx>
 
-# Base domain.
+ #Base domain.
 export TF_VAR_base_domain=${TF_VAR_cluster_name}.${TF_VAR_aws_region}.aws.gigantic.io
 
 # ID of aws route53 zone.
