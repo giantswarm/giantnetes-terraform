@@ -250,7 +250,7 @@ stage-destroy() {
 # will be in ready state and timeout after 3 minutes.
 stage-wait-kubernetes-nodes(){
     local nodes_num_actual=$(exec_on master1 ${KUBECTL_CMD} get node | tail -n +2 | grep -v NotReady | wc -l)
-    local nodes_num_expected=$((${WORKER_COUNT} + 1))
+    local nodes_num_expected=$((${WORKER_COUNT} + 3))
 
     local tries=0
     until [ ${nodes_num_expected} -eq ${nodes_num_actual} ]; do
