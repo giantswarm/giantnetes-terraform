@@ -73,3 +73,14 @@ output "ignition_bucket_id" {
 output "logging_bucket_id" {
   value = "${aws_s3_bucket.logging.id}"
 }
+
+resource "aws_cloudwatch_log_group" "control-plane" {
+  name = "${var.cluster_name}-control-plane"
+
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-ignition"
+    )
+  )}"
+}
