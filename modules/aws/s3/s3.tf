@@ -75,7 +75,8 @@ output "logging_bucket_id" {
 }
 
 resource "aws_cloudwatch_log_group" "control-plane" {
-  name = "${var.cluster_name}-control-plane"
+  name              = "${var.cluster_name}-control-plane"
+  retention_in_days = "90"
 
   tags = "${merge(
     local.common_tags,
