@@ -3076,6 +3076,7 @@ systemd:
       -v /run/calico/:/run/calico/:rw \
       -v /run/docker/:/run/docker/:rw \
       -v /run/docker.sock:/run/docker.sock:rw \
+      -v /run/dockershim:/run/dockershim:rw \
       -v /var/log:/var/log:rw \
       -v /usr/lib/os-release:/etc/os-release \
       -v /usr/share/ca-certificates/:/etc/ssl/certs \
@@ -3096,6 +3097,7 @@ systemd:
       /hyperkube kubelet \
       --config=/etc/kubernetes/config/kubelet.yaml \
       --node-ip=${DEFAULT_IPV4} \
+      --container-runtime-endpoint=/var/run/dockershim/dockershim.sock \
       --containerized \
       --enable-server \
       --logtostderr=true \
