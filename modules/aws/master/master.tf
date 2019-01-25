@@ -95,6 +95,8 @@ resource "aws_volume_attachment" "master_etcd" {
 
   # Allows reattaching volume.
   skip_destroy = true
+
+  depends_on = ["aws_volume_attachment.master_docker"]
 }
 
 resource "aws_security_group" "master" {

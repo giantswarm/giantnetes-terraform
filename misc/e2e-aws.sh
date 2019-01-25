@@ -20,10 +20,12 @@ set -o pipefail
 
 WORKDIR=$(pwd)
 BUILDDIR=${WORKDIR}/build
-CLUSTER=e2e-terraform-$(echo ${CIRCLE_SHA1} | cut -c 1-6)
+CLUSTER=e2e-terraform-$(echo ${CIRCLE_SHA1} | cut -c 1-6)-${MASTER_COUNT}
 SSH_USER="e2e"
 KUBECTL_CMD="docker run -i --net=host --rm quay.io/giantswarm/docker-kubectl:8cabd75bacbcdad7ac5d85efc3ca90c2fabf023b"
 WORKER_COUNT=1
+
+export TF_VAR_master_count=${MASTER_COUNT}
 
 # Please set any non empty value to E2E_ENABLE_CONFORMANCE in CircleCI
 # to enable full run of e2e conformance tests.
@@ -250,7 +252,7 @@ stage-destroy() {
 # will be in ready state and timeout after 3 minutes.
 stage-wait-kubernetes-nodes(){
     local nodes_num_actual=$(exec_on master1 ${KUBECTL_CMD} get node | tail -n +2 | grep -v NotReady | wc -l)
-    local nodes_num_expected=$((${WORKER_COUNT} + 3))
+    local nodes_num_expected=$((${WORKER_COUNT} + ${MASTER_COUNT}))
 
     local tries=0
     until [ ${nodes_num_expected} -eq ${nodes_num_actual} ]; do
