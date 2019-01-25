@@ -20,7 +20,7 @@ set -o pipefail
 
 WORKDIR=$(pwd)
 BUILDDIR=${WORKDIR}/build
-CLUSTER=e2e-terraform-$(echo ${CIRCLE_SHA1} | cut -c 1-6)-${MASTER_COUNT}
+CLUSTER=e2eterraform$(echo ${CIRCLE_SHA1} | cut -c 1-5)-${MASTER_COUNT}
 SSH_USER="e2e"
 KUBECTL_CMD="docker run -i --net=host --rm quay.io/giantswarm/docker-kubectl:8cabd75bacbcdad7ac5d85efc3ca90c2fabf023b"
 WORKER_COUNT=1
