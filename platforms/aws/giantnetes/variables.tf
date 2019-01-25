@@ -45,6 +45,12 @@ variable "nodes_vault_token" {
   description = "Vault token used by nodes for bootstrapping. Should be defined after Vault is installed."
 }
 
+variable "master_count" {
+  type        = "string"
+  description = "Number of master nodes to be created. Supported values 1 (single master) or 3 (multi master)."
+  default     = "3"
+}
+
 variable "worker_count" {
   type        = "string"
   description = "Number of worker nodes to be created."

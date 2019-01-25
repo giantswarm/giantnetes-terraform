@@ -79,7 +79,8 @@ locals {
     "DockerCIDR"                   = "${var.docker_cidr}"
     "DockerRegistry"               = "${var.docker_registry}"
     "ETCDDomainName"               = "${var.etcd_dns}.${var.base_domain}"
-    "ETCDInitialCluster"           = "etcd1=https://etcd1.${var.base_domain}:2380,etcd2=https://etcd2.${var.base_domain}:2380,etcd3=https://etcd3.${var.base_domain}:2380"
+    "ETCDInitialClusterMulti"      = "etcd1=https://etcd1.${var.base_domain}:2380,etcd2=https://etcd2.${var.base_domain}:2380,etcd3=https://etcd3.${var.base_domain}:2380"
+    "ETCDInitialClusterSingle"     = "etcd1=https://etcd1.${var.base_domain}:2380"
     "ExternalVpnGridscaleIp"       = "${var.external_ipsec_public_ip_0}"
     "ExternalVpnGridscalePassword" = "${var.external_ipsec_password}"
     "ExternalVpnGridscaleSubnet"   = "${var.external_ipsec_subnet_0}"
@@ -93,6 +94,7 @@ locals {
     "K8SAPIIP"                     = "${var.k8s_api_ip}"
     "K8SDNSIP"                     = "${var.k8s_dns_ip}"
     "K8SServiceCIDR"               = "${var.k8s_service_cidr}"
+    "MasterCount"                  = "${var.master_count}"
     "MasterID"                     = "${var.master_id}"
     "MasterMountDocker"            = "${var.master_instance["volume_docker"]}"
     "MasterMountETCD"              = "${var.master_instance["volume_etcd"]}"
@@ -223,7 +225,7 @@ data "ct_config" "master" {
 module "master" {
   source = "../../../modules/aws/master"
 
-  master_count = 3
+  master_count = "${var.master_count}"
 
   api_dns                = "${var.api_dns}"
   aws_account            = "${var.aws_account}"
