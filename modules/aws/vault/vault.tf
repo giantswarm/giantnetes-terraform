@@ -40,7 +40,7 @@ resource "aws_instance" "vault" {
 }
 
 resource "aws_ebs_volume" "vault_etcd" {
-  availability_zone = "${data.aws_availability_zones.available.names[0]}"
+  availability_zone = "${element(data.aws_availability_zones.available.names,0)}"
   size              = "${var.volume_size_etcd}"
   type              = "${var.volume_type}"
 

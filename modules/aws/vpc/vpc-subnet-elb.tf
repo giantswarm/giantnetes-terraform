@@ -1,6 +1,6 @@
 resource "aws_subnet" "elb_0" {
   vpc_id            = "${aws_vpc.cluster_vpc.id}"
-  availability_zone = "${data.aws_availability_zones.available.names[0]}"
+  availability_zone = "${element(data.aws_availability_zones.available.names,0)}"
   cidr_block        = "${var.subnet_elb_0}"
 
   tags = "${merge(
@@ -13,7 +13,7 @@ resource "aws_subnet" "elb_0" {
 
 resource "aws_subnet" "elb_1" {
   vpc_id            = "${aws_vpc.cluster_vpc.id}"
-  availability_zone = "${data.aws_availability_zones.available.names[1]}"
+  availability_zone = "${element(data.aws_availability_zones.available.names,1)}"
   cidr_block        = "${var.subnet_elb_1}"
 
   tags = "${merge(
@@ -26,7 +26,7 @@ resource "aws_subnet" "elb_1" {
 
 resource "aws_subnet" "elb_2" {
   vpc_id            = "${aws_vpc.cluster_vpc.id}"
-  availability_zone = "${data.aws_availability_zones.available.names[2]}"
+  availability_zone = "${element(data.aws_availability_zones.available.names,2)}"
   cidr_block        = "${var.subnet_elb_2}"
 
   tags = "${merge(
