@@ -102,7 +102,7 @@ variable "worker_instance" {
 ## temporary until 1995.x will be in stable, as older version have disk timeout issues
 variable "container_linux_channel" {
   description = "Container linux channel (e.g. stable, beta, alpha)."
-  default     = "beta"
+  default     = "alpha"
 }
 
 variable "container_linux_version" {
