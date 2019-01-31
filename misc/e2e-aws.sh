@@ -22,7 +22,11 @@ WORKDIR=$(pwd)
 BUILDDIR=${WORKDIR}/build
 CLUSTER=e2e-terraform-$(echo ${CIRCLE_SHA1} | cut -c 1-6)
 SSH_USER="e2e"
-KUBECTL_CMD="docker run -i --net=host --rm quay.io/giantswarm/docker-kubectl:8cabd75bacbcdad7ac5d85efc3ca90c2fabf023b"
+KUBECTL_IMAGE="quay.io/giantswarm/docker-kubectl:8cabd75bacbcdad7ac5d85efc3ca90c2fabf023b"
+KUBECTL_CMD="/usr/bin/docker run --net=host --rm
+-e KUBECONFIG=/etc/kubernetes/kubeconfig/addons.yaml
+-v /etc/kubernetes:/etc/kubernetes
+-v /srv:/srv $KUBECTL_IMAGE"
 WORKER_COUNT=1
 
 # Please set any non empty value to E2E_ENABLE_CONFORMANCE in CircleCI
