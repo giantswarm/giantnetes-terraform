@@ -271,7 +271,7 @@ stage-wait-kubernetes-nodes(){
         msg "Waiting all nodes to be ready."
         sleep 30; let tries+=1;
         [ ${tries} -gt 10 ] && sleep 5m && echo "a" && sleep 5m && fail "Timeout waiting all nodes to be ready."
-        exec_on master1 ${KUBECTL_CMD} get node
+        echo "$(exec_on master1 ${KUBECTL_CMD} get node)"
         local nodes_num_actual=$(exec_on master1 ${KUBECTL_CMD} get node | tail -n +2 | grep -v NotReady | wc -l)
         msg "Expected nodes ${nodes_num_expected}, actual nodes ${nodes_num_actual}."
     done
