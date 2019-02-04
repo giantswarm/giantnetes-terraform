@@ -116,7 +116,7 @@ stage-prepare-ssh(){
     ssh-keygen -t rsa -N "" -f ${BUILDDIR}/${SSH_USER}.key
 
     ssh_pub_key=$(cat ${BUILDDIR}/${SSH_USER}.key.pub)
-    ssh_pub_key2="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9IyAZvlEL7lrxDghpqWjs/z/q4E0OtEbmKW9oD0zhYfyHIaX33YYoj3iC7oEd6OEvY4+L4awjRZ2FrXerN/tTg9t1zrW7f7Tah/SnS9XYY9zyo4uzuq1Pa6spOkjpcjtXbQwdQSATD0eeLraBWWVBDIg1COAMsAhveP04UaXAKGSQst6df007dIS5pmcATASNNBc9zzBmJgFwPDLwVviYqoqcYTASka4fSQhQ+fSj9zO1pgrCvvsmA/QeHz2Cn5uFzjh8ftqkM10sjiYibknsBuvVKZ2KpeTY6XoTOT0d9YWoJpfqAEE00+RmYLqDTQGWm5pRuZSc9vbnnH2MiEKf calvix@masteR"
+
     cat > ${WORKDIR}/ignition/bastion-users.yaml << EOF
 passwd:
   users:
@@ -126,12 +126,6 @@ passwd:
       - "docker"
     ssh_authorized_keys:
       - $(cat ${BUILDDIR}/${SSH_USER}.key.pub)
-  - name: calvix
-    groups:
-      - "sudo"
-      - "docker"
-    ssh_authorized_keys:
-      - ${ssh_pub_key2}
 EOF
     cat > ${WORKDIR}/ignition/users.yaml << EOF
 passwd:
@@ -142,12 +136,6 @@ passwd:
       - "docker"
     ssh_authorized_keys:
       - $(cat ${BUILDDIR}/${SSH_USER}.key.pub)
-  - name: calvix
-    groups:
-      - "sudo"
-      - "docker"
-    ssh_authorized_keys:
-      - ${ssh_pub_key2}
 EOF
 
     eval "$(ssh-agent)"
@@ -270,8 +258,7 @@ stage-wait-kubernetes-nodes(){
     until [ ${nodes_num_expected} -eq ${nodes_num_actual} ]; do
         msg "Waiting all nodes to be ready."
         sleep 30; let tries+=1;
-        [ ${tries} -gt 10 ] && sleep 5m && echo "a" && sleep 5m && fail "Timeout waiting all nodes to be ready."
-        echo "$(exec_on master1 ${KUBECTL_CMD} get node)"
+        [ ${tries} -gt 10 ] && fail "Timeout waiting all nodes to be ready."
         local nodes_num_actual=$(exec_on master1 ${KUBECTL_CMD} get node | tail -n +2 | grep -v NotReady | wc -l)
         msg "Expected nodes ${nodes_num_expected}, actual nodes ${nodes_num_actual}."
     done

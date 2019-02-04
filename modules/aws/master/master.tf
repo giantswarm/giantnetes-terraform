@@ -146,7 +146,7 @@ resource "aws_security_group" "master" {
 resource "aws_route53_record" "master" {
   count   = "${var.route53_enabled ? var.master_count : 0}"
   zone_id = "${var.dns_zone_id}"
-  name    = "master{count.index+1}"
+  name    = "master${count.index+1}"
   type    = "CNAME"
   records = ["${element(aws_instance.master.*.private_dns, count.index)}"]
   ttl     = "30"
