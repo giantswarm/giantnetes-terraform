@@ -4,19 +4,23 @@ locals {
 
 # Only necessary, because azurerm_storage_blob requires file as a source.
 resource "local_file" "master_ignition" {
-  content  = "${var.user_data}"
-  filename = "${path.cwd}/generated/master-ignition.yaml"
+  count = 1
+
+  content  = "${replace(var.user_data, "__MASTER_ID__", count.index+1)}"
+  filename = "${path.cwd}/generated/master-ignition${count.index}.yaml"
 }
 
 resource "azurerm_storage_blob" "ignition_blob" {
-  name = "master-ignition-${md5(var.user_data)}.yaml"
+  count = 1
+
+  name = "master-ignition${count.index}-${md5(var.user_data)}.yaml"
 
   resource_group_name    = "${var.resource_group_name}"
   storage_account_name   = "${var.storage_acc}"
   storage_container_name = "${var.storage_container}"
 
   type   = "block"
-  source = "${path.cwd}/generated/master-ignition.yaml"
+  source = "${path.cwd}/generated/master-ignition${count.index}.yaml"
 }
 
 # Create temporary credentials to access storage account objects.

@@ -83,7 +83,7 @@ variable "master_instance" {
   type = "map"
 
   default = {
-    type          = "m4.large"
+    type          = "m3.large"
     volume_docker = "/dev/xvdc"
     volume_etcd   = "/dev/xvdh"
   }
@@ -93,7 +93,7 @@ variable "worker_instance" {
   type = "map"
 
   default = {
-    type          = "m4.xlarge"
+    type          = "m5.xlarge"
     volume_docker = "/dev/xvdc"
   }
 }
