@@ -123,7 +123,7 @@ storage:
           done
           sleep 30s
           {{end}}
-          domains="{{ .APIDomainName }} {{ .VaultDomainName }}"
+          domains="etcd.{{ .BaseDomain }} {{ .APIDomainName }} {{ .VaultDomainName }}"
 
           for domain in $domains; do
             until nslookup $domain; do

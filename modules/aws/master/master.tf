@@ -16,7 +16,6 @@ resource "aws_instance" "master" {
   associate_public_ip_address = false
   source_dest_check           = false
 
-  # TODO: change to count.index after resolving the  subnets
   subnet_id              = "${var.master_subnet_ids[count.index]}"
   vpc_security_group_ids = ["${aws_security_group.master.id}"]
 
@@ -44,7 +43,6 @@ resource "aws_instance" "master" {
 resource "aws_ebs_volume" "master_docker" {
   count = "${var.master_count}"
 
-  # TODO: change to count.index after resolving the  subnets
   availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
   size              = "${var.volume_size_docker}"
   type              = "${var.volume_type}"
@@ -70,7 +68,6 @@ resource "aws_volume_attachment" "master_docker" {
 resource "aws_ebs_volume" "master_etcd" {
   count = "${var.master_count}"
 
-  # TODO: change to count.index after resolving the subnets
   availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
   size              = "${var.volume_size_etcd}"
   type              = "${var.volume_type}"
