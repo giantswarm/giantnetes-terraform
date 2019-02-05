@@ -2383,7 +2383,7 @@ storage:
                 - --authorization-mode=RBAC
                 - --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,PodSecurityPolicy,PersistentVolumeClaimResize,DefaultStorageClass,Priority,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook
                 - --service-cluster-ip-range={{ .K8SServiceCIDR }}
-                - --etcd-servers=https://{{ .ETCDDomainName }}:2379
+                - --etcd-servers=https://{{if eq .Provider "azure" }}127.0.0.1{{else}}{{ .ETCDDomainName }}{{end}}:2379
                 - --etcd-cafile=/etc/kubernetes/ssl/etcd/server-ca.pem
                 - --etcd-certfile=/etc/kubernetes/ssl/etcd/server-crt.pem
                 - --etcd-keyfile=/etc/kubernetes/ssl/etcd/server-key.pem
