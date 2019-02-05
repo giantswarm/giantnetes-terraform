@@ -2094,15 +2094,6 @@ storage:
             #!/bin/bash
             set -eu
 
-            # download etcdctl
-            ETCD_VERSION=v0.4.5
-            wget https://github.com/etcd-io/etcd/releases/download/${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-amd64.tar.gz
-            tar xvf etcd-${ETCD_VERSION}-linux-amd64.tar.gz
-            mv etcd-${ETCD_VERSION}-linux-amd64/etcdctl /opt/bin/etcdctl
-            chmod +x /opt/bin/etcdctl
-            rm etcd-${ETCD_VERSION}-linux-amd64.tar.gz
-            rm etcd-${ETCD_VERSION}-linux-amd64 -Rf
-
             # download calicoctl
             CALICOCTL_VERSION=v3.5.0
             wget https://github.com/projectcalico/calicoctl/releases/download/${CALICOCTL_VERSION}/calicoctl-linux-amd64
@@ -3295,7 +3286,7 @@ systemd:
     enabled: true
     contents: |
       [Unit]
-      Description=Calicoctl, etcdctl and crictl tools
+      Description=Calicoctl and crictl tools
       After=network.target
       [Service]
       Type=oneshot
