@@ -275,7 +275,7 @@ stage-e2e(){
     # when only one worker. But e2e tests require all pods in kube-system to be Running.
     exec_on master1 ${KUBECTL_CMD} delete deploy nginx-ingress-controller -n kube-system
 
-    exec_on master1 "curl -L ${url} 2>/dev/null | ${KUBECTL_CMD} apply -f -"
+    exec_on master1 ${KUBECTL_CMD} apply -f ${url}
     msg "Started e2e tests..."
 
     sleep 60
