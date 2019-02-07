@@ -1,4 +1,6 @@
 # Guide how to migrate single CP to multi cluster
+This migration will cause downtime for the cluster.
+
 
 ## before migration
 do etcd backup of etcd cluster and shut down master right after that
@@ -11,10 +13,30 @@ dont forget to copy the etcd snapshot out of the machien to somewhere safe
 ## Migration from old version
 If you are migration from older version of giantnetes-terraform which did not have multi-master support please do following steps:
 
+### delete old infrastrucutre
 switch  `giantnetes-terraform` to branch `13bca31185e282a3ff65fcd523ecbef4057e2b36` and run:
 ```
 terraform destroy -target=aws_cloudformation_stack.worker_asg -target=aws_instance.master --target=aws_elb.master --target=aws_elb.worker --target=aws_elb.vault --target=aws_subnet.elb_0 --target=aws_subnet.elb_1 --target=aws_subnet.worker_0 --target=aws_subnet.worker_1
 ```
+
+### update terraform values
+If the cluster is using custom worker subnet or elb subnet, than you need to adjust the values and add one more subnet. Old version worked with 2 worker subnets and 2 elb subnets, new version needs 3 subnets for both. This can be easily done by reducing the subnet size:
+```
+export TF_VAR_subnet_elb_0=10.0.0.0/25
+export TF_VAR_subnet_elb_1=10.0.0.128/25
+export TF_VAR_subnet_worker_0=10.0.1.0/25
+export TF_VAR_subnet_worker_1=10.0.1.128/25
+```
+to
+```
+export TF_VAR_subnet_elb_0=10.0.0.0/26
+export TF_VAR_subnet_elb_1=10.0.0.64/26
+export TF_VAR_subnet_elb_2=10.0.0.128/26
+export TF_VAR_subnet_worker_0=10.0.1.0/26
+export TF_VAR_subnet_worker_1=10.0.1.64/26
+export TF_VAR_subnet_worker_2=10.0.1.128/26
+```
+
 
 ## Apply new version
 Be sure to be on latest master branch, have prepared build dir and be inside build dir:
