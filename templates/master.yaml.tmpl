@@ -1615,7 +1615,7 @@ storage:
                 priorityClassName: system-cluster-critical
                 containers:
                 - name: nginx-ingress-controller
-                  image: {{.DockerRegistry}}/giantswarm/nginx-ingress-controller:0.16.2
+                  image: {{.DockerRegistry}}/giantswarm/nginx-ingress-controller:0.21.0
                   args:
                   - /nginx-ingress-controller
                   - --default-backend-service=$(POD_NAMESPACE)/default-http-backend
