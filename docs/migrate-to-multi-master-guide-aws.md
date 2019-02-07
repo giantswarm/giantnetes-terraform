@@ -110,3 +110,9 @@ sudo -E etcdctl cluster-health
 * Restart kubelets on all 3 masters to ensure everyhting is up and running.
 * You might need to restart all workers so they properly register to k8s-api.
 * On one of masters restart `k8s-addons` to esnure latest version is applied.
+
+## Recover tenant cluster peering
+If there are any cluster created with `aws-operator`, then the CloudFOrmation stack that is configuring VPC peergin needs to be deleted  in order to reconfigure proper connection between VPC.
+
+The CLoudFormation stack should look like this: `cluster-{cluster_id}-host-main`. After deletion, `aws-operator` will recreate it with proper values.
+
