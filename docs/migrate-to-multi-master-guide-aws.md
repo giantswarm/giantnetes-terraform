@@ -20,7 +20,7 @@ terraform destroy -target=aws_cloudformation_stack.worker_asg -target=aws_instan
 ```
 
 ### update terraform values
-If the cluster is using custom worker subnet or elb subnet, than you need to adjust the values and add one more subnet. Old version worked with 2 worker subnets and 2 elb subnets, new version needs 3 subnets for both. This can be easily done by reducing the subnet size:
+If the cluster is using custom worker subnet or elb subnet, than you need to adjust the values and add one more subnet. Old version worked with 2 worker subnets and 2 elb subnets, new version needs 3 subnets for both and in `list` format. This can be easily done by reducing the subnet size:
 ```
 export TF_VAR_subnet_elb_0=10.0.0.0/25
 export TF_VAR_subnet_elb_1=10.0.0.128/25
@@ -29,12 +29,8 @@ export TF_VAR_subnet_worker_1=10.0.1.128/25
 ```
 to
 ```
-export TF_VAR_subnet_elb_0=10.0.0.0/26
-export TF_VAR_subnet_elb_1=10.0.0.64/26
-export TF_VAR_subnet_elb_2=10.0.0.128/26
-export TF_VAR_subnet_worker_0=10.0.1.0/26
-export TF_VAR_subnet_worker_1=10.0.1.64/26
-export TF_VAR_subnet_worker_2=10.0.1.128/26
+export TF_VAR_subnet_elb='["10.0.0.0/26","10.0.0.64/26","10.0.0.128/26"]'
+export TF_VAR_subnet_worker='["10.0.1.0/26","10.0.1.64/26","10.0.1.128/26"]'
 ```
 
 

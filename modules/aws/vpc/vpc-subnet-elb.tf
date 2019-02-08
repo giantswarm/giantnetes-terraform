@@ -17,5 +17,5 @@ resource "aws_route_table_association" "elb" {
   count = "${length(var.subnet_elb)}"
 
   subnet_id      = "${element(aws_subnet.elb.*.id, count.index)}"
-  route_table_id = "${element(aws_route_table.cluster_vpc_public.*.id, count.index}"
+  route_table_id = "${element(aws_route_table.cluster_vpc_public.*.id, count.index)}"
 }

@@ -23,7 +23,7 @@ variable "subnet_elb" {
   type = "list"
 }
 
-variable "subnet_vault" {
+variable "subnet_vault_0" {
   type = "string"
 }
 
