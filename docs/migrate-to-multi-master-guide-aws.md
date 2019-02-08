@@ -63,6 +63,7 @@ sudo rm -rf /var/lib/etcd/member
 ### master0
 Copy the etcd snapshot backup on first master and restore data from etcd backup:
 ```
+unalias etcdctl
 ETCDCTL_API=3 etcdctl snapshot restore  --data-dir="/tmp/etcd"  db-snapshot
 sudo cp -r /tmp/etcd/member /var/lib/etcd/
 sudo rm -rf /tmp/etcd/
