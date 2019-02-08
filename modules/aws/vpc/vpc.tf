@@ -87,14 +87,14 @@ resource "aws_internet_gateway" "cluster_vpc" {
 }
 
 resource "aws_nat_gateway" "private_nat_gateway" {
-  count = "${length(var.subnet_elb)}"
+  count = "${length(var.subnets_elb)}"
 
   allocation_id = "${element(aws_eip.private_nat_gateway.*.id, count.index)}"
   subnet_id     = "${element(aws_subnet.elb.*.id, count.index)}"
 }
 
 resource "aws_eip" "private_nat_gateway" {
-  count = "${length(var.subnet_elb)}"
+  count = "${length(var.subnets_elb)}"
   vpc   = true
 
   tags = "${merge(
@@ -106,7 +106,7 @@ resource "aws_eip" "private_nat_gateway" {
 }
 
 resource "aws_route_table" "cluster_vpc_private" {
-  count  = "${length(var.subnet_worker)}"
+  count  = "${length(var.subnets_worker)}"
   vpc_id = "${aws_vpc.cluster_vpc.id}"
 
   tags = "${merge(
@@ -118,7 +118,7 @@ resource "aws_route_table" "cluster_vpc_private" {
 }
 
 resource "aws_route_table" "cluster_vpc_public" {
-  count  = "${length(var.subnet_elb)}"
+  count  = "${length(var.subnets_elb)}"
   vpc_id = "${aws_vpc.cluster_vpc.id}"
 
   tags = "${merge(
@@ -130,7 +130,7 @@ resource "aws_route_table" "cluster_vpc_public" {
 }
 
 resource "aws_route" "vpc_local_route" {
-  count = "${length(var.subnet_elb)}"
+  count = "${length(var.subnets_elb)}"
 
   route_table_id         = "${element(aws_route_table.cluster_vpc_public.*.id, count.index)}"
   destination_cidr_block = "0.0.0.0/0"
@@ -139,7 +139,7 @@ resource "aws_route" "vpc_local_route" {
 }
 
 resource "aws_route" "private_nat_gateway" {
-  count = "${length(var.subnet_worker)}"
+  count = "${length(var.subnets_worker)}"
 
   route_table_id         = "${element(aws_route_table.cluster_vpc_private.*.id, count.index)}"
   destination_cidr_block = "0.0.0.0/0"

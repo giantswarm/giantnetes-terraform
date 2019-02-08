@@ -1,7 +1,7 @@
 resource "aws_subnet" "vault_0" {
   vpc_id            = "${aws_vpc.cluster_vpc.id}"
   availability_zone = "${element(data.aws_availability_zones.available.names,0)}"
-  cidr_block        = "${var.subnet_vault_0}"
+  cidr_block        = "${element(var.subnets_vault, 0)}"
 
   tags = "${merge(
     local.common_tags,

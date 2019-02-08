@@ -15,19 +15,19 @@ variable "cluster_name" {
   type = "string"
 }
 
-variable "subnet_bastion" {
+variable "subnets_bastion" {
   type = "list"
 }
 
-variable "subnet_elb" {
+variable "subnets_elb" {
   type = "list"
 }
 
-variable "subnet_vault_0" {
-  type = "string"
+variable "subnets_vault" {
+  type = "list"
 }
 
-variable "subnet_worker" {
+variable "subnets_worker" {
   type = "list"
 }
 

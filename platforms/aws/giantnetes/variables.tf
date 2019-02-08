@@ -199,24 +199,24 @@ variable "k8s_api_ip" {
   default     = "172.31.0.1"
 }
 
-variable "subnet_bastion" {
+variable "subnets_bastion" {
   description = "CIDR for bastion networks"
   type        = "list"
   default     = ["10.0.1.0/25", "10.0.1.128/25"]
 }
 
-variable "subnet_elb" {
+variable "subnets_elb" {
   description = "CIDR for load balancer networks."
   type        = "list"
   default     = ["10.0.2.0/26", "10.0.2.64/26", "10.0.2.128/26"]
 }
 
-variable "subnet_vault_0" {
+variable "subnets_vault" {
   description = "CIDR for Vault network."
-  default     = "10.0.3.0/25"
+  default     = ["10.0.3.0/25"]
 }
 
-variable "subnet_worker" {
+variable "subnets_worker" {
   description = "CIDR for worker networks"
   type        = "list"
   default     = ["10.0.5.0/26", "10.0.5.64/26", "10.0.5.128/26"]
