@@ -26,7 +26,7 @@ There is change in subnet naming and structure. Subnets are agregated into lists
 subnets_bastion = ["10.0.1.0/25", "10.0.1.128/25"]
 subnets_elb = ["10.0.2.0/26", "10.0.2.64/26", "10.0.2.128/26"]
 subnets_vault = ["10.0.3.0/25"]
-10.0.220.48/28subnets_worker = ["10.0.5.0/26", "10.0.5.64/26", "10.0.5.128/26"]
+subnets_worker = ["10.0.5.0/26", "10.0.5.64/26", "10.0.5.128/26"]
 ```
 
 If the cluster is using custom worker subnet or elb subnet, than you need to adjust the values and add one more subnet. Old version worked with 2 worker subnets and 2 elb subnets, new version needs 3 subnets for both and in `list` format. This can be easily done by reducing the subnet size.
@@ -132,7 +132,7 @@ sudo -E etcdctl cluster-health
 * On one of masters restart `k8s-addons` to esnure latest version is applied.
 
 ## Recover tenant cluster peering
-If there are any cluster created with `aws-operator`, then the CloudFOrmation stack that is configuring VPC peergin needs to be deleted  in order to reconfigure proper connection between VPC.
+If there are any cluster created with `aws-operator`, then the CloudFormation stack that is configuring VPC peering needs to be deleted in order to reconfigure proper connection between VPCs.
 
-The CLoudFormation stack should look like this: `cluster-{cluster_id}-host-main`. After deletion, `aws-operator` will recreate it with proper values.
+The CloudFormation stack name look like this: `cluster-{cluster_id}-host-main`. After deletion, `aws-operator` will recreate it with proper values.
 
