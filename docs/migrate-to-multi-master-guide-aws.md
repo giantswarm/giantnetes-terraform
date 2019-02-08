@@ -16,8 +16,9 @@ If you are migration from older version of giantnetes-terraform which did not ha
 ### delete old infrastrucutre
 switch  `giantnetes-terraform` to branch `13bca31185e282a3ff65fcd523ecbef4057e2b36` and run:
 ```
-terraform destroy -target=aws_cloudformation_stack.worker_asg -target=aws_instance.master --target=aws_elb.master --target=aws_elb.worker --target=aws_elb.vault --target=aws_subnet.elb_0 --target=aws_subnet.elb_1 --target=aws_subnet.worker_0 --target=aws_subnet.worker_1 --target=aws_instance.bastion --target=aws_subnet.bastion_0 --target=aws_subnet.bastion_1 --target=aws_vpc_endpoint.cloudwatch
+terraform destroy --target=aws_cloudformation_stack.worker_asg --target=aws_instance.master --target=aws_elb.master --target=aws_elb.worker --target=aws_elb.vault --target=aws_subnet.elb_0 --target=aws_subnet.elb_1 --target=aws_subnet.worker_0 --target=aws_subnet.worker_1 --target=aws_instance.bastion --target=aws_subnet.bastion_0 --target=aws_subnet.bastion_1 --target=aws_vpc_endpoint.cloudwatch --target=aws_nat_gateway.private_nat_gateway_0 --target=aws_nat_gateway.private_nat_gateway_1 --target=aws_eip.private_nat_gateway_0  --target=aws_eip.private_nat_gateway_1
 ```
+after deletion go back to latest master
 
 ### update terraform values
 There is change in subnet naming and structure. Subnets are agregated into lists and names are also changed: 
@@ -55,24 +56,13 @@ terraform apply ../platforms/aws/giantnetes/
 
 ### prepare
 * stop kubelet on all master machines
-* stop all etcd's and  delete all etcd data via `rm -rf /var/lib/etcd/member` on all masters
-```
-sudo systemctl stop etcd3 k8s-kubelet
-sudo rm -rf /var/lib/etcd/member
-```
+* stop etcd3.service on second and third master machine
+* go to first master
+
 ### master0
-Copy the etcd snapshot backup on first master and restore data from etcd backup:
-```
-unalias etcdctl
-ETCDCTL_API=3 etcdctl snapshot restore  --data-dir="/tmp/etcd"  db-snapshot
-sudo cp -r /tmp/etcd/member /var/lib/etcd/
-sudo rm -rf /tmp/etcd/
-sudo systemctl start etcd3
-```
-
-
 Export envs to use etcdctl againts cluster:
 ```
+unalias etcdctl
 export ETCDCTL_CERT_FILE=/etc/kubernetes/ssl/etcd/client-crt.pem
 export ETCDCTL_CA_FILE=/etc/kubernetes/ssl/etcd/client-ca.pem
 export ETCDCTL_KEY_FILE=/etc/kubernetes/ssl/etcd/client-key.pem
@@ -114,6 +104,7 @@ to
 Save changes, reload systemd daemon and start etcd:
 ```
 sudo vim /etc/systemd/system/etcd3.service
+
 sudo systemctl daemon-reload
 systemctl start etcd3
 ```
