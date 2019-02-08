@@ -1615,7 +1615,7 @@ storage:
                 priorityClassName: system-cluster-critical
                 containers:
                 - name: nginx-ingress-controller
-                  image: {{.DockerRegistry}}/giantswarm/nginx-ingress-controller:0.16.2
+                  image: {{.DockerRegistry}}/giantswarm/nginx-ingress-controller:0.21.0
                   args:
                   - /nginx-ingress-controller
                   - --default-backend-service=$(POD_NAMESPACE)/default-http-backend
@@ -2086,31 +2086,79 @@ storage:
 
               echo "Successfully resolved domain $domain"
             done
+    - path: /opt/install-debug-tools
+      filesystem: root
+      mode: 0544
+      contents:
+        inline: |
+            #!/bin/bash
+            set -eu
+
+            # download calicoctl
+            CALICOCTL_VERSION=v3.5.0
+            wget https://github.com/projectcalico/calicoctl/releases/download/${CALICOCTL_VERSION}/calicoctl-linux-amd64
+            mv calicoctl-linux-amd64 /opt/bin/calicoctl
+            chmod +x /opt/bin/calicoctl
+
+            # download crictl
+            CRICTL_VERSION=v1.13.0
+            wget https://github.com/kubernetes-sigs/cri-tools/releases/download/${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
+            tar xvf crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
+            mv crictl /opt/bin/crictl
+            chmod +x /opt/bin/crictl
+            rm crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
+    - path: /etc/calico/calicoctl.cfg
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          apiVersion: projectcalico.org/v3
+          kind: CalicoAPIConfig
+          metadata:
+          spec:
+            etcdEndpoints: https://{{ .ETCDDomainName }}:2379
+            etcdKeyFile: /etc/kubernetes/ssl/calico/etcd-key
+            etcdCertFile: /etc/kubernetes/ssl/calico/etcd-cert
+            etcdCACertFile: /etc/kubernetes/ssl/calico/etcd-ca
+    - path: /etc/crictl.yaml
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          runtime-endpoint: unix:///var/run/dockershim/dockershim.sock
+          image-endpoint: unix:///var/run/dockershim/dockershim.sock
+          timeout: 10
+          debug: false
     - path: /opt/k8s-addons
       filesystem: root
       mode: 0544
       contents:
         inline: |
             #!/bin/bash
-            # kubectl 1.12.2
-            KUBECTL=quay.io/giantswarm/docker-kubectl:f5cae44c480bd797dc770dd5f62d40b74063c0d7
+            set -eu
 
-            /usr/bin/docker pull $KUBECTL
+            # k8s 1.12.2
+            KUBECTL_IMAGE=quay.io/giantswarm/docker-kubectl:f5cae44c480bd797dc770dd5f62d40b74063c0d7
+            KUBECTL="/usr/bin/docker run --net=host --rm
+            -e KUBECONFIG=/etc/kubernetes/kubeconfig/addons.yaml
+            -v /etc/kubernetes:/etc/kubernetes
+            -v /srv:/srv $KUBECTL_IMAGE"
 
-            # wait for healthy master
-            while [ "$(/usr/bin/docker run --net=host --rm $KUBECTL get cs | grep Healthy | wc -l)" -ne "3" ]; do sleep 1 && echo 'Waiting for healthy k8s'; done
+            /usr/bin/docker pull $KUBECTL_IMAGE
+
+            while ! curl --output /dev/null --silent --head --insecure "https://{{ .APIDomainName }}"; do sleep 1 && echo 'Waiting for master'; done
 
             # apply Security bootstrap (RBAC and PSP)
-            SECURITY_FILES="rbac-roles.yaml\
-              rbac-bindings.yaml\
-              psp-policies.yaml\
-              psp-roles.yaml\
-              psp-bindings.yaml"
+            SECURITY_FILES="rbac-roles.yaml
+             rbac-bindings.yaml
+             psp-policies.yaml
+             psp-roles.yaml
+             psp-bindings.yaml"
 
             for manifest in $SECURITY_FILES
             do
                 while
-                    /usr/bin/docker run --net=host --rm -v /srv:/srv $KUBECTL apply -f /srv/$manifest
+                    $KUBECTL apply -f /srv/$manifest
                     [ "$?" -ne "0" ]
                 do
                     echo "failed to apply /srv/$manifest, retrying in 5 sec"
@@ -2120,8 +2168,13 @@ storage:
 
             # create kube-proxy configmap
             while
-                /usr/bin/docker run --net=host --rm -v /srv:/srv $KUBECTL create configmap kube-proxy --from-file=kube-proxy.yaml=/srv/kube-proxy-config.yaml -o yaml --dry-run \
-                | /usr/bin/docker run -i --log-driver=none -a stdin -a stdout -a stderr --net=host --rm $KUBECTL apply -n kube-system -f -
+                # XXX: Why we do piping here?
+                $KUBECTL create configmap kube-proxy \
+                    --from-file=kube-proxy.yaml=/srv/kube-proxy-config.yaml -o yaml --dry-run | \
+                /usr/bin/docker run -e KUBECONFIG=/etc/kubernetes/kubeconfig/addons.yaml \
+                    -v /etc/kubernetes:/etc/kubernetes \
+                    -i --log-driver=none -a stdin -a stdout -a stderr --net=host --rm \
+                    $KUBECTL_IMAGE apply -n kube-system -f -
                 [ "$?" -ne "0" ]
             do
                 echo "failed to configure kube-proxy from /srv/kube-proxy-confg.yaml, retrying in 5 sec"
@@ -2134,7 +2187,7 @@ storage:
             for manifest in $KUBE_PROXY_MANIFESTS
             do
                 while
-                    /usr/bin/docker run --net=host --rm -v /srv:/srv $KUBECTL apply -f /srv/$manifest
+                    $KUBECTL apply -f /srv/$manifest
                     [ "$?" -ne "0" ]
                 do
                     echo "failed to apply /srv/$manifest, retrying in 5 sec"
@@ -2143,13 +2196,13 @@ storage:
             done
 
             # restart ds to apply config from configmap
-            /usr/bin/docker run --net=host --rm -v /srv:/srv $KUBECTL delete pods -l k8s-app=kube-proxy -n kube-system
+            $KUBECTL delete pods -l k8s-app=kube-proxy -n kube-system
 
             # apply calico CNI
             CALICO_FILE="calico-all.yaml"
 
             while
-                /usr/bin/docker run --net=host --rm -v /srv:/srv $KUBECTL apply -f /srv/$CALICO_FILE
+                $KUBECTL apply -f /srv/$CALICO_FILE
                 [ "$?" -ne "0" ]
             do
                 echo "failed to apply /srv/$CALICO_FILE, retrying in 5 sec"
@@ -2158,10 +2211,9 @@ storage:
 
             # wait for healthy calico - we check for pods - desired vs ready
             while
-                # result of this is 'eval [ "$DESIRED_POD_COUNT" -eq "$READY_POD_COUNT" ]'
-                /usr/bin/docker run --net=host --rm -v /etc/kubernetes:/etc/kubernetes $KUBECTL -n kube-system  get ds calico-node 2>/dev/null >/dev/null
+                $KUBECTL -n kube-system get ds calico-node &>/dev/null
                 RET_CODE_1=$?
-                eval $(/usr/bin/docker run --net=host --rm $KUBECTL -n kube-system get ds calico-node | tail -1 | awk '{print "[ \"" $2"\" -eq \""$4"\" ] "}')
+                eval $($KUBECTL -n kube-system get ds calico-node | tail -1 | awk '{print "[ \"" $2"\" -eq \""$4"\" ] "}')
                 RET_CODE_2=$?
                 [ "$RET_CODE_1" -ne "0" ] || [ "$RET_CODE_2" -ne "0" ]
             do
@@ -2170,12 +2222,19 @@ storage:
             done
 
             # apply k8s addons
-            MANIFESTS="default-storage-class.yaml coredns-all.yaml default-backend-dep.yaml default-backend-svc.yaml ingress-controller-cm.yaml ingress-controller-sa.yaml ingress-controller-dep.yaml ingress-controller-svc.yaml"
+            MANIFESTS="default-storage-class.yaml
+             coredns-all.yaml
+             default-backend-dep.yaml
+             default-backend-svc.yaml
+             ingress-controller-cm.yaml
+             ingress-controller-sa.yaml
+             ingress-controller-dep.yaml
+             ingress-controller-svc.yaml"
 
             for manifest in $MANIFESTS
             do
                 while
-                    /usr/bin/docker run --net=host --rm -v /srv:/srv $KUBECTL apply -f /srv/$manifest
+                    $KUBECTL apply -f /srv/$manifest
                     [ "$?" -ne "0" ]
                 do
                     echo "failed to apply /srv/$manifest, retrying in 5 sec"
@@ -2268,6 +2327,29 @@ storage:
             kubeconfig: /etc/kubernetes/kubeconfig/scheduler.yaml
           failureDomains: kubernetes.io/hostname,failure-domain.beta.kubernetes.io/zone,failure-domain.beta.kubernetes.io/region
           hardPodAffinitySymmetricWeight: 1
+    - path: /etc/kubernetes/kubeconfig/addons.yaml
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          apiVersion: v1
+          kind: Config
+          users:
+          - name: addons
+            user:
+              client-certificate: /etc/kubernetes/ssl/apiserver-crt.pem
+              client-key: /etc/kubernetes/ssl/apiserver-key.pem
+          clusters:
+          - name: local
+            cluster:
+              certificate-authority: /etc/kubernetes/ssl/apiserver-ca.pem
+              server: https://{{ .APIDomainName }}
+          contexts:
+          - context:
+              cluster: local
+              user: addons
+            name: service-account-context
+          current-context: service-account-context
     - path: /etc/kubernetes/kubeconfig/kubelet.yaml
       filesystem: root
       mode: 0644
@@ -2370,8 +2452,10 @@ storage:
                 - /hyperkube
                 - apiserver
                 - --allow-privileged=true
+                - --anonymous-auth=false
                 - --kubelet-https=true
                 - --secure-port=443
+                - --insecure-port=0
                 {{ if eq .Provider "aws" -}}
                 - --cloud-provider=aws
                 {{ else -}}
@@ -2594,6 +2678,17 @@ storage:
       contents:
         inline: |
           export PS1="WARNING: CONTROL-PLANE MASTER | $PS1"
+    - path: /etc/profile.d/setup-etcdctl.sh
+      filesystem: root
+      mode: 0444
+      contents:
+        inline: |
+          alias etcdctl="ETCDCTL_API=3 \
+                ETCDCTL_ENDPOINTS=https://{{ .ETCDDomainName }}:2379 \
+                ETCDCTL_CACERT=/etc/kubernetes/ssl/etcd/client-ca.pem \
+                ETCDCTL_CERT=/etc/kubernetes/ssl/etcd/client-crt.pem \
+                ETCDCTL_KEY=/etc/kubernetes/ssl/etcd/client-key.pem \
+                etcdctl"
     - path: /opt/bin/confirm
       filesystem: root
       mode: 0555
@@ -3176,6 +3271,7 @@ systemd:
       --crt-file=/etc/kubernetes/ssl/apiserver-crt.pem \
       --ip-sans=127.0.0.1,${DEFAULT_IPV4},{{ .K8SAPIIP }} \
       --alt-names=localhost,kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.local \
+      --organizations=system:masters \
       --key-file=/etc/kubernetes/ssl/apiserver-key.pem \
       --ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
       [Install]
@@ -3191,6 +3287,17 @@ systemd:
       Type=oneshot
       EnvironmentFile=/etc/network-environment
       ExecStart=/opt/k8s-addons
+      [Install]
+      WantedBy=multi-user.target
+  - name: debug-tools.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=Calicoctl and crictl tools
+      After=network.target
+      [Service]
+      Type=oneshot
+      ExecStart=/opt/install-debug-tools
       [Install]
       WantedBy=multi-user.target
 storage:

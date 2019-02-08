@@ -71,6 +71,17 @@ resource "aws_iam_role_policy" "worker" {
       "Resource": [
         "arn:${var.arn_region}:s3:::${var.aws_account}-${var.cluster_name}-ignition/*"
       ]
+    },
+    {
+     "Effect": "Allow",
+     "Action": [
+       "logs:*",
+       "s3:GetObject"
+     ],
+     "Resource": [
+       "arn:aws:logs:${var.arn_region}:*:*",
+       "arn:aws:s3:::*"
+     ]
     }
   ]
 }
