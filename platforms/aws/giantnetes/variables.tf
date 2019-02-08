@@ -199,29 +199,16 @@ variable "k8s_api_ip" {
   default     = "172.31.0.1"
 }
 
-variable "subnet_bastion_0" {
-  description = "CIDR for bastion network 0."
-  default     = "10.0.1.0/25"
+variable "subnet_bastion" {
+  description = "CIDR for bastion networks"
+  type        = "list"
+  default     = ["10.0.1.0/25", "10.0.1.128/25"]
 }
 
-variable "subnet_bastion_1" {
-  description = "CIDR for bastion network 1."
-  default     = "10.0.1.128/25"
-}
-
-variable "subnet_elb_0" {
-  description = "CIDR for load balancer network 0."
-  default     = "10.0.2.0/26"
-}
-
-variable "subnet_elb_1" {
-  description = "CIDR for load balancer network 1."
-  default     = "10.0.2.64/26"
-}
-
-variable "subnet_elb_2" {
-  description = "CIDR for load balancer network 2."
-  default     = "10.0.2.128/26"
+variable "subnet_elb" {
+  description = "CIDR for load balancer networks."
+  type        = "list"
+  default     = ["10.0.2.0/26", "10.0.2.64/26", "10.0.2.128/26"]
 }
 
 variable "subnet_vault_0" {
@@ -229,19 +216,10 @@ variable "subnet_vault_0" {
   default     = "10.0.3.0/25"
 }
 
-variable "subnet_worker_0" {
-  description = "CIDR for worker network 0."
-  default     = "10.0.5.0/26"
-}
-
-variable "subnet_worker_1" {
-  description = "CIDR for worker network 1."
-  default     = "10.0.5.64/26"
-}
-
-variable "subnet_worker_2" {
-  description = "CIDR for worker network 2."
-  default     = "10.0.5.128/26"
+variable "subnet_worker" {
+  description = "CIDR for worker networks"
+  type        = "list"
+  default     = ["10.0.5.0/26", "10.0.5.64/26", "10.0.5.128/26"]
 }
 
 ### VPN ###

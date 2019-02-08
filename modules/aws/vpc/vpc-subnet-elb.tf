@@ -1,53 +1,21 @@
-resource "aws_subnet" "elb_0" {
+resource "aws_subnet" "elb" {
+  count = "${length(var.subnet_elb)}"
+
   vpc_id            = "${aws_vpc.cluster_vpc.id}"
-  availability_zone = "${element(data.aws_availability_zones.available.names,0)}"
-  cidr_block        = "${var.subnet_elb_0}"
+  availability_zone = "${element(data.aws_availability_zones.available.names,count.index)}"
+  cidr_block        = "${element(var.subnet_elb, count.index)}"
 
   tags = "${merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}-elb0"
+      "Name", "${var.cluster_name}-elb${count.index}"
     )
   )}"
 }
 
-resource "aws_subnet" "elb_1" {
-  vpc_id            = "${aws_vpc.cluster_vpc.id}"
-  availability_zone = "${element(data.aws_availability_zones.available.names,1)}"
-  cidr_block        = "${var.subnet_elb_1}"
+resource "aws_route_table_association" "elb" {
+  count = "${length(var.subnet_elb)}"
 
-  tags = "${merge(
-    local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-elb1"
-    )
-  )}"
-}
-
-resource "aws_subnet" "elb_2" {
-  vpc_id            = "${aws_vpc.cluster_vpc.id}"
-  availability_zone = "${element(data.aws_availability_zones.available.names,2)}"
-  cidr_block        = "${var.subnet_elb_2}"
-
-  tags = "${merge(
-    local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-elb2"
-    )
-  )}"
-}
-
-resource "aws_route_table_association" "elb_0" {
-  subnet_id      = "${aws_subnet.elb_0.id}"
-  route_table_id = "${aws_route_table.cluster_vpc_public_0.id}"
-}
-
-resource "aws_route_table_association" "elb_1" {
-  subnet_id      = "${aws_subnet.elb_1.id}"
-  route_table_id = "${aws_route_table.cluster_vpc_public_1.id}"
-}
-
-resource "aws_route_table_association" "elb_2" {
-  subnet_id      = "${aws_subnet.elb_2.id}"
-  route_table_id = "${aws_route_table.cluster_vpc_public_2.id}"
+  subnet_id      = "${element(aws_subnet.elb.*.id, count.index)}"
+  route_table_id = "${element(aws_route_table.cluster_vpc_public.*.id, count.index}"
 }
