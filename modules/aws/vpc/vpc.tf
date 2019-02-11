@@ -86,61 +86,39 @@ resource "aws_internet_gateway" "cluster_vpc" {
   )}"
 }
 
-resource "aws_nat_gateway" "private_nat_gateway_0" {
-  allocation_id = "${aws_eip.private_nat_gateway_0.id}"
-  subnet_id     = "${aws_subnet.elb_0.id}"
+resource "aws_nat_gateway" "private_nat_gateway" {
+  count = "${length(var.subnets_elb)}"
+
+  allocation_id = "${element(aws_eip.private_nat_gateway.*.id, count.index)}"
+  subnet_id     = "${element(aws_subnet.elb.*.id, count.index)}"
 }
 
-resource "aws_nat_gateway" "private_nat_gateway_1" {
-  allocation_id = "${aws_eip.private_nat_gateway_1.id}"
-  subnet_id     = "${aws_subnet.elb_1.id}"
-}
-
-resource "aws_eip" "private_nat_gateway_0" {
-  vpc = true
+resource "aws_eip" "private_nat_gateway" {
+  count = "${length(var.subnets_elb)}"
+  vpc   = true
 
   tags = "${merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}-private-nat-gateway0"
+      "Name", "${var.cluster_name}-private-nat-gateway${count.index}"
     )
   )}"
 }
 
-resource "aws_eip" "private_nat_gateway_1" {
-  vpc = true
-
-  tags = "${merge(
-    local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-private-nat-gateway1"
-    )
-  )}"
-}
-
-resource "aws_route_table" "cluster_vpc_private_0" {
+resource "aws_route_table" "cluster_vpc_private" {
+  count  = "${length(var.subnets_worker)}"
   vpc_id = "${aws_vpc.cluster_vpc.id}"
 
   tags = "${merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}_private_0"
+      "Name", "${var.cluster_name}_private_${count.index}"
     )
   )}"
 }
 
-resource "aws_route_table" "cluster_vpc_private_1" {
-  vpc_id = "${aws_vpc.cluster_vpc.id}"
-
-  tags = "${merge(
-    local.common_tags,
-    map(
-      "Name", "${var.cluster_name}_private_1"
-    )
-  )}"
-}
-
-resource "aws_route_table" "cluster_vpc_public_0" {
+resource "aws_route_table" "cluster_vpc_public" {
+  count  = "${length(var.subnets_elb)}"
   vpc_id = "${aws_vpc.cluster_vpc.id}"
 
   tags = "${merge(
@@ -151,53 +129,28 @@ resource "aws_route_table" "cluster_vpc_public_0" {
   )}"
 }
 
-resource "aws_route_table" "cluster_vpc_public_1" {
-  vpc_id = "${aws_vpc.cluster_vpc.id}"
+resource "aws_route" "vpc_local_route" {
+  count = "${length(var.subnets_elb)}"
 
-  tags = "${merge(
-    local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-public1"
-    )
-  )}"
-}
-
-resource "aws_route" "vpc_local_route_0" {
-  route_table_id         = "${aws_route_table.cluster_vpc_public_0.id}"
+  route_table_id         = "${element(aws_route_table.cluster_vpc_public.*.id, count.index)}"
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = "${aws_internet_gateway.cluster_vpc.id}"
-  depends_on             = ["aws_route_table.cluster_vpc_public_0"]
+  depends_on             = ["aws_route_table.cluster_vpc_public"]
 }
 
-resource "aws_route" "vpc_local_route_1" {
-  route_table_id         = "${aws_route_table.cluster_vpc_public_1.id}"
-  destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = "${aws_internet_gateway.cluster_vpc.id}"
-  depends_on             = ["aws_route_table.cluster_vpc_public_1"]
-}
+resource "aws_route" "private_nat_gateway" {
+  count = "${length(var.subnets_worker)}"
 
-resource "aws_route" "private_nat_gateway_0" {
-  route_table_id         = "${aws_route_table.cluster_vpc_private_0.id}"
+  route_table_id         = "${element(aws_route_table.cluster_vpc_private.*.id, count.index)}"
   destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = "${aws_nat_gateway.private_nat_gateway_0.id}"
-}
-
-resource "aws_route" "private_nat_gateway_1" {
-  route_table_id         = "${aws_route_table.cluster_vpc_private_1.id}"
-  destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = "${aws_nat_gateway.private_nat_gateway_1.id}"
+  nat_gateway_id         = "${element(aws_nat_gateway.private_nat_gateway.*.id, count.index)}"
 }
 
 resource "aws_vpc_endpoint" "s3" {
   vpc_id       = "${aws_vpc.cluster_vpc.id}"
   service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
 
-  route_table_ids = [
-    "${aws_route_table.cluster_vpc_private_0.id}",
-    "${aws_route_table.cluster_vpc_private_1.id}",
-    "${aws_route_table.cluster_vpc_public_0.id}",
-    "${aws_route_table.cluster_vpc_public_1.id}",
-  ]
+  route_table_ids = ["${concat(aws_route_table.cluster_vpc_private.*.id, aws_route_table.cluster_vpc_public.*.id)}"]
 
   # Use allow all policy for for us-east-1. Problem that github, bitbucket
   # and quay are hosted in us-east-1 (other US?) and accessing these resources thru

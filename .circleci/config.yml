@@ -22,9 +22,20 @@ jobs:
           # Run terraform syntax check
           command: terraform fmt -write=false -diff=true -check=true
 
-  e2eTestAWS: &e2eTestAWS
+  e2eTestAWSSingleMaster: &e2eTestAWSSingleMaster
     docker:
       - image: quay.io/giantswarm/docker-terraform-and-stuff
+    environment:
+      MASTER_COUNT: 1
+    steps:
+    - checkout
+    - run: ./misc/e2e-aws.sh
+
+  e2eTestAWSMultiMaster: &e2eTestAWSMultiMaster
+    docker:
+      - image: quay.io/giantswarm/docker-terraform-and-stuff
+    environment:
+      MASTER_COUNT: 3
     steps:
     - checkout
     - run: ./misc/e2e-aws.sh
@@ -32,7 +43,7 @@ jobs:
   e2eTestAWSMaster:
     environment:
       E2E_ENABLE_CONFORMANCE: "yes"
-    <<: *e2eTestAWS
+    <<: *e2eTestAWSMultiMaster
 
   e2eTestAzure: &e2eTestAzure
     docker:
@@ -61,7 +72,11 @@ workflows:
           requires:
           - build
 
-      - e2eTestAWS:
+      - e2eTestAWSSingleMaster:
+          requires:
+          - hold
+
+      - e2eTestAWSMultiMaster:
           requires:
           - hold
 

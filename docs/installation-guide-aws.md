@@ -6,6 +6,9 @@ Common:
 - `aws` cli
 - `terraform-provider-ct`. See [README.md](https://github.com/giantswarm/giantnetes-terraform/blob/master/README.md) for installation.
 
+## Multi-master 
+By default terraform will create multi-master cluster with 3 master nodes, single master mode can be enabled by setting terraform variable `master_count=1` or export env variable `export TF_VAR_master_count=1`.
+
 ### Create S3 bucket and DynamoDB table for terraform state
 
 ```
@@ -197,6 +200,24 @@ terraform init ../platforms/aws/giantnetes
 terraform plan ../platforms/aws/giantnetes
 terraform apply ../platforms/aws/giantnetes
 ```
+
+### Update masters
+As each master is single ec2 instance, normal `terraform apply` operation would cause all of 3 masters to go offline which is not desirable. In order to avoid that, master instance ignore changes by default. If you want to update them you need to taint each of them and then run `terraform apply` command:
+```
+# update first master
+terraform taint --module="master" aws_instance.master.0
+terraform apply ../platforms/aws/giantnetes
+
+# update second master
+terraform taint --module="master" aws_instance.master.1
+terraform apply ../platforms/aws/giantnetes
+
+# update third master
+terraform taint --module="master" aws_instance.master.2
+terraform apply ../platforms/aws/giantnetes
+
+```
+
 
 ### Vault update
 

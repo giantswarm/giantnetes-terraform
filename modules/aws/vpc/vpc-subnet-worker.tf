@@ -1,35 +1,21 @@
-resource "aws_subnet" "worker_0" {
+resource "aws_subnet" "worker" {
+  count = "${length(var.subnets_worker)}"
+
   vpc_id            = "${aws_vpc.cluster_vpc.id}"
-  availability_zone = "${data.aws_availability_zones.available.names[0]}"
-  cidr_block        = "${var.subnet_worker_0}"
+  availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
+  cidr_block        = "${element(var.subnets_worker, count.index)}"
 
   tags = "${merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}-worker0"
+      "Name", "${var.cluster_name}-worker${count.index}"
     )
   )}"
 }
 
-resource "aws_subnet" "worker_1" {
-  vpc_id            = "${aws_vpc.cluster_vpc.id}"
-  availability_zone = "${data.aws_availability_zones.available.names[1]}"
-  cidr_block        = "${var.subnet_worker_1}"
+resource "aws_route_table_association" "worker" {
+  count = "${length(var.subnets_worker)}"
 
-  tags = "${merge(
-    local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-worker1"
-    )
-  )}"
-}
-
-resource "aws_route_table_association" "worker_0" {
-  subnet_id      = "${aws_subnet.worker_0.id}"
-  route_table_id = "${aws_route_table.cluster_vpc_private_0.id}"
-}
-
-resource "aws_route_table_association" "worker_1" {
-  subnet_id      = "${aws_subnet.worker_1.id}"
-  route_table_id = "${aws_route_table.cluster_vpc_private_1.id}"
+  subnet_id      = "${element(aws_subnet.worker.*.id, count.index)}"
+  route_table_id = "${element(aws_route_table.cluster_vpc_private.*.id, count.index)}"
 }

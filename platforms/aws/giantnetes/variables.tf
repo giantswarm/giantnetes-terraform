@@ -45,6 +45,12 @@ variable "nodes_vault_token" {
   description = "Vault token used by nodes for bootstrapping. Should be defined after Vault is installed."
 }
 
+variable "master_count" {
+  type        = "string"
+  description = "Number of master nodes to be created. Supported values 1 (single master) or 3 (multi master)."
+  default     = "3"
+}
+
 variable "worker_count" {
   type        = "string"
   description = "Number of worker nodes to be created."
@@ -93,10 +99,10 @@ variable "worker_instance" {
 }
 
 ### Container Linux ###
-
+## temporary until 1995.x will be in stable, as older version have disk timeout issues
 variable "container_linux_channel" {
   description = "Container linux channel (e.g. stable, beta, alpha)."
-  default     = "stable"
+  default     = "alpha"
 }
 
 variable "container_linux_version" {
@@ -130,8 +136,8 @@ variable "api_dns" {
 
 variable "etcd_dns" {
   type        = "string"
-  description = "FQDN for etcd (i.e. etcd)."
-  default     = "etcd"
+  description = "FQDN for etcd (i.e. etcd). '__MASTER_ID__' wil be replaced with id of master"
+  default     = "etcd__MASTER_ID__"
 }
 
 variable "ingress_dns" {
@@ -147,6 +153,12 @@ variable "root_dns_zone_id" {
 
 variable "route53_enabled" {
   default = true
+}
+
+### Machine ID ###
+variable "master_id" {
+  description = "Define master id in multi-master cluster."
+  default     = "__MASTER_ID__"
 }
 
 ### Network ###
@@ -187,39 +199,27 @@ variable "k8s_api_ip" {
   default     = "172.31.0.1"
 }
 
-variable "subnet_bastion_0" {
-  description = "CIDR for bastion network 0."
-  default     = "10.0.1.0/25"
+variable "subnets_bastion" {
+  description = "CIDR for bastion networks"
+  type        = "list"
+  default     = ["10.0.1.0/25", "10.0.1.128/25"]
 }
 
-variable "subnet_bastion_1" {
-  description = "CIDR for bastion network 1."
-  default     = "10.0.1.128/25"
+variable "subnets_elb" {
+  description = "CIDR for load balancer networks."
+  type        = "list"
+  default     = ["10.0.2.0/26", "10.0.2.64/26", "10.0.2.128/26"]
 }
 
-variable "subnet_elb_0" {
-  description = "CIDR for load balancer network 0."
-  default     = "10.0.2.0/25"
-}
-
-variable "subnet_elb_1" {
-  description = "CIDR for load balancer network 1."
-  default     = "10.0.2.128/25"
-}
-
-variable "subnet_vault_0" {
+variable "subnets_vault" {
   description = "CIDR for Vault network."
-  default     = "10.0.3.0/25"
+  default     = ["10.0.3.0/25"]
 }
 
-variable "subnet_worker_0" {
-  description = "CIDR for worker network 0."
-  default     = "10.0.5.0/25"
-}
-
-variable "subnet_worker_1" {
-  description = "CIDR for worker network 1."
-  default     = "10.0.5.128/25"
+variable "subnets_worker" {
+  description = "CIDR for worker networks"
+  type        = "list"
+  default     = ["10.0.5.0/26", "10.0.5.64/26", "10.0.5.128/26"]
 }
 
 ### VPN ###

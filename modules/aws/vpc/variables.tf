@@ -15,32 +15,20 @@ variable "cluster_name" {
   type = "string"
 }
 
-variable "subnet_bastion_0" {
-  type = "string"
+variable "subnets_bastion" {
+  type = "list"
 }
 
-variable "subnet_bastion_1" {
-  type = "string"
+variable "subnets_elb" {
+  type = "list"
 }
 
-variable "subnet_elb_0" {
-  type = "string"
+variable "subnets_vault" {
+  type = "list"
 }
 
-variable "subnet_elb_1" {
-  type = "string"
-}
-
-variable "subnet_vault_0" {
-  type = "string"
-}
-
-variable "subnet_worker_0" {
-  type = "string"
-}
-
-variable "subnet_worker_1" {
-  type = "string"
+variable "subnets_worker" {
+  type = "list"
 }
 
 variable "vpc_cidr" {
