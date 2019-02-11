@@ -87,7 +87,7 @@ Install consists two stages:
 - Vault (only needed because we bootstrapping Vault manually)
 - Kubernetes
 
-Master and workers will be created within the Vault stage and expectedly will fail (and recreated later). This is done to keep single Terraform state and simplify cluster management after installation. Master and workers will be reprovisioned with right configuration in the second state called Kubernetes.
+Masters and workers will be created within the Vault stage and expectedly will fail (and recreated later). This is done to keep single Terraform state and simplify cluster management after installation. Masters and workers will be reprovisioned with right configuration in the second state called Kubernetes.
 
 ### Stage: Vault
 
@@ -97,7 +97,7 @@ terraform plan ../platforms/aws/giantnetes
 terraform apply ../platforms/aws/giantnetes
 ```
 
-It should create all cluster resources. Please note master and worker vms are created, but will fail. This is expected behaviour.
+It should create all cluster resources. Please note masters and worker vms are created, but will fail. This is expected behaviour.
 
 #### Configure IPsec
 
