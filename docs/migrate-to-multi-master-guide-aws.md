@@ -66,7 +66,7 @@ unalias etcdctl
 export ETCDCTL_CERT_FILE=/etc/kubernetes/ssl/etcd/client-crt.pem
 export ETCDCTL_CA_FILE=/etc/kubernetes/ssl/etcd/client-ca.pem
 export ETCDCTL_KEY_FILE=/etc/kubernetes/ssl/etcd/client-key.pem
-export ETCDCTL_ENDPOINT=https://etcd1.DOMAIN_BASE:2379
+export ETCDCTL_ENDPOINT=https://127.0.0.1:2379
 ```
 
 
