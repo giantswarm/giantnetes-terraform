@@ -66,7 +66,7 @@ jobs:
   e2eTestAzureMaster:
     environment:
       E2E_ENABLE_CONFORMANCE: "yes"
-    <<: *e2eTestAzure
+    <<: *e2eTestAzureMultiMaster
 
 workflows:
   version: 2
