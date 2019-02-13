@@ -210,26 +210,6 @@ variable "k8s_api_ip" {
   default     = "172.31.0.1"
 }
 
-variable "subnets_bastion" {
-  description = "CIDR for bastion networks."
-  default     = ["10.0.1.0/25", "10.0.1.128/25"]
-}
-
-variable "subnets_lb" {
-  description = "CIDR for load balancer networks."
-  default     = ["10.0.2.0/25", "10.0.2.128/25"]
-}
-
-variable "subnets_vault" {
-  description = "CIDR for Vault network."
-  default     = ["10.0.3.0/25"]
-}
-
-variable "subnets_worker" {
-  description = "CIDR for worker network."
-  default     = ["10.0.5.0/25", "10.0.5.128/25"]
-}
-
 ### VPN ###
 
 # NOTE: VPN is disabled by default.

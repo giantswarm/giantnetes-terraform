@@ -71,11 +71,11 @@ resource "azurerm_virtual_machine" "master" {
   }
 
   storage_data_disk {
-    name            = "${azurerm_managed_disk.master_etcd.name}"
-    managed_disk_id = "${azurerm_managed_disk.master_etcd.id}"
+    name            = "${element(azurerm_managed_disk.master_etcd.*.name,count.index)}"
+    managed_disk_id = "${element(azurerm_managed_disk.master_etcd.*.id,count.index)}"
     create_option   = "Attach"
     lun             = 1
-    disk_size_gb    = "${azurerm_managed_disk.master_etcd.disk_size_gb}"
+    disk_size_gb    = "${element(azurerm_managed_disk.master_etcd.*.disk_size_gb,count.index)}"
   }
 
   os_profile {
