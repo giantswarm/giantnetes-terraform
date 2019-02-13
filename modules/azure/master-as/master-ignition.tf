@@ -4,7 +4,7 @@ locals {
 
 # Only necessary, because azurerm_storage_blob requires file as a source.
 resource "local_file" "master_ignition" {
-  count = 1
+  count = "${var.master_count}"
 
   content  = "${replace(var.user_data, "__MASTER_ID__", count.index+1)}"
   filename = "${path.cwd}/generated/master-ignition${count.index}.yaml"
