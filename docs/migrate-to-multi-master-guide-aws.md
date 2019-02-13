@@ -16,7 +16,7 @@ If you are migration from older version of giantnetes-terraform which did not ha
 ### delete old infrastrucutre
 switch  `giantnetes-terraform` to branch `13bca31185e282a3ff65fcd523ecbef4057e2b36` and run:
 ```
-terraform destroy --target=aws_cloudformation_stack.worker_asg --target=aws_instance.master --target=aws_elb.master --target=aws_elb.worker --target=aws_elb.vault --target=aws_subnet.elb_0 --target=aws_subnet.elb_1 --target=aws_subnet.worker_0 --target=aws_subnet.worker_1 --target=aws_instance.bastion --target=aws_subnet.bastion_0 --target=aws_subnet.bastion_1 --target=aws_vpc_endpoint.cloudwatch --target=aws_nat_gateway.private_nat_gateway_0 --target=aws_nat_gateway.private_nat_gateway_1 --target=aws_eip.private_nat_gateway_0  --target=aws_eip.private_nat_gateway_1
+terraform destroy --target=aws_cloudformation_stack.worker_asg --target=aws_instance.master --target=aws_elb.master --target=aws_elb.worker --target=aws_elb.vault --target=aws_subnet.elb_0 --target=aws_subnet.elb_1 --target=aws_subnet.worker_0 --target=aws_subnet.worker_1 --target=aws_instance.bastion --target=aws_subnet.bastion_0 --target=aws_subnet.bastion_1 --target=aws_vpc_endpoint.cloudwatch --target=aws_nat_gateway.private_nat_gateway_0 --target=aws_nat_gateway.private_nat_gateway_1 --target=aws_eip.private_nat_gateway_0  --target=aws_eip.private_nat_gateway_1 --target=aws_vpc_endpoint.s3 --target=aws_route.vpc_route_0 --target=aws_route.vpc_route_1 --target=aws_launch_configuration.worker
 ```
 after deletion go back to latest master
 
@@ -104,9 +104,9 @@ to
 Save changes, reload systemd daemon and start etcd:
 ```
 sudo vim /etc/systemd/system/etcd3.service
-
+sudo rm -rf /var/lib/etcd/member
 sudo systemctl daemon-reload
-systemctl start etcd3
+sudo systemctl start etcd3
 ```
 
 Now you should have 2 healthy nodes in etcd cluster, check logs on both masters or run:

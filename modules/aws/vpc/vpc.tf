@@ -124,7 +124,7 @@ resource "aws_route_table" "cluster_vpc_public" {
   tags = "${merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}-public0"
+      "Name", "${var.cluster_name}-public${count.index}"
     )
   )}"
 }
