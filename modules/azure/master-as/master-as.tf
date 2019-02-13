@@ -82,7 +82,7 @@ resource "azurerm_virtual_machine" "master" {
     computer_name  = "master${count.index}"
     admin_username = "core"
     admin_password = ""
-    custom_data    = "${base64encode("${data.ignition_config.loader.rendered}")}"
+    custom_data    = "${base64encode("${element(data.ignition_config.loader.*.rendered, count.index)}")}"
   }
 
   os_profile_linux_config {

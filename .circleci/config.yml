@@ -45,9 +45,20 @@ jobs:
       E2E_ENABLE_CONFORMANCE: "yes"
     <<: *e2eTestAWSMultiMaster
 
-  e2eTestAzure: &e2eTestAzure
+  e2eTestAzureSingleMaster: &e2eTestAzureSingleMaster
     docker:
       - image: quay.io/giantswarm/docker-terraform-and-stuff
+    environment:
+      MASTER_COUNT: 1
+    steps:
+    - checkout
+    - run: ./misc/e2e-azure.sh
+
+  e2eTestAzureMultiMaster: &e2eTestAzureMultiMaster
+    docker:
+      - image: quay.io/giantswarm/docker-terraform-and-stuff
+    environment:
+      MASTER_COUNT: 1
     steps:
     - checkout
     - run: ./misc/e2e-azure.sh
@@ -80,7 +91,11 @@ workflows:
           requires:
           - hold
 
-      - e2eTestAzure:
+      - e2eTestAzureSingleMaster:
+          requires:
+          - hold
+
+      - e2eTestAzureMultiMaster:
           requires:
           - hold
 

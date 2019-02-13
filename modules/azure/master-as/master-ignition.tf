@@ -11,7 +11,7 @@ resource "local_file" "master_ignition" {
 }
 
 resource "azurerm_storage_blob" "ignition_blob" {
-  count = 1
+  count = "${var.master_count}"
 
   name = "master-ignition${count.index}-${md5(var.user_data)}.yaml"
 
@@ -58,7 +58,9 @@ data "azurerm_storage_account_sas" "sas" {
 }
 
 data "ignition_config" "loader" {
+  count = "${var.master_count}"
+
   replace {
-    source = "${azurerm_storage_blob.ignition_blob.url}${data.azurerm_storage_account_sas.sas.sas}"
+    source = "${element(azurerm_storage_blob.ignition_blob.*.url,count.index)}${data.azurerm_storage_account_sas.sas.sas}"
   }
 }
