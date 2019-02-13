@@ -26,7 +26,7 @@ resource "azurerm_dns_a_record" "master_dns" {
 # TODO: If more than one master this should become load balancer.
 resource "azurerm_dns_a_record" "etcd_dns" {
   count               = "${var.master_count}"
-  name                = "${var.etcd_dns}${count.index}"
+  name                = "etcd${count.index+1}"
   zone_name           = "${var.base_domain}"
   resource_group_name = "${var.resource_group_name}"
   ttl                 = 300
