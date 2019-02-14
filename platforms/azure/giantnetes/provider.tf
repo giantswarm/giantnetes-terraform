@@ -1,4 +1,6 @@
 provider "azurerm" {
+  version = "=1.22.0"
+
   environment = "${var.azure_cloud}"
 }
 

@@ -233,3 +233,7 @@ module "vpn" {
   vpn_right_gateway_address_1 = "${var.vpn_right_gateway_address_1}"
   vpn_right_subnet_cidr_1     = "${var.vpn_right_subnet_cidr_1}"
 }
+
+terraform = {
+  required_version = ">= 0.11.0"
+}
