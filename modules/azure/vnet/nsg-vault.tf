@@ -8,6 +8,11 @@ resource "azurerm_network_security_group" "vault" {
   }
 }
 
+resource "azurerm_subnet_network_security_group_association" "vault" {
+  subnet_id                 = "${azurerm_subnet.vault_subnet.id}"
+  network_security_group_id = "${azurerm_network_security_group.vault.id}"
+}
+
 resource "azurerm_network_security_rule" "vault_ingress_ssh" {
   name                        = "${var.cluster_name}-vault-ssh"
   description                 = "${var.cluster_name} vault - SSH"

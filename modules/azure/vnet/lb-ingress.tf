@@ -15,10 +15,10 @@ resource "azurerm_lb" "ingress_lb" {
 }
 
 resource "azurerm_public_ip" "ingress_ip" {
-  name                         = "${var.cluster_name}_ingress_ip"
-  location                     = "${var.location}"
-  resource_group_name          = "${var.resource_group_name}"
-  public_ip_address_allocation = "static"
+  name                = "${var.cluster_name}_ingress_ip"
+  location            = "${var.location}"
+  resource_group_name = "${var.resource_group_name}"
+  allocation_method   = "static"
 
   tags {
     GiantSwarmInstallation = "${var.cluster_name}"

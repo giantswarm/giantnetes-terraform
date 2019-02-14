@@ -7,11 +7,17 @@ resource "azurerm_network_interface" "master" {
   enable_ip_forwarding = true
 
   ip_configuration {
-    private_ip_address_allocation           = "dynamic"
-    name                                    = "${var.cluster_name}-masterIPConfiguration"
-    subnet_id                               = "${azurerm_subnet.worker_subnet.id}"
-    load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.api-lb.id}"]
+    private_ip_address_allocation = "dynamic"
+    name                          = "${var.cluster_name}-masterIPConfiguration"
+    subnet_id                     = "${azurerm_subnet.worker_subnet.id}"
   }
+}
+
+resource "azurerm_network_interface_backend_address_pool_association" "master" {
+  count                   = "${var.master_count}"
+  network_interface_id    = "${element(azurerm_network_interface.master.*.id,count.index)}"
+  ip_configuration_name   = "${var.cluster_name}-masterIPConfiguration"
+  backend_address_pool_id = "${azurerm_lb_backend_address_pool.api-lb.id}}"
 }
 
 resource "azurerm_dns_a_record" "master_dns" {

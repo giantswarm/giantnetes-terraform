@@ -31,23 +31,24 @@ resource "azurerm_subnet" "bastion_subnet" {
   virtual_network_name = "${azurerm_virtual_network.cluster_vnet.name}"
 
   # NOTE: bastion_cidr should be unique across clusters, when VPN enabled.
-  address_prefix            = "${var.bastion_cidr}"
-  network_security_group_id = "${azurerm_network_security_group.bastion.id}"
+  address_prefix = "${var.bastion_cidr}"
 }
 
 resource "azurerm_subnet" "vault_subnet" {
-  name                      = "${var.cluster_name}_vault_subnet"
-  resource_group_name       = "${var.resource_group_name}"
-  virtual_network_name      = "${azurerm_virtual_network.cluster_vnet.name}"
-  address_prefix            = "${cidrsubnet(var.vnet_cidr, 8, 1)}"
-  network_security_group_id = "${azurerm_network_security_group.vault.id}"
+  name                 = "${var.cluster_name}_vault_subnet"
+  resource_group_name  = "${var.resource_group_name}"
+  virtual_network_name = "${azurerm_virtual_network.cluster_vnet.name}"
+  address_prefix       = "${cidrsubnet(var.vnet_cidr, 8, 1)}"
 }
 
 resource "azurerm_subnet" "worker_subnet" {
-  name                      = "${var.cluster_name}_worker_subnet"
-  resource_group_name       = "${var.resource_group_name}"
-  virtual_network_name      = "${azurerm_virtual_network.cluster_vnet.name}"
-  address_prefix            = "${cidrsubnet(var.vnet_cidr, 8, 2)}"
-  network_security_group_id = "${azurerm_network_security_group.worker.id}"
-  route_table_id            = "${azurerm_route_table.worker_rt.id}"
+  name                 = "${var.cluster_name}_worker_subnet"
+  resource_group_name  = "${var.resource_group_name}"
+  virtual_network_name = "${azurerm_virtual_network.cluster_vnet.name}"
+  address_prefix       = "${cidrsubnet(var.vnet_cidr, 8, 2)}"
+}
+
+resource "azurerm_subnet_route_table_association" "worker" {
+  subnet_id      = "${azurerm_subnet.worker_subnet.id}"
+  route_table_id = "${azurerm_route_table.worker_rt.id}"
 }
