@@ -97,4 +97,10 @@ resource "azurerm_virtual_machine" "master" {
   tags {
     GiantSwarmInstallation = "${var.cluster_name}"
   }
+
+  # we ignore changes, to avoid rolling all masters at once
+  # update is done via tainting masters
+  lifecycle {
+    ignore_changes = ["*"]
+  }
 }
