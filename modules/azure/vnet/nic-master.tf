@@ -8,7 +8,7 @@ resource "azurerm_network_interface" "master" {
 
   ip_configuration {
     private_ip_address_allocation = "dynamic"
-    name                          = "${var.cluster_name}-masterIPConfiguration${count.index}"
+    name                          = "${var.cluster_name}-masterIPConfiguration"
     subnet_id                     = "${azurerm_subnet.worker_subnet.id}"
   }
 }
@@ -16,7 +16,7 @@ resource "azurerm_network_interface" "master" {
 resource "azurerm_network_interface_backend_address_pool_association" "master" {
   count                   = "${var.master_count}"
   network_interface_id    = "${element(azurerm_network_interface.master.*.id,count.index)}"
-  ip_configuration_name   = "${var.cluster_name}-masterIPConfiguration${count.index}"
+  ip_configuration_name   = "${var.cluster_name}-masterIPConfiguration"
   backend_address_pool_id = "${azurerm_lb_backend_address_pool.api-lb.id}"
 }
 
