@@ -2986,7 +2986,7 @@ systemd:
           --net=host \
           -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
           -v /etc/kubernetes/ssl/calico/:/etc/kubernetes/ssl/calico/ \
-          quay.io/giantswarm/certctl:b8074296d25d1c907bafed843411413fbcdbfff3 \
+          quay.io/giantswarm/certctl:2a6615f61499cd09a8d5ced9a5fade322d2de254 \
           issue \
           --vault-addr=https://{{ .VaultDomainName }} \
           --vault-token=${VAULT_TOKEN} \
@@ -3030,7 +3030,7 @@ systemd:
           --net=host \
           -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
           -v /etc/kubernetes/ssl/etcd/:/etc/kubernetes/ssl/etcd/ \
-          quay.io/giantswarm/certctl:b8074296d25d1c907bafed843411413fbcdbfff3 \
+          quay.io/giantswarm/certctl:2a6615f61499cd09a8d5ced9a5fade322d2de254 \
           issue \
           --vault-addr=https://{{ .VaultDomainName }} \
           --vault-token=${VAULT_TOKEN} \
@@ -3261,7 +3261,7 @@ systemd:
       --net=host \
       -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
       -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
-      quay.io/giantswarm/certctl:b8074296d25d1c907bafed843411413fbcdbfff3 \
+      quay.io/giantswarm/certctl:2a6615f61499cd09a8d5ced9a5fade322d2de254 \
       issue \
       --vault-addr=${VAULT_ADDR} \
       --vault-token=${VAULT_TOKEN} \
@@ -3271,6 +3271,7 @@ systemd:
       --crt-file=/etc/kubernetes/ssl/apiserver-crt.pem \
       --ip-sans=127.0.0.1,${DEFAULT_IPV4},{{ .K8SAPIIP }} \
       --alt-names=localhost,kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.local \
+      --allowed-domains={{ .APIDomainName }},localhost,kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.local \
       --organizations=system:masters \
       --key-file=/etc/kubernetes/ssl/apiserver-key.pem \
       --ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
