@@ -93,9 +93,7 @@ stage-prepare-builddir() {
   [ -d ${BUILDDIR} ] && rm -rf ${BUILDDIR}
   mkdir -p ${BUILDDIR}
 
-  touch ${BUILDDIR}/backend.tf
-
-  cat > ${BUILDDIR}/envs.sh << EOF
+  cat > ${BUILDDIR}/bootstrap.sh << EOF
 export ARM_CLIENT_ID=${E2E_SP_APP_ID}
 export ARM_CLIENT_SECRET=${E2E_SP_PASSWORD}
 export ARM_TENANT_ID=${E2E_SP_TENANT_ID}
@@ -114,6 +112,7 @@ export TF_VAR_delete_data_disks_on_termination="true"
 # TODO: Remove this as soon as 1995.0.0 available.
 export TF_VAR_container_linux_version=1995.0.0
 export TF_VAR_container_linux_channel=alpha
+terraform init ../platforms/azure/giantnetes
 EOF
 }
 
@@ -150,8 +149,7 @@ EOF
 stage-terraform-only-vault() {
   cd ${BUILDDIR}
 
-  source envs.sh
-  terraform init ../platforms/azure/giantnetes
+  source bootstrap.sh
   terraform apply -auto-approve -target="module.dns" ../platforms/azure/giantnetes
   terraform apply -auto-approve -target="module.vnet" ../platforms/azure/giantnetes
   terraform apply -auto-approve -target="module.bastion" ../platforms/azure/giantnetes
@@ -163,8 +161,7 @@ stage-terraform-only-vault() {
 stage-terraform() {
   cd ${BUILDDIR}
 
-  source envs.sh
-  terraform init ../platforms/azure/giantnetes
+  source bootstrap.sh
   terraform apply -auto-approve ../platforms/azure/giantnetes
 
   cd -
@@ -231,7 +228,7 @@ EOF
     exec_on vault1 vault operator unseal ${unseal_key}
 
     # Insert vault token in envs file.
-    sed -i "s/export TF_VAR_nodes_vault_token=.*/export TF_VAR_nodes_vault_token=${VAULT_TOKEN}/" ${BUILDDIR}/envs.sh
+    sed -i "s/export TF_VAR_nodes_vault_token=.*/export TF_VAR_nodes_vault_token=${VAULT_TOKEN}/" ${BUILDDIR}/bootstrap.sh
 
     cd ${WORKDIR}
 }
@@ -250,8 +247,7 @@ stage-destroy() {
   stage-debug || true
   
   cd ${BUILDDIR}
-  source envs.sh
-  terraform init ../platforms/azure/giantnetes
+  source bootstrap.sh
   terraform destroy -force ../platforms/azure/giantnetes
 
   cd -

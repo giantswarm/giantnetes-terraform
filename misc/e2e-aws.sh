@@ -97,10 +97,7 @@ stage-prepare-builddir() {
   [ -d ${BUILDDIR} ] && rm -rf ${BUILDDIR}
   mkdir -p ${BUILDDIR}
 
-  touch ${BUILDDIR}/backend.tf
-  touch ${BUILDDIR}/provider.tf
-
-  cat > ${BUILDDIR}/envs.sh << EOF
+  cat > ${BUILDDIR}/bootstrap.sh << EOF
 export AWS_DEFAULT_REGION=${E2E_AWS_REGION}
 export TF_VAR_aws_account=${E2E_AWS_ACCOUNT}
 export TF_VAR_aws_region=\${AWS_DEFAULT_REGION}
@@ -113,6 +110,7 @@ export TF_VAR_worker_count=${WORKER_COUNT}
 # TODO: Remove this as soon as 1995.0.0 available.
 export TF_VAR_container_linux_version=1995.0.0
 export TF_VAR_container_linux_channel=alpha
+terraform init ../platforms/aws/giantnetes
 EOF
 }
 
@@ -149,7 +147,7 @@ EOF
 stage-terraform-only-vault() {
   cd ${BUILDDIR}
 
-  source envs.sh
+  source bootstrap.sh
   terraform init ../platforms/aws/giantnetes
   terraform apply -auto-approve -target="module.dns" ../platforms/aws/giantnetes
   terraform apply -auto-approve -target="module.vpc" ../platforms/aws/giantnetes
@@ -163,8 +161,7 @@ stage-terraform-only-vault() {
 stage-terraform() {
   cd ${BUILDDIR}
 
-  source envs.sh
-  terraform init ../platforms/aws/giantnetes
+  source bootstrap.sh
   terraform apply -auto-approve ../platforms/aws/giantnetes
 
   cd -
@@ -227,7 +224,7 @@ EOF
     exec_on vault1 vault operator unseal ${unseal_key}
 
     # Insert vault token in envs file.
-    sed -i "s/export TF_VAR_nodes_vault_token=.*/export TF_VAR_nodes_vault_token=${VAULT_TOKEN}/" ${BUILDDIR}/envs.sh
+    sed -i "s/export TF_VAR_nodes_vault_token=.*/export TF_VAR_nodes_vault_token=${VAULT_TOKEN}/" ${BUILDDIR}/bootstrap.sh
 
     cd ${WORKDIR}
 }
@@ -245,8 +242,7 @@ stage-destroy() {
   stage-debug || true
 
   cd ${BUILDDIR}
-  source envs.sh
-  terraform init ../platforms/aws/giantnetes
+  source bootstrap.sh
   terraform destroy -force ../platforms/aws/giantnetes
 
   cd -
