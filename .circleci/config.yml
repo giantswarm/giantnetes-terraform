@@ -58,7 +58,7 @@ jobs:
     docker:
       - image: quay.io/giantswarm/docker-terraform-and-stuff
     environment:
-      MASTER_COUNT: 1
+      MASTER_COUNT: 3
     steps:
     - checkout
     - run: ./misc/e2e-azure.sh
