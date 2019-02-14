@@ -5,7 +5,7 @@ This migration will cause downtime for the cluster.
 ## before migration
 do etcd backup of etcd cluster and shut down master right after that
 ```
-ETCDCTL_API=3 etcdctl snapshot save db-snapshot --key=/etc/kubernetes/ssl/etcd/client-key.pem --cert=/etc/kubernetes/ssl/etcd/client-crt.pem --cacert=/etc/kubernetes/ssl/etcd/client-ca.pem --endpoints=https://etcd.MAIN_DOMAIN:2379
+ETCDCTL_API=3 etcdctl snapshot save db-snapshot --key=/etc/kubernetes/ssl/etcd/client-key.pem --cert=/etc/kubernetes/ssl/etcd/client-crt.pem --cacert=/etc/kubernetes/ssl/etcd/client-ca.pem --endpoints=https://127.0.0.1:2379
 ```
 Do not forget to copy the etcd snapshot out of the machine to somewhere safe.
 
@@ -54,78 +54,8 @@ terraform apply ../platforms/aws/giantnetes/
 
 ## Migrate etcd into cluster
 
-### prepare
-* stop kubelet on all master machines
-* stop etcd3.service on second and third master machine
-* go to first master
+see [migrate to etcd multi cluster guide](https://github.com/giantswarm/giantnetes-terraform/blob/master/docs/migrate-etcd-to-multi-cluster.md)
 
-### master0
-Export envs to use etcdctl againts cluster:
-```
-unalias etcdctl
-export ETCDCTL_CERT_FILE=/etc/kubernetes/ssl/etcd/client-crt.pem
-export ETCDCTL_CA_FILE=/etc/kubernetes/ssl/etcd/client-ca.pem
-export ETCDCTL_KEY_FILE=/etc/kubernetes/ssl/etcd/client-key.pem
-export ETCDCTL_ENDPOINT=https://etcd1.DOMAIN_BASE:2379
-```
-
-
-Check member status via etcdctl and update member `peerURL`:
-```
-sudo -E etcdctl member list
-sudo -E etcdctl member update MEMBER_ID https://etcd1.DOMAIN_BASE:2380
-```
-
-
-Add second master to etcd cluster
-```
-sudo -E etcdctl member add etcd2 https://etcd2.DOMAIN_BASE:2380
-```
-
-Now go to second master.
-
-### master1
-Edit `/etc/systemd/system/etcd3.service` and change `--initial-cluster-state new` to  to `--initial-cluster-state existing` and remove `etcd3=https://etcd3.DOMAIN_BASE:2379` from `--initial-cluster` in the same file. 
-
-``` 
-...
---initial-cluster-state new 
---initial-cluster=etcd1=https://etcd1.DOMAIN_BASE:2379,etcd2=https://etcd2.DOMAIN_BASE:2379,etcd3=https://etcd3.DOMAIN_BASE:2379
-...
-```
-to
-```
-...
---initial-cluster-state existing
---initial-cluster=etcd1=https://etcd1.DOMAIN_BASE:2379,etcd2=https://etcd2.DOMAIN_BASE:2379
-...
-```
-
-Save changes, reload systemd daemon and start etcd:
-```
-sudo vim /etc/systemd/system/etcd3.service
-
-sudo systemctl daemon-reload
-systemctl start etcd3
-```
-
-Now you should have 2 healthy nodes in etcd cluster, check logs on both masters or run:
-```
-sudo -E etcdctl cluster-health
-```
-
-### master2
-Eedit /etc/systemd/system/etcd3.service and change `--initial-cluster-state new` to `--initial-cluster-state existing`.
-```
-sudo vim /etc/systemd/system/etcd3.service 
-sudo systemctl daemon-reload
-systemctl start etcd3
-``` 
-
-Now you should have 3 healthy nodes in etcd cluster, to ensure run:
-```
-sudo -E etcdctl cluster-health
-```
 ## Recover rest of cluster
 * Restart kubelets on all 3 masters to ensure everyhting is up and running.
 * You might need to restart all workers so they properly register to k8s-api.
