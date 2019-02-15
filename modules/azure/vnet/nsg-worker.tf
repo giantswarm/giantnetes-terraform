@@ -8,6 +8,11 @@ resource "azurerm_network_security_group" "worker" {
   }
 }
 
+resource "azurerm_subnet_network_security_group_association" "worker" {
+  subnet_id                 = "${azurerm_subnet.worker_subnet.id}"
+  network_security_group_id = "${azurerm_network_security_group.worker.id}"
+}
+
 resource "azurerm_network_security_rule" "master_ingress_api" {
   name                        = "${var.cluster_name}-master-in-api"
   description                 = "${var.cluster_name} master - API allow for all"

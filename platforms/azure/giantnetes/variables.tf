@@ -46,6 +46,12 @@ variable "nodes_vault_token" {
   description = "Vault token used by nodes for bootstrapping. Should be defined after Vault is installed."
 }
 
+variable "master_count" {
+  type        = "string"
+  description = "Number of master nodes to be created. Allowed values are 1 or 3."
+  default     = "3"
+}
+
 variable "worker_count" {
   type        = "string"
   description = "Number of worker nodes to be created."
@@ -202,41 +208,6 @@ variable "k8s_dns_ip" {
 variable "k8s_api_ip" {
   description = "IP for k8s internal API server."
   default     = "172.31.0.1"
-}
-
-variable "subnet_bastion_0" {
-  description = "CIDR for bastion network 0."
-  default     = "10.0.1.0/25"
-}
-
-variable "subnet_bastion_1" {
-  description = "CIDR for bastion network 1."
-  default     = "10.0.1.128/25"
-}
-
-variable "subnet_lb_0" {
-  description = "CIDR for load balancer network 0."
-  default     = "10.0.2.0/25"
-}
-
-variable "subnet_lb_1" {
-  description = "CIDR for load balancer network 1."
-  default     = "10.0.2.128/25"
-}
-
-variable "subnet_vault_0" {
-  description = "CIDR for Vault network."
-  default     = "10.0.3.0/25"
-}
-
-variable "subnet_worker_0" {
-  description = "CIDR for worker network 0."
-  default     = "10.0.5.0/25"
-}
-
-variable "subnet_worker_1" {
-  description = "CIDR for worker network 1."
-  default     = "10.0.5.128/25"
 }
 
 ### VPN ###

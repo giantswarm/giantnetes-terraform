@@ -6,6 +6,9 @@ Common:
 - `az` cli installed (See [azure docs](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest))
 - `az login` executed (To switch to German cloud `az cloud set --name AzureGermanCloud`)
 
+## Multi-master 
+By default terraform will create multi-master cluster with 3 master nodes, single master mode can be enabled by setting terraform variable `master_count=1` or export env variable `export TF_VAR_master_count=1`.
+
 ### Create storage account for terraform state
 
 ```
@@ -167,7 +170,9 @@ source envs.sh
 ```
 terraform taint -module="bastion" "azurerm_virtual_machine.bastion.0"
 terraform taint -module="bastion" "azurerm_virtual_machine.bastion.1"
-terraform taint -module="master" "azurerm_virtual_machine.master"
+terraform taint -module="master" "azurerm_virtual_machine.master.0"
+terraform taint -module="master" "azurerm_virtual_machine.master.1"
+terraform taint -module="master" "azurerm_virtual_machine.master.2"
 terraform taint -module="worker" "azurerm_virtual_machine.worker.0"
 terraform taint -module="worker" "azurerm_virtual_machine.worker.1"
 terraform taint -module="worker" "azurerm_virtual_machine.worker.2"
@@ -249,10 +254,16 @@ terraform init ../platforms/azure/giantnetes
 terraform plan ../platforms/azure/giantnetes
 ```
 
-#### Update master
+#### Update masters
 
 ```
-terraform taint -module="master" azurerm_virtual_machine.master
+terraform taint -module="master" azurerm_virtual_machine.master.0
+terraform apply ../platforms/azure/giantnetes
+
+terraform taint -module="master" azurerm_virtual_machine.master.1
+terraform apply ../platforms/azure/giantnetes
+
+terraform taint -module="master" azurerm_virtual_machine.master.2
 terraform apply ../platforms/azure/giantnetes
 ```
 
