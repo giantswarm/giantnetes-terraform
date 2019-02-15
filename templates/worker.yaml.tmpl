@@ -523,7 +523,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:v1.13.1"
+      Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:v1.13.3"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
