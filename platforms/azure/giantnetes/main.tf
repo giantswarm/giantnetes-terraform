@@ -35,7 +35,7 @@ module "vnet" {
   etcd_dns            = "${var.etcd_dns}"
   ingress_dns         = "${var.ingress_dns}"
   location            = "${var.azure_location}"
-  master_count        = "1"
+  master_count        = "${var.master_count}"
   worker_count        = "${var.worker_count}"
   resource_group_name = "${module.resource_group.name}"
   vault_dns           = "${var.vault_dns}"
@@ -77,7 +77,7 @@ locals {
     "K8SAPIIP"                 = "${var.k8s_api_ip}"
     "K8SDNSIP"                 = "${var.k8s_dns_ip}"
     "K8SServiceCIDR"           = "${var.k8s_service_cidr}"
-    "MasterCount"              = "1"                                                                                                                                   # 1 for now
+    "MasterCount"              = "${var.master_count}"
     "MasterID"                 = "${var.master_id}"
     "PodCIDR"                  = "${var.pod_cidr}"
     "Provider"                 = "azure"
@@ -171,8 +171,7 @@ module "master" {
   etcd_disk_size              = "10"
   location                    = "${var.azure_location}"
 
-  # Only single master supported.
-  master_count                = "1"
+  master_count                = "${var.master_count}"
   resource_group_name         = "${module.resource_group.name}"
   os_disk_storage_type        = "${var.os_disk_storage_type}"
   platform_fault_domain_count = "${var.platform_fault_domain_count}"

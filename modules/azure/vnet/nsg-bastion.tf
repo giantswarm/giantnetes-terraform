@@ -8,6 +8,11 @@ resource "azurerm_network_security_group" "bastion" {
   }
 }
 
+resource "azurerm_subnet_network_security_group_association" "bastion" {
+  subnet_id                 = "${azurerm_subnet.bastion_subnet.id}"
+  network_security_group_id = "${azurerm_network_security_group.bastion.id}"
+}
+
 resource "azurerm_network_security_rule" "bastion_ingress_ssh" {
   name                   = "${var.cluster_name}-bastion-ssh"
   description            = "${var.cluster_name} bastion - SSH"
