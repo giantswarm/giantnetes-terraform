@@ -1,3 +1,10 @@
+provider "aws" {
+  version = "~> 1.58.0"
+
+  # Make sure to define profile in ~/.aws/config
+  profile = "${var.cluster_name}"
+}
+
 module "container_linux" {
   source = "../../../modules/container-linux"
 
@@ -291,4 +298,8 @@ module "vpn" {
   aws_private_route_table_ids = "${module.vpc.private_route_table_ids}"
   aws_vpn_name                = "Giant Swarm <-> ${var.cluster_name}"
   aws_vpn_vpc_id              = "${module.vpc.vpc_id}"
+}
+
+terraform = {
+  required_version = ">= 0.11.0"
 }

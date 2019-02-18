@@ -18,7 +18,7 @@ export TF_VAR_nodes_vault_token=
 export TF_VAR_aws_customer_gateway_id_0=<e.g. cgw-xxxxxxx>
 export TF_VAR_aws_customer_gateway_id_1=<e.g. cgw-xxxxxxx>
 
- #Base domain.
+#Base domain.
 export TF_VAR_base_domain=${TF_VAR_cluster_name}.${TF_VAR_aws_region}.aws.gigantic.io
 
 # ID of aws route53 zone.
@@ -29,3 +29,11 @@ export TF_VAR_subnet_bastion_0=<bastion subnet cidr 1>
 export TF_VAR_subnet_bastion_1=<bastion subnet cidr 2>
 
 # Overwrite any parameters from "platforms/aws/giantnetes/variables.tf" here.
+
+terraform init -backend=true \
+-backend-config="bucket=${TF_VAR_cluster_name}-state" \
+-backend-config="key=terraform.tfstate" \
+-backend-config="dynamodb_table=${TF_VAR_cluster_name}-lock" \
+-backend-config="profile=${TF_VAR_cluster_name}" \
+-backend-config="region=${TF_VAR_aws_region}" \
+../platforms/aws/giantnetes

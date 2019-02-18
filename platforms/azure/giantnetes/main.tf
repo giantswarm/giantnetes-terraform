@@ -1,3 +1,11 @@
+provider "azurerm" {
+  version = "=1.22.1"
+
+  environment = "${var.azure_cloud}"
+}
+
+data "azurerm_client_config" "current" {}
+
 module "container_linux" {
   source = "../../../modules/container-linux"
 
@@ -232,4 +240,8 @@ module "vpn" {
   vpn_right_subnet_cidr_0     = "${var.vpn_right_subnet_cidr_0}"
   vpn_right_gateway_address_1 = "${var.vpn_right_gateway_address_1}"
   vpn_right_subnet_cidr_1     = "${var.vpn_right_subnet_cidr_1}"
+}
+
+terraform = {
+  required_version = ">= 0.11.0"
 }
