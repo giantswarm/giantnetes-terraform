@@ -110,7 +110,7 @@ export TF_VAR_worker_count=${WORKER_COUNT}
 # TODO: Remove this as soon as 1995.0.0 available.
 export TF_VAR_container_linux_version=1995.0.0
 export TF_VAR_container_linux_channel=alpha
-terraform init -backend=false ../platforms/aws/giantnetes
+terraform init ../platforms/aws/giantnetes
 EOF
 }
 
