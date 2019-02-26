@@ -112,7 +112,7 @@ export TF_VAR_delete_data_disks_on_termination="true"
 # TODO: Remove this as soon as 1995.0.0 available.
 export TF_VAR_container_linux_version=1995.0.0
 export TF_VAR_container_linux_channel=alpha
-terraform init ../platforms/azure/giantnetes
+terraform init -backend=false ../platforms/azure/giantnetes
 EOF
 }
 
