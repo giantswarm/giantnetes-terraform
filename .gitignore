@@ -1,4 +1,7 @@
-build
 .terraform
 terraform.tfstate*
 generated
+platforms/aws/giantnetes/bootstrap.sh
+platforms/aws/giantnetes/terraform-secrets.yaml
+platforms/aws/giantnetes/bastion-users.yaml
+platforms/aws/giantnetes/users.yaml

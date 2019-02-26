@@ -40,12 +40,11 @@ aws dynamodb create-table --region $AWS_DEFAULT_REGION \
     --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
 ```
 
-### Prepare terraform build directory
+### Prepare terraform
 
 ```
-mkdir -p build
-cp -r examples/aws/example-build/* build
-cd build
+cp -r examples/aws/* ./platforms/aws/giantnetes/
+cd ./platforms/aws/giantnetes/
 ```
 
 Edit `bootstrap.sh`.
@@ -59,7 +58,7 @@ NOTE: Reexecute `source bootstrap.sh` in every new console.
 
 ### Configure ssh users
 
-Add bastion users to `build/bastion-users.yaml`. All other vms take users configuration from `build/users.yaml`, so please modify it too.
+Add bastion users to `./platforms/aws/giantnetes/bastion-users.yaml`. All other vms take users configuration from `./platforms/aws/giantnetes/users.yaml`, so please modify it too.
 
 ### Route53 DNS zone setup
 
@@ -89,8 +88,8 @@ source bootstrap.sh
 ```
 
 ```
-terraform plan ../platforms/aws/giantnetes
-terraform apply ../platforms/aws/giantnetes
+terraform plan ./
+terraform apply ./
 ```
 
 It should create all cluster resources. Please note master and worker vms are created, but will fail. This is expected behaviour.
@@ -114,8 +113,8 @@ source bootstrap.sh
 ```
 
 ```
-terraform plan ../platforms/aws/giantnetes
-terraform apply ../platforms/aws/giantnetes
+terraform plan .
+terraform apply .
 ```
 
 ## Upload variables and configuration
@@ -150,7 +149,7 @@ aws s3 sync s3://$CLUSTER-access-logs .
 ```
 
 ```
-terraform destroy ../platforms/aws/giantnetes
+terraform destroy ./
 ```
 
 ## Enable access logs for state bucket
@@ -167,8 +166,7 @@ aws s3api put-bucket-logging --bucket $CLUSTER-state --bucket-logging-status fil
 ### Prepare variables and configuration.
 
 ```
-mkdir build
-cd build
+cd platforms/aws/giantnetes
 ```
 
 ```
@@ -191,8 +189,8 @@ source bootstrap.sh
 ```
 
 ```
-terraform plan ../platforms/aws/giantnetes
-terraform apply ../platforms/aws/giantnetes
+terraform plan ./
+terraform apply ./
 ```
 
 ### Update masters
@@ -202,15 +200,15 @@ As each master is single ec2 instance, normal `terraform apply` operation would 
 ```
 # update first master
 terraform taint --module="master" aws_instance.master.0
-terraform apply ../platforms/aws/giantnetes
+terraform apply ./
 
 # update second master
 terraform taint --module="master" aws_instance.master.1
-terraform apply ../platforms/aws/giantnetes
+terraform apply ./
 
 # update third master
 terraform taint --module="master" aws_instance.master.2
-terraform apply ../platforms/aws/giantnetes
+terraform apply ./
 
 ```
 
