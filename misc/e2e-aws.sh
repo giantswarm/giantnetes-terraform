@@ -115,7 +115,7 @@ EOF
 
   # This removes the configuration of the backend to init Terraform
   # with the local backend
-  sed -i '/backend "s3" {}/d' ../platforms/aws/giantnetes/main.tf
+  sed -i '/backend "s3" {}/d' ${WORKDIR}/platforms/aws/giantnetes/main.tf
 }
 
 stage-prepare-ssh(){
