@@ -108,7 +108,12 @@ export TF_VAR_worker_count=${WORKER_COUNT}
 # TODO: Remove this as soon as 1995.0.0 available.
 export TF_VAR_container_linux_version=1995.0.0
 export TF_VAR_container_linux_channel=alpha
-terraform init ./
+terraform init -backend=true \
+ -backend-config="bucket=${TF_VAR_cluster_name}-state" \
+ -backend-config="key=terraform.tfstate" \
+ -backend-config="dynamodb_table=${TF_VAR_cluster_name}-lock" \
+ -backend-config="profile=${TF_VAR_cluster_name}" \
+ -backend-config="region=${TF_VAR_aws_region}" ./
 EOF
 
 }
