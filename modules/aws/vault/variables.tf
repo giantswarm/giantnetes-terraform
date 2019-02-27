@@ -1,3 +1,11 @@
+variable "arn_region" {
+  type = "string"
+}
+
+variable "aws_account" {
+  type = "string"
+}
+
 variable "elb_subnet_ids" {
   type = "list"
 }
@@ -7,6 +15,10 @@ variable "container_linux_ami_id" {
 }
 
 variable "cluster_name" {
+  type = "string"
+}
+
+variable "iam_region" {
   type = "string"
 }
 

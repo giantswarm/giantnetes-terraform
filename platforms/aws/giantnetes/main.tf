@@ -195,10 +195,13 @@ data "ct_config" "vault" {
 module "vault" {
   source = "../../../modules/aws/vault"
 
+  arn_region             = "${var.arn_region}"
+  aws_account            = "${var.aws_account}"
   cluster_name           = "${var.cluster_name}"
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
+  iam_region             = "${var.iam_region}"
   instance_type          = "${var.vault_instance_type}"
   user_data              = "${data.ct_config.vault.rendered}"
   route53_enabled        = "${var.route53_enabled}"
