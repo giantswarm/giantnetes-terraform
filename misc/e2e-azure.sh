@@ -112,6 +112,10 @@ export TF_VAR_container_linux_version=1995.0.0
 export TF_VAR_container_linux_channel=alpha
 terraform init ./
 EOF
+
+  # This removes the configuration of the backend to init Terraform
+  # with the local backend
+  sed -i '/backend "azurerm" {}/d' ${WORKDIR}/platforms/azure/giantnetes/main.tf
 }
 
 stage-prepare-ssh(){
