@@ -32,6 +32,10 @@ resource "azurerm_subnet" "bastion_subnet" {
 
   # NOTE: bastion_cidr should be unique across clusters, when VPN enabled.
   address_prefix = "${var.bastion_cidr}"
+
+  # We stil need to hold the old deprecated way of defining network security group
+  # https://github.com/hashicorp/terraform/issues/19722
+  network_security_group_id = "${azurerm_network_security_group.bastion.id}"
 }
 
 resource "azurerm_subnet" "vault_subnet" {
@@ -39,6 +43,10 @@ resource "azurerm_subnet" "vault_subnet" {
   resource_group_name  = "${var.resource_group_name}"
   virtual_network_name = "${azurerm_virtual_network.cluster_vnet.name}"
   address_prefix       = "${cidrsubnet(var.vnet_cidr, 8, 1)}"
+
+  # We stil need to hold the old deprecated way of defining network security group
+  # https://github.com/hashicorp/terraform/issues/19722
+  network_security_group_id = "${azurerm_network_security_group.vault.id}"
 }
 
 resource "azurerm_subnet" "worker_subnet" {
@@ -46,6 +54,10 @@ resource "azurerm_subnet" "worker_subnet" {
   resource_group_name  = "${var.resource_group_name}"
   virtual_network_name = "${azurerm_virtual_network.cluster_vnet.name}"
   address_prefix       = "${cidrsubnet(var.vnet_cidr, 8, 2)}"
+
+  # We stil need to hold the old deprecated way of defining network security group
+  # https://github.com/hashicorp/terraform/issues/19722
+  network_security_group_id = "${azurerm_network_security_group.worker.id}"
 }
 
 resource "azurerm_subnet_route_table_association" "worker" {
