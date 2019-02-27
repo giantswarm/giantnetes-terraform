@@ -58,6 +58,10 @@ resource "azurerm_subnet" "worker_subnet" {
   # We stil need to hold the old deprecated way of defining network security group
   # https://github.com/hashicorp/terraform/issues/19722
   network_security_group_id = "${azurerm_network_security_group.worker.id}"
+
+  # Same for rt association 
+  # https://www.terraform.io/docs/providers/azurerm/r/subnet_route_table_association.html
+  route_table_id = "${azurerm_subnet.worker_subnet.id}"
 }
 
 resource "azurerm_subnet_route_table_association" "worker" {
