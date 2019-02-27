@@ -32,14 +32,14 @@ data "aws_iam_policy_document" "vault-kms-unseal" {
     actions = [
       "kms:Encrypt",
       "kms:Decrypt",
-      "kms:DescribeKey"
+      "kms:DescribeKey",
     ]
   }
 }
 
 resource "aws_iam_role_policy" "vault-ksm-unseal" {
-  name = "${var.cluster_name}-vault-kms-unseal"
-  role = "${aws_iam_role.vault.id}"
+  name   = "${var.cluster_name}-vault-kms-unseal"
+  role   = "${aws_iam_role.vault.id}"
   policy = "${data.aws_iam_policy_document.vault-kms-unseal.json}"
 }
 
