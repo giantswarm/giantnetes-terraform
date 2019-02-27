@@ -61,7 +61,7 @@ resource "azurerm_subnet" "worker_subnet" {
 
   # Same for rt association 
   # https://www.terraform.io/docs/providers/azurerm/r/subnet_route_table_association.html
-  route_table_id = "${azurerm_subnet.worker_subnet.id}"
+  route_table_id = "${azurerm_route_table.worker_rt.id}"
 }
 
 resource "azurerm_subnet_route_table_association" "worker" {
