@@ -62,9 +62,8 @@ Please save these and storage credentials above in keepass (e.g. "<cluster name>
 ### Prepare terraform environment
 
 ```
-mkdir -p build
-cp -r examples/azure/example-build/* build
-cd build
+cp -r examples/azure/* ./platforms/azure/giantnetes/
+cd ./platforms/aws/giantnetes/
 ```
 
 Edit `bootstrap.sh`. DO NOT PUT passwords and keys into `bootstrap.sh` as it will be stored as plain text.
@@ -98,7 +97,7 @@ NOTE: Reexecute `source bootstrap.sh` everytime if opening new console.
 
 ### Configure ssh users
 
-Add bastion users to `build/bastion-users.yaml`. All other vms take users configuration from `build/users.yaml`, so please modify it too.
+Add bastion users to `ignition/bastion-users.yaml`. All other vms take users configuration from `ignition/users.yaml`, so please modify it too.
 
 ## Install
 
@@ -124,8 +123,8 @@ source bootstrap.sh
 ```
 
 ```
-terraform plan ../platforms/azure/giantnetes
-terraform apply ../platforms/azure/giantnetes
+terraform plan ./
+terraform apply ./
 ```
 
 It should create all cluster resources. Please note master and worker vms are created, but will fail. This is expected behaviour.
@@ -161,7 +160,7 @@ Step two is individual and depends on your setup.
 
 How to do that see [here](https://github.com/giantswarm/hive/#install-insecure-vault)
 
-When done make sure to update "TF_VAR_nodes_vault_token" in envs.sh with node token that was outputed by Ansible.
+When done make sure to update "TF_VAR_nodes_vault_token" in bootstrap.sh with node token that was outputed by Ansible.
 
 ### Stage: Kubernetes
 
@@ -194,8 +193,8 @@ source bootstrap.sh
 ```
 
 ```
-terraform plan ../platforms/azure/giantnetes
-terraform apply ../platforms/azure/giantnetes
+terraform plan ./
+terraform apply ./
 ```
 
 ## Upload variables and configuration
@@ -237,11 +236,7 @@ az ad sp delete --id <appid>
 ### Prepare variables and configuration.
 
 ```
-mkdir build
-cd build
-```
-
-```
+cd ./platforms/azure/giantnetes/
 export NAME=cluster1
 export INSTALLATIONS=<installations_repo_path>
 
@@ -257,20 +252,20 @@ source bootstrap.sh
 Check resources that has been changed.
 
 ```
-terraform plan ../platforms/azure/giantnetes
+terraform plan ./
 ```
 
 #### Update masters
 
 ```
 terraform taint -module="master" azurerm_virtual_machine.master.0
-terraform apply ../platforms/azure/giantnetes
+terraform apply ./
 
 terraform taint -module="master" azurerm_virtual_machine.master.1
-terraform apply ../platforms/azure/giantnetes
+terraform apply ./
 
 terraform taint -module="master" azurerm_virtual_machine.master.2
-terraform apply ../platforms/azure/giantnetes
+terraform apply ./
 ```
 
 ### Update workers
@@ -279,7 +274,7 @@ Select worker (e.g. last worker with index 3) for update and delete VM and OS di
 
 ```
 terraform taint -module="worker" "azurerm_virtual_machine.worker.3"
-terraform apply ../platforms/azure/giantnetes
+terraform apply ./
 ```
 
 Repeat for other workers.
@@ -287,7 +282,7 @@ Repeat for other workers.
 ### Update everything else
 
 ```
-terraform apply ../platforms/azure/giantnetes
+terraform apply ./
 ```
 
 ## Known issues

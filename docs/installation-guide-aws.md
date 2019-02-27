@@ -58,7 +58,7 @@ NOTE: Reexecute `source bootstrap.sh` in every new console.
 
 ### Configure ssh users
 
-Add bastion users to `./platforms/aws/giantnetes/bastion-users.yaml`. All other vms take users configuration from `./platforms/aws/giantnetes/users.yaml`, so please modify it too.
+Add bastion users to `ignition/bastion-users.yaml`. All other vms take users configuration from `ignition/users.yaml`, so please modify it too.
 
 ### Route53 DNS zone setup
 
@@ -66,7 +66,7 @@ Giantnetes requires real DNS domain, so it's mandatory to have existing DNS zone
 
 #### Parent DNS zone in Route53
 
-Set id of the zone in `TF_VAR_root_dns_zone_id` in `envs.sh`.
+Set id of the zone in `TF_VAR_root_dns_zone_id` in `bootstrap.sh`.
 
 #### Parent DNS zone outside Route53
 
@@ -104,7 +104,7 @@ To get passphrase login to AWS console, switch to VPC service and open VPN conne
 
 How to do that see [here](https://github.com/giantswarm/aws-terraform/blob/master/docs/install-g8s-on-aws.md#install-vault-with-hive-ansible)
 
-Set "TF_VAR_nodes_vault_token" in envs.sh with node token that was outputed by Ansible.
+Set "TF_VAR_nodes_vault_token" in bootstrap.sh with node token that was outputed by Ansible.
 
 ### Stage: Kubernetes
 

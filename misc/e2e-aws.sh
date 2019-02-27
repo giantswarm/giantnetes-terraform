@@ -19,7 +19,7 @@ set -o nounset
 set -o pipefail
 
 WORKDIR=$(pwd)
-BUILDDIR=${WORKDIR}/build
+TFDIR=${WORKDIR}/platforms/aws/giantnetes
 CLUSTER=e2e-terraform-$(echo ${CIRCLE_SHA1} | cut -c 1-4)-${MASTER_COUNT}
 SSH_USER="e2e"
 KUBECTL_IMAGE="quay.io/giantswarm/docker-kubectl:8cabd75bacbcdad7ac5d85efc3ca90c2fabf023b"
@@ -88,16 +88,14 @@ stage-preflight() {
   [ ! -z "${CIRCLE_SHA1+x}" ] || fail "variable CIRCLE_SHA1 is not set"
 }
 
-stage-prepare-builddir() {
+stage-prepare() {
   msg "Configuring aws cli..."
   export AWS_ACCESS_KEY_ID=${E2E_AWS_ACCESS_KEY}
   export AWS_SECRET_ACCESS_KEY=${E2E_AWS_SECRET_KEY}
 
-  msg "Creating and switching to build directory..."
-  [ -d ${BUILDDIR} ] && rm -rf ${BUILDDIR}
-  mkdir -p ${BUILDDIR}
+  mkdir -p ${TFDIR}
 
-  cat > ${BUILDDIR}/bootstrap.sh << EOF
+  cat > ${TFDIR}/bootstrap.sh << EOF
 export AWS_DEFAULT_REGION=${E2E_AWS_REGION}
 export TF_VAR_aws_account=${E2E_AWS_ACCOUNT}
 export TF_VAR_aws_region=\${AWS_DEFAULT_REGION}
@@ -110,14 +108,14 @@ export TF_VAR_worker_count=${WORKER_COUNT}
 # TODO: Remove this as soon as 1995.0.0 available.
 export TF_VAR_container_linux_version=1995.0.0
 export TF_VAR_container_linux_channel=alpha
-terraform init ../platforms/aws/giantnetes
+terraform init ./
 EOF
 }
 
 stage-prepare-ssh(){
-    ssh-keygen -t rsa -N "" -f ${BUILDDIR}/${SSH_USER}.key
+    ssh-keygen -t rsa -N "" -f ${TFDIR}/${SSH_USER}.key
 
-    ssh_pub_key=$(cat ${BUILDDIR}/${SSH_USER}.key.pub)
+    ssh_pub_key=$(cat ${TFDIR}/${SSH_USER}.key.pub)
 
     cat > ${WORKDIR}/ignition/bastion-users.yaml << EOF
 passwd:
@@ -127,7 +125,7 @@ passwd:
       - "sudo"
       - "docker"
     ssh_authorized_keys:
-      - $(cat ${BUILDDIR}/${SSH_USER}.key.pub)
+      - $(cat ${TFDIR}/${SSH_USER}.key.pub)
 EOF
     cat > ${WORKDIR}/ignition/users.yaml << EOF
 passwd:
@@ -137,32 +135,31 @@ passwd:
       - "sudo"
       - "docker"
     ssh_authorized_keys:
-      - $(cat ${BUILDDIR}/${SSH_USER}.key.pub)
+      - $(cat ${TFDIR}/${SSH_USER}.key.pub)
 EOF
 
     eval "$(ssh-agent)"
-    ssh-add ${BUILDDIR}/${SSH_USER}.key
+    ssh-add ${TFDIR}/${SSH_USER}.key
 }
 
 stage-terraform-only-vault() {
-  cd ${BUILDDIR}
+  cd ${TFDIR}
 
   source bootstrap.sh
-  terraform init ../platforms/aws/giantnetes
-  terraform apply -auto-approve -target="module.dns" ../platforms/aws/giantnetes
-  terraform apply -auto-approve -target="module.vpc" ../platforms/aws/giantnetes
-  terraform apply -auto-approve -target="module.s3" ../platforms/aws/giantnetes
-  terraform apply -auto-approve -target="module.bastion" ../platforms/aws/giantnetes
-  terraform apply -auto-approve -target="module.vault" ../platforms/aws/giantnetes
+  terraform apply -auto-approve -target="module.dns" ./
+  terraform apply -auto-approve -target="module.vpc" ./
+  terraform apply -auto-approve -target="module.s3" ./
+  terraform apply -auto-approve -target="module.bastion" ./
+  terraform apply -auto-approve -target="module.vault" ./
 
   cd -
 }
 
 stage-terraform() {
-  cd ${BUILDDIR}
+  cd ${TFDIR}
 
   source bootstrap.sh
-  terraform apply -auto-approve ../platforms/aws/giantnetes
+  terraform apply -auto-approve ./
 
   cd -
 }
@@ -224,7 +221,7 @@ EOF
     exec_on vault1 vault operator unseal ${unseal_key}
 
     # Insert vault token in envs file.
-    sed -i "s/export TF_VAR_nodes_vault_token=.*/export TF_VAR_nodes_vault_token=${VAULT_TOKEN}/" ${BUILDDIR}/bootstrap.sh
+    sed -i "s/export TF_VAR_nodes_vault_token=.*/export TF_VAR_nodes_vault_token=${VAULT_TOKEN}/" ${TFDIR}/bootstrap.sh
 
     cd ${WORKDIR}
 }
@@ -241,9 +238,9 @@ stage-debug() {
 stage-destroy() {
   stage-debug || true
 
-  cd ${BUILDDIR}
+  cd ${TFDIR}
   source bootstrap.sh
-  terraform destroy -force ../platforms/aws/giantnetes
+  terraform destroy -force ./
 
   cd -
 }
@@ -294,7 +291,7 @@ main() {
       exit
   fi
 
-  stage-prepare-builddir
+  stage-prepare
   stage-prepare-ssh
   trap "stage-destroy" EXIT
   stage-terraform-only-vault
