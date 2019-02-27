@@ -50,9 +50,4 @@ resource "aws_iam_instance_profile" "vault" {
   lifecycle {
     create_before_destroy = true
   }
-
-  # Sleep a little to wait the IAM profile to be ready -
-  provisioner "local-exec" {
-    command = "sleep 10"
-  }
 }
