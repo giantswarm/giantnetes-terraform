@@ -6,6 +6,10 @@ variable "aws_account" {
   type = "string"
 }
 
+variable "aws_region" {
+  type = "string"
+}
+
 variable "elb_subnet_ids" {
   type = "list"
 }
@@ -18,11 +22,11 @@ variable "cluster_name" {
   type = "string"
 }
 
-variable "iam_region" {
+variable "instance_type" {
   type = "string"
 }
 
-variable "instance_type" {
+variable "iam_region" {
   type = "string"
 }
 

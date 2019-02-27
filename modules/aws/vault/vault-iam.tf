@@ -27,7 +27,7 @@ data "aws_iam_policy_document" "vault-kms-unseal" {
   statement {
     sid       = "VaultKMSUnseal"
     effect    = "Allow"
-    resources = ["arn:${var.arn_region}:iam::${var.aws_account}:user/${var.cluster_name}-vault-unseal-key"]
+    resources = ["arn:${var.arn_region}:kms:${var.aws_region}:${var.aws_account}:key/${aws_kms_key.vault-unseal-key.id}"]
 
     actions = [
       "kms:Encrypt",
