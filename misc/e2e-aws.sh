@@ -112,6 +112,10 @@ export TF_VAR_container_linux_version=1995.0.0
 export TF_VAR_container_linux_channel=alpha
 terraform init ../platforms/aws/giantnetes
 EOF
+
+  # This removes the configuration of the backend to init Terraform
+  # with the local backend
+  sed -i '/backend "s3" {}/d' ${WORKDIR}/platforms/aws/giantnetes/main.tf
 }
 
 stage-prepare-ssh(){
@@ -148,7 +152,6 @@ stage-terraform-only-vault() {
   cd ${BUILDDIR}
 
   source bootstrap.sh
-  terraform init ../platforms/aws/giantnetes
   terraform apply -auto-approve -target="module.dns" ../platforms/aws/giantnetes
   terraform apply -auto-approve -target="module.vpc" ../platforms/aws/giantnetes
   terraform apply -auto-approve -target="module.s3" ../platforms/aws/giantnetes
