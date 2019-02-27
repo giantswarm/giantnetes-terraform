@@ -37,7 +37,7 @@ data "aws_iam_policy_document" "vault-kms-unseal" {
   }
 }
 
-resource "aws_iam_role_policy" "vault-ksm-unseal" {
+resource "aws_iam_role_policy" "vault-kms-unseal" {
   name   = "${var.cluster_name}-vault-kms-unseal"
   role   = "${aws_iam_role.vault.id}"
   policy = "${data.aws_iam_policy_document.vault-kms-unseal.json}"
