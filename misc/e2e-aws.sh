@@ -106,12 +106,7 @@ export TF_VAR_nodes_vault_token=
 export TF_VAR_aws_customer_gateway_id=
 export TF_VAR_worker_count=${WORKER_COUNT}
 
-terraform init -backend=true \
- -backend-config="bucket=\${TF_VAR_cluster_name}-state" \
- -backend-config="key=terraform.tfstate" \
- -backend-config="dynamodb_table=\${TF_VAR_cluster_name}-lock" \
- -backend-config="profile=\${TF_VAR_cluster_name}" \
- -backend-config="region=\${TF_VAR_aws_region}" ./
+terraform init ./
 EOF
 
 }

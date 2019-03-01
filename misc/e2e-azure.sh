@@ -108,10 +108,7 @@ export TF_VAR_nodes_vault_token=
 export TF_VAR_worker_count=${WORKER_COUNT}
 export TF_VAR_delete_data_disks_on_termination="true"
 
-terraform init -backend=true \
- -backend-config="storage_account_name=\${TF_VAR_cluster_name}terraform" \
- -backend-config="key=terraform" \
- -backend-config="container_name=\${TF_VAR_cluster_name}-state" ./
+terraform init ./
 EOF
 
 }
