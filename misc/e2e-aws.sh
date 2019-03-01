@@ -105,9 +105,7 @@ export TF_VAR_root_dns_zone_id=${E2E_AWS_ROUTE53_ZONE}
 export TF_VAR_nodes_vault_token=
 export TF_VAR_aws_customer_gateway_id=
 export TF_VAR_worker_count=${WORKER_COUNT}
-# TODO: Remove this as soon as 1995.0.0 available.
-export TF_VAR_container_linux_version=1995.0.0
-export TF_VAR_container_linux_channel=alpha
+
 terraform init -backend=true \
  -backend-config="bucket=\${TF_VAR_cluster_name}-state" \
  -backend-config="key=terraform.tfstate" \
