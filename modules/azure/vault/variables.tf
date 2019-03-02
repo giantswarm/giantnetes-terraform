@@ -51,6 +51,16 @@ variable "storage_type" {
   description = "Storage account type"
 }
 
+variable "tenant_id" {
+  type        = "string"
+  description = "Azure SP Tenant ID"
+}
+
+variable "vault_subnet" {
+  type        = "string"
+  description = "Vault subnet"
+}
+
 variable "vm_size" {
   type        = "string"
   description = "VM Size name"
