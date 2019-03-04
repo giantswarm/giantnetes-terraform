@@ -108,12 +108,12 @@ export TF_VAR_nodes_vault_token=
 export TF_VAR_worker_count=${WORKER_COUNT}
 export TF_VAR_delete_data_disks_on_termination="true"
 
-terraform init -backend=false ./
+terraform init ./
 EOF
 
   # This removes the configuration of the backend to init Terraform
   # with the local backend
-  #sed -i '/backend "azurerm" {}/d' ${WORKDIR}/platforms/azure/giantnetes/main.tf
+  sed -i '/backend "azurerm" {}/d' ${WORKDIR}/platforms/azure/giantnetes/main.tf
 }
 
 stage-prepare-ssh(){

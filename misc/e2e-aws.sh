@@ -106,10 +106,12 @@ export TF_VAR_nodes_vault_token=
 export TF_VAR_aws_customer_gateway_id=
 export TF_VAR_worker_count=${WORKER_COUNT}
 
-terraform init -backend=false ./
+terraform init ./
 EOF
 
- #sed -i '/backend "s3" {}/d' ${WORKDIR}/platforms/aws/giantnetes/main.tf
+ # This removes the configuration of the backend to init Terraform
+ # with the local backend
+ sed -i '/backend "s3" {}/d' ${WORKDIR}/platforms/aws/giantnetes/main.tf
 }
 
 stage-prepare-ssh(){
