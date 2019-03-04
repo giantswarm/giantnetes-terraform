@@ -11,8 +11,8 @@ Common:
 By default terraform will create multi-master cluster with 3 master nodes, single master mode can be enabled by setting terraform variable `master_count=1` or export env variable `export TF_VAR_master_count=1`.
 
 ## Vault auto-unseal
-In case Azure Cloud supports MSI (Managed Service Identities), `vault` can be provisioned with additional resources for `auto-unseal`. This process requires master key to be inside the Key Vault. `create key` operation requires respective access policy for the identity, which is running provisioning. Therefore, special `Terraform` group should be created in the Active Directory for respective subscription:
-  - group name: `Terraform`
+In case Azure Cloud supports MSI (Managed Service Identities), `vault` can be provisioned with additional resources for `auto-unseal`. This process requires master key to be inside the Key Vault. `create key` operation requires respective access policy for the identity, which is running provisioning. Therefore, special `terraform` group should be created in the Active Directory for respective subscription:
+  - group name: `terraform`
   - members: SREs, who can run terraform manually; `conveyor` service principal; e2e service principal in case of Giant Swarm subscription.
 
 After group is created, `Object ID` value should be assigned for `TF_VAR_terraform_group_id` in `bootstrap.sh` file:
