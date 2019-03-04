@@ -14,6 +14,11 @@ resource "azurerm_key_vault" "vault" {
     Name                   = "${var.cluster_name}"
     GiantSwarmInstallation = "${var.cluster_name}"
   }
+
+  network_acls {
+    default_action = "Allow"
+    bypass         = "AzureServices"
+  }
 }
 
 resource "azurerm_key_vault_access_policy" "runner" {
