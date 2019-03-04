@@ -11,6 +11,11 @@ variable "core_ssh_key" {
   type        = "string"
 }
 
+variable "terraform_group_id" {
+  description = "Active Directory group id with access to Key Vault"
+  type        = "string"
+}
+
 variable "user_data" {
   type        = "string"
   description = "Generated user data"
@@ -64,4 +69,10 @@ variable "vault_subnet" {
 variable "vm_size" {
   type        = "string"
   description = "VM Size name"
+}
+
+variable "vault_vm_objectid" {
+  type        = "string"
+  description = "Object ID is defined for vault VM, runned before MSI was enabled"
+  default     = ""
 }

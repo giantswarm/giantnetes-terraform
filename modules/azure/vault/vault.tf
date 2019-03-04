@@ -14,8 +14,7 @@ resource "azurerm_virtual_machine" "vault" {
   network_interface_ids = ["${var.network_interface_ids[0]}"]
   vm_size               = "${var.vm_size}"
 
-  identity =
-  {
+  identity = {
     type = "SystemAssigned"
   }
 
@@ -41,7 +40,7 @@ resource "azurerm_virtual_machine" "vault" {
     managed_disk_type = "${var.os_disk_storage_type}"
     create_option     = "FromImage"
     caching           = "ReadWrite"
-    os_type           = "linux"
+    os_type           = "Linux"
   }
 
   storage_data_disk {
