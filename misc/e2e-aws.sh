@@ -109,6 +109,7 @@ export TF_VAR_worker_count=${WORKER_COUNT}
 terraform init ./
 EOF
 
+ sed -i '/backend "s3" {}/d' ${WORKDIR}/platforms/aws/giantnetes/main.tf
 }
 
 stage-prepare-ssh(){

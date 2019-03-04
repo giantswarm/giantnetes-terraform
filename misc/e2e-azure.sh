@@ -111,6 +111,9 @@ export TF_VAR_delete_data_disks_on_termination="true"
 terraform init ./
 EOF
 
+  # This removes the configuration of the backend to init Terraform
+  # with the local backend
+  sed -i '/backend "azurerm" {}/d' ${WORKDIR}/platforms/azure/giantnetes/main.tf
 }
 
 stage-prepare-ssh(){
