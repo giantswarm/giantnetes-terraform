@@ -27,7 +27,7 @@ resource "azurerm_virtual_machine" "vault" {
   vm_size               = "${var.vm_size}"
 
   identity = {
-    type = "UserAssigned"
+    type         = "UserAssigned"
     identity_ids = ["${azurerm_user_assigned_identity.vault.id}"]
   }
 
