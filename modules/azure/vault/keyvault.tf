@@ -41,7 +41,7 @@ resource "azurerm_key_vault_access_policy" "vault" {
   resource_group_name = "${var.resource_group_name}"
 
   tenant_id = "${var.tenant_id}"
-  object_id = "${var.vault_vm_objectid == "" ? azurerm_virtual_machine.vault.id : var.vault_vm_objectid}"
+  object_id = "${azurerm_user_assigned_identity.vault.principal_id}"
 
   key_permissions = [
     "get",

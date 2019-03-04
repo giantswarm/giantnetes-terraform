@@ -154,7 +154,6 @@ module "vault" {
   user_data               = "${data.ct_config.vault.rendered}"
   vault_subnet            = "${module.vnet.vault_subnet}"
   vm_size                 = "${var.vault_vm_size}"
-  vault_vm_objectid       = "${var.vault_vm_objectid}"
 }
 
 # Generate ignition config.

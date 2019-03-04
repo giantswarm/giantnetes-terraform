@@ -1,3 +1,15 @@
+resource "azurerm_user_assigned_identity" "vault" {
+  resource_group_name = "${var.resource_group_name}"
+  location            = "${var.location}"
+
+  name = "${var.cluster_name}-keyvault-id"
+
+  tags {
+    Name                   = "${var.cluster_name}"
+    GiantSwarmInstallation = "${var.cluster_name}"
+  }
+}
+
 resource "azurerm_managed_disk" "vault_data" {
   name                 = "${var.cluster_name}-vault-data-disk"
   location             = "${var.location}"
@@ -15,7 +27,8 @@ resource "azurerm_virtual_machine" "vault" {
   vm_size               = "${var.vm_size}"
 
   identity = {
-    type = "SystemAssigned"
+    type = "UserAssigned"
+    identity_ids = ["${azurerm_user_assigned_identity.vault.id}"]
   }
 
   lifecycle {
