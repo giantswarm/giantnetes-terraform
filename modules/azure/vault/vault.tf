@@ -1,4 +1,5 @@
 resource "azurerm_user_assigned_identity" "vault" {
+  count               = "${var.terraform_group_id == "" ? 0 : 1}"
   resource_group_name = "${var.resource_group_name}"
   location            = "${var.location}"
 
