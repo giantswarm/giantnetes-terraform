@@ -61,6 +61,7 @@ variable "worker_count" {
 variable "terraform_group_id" {
   type        = "string"
   description = "Active Directory group ID with access to Key Vault"
+  default = ""
 }
 
 ### Compute and Storage ###
@@ -78,12 +79,6 @@ variable "os_disk_storage_type" {
 variable "vault_vm_size" {
   type    = "string"
   default = "Standard_DS1_v2"
-}
-
-variable "vault_vm_objectid" {
-  type        = "string"
-  description = "Object ID is defined for vault VM, runned before MSI was enabled"
-  default     = ""
 }
 
 variable "vault_storage_type" {
