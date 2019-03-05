@@ -36,4 +36,4 @@ terraform init -backend=true \
 -backend-config="dynamodb_table=${TF_VAR_cluster_name}-lock" \
 -backend-config="profile=${TF_VAR_cluster_name}" \
 -backend-config="region=${TF_VAR_aws_region}" \
-../platforms/aws/giantnetes
+ ./

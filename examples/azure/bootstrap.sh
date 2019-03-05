@@ -50,4 +50,4 @@ terraform init -backend=true \
 -backend-config="storage_account_name=${TF_VAR_cluster_name}terraform" \
 -backend-config="key=terraform" \
 -backend-config="container_name=${TF_VAR_cluster_name}-state" \
-../platforms/azure/giantnetes
+ ./
