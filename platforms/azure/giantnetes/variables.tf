@@ -61,7 +61,7 @@ variable "worker_count" {
 variable "terraform_group_id" {
   type        = "string"
   description = "Active Directory group ID with access to Key Vault"
-  default = ""
+  default     = ""
 }
 
 ### Compute and Storage ###
