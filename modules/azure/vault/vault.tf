@@ -29,7 +29,7 @@ resource "azurerm_virtual_machine" "vault" {
 
   identity = {
     type         = "UserAssigned"
-    identity_ids = "${var.terraform_group_id != "" ? list(azurerm_user_assigned_identity.vault.*.id...) : list()}"
+    identity_ids = ["${var.terraform_group_id != "" ? element(azurerm_user_assigned_identity.vault.*.id,0) : element(concat(..., list("")), 0)}"]
   }
 
   lifecycle {
