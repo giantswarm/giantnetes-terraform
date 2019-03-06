@@ -11,6 +11,11 @@ variable "core_ssh_key" {
   type        = "string"
 }
 
+variable "terraform_group_id" {
+  description = "Active Directory group id with access to Key Vault"
+  type        = "string"
+}
+
 variable "user_data" {
   type        = "string"
   description = "Generated user data"
@@ -49,6 +54,16 @@ variable "os_disk_storage_type" {
 variable "storage_type" {
   type        = "string"
   description = "Storage account type"
+}
+
+variable "tenant_id" {
+  type        = "string"
+  description = "Azure SP Tenant ID"
+}
+
+variable "vault_subnet" {
+  type        = "string"
+  description = "Vault subnet"
 }
 
 variable "vm_size" {
