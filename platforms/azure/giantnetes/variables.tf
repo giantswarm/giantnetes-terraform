@@ -86,6 +86,10 @@ variable "vault_storage_type" {
   default = "Premium_LRS"
 }
 
+variable "vault_auto_unseal" {
+  default = true
+}
+
 variable "master_vm_size" {
   type    = "string"
   default = "Standard_D2s_v3"

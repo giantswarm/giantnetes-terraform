@@ -153,6 +153,7 @@ module "vault" {
   tenant_id               = "${data.azurerm_client_config.current.tenant_id}"
   user_data               = "${data.ct_config.vault.rendered}"
   vault_subnet            = "${module.vnet.vault_subnet}"
+  vault_auto_unseal       = "${var.vault_auto_unseal}"
   vm_size                 = "${var.vault_vm_size}"
 }
 

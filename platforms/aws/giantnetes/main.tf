@@ -209,6 +209,7 @@ module "vault" {
   vault_count            = "1"
   vault_dns              = "${var.vault_dns}"
   vault_subnet_ids       = "${module.vpc.vault_subnet_ids}"
+  vault_auto_unseal      = "${var.vault_auto_unseal}"
   vpc_cidr               = "${var.vpc_cidr}"
   ipam_network_cidr      = "${var.ipam_network_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"

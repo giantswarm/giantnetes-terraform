@@ -79,6 +79,10 @@ variable "vault_instance_type" {
   default = "t2.medium"
 }
 
+variable "vault_auto_unseal" {
+  default = true
+}
+
 variable "master_instance" {
   type = "map"
 

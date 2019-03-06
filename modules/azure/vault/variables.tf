@@ -70,3 +70,7 @@ variable "vm_size" {
   type        = "string"
   description = "VM Size name"
 }
+
+variable "vault_auto_unseal" {
+  default = true
+}

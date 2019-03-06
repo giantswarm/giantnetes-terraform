@@ -1,5 +1,5 @@
 resource "azurerm_key_vault" "vault" {
-  count                       = "${var.terraform_group_id == "" ? 0 : 1}"
+  count                       = "${var.vault_auto_unseal ? 1 : 0}"
   name                        = "gs-${var.cluster_name}-vault"
   location                    = "${var.location}"
   resource_group_name         = "${var.resource_group_name}"
@@ -23,7 +23,7 @@ resource "azurerm_key_vault" "vault" {
 }
 
 resource "azurerm_key_vault_access_policy" "runner" {
-  count               = "${var.terraform_group_id == "" ? 0 : 1}"
+  count               = "${var.vault_auto_unseal ? 1 : 0}"
   vault_name          = "${azurerm_key_vault.vault.name}"
   resource_group_name = "${var.resource_group_name}"
 
@@ -39,7 +39,7 @@ resource "azurerm_key_vault_access_policy" "runner" {
 }
 
 resource "azurerm_key_vault_access_policy" "vault" {
-  count               = "${var.terraform_group_id == "" ? 0 : 1}"
+  count               = "${var.vault_auto_unseal ? 1 : 0}"
   vault_name          = "${azurerm_key_vault.vault.name}"
   resource_group_name = "${var.resource_group_name}"
 
@@ -60,7 +60,7 @@ resource "azurerm_key_vault_access_policy" "vault" {
 }
 
 resource "azurerm_key_vault_key" "generated" {
-  count        = "${var.terraform_group_id == "" ? 0 : 1}"
+  count        = "${var.vault_auto_unseal ? 1 : 0}"
   name         = "${var.cluster_name}-vault-unseal-key"
   key_vault_id = "${azurerm_key_vault.vault.id}"
   key_type     = "RSA"
