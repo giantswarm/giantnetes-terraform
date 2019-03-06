@@ -3172,6 +3172,7 @@ systemd:
 
       [Install]
       WantedBy=multi-user.target
+{{if eq .Provider "aws" -}}
   - name: set-hostname.service
     enabled: true
     contents: |
@@ -3188,6 +3189,7 @@ systemd:
 
       [Install]
       WantedBy=multi-user.target
+{{end}}
   - name: k8s-kubelet.service
     enabled: true
     contents: |
