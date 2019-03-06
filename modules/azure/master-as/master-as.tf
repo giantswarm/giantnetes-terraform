@@ -101,6 +101,6 @@ resource "azurerm_virtual_machine" "master" {
   # we ignore changes, to avoid rolling all masters at once
   # update is done via tainting masters
   lifecycle {
-    ignore_changes = ["*"]
+    ignore_changes = all
   }
 }
