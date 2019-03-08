@@ -1,5 +1,5 @@
 resource "azurerm_user_assigned_identity" "vault" {
-  count               = "${var.terraform_group_id == "" ? 0 : 1}"
+  count               = "${var.vault_auto_unseal ? 1 : 0}"
   resource_group_name = "${var.resource_group_name}"
   location            = "${var.location}"
 
@@ -21,7 +21,7 @@ resource "azurerm_managed_disk" "vault_data" {
 }
 
 resource "azurerm_virtual_machine" "vault_with_msi" {
-  count                 = "${var.terraform_group_id == "" ? 0 : 1}"
+  count                 = "${var.vault_auto_unseal ? 1 : 0}"
   name                  = "vault"
   location              = "${var.location}"
   resource_group_name   = "${var.resource_group_name}"
@@ -88,7 +88,7 @@ resource "azurerm_virtual_machine" "vault_with_msi" {
 }
 
 resource "azurerm_virtual_machine" "vault_without_msi" {
-  count                 = "${var.terraform_group_id == "" ? 1 : 0}"
+  count                 = "${var.vault_auto_unseal ? 0 : 1}"
   name                  = "vault"
   location              = "${var.location}"
   resource_group_name   = "${var.resource_group_name}"

@@ -76,6 +76,10 @@ variable "vault_subnet_ids" {
   type = "list"
 }
 
+variable "vault_auto_unseal" {
+  default = true
+}
+
 variable "vpc_cidr" {
   type = "string"
 }
