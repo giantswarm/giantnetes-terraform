@@ -1376,7 +1376,7 @@ storage:
           clientConnection:
             kubeconfig: /etc/kubernetes/kubeconfig/kube-proxy.yaml
           kind: KubeProxyConfiguration
-          mode: ipvs
+          mode: iptables
           resourceContainer: /kube-proxy
           clusterCIDR: {{ if eq .Provider "aws"}}{{ .CalicoCIDR }}{{ else }}{{ .PodCIDR }}{{ end }}
     - path: /srv/kube-proxy-ds.yaml
@@ -1423,7 +1423,7 @@ storage:
                   command:
                   - /hyperkube
                   - proxy
-                  - --proxy-mode=ipvs
+                  - --proxy-mode=iptables
                   - --config=/etc/kubernetes/config/kube-proxy.yaml
                   - --v=2
                   livenessProbe:
@@ -1453,9 +1453,6 @@ storage:
                   - mountPath: /etc/kubernetes/ssl
                     name: ssl-certs-kubernetes
                     readOnly: true
-                  - mountPath: /lib/modules
-                    name: lib-modules
-                    readOnly: true
                 volumes:
                 - name: k8s-config
                   configMap:
@@ -1472,9 +1469,6 @@ storage:
                 - hostPath:
                     path: /usr/share/ca-certificates
                   name: ssl-certs-host
-                - hostPath:
-                    path: /lib/modules
-                  name: lib-modules
     {{ if eq .Provider "aws" -}}
     - path: /srv/network-policy.json
       filesystem: root

@@ -59,7 +59,7 @@ storage:
           clientConnection:
             kubeconfig: /etc/kubernetes/kubeconfig/kube-proxy.yaml
           kind: KubeProxyConfiguration
-          mode: ipvs
+          mode: iptables
           resourceContainer: /kube-proxy
           clusterCIDR: {{ .CalicoCIDR }}
     - path: /etc/kubernetes/kubeconfig/kube-proxy.yaml
