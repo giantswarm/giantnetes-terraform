@@ -10,7 +10,7 @@ resource "azurerm_resource_group" "cluster_rg" {
   location = "${var.location}"
   name     = "${var.cluster_name}"
 
-  tags {
+  tags = {
     Name                   = "${var.cluster_name}"
     GiantSwarmInstallation = "${var.cluster_name}"
   }

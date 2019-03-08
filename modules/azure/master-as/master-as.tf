@@ -5,7 +5,7 @@ resource "azurerm_availability_set" "masters" {
   managed                     = true
   platform_fault_domain_count = "${var.platform_fault_domain_count}"
 
-  tags {
+  tags = {
     GiantSwarmInstallation = "${var.cluster_name}"
   }
 }
@@ -94,7 +94,7 @@ resource "azurerm_virtual_machine" "master" {
     }
   }
 
-  tags {
+  tags = {
     GiantSwarmInstallation = "${var.cluster_name}"
   }
 
