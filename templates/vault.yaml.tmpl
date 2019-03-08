@@ -60,4 +60,42 @@ storage:
         format: ext4
         wipe_filesystem: false
         label: var-lib-etcd
+  files:
+    - path: /etc/vault/vault.hcl
+      filesystem: root
+      mode: 0400
+      contents:
+        inline: |
+          backend "etcd" {
+            address = "https://127.0.0.1:2379"
+            path = "vault/"
+            tls_ca_file = "/etc/etcd/etcd-ca.pem"
+            tls_cert_file = "/etc/etcd/etcd.pem"
+            tls_key_file = "/etc/etcd/etcd-key.pem" 
+          }
+
+          listener "tcp" {
+            address = "0.0.0.0:8200"
+            tls_cert_file = "/etc/vault/vault-crtca.pem"
+            tls_key_file = "/etc/vault/vault-key.pem"
+          }
+
+          max_lease_ttl = "4320h"
+
+          {{ if .VaultAutoUnseal -}}
+          {{ if eq .Provider "aws" -}}
+          seal "awskms" {
+            region = "{{ .AWSRegion }}"
+            kms_key_id = "alias/{{ .ClusterName }}-vault-unseal-key"
+            endpoint= "kms.{{ .AWSRegion }}.amazonaws.com"
+          }
+          {{ end -}}
+          {{ if eq .Provider "azure" -}}
+          seal "azurekeyvault" {
+            vault_name     = "gs-{{ .ClusterName }}-vault"
+            key_name       = "{{ .ClusterName }}-vault-unseal-key"
+            tenant_id      = "{{ .AzureSPTenantID }}"
+          }
+          {{ end -}}
+          {{ end -}}
 {{ .BastionUsers }}
