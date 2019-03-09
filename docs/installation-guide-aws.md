@@ -40,6 +40,10 @@ aws dynamodb create-table --region $AWS_DEFAULT_REGION \
     --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
 ```
 
+### Vault auto-unseal
+
+Auto-unseal is configured by default. In case installation region doesn't support KMS service, override `TF_VAR_vault_auto_unseal=false` in `bootstrap.sh` 
+
 ### Prepare terraform
 
 ```
