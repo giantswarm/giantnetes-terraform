@@ -60,4 +60,27 @@ storage:
         format: ext4
         wipe_filesystem: false
         label: var-lib-etcd
+  files:
+    {{ if .VaultAutoUnseal -}}
+    - path: /etc/vault/vault-auto-unseal.hcl
+      filesystem: root
+      mode: 0400
+      contents:
+        inline: |
+          
+          {{ if eq .Provider "aws" -}}
+          seal "awskms" {
+            region = "{{ .AWSRegion }}"
+            kms_key_id = "alias/{{ .ClusterName }}-vault-unseal-key"
+            endpoint= "kms.{{ .AWSRegion }}.amazonaws.com"
+          }
+          {{ end -}}
+          {{ if eq .Provider "azure" -}}
+          seal "azurekeyvault" {
+            vault_name     = "gs-{{ .ClusterName }}-vault"
+            key_name       = "{{ .ClusterName }}-vault-unseal-key"
+            tenant_id      = "{{ .AzureSPTenantID }}"
+          }
+          {{ end -}}
+    {{ end -}}
 {{ .BastionUsers }}

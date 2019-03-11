@@ -70,6 +70,7 @@ module "s3" {
 locals {
   ignition_data = {
     "APIDomainName"                = "${var.api_dns}.${var.base_domain}"
+    "AWSRegion"                    = "${var.aws_region}"
     "BastionUsers"                 = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
     "BastionSubnet0"               = "${element(var.subnets_bastion,0)}"
     "BastionSubnet1"               = "${element(var.subnets_bastion,1)}"
@@ -103,6 +104,7 @@ locals {
     "PodInfraImage"                = "${var.pod_infra_image}"
     "Provider"                     = "aws"
     "Users"                        = "${file("${path.module}/../../../ignition/users.yaml")}"
+    "VaultAutoUnseal"              = "${var.vault_auto_unseal}"
     "VaultDomainName"              = "${var.vault_dns}.${var.base_domain}"
     "WorkerMountDocker"            = "${var.worker_instance["volume_docker"]}"
   }
