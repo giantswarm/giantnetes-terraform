@@ -145,6 +145,6 @@ resource "azurerm_virtual_machine" "vault_without_msi" {
   }
 
   tags {
-    GiantSwarmInstallation = "${var.cluster_name}"
+    giantSwarmInstallation = "${var.cluster_name}"
   }
 }
