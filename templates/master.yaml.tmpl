@@ -3319,9 +3319,10 @@ systemd:
     contents: |
       [Unit]
       Description=Calicoctl and crictl tools
-      After=network.target
+      After=network-online.target
       [Service]
       Type=oneshot
+      ExecStartPre=/bin/sleep 30
       ExecStart=/opt/install-debug-tools
       [Install]
       WantedBy=multi-user.target
