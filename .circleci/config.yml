@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: alpine:3.8
+      - image: quay.io/giantswarm/docker-terraform-and-stuff
     steps:
       - checkout
       - run:
