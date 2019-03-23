@@ -1,7 +1,8 @@
 version: 2
 jobs:
   build:
-    machine: true
+    docker:
+    - image: quay.io/giantswarm/docker-terraform-and-stuff
     steps:
       - checkout
       - run:
