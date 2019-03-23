@@ -10,7 +10,7 @@ jobs:
           command: |
             TF_VERSION=${TF_VERSION:-"0.11.7"}
             wget https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
-            unzip terraform_${TF_VERSION}_linux_amd64.zip -o -d /bin
+            unzip -o terraform_${TF_VERSION}_linux_amd64.zip -d /bin
       - run:
           # Delete symlinks for backend configuration as we OK with local state files here.
           command: |
