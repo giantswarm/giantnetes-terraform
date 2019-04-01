@@ -90,6 +90,7 @@ locals {
     "PodCIDR"                  = "${var.pod_cidr}"
     "Provider"                 = "azure"
     "Users"                    = "${file("${path.module}/../../../ignition/users.yaml")}"
+    "VaultAutoUnseal"          = "${var.vault_auto_unseal}"
     "VaultDomainName"          = "${var.vault_dns}.${var.base_domain}"
   }
 }
