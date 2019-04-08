@@ -90,8 +90,6 @@ resource "aws_volume_attachment" "vault_logs_ebs" {
   skip_destroy = true
 }
 
-
-
 resource "aws_security_group" "vault" {
   name   = "${var.cluster_name}-vault"
   vpc_id = "${var.vpc_id}"
@@ -198,4 +196,3 @@ data "ignition_config" "s3" {
     verification = "sha512-${sha512(var.user_data)}"
   }
 }
-
