@@ -32,6 +32,12 @@ variable "data_disk_size" {
   default     = "10"
 }
 
+variable "logs_disk_size" {
+  type        = "string"
+  description = "Size of logs disk in GB."
+  default     = "5"
+}
+
 variable "location" {
   type        = "string"
   description = "Location is the Azure Location (East US, West US, etc)"
