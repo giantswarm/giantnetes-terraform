@@ -43,6 +43,28 @@ resource "aws_iam_role_policy" "vault-kms-unseal" {
   policy = "${data.aws_iam_policy_document.vault-kms-unseal.json}"
 }
 
+resource "aws_iam_role_policy" "vault-s3-ignition" {
+  name   = "${var.cluster_name}-vault-s3-ignition"
+  role   = "${aws_iam_role.vault.id}"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject"
+      ],
+      "Resource": [
+        "arn:${var.arn_region}:s3:::${var.aws_account}-${var.cluster_name}-ignition/*"
+      ]
+    }
+  ]
+}
+EOF
+}
+
 resource "aws_iam_instance_profile" "vault" {
   name = "${var.cluster_name}-vault"
   role = "${aws_iam_role.vault.name}"
