@@ -44,8 +44,8 @@ resource "aws_iam_role_policy" "vault-kms-unseal" {
 }
 
 resource "aws_iam_role_policy" "vault-s3-ignition" {
-  name   = "${var.cluster_name}-vault-s3-ignition"
-  role   = "${aws_iam_role.vault.id}"
+  name = "${var.cluster_name}-vault-s3-ignition"
+  role = "${aws_iam_role.vault.id}"
 
   policy = <<EOF
 {
