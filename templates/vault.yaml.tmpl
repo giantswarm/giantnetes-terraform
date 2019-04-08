@@ -38,6 +38,16 @@ systemd:
         Where=/var/lib/etcd
         [Install]
         WantedBy=multi-user.target
+    - name: var-log.mount
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Mount disk to /var/log
+        Before=vault.service
+        [Mount]
+        What=/dev/disk/by-label/var-log
+        Where=/var/log
+        Type=ext4
     - name: docker.service
       command: start
       dropins:
@@ -60,6 +70,12 @@ storage:
         format: ext4
         wipe_filesystem: false
         label: var-lib-etcd
+    - name: logs
+      mount:
+        device: {{if eq .Provider "azure" }}/dev/sdd{{else}}/dev/xvdh{{end}}
+        format: ext4
+        wipe_filesystem: false
+        label: var-log
   files:
     {{ if .VaultAutoUnseal -}}
     - path: /etc/vault/vault-auto-unseal.hcl

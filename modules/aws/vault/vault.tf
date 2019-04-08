@@ -60,6 +60,28 @@ resource "aws_volume_attachment" "vault_etcd_ebs" {
   skip_destroy = true
 }
 
+resource "aws_ebs_volume" "vault_logs" {
+  availability_zone = "${element(data.aws_availability_zones.available.names,0)}"
+  size              = "${var.volume_size_logs}"
+  type              = "${var.volume_type}"
+
+  tags {
+    Name                         = "${var.cluster_name}-vault"
+    "giantswarm.io/installation" = "${var.cluster_name}"
+  }
+}
+
+resource "aws_volume_attachment" "vault_logs_ebs" {
+  device_name = "/dev/xvdh"
+  volume_id   = "${aws_ebs_volume.vault_logs.id}"
+  instance_id = "${aws_instance.vault.id}"
+
+  # Allows reattaching volume.
+  skip_destroy = true
+}
+
+
+
 resource "aws_security_group" "vault" {
   name   = "${var.cluster_name}-vault"
   vpc_id = "${var.vpc_id}"

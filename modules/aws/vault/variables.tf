@@ -53,6 +53,11 @@ variable "volume_size_etcd" {
   default = 10
 }
 
+variable "volume_size_logs" {
+  type    = "string"
+  default = 5
+}
+
 variable "volume_size_root" {
   type    = "string"
   default = 8
