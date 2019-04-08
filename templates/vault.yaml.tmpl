@@ -43,7 +43,7 @@ systemd:
       contents: |
         [Unit]
         Description=Mount disk to /var/log
-        Before=vault.service
+        Before=docker.service
         [Mount]
         What=/dev/disk/by-label/var-log
         Where=/var/log

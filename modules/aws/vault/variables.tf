@@ -22,6 +22,10 @@ variable "cluster_name" {
   type = "string"
 }
 
+variable "ignition_bucket_id" {
+  type = "string"
+}
+
 variable "instance_type" {
   type = "string"
 }
@@ -100,3 +104,5 @@ variable "worker_subnet_ids" {
 variable "route53_enabled" {
   default = false
 }
+
+variable "s3_bucket_tags" {}
