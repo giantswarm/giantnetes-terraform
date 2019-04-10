@@ -20,6 +20,15 @@ resource "azurerm_managed_disk" "vault_data" {
   disk_size_gb         = "${var.data_disk_size}"
 }
 
+resource "azurerm_managed_disk" "logs_data" {
+  name                 = "${var.cluster_name}-logs-data-disk"
+  location             = "${var.location}"
+  resource_group_name  = "${var.resource_group_name}"
+  storage_account_type = "${var.storage_type}"
+  create_option        = "Empty"
+  disk_size_gb         = "${var.logs_disk_size}"
+}
+
 resource "azurerm_virtual_machine" "vault_with_msi" {
   count                 = "${var.vault_auto_unseal ? 1 : 0}"
   name                  = "vault"
@@ -64,6 +73,14 @@ resource "azurerm_virtual_machine" "vault_with_msi" {
     create_option   = "Attach"
     lun             = 0
     disk_size_gb    = "${azurerm_managed_disk.vault_data.disk_size_gb}"
+  }
+
+  storage_data_disk {
+    name            = "${azurerm_managed_disk.logs_data.name}"
+    managed_disk_id = "${azurerm_managed_disk.logs_data.id}"
+    create_option   = "Attach"
+    lun             = 1
+    disk_size_gb    = "${azurerm_managed_disk.logs_data.disk_size_gb}"
   }
 
   os_profile {

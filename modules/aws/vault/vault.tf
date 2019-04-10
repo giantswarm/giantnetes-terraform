@@ -1,3 +1,13 @@
+locals {
+  # In China there is no tags for s3 buckets
+  s3_ignition_vault_key = "${element(concat(aws_s3_bucket_object.ignition_vault_with_tags.*.key, aws_s3_bucket_object.ignition_vault_without_tags.*.key), 0)}"
+
+  common_tags = "${map(
+    "giantswarm.io/installation", "${var.cluster_name}",
+    "kubernetes.io/cluster/${var.cluster_name}", "owned"
+  )}"
+}
+
 data "aws_availability_zones" "available" {}
 
 # "Recreate" worker subnets in order to lookup CIDR blocks for security group
@@ -32,7 +42,7 @@ resource "aws_instance" "vault" {
     volume_size = "${var.volume_size_root}"
   }
 
-  user_data = "${var.user_data}"
+  user_data = "${data.ignition_config.s3.rendered}"
 
   tags = {
     Name                         = "${var.cluster_name}-vault${count.index}"
@@ -54,6 +64,26 @@ resource "aws_ebs_volume" "vault_etcd" {
 resource "aws_volume_attachment" "vault_etcd_ebs" {
   device_name = "/dev/xvdc"
   volume_id   = "${aws_ebs_volume.vault_etcd.id}"
+  instance_id = "${aws_instance.vault.id}"
+
+  # Allows reattaching volume.
+  skip_destroy = true
+}
+
+resource "aws_ebs_volume" "vault_logs" {
+  availability_zone = "${element(data.aws_availability_zones.available.names,0)}"
+  size              = "${var.volume_size_logs}"
+  type              = "${var.volume_type}"
+
+  tags {
+    Name                         = "${var.cluster_name}-vault"
+    "giantswarm.io/installation" = "${var.cluster_name}"
+  }
+}
+
+resource "aws_volume_attachment" "vault_logs_ebs" {
+  device_name = "/dev/xvdh"
+  volume_id   = "${aws_ebs_volume.vault_logs.id}"
   instance_id = "${aws_instance.vault.id}"
 
   # Allows reattaching volume.
@@ -127,4 +157,42 @@ resource "aws_route53_record" "vault" {
 
   records = ["${element(aws_instance.vault.*.private_ip, count.index)}"]
   ttl     = "300"
+}
+
+# To avoid 16kb user_data limit upload CoreOS ignition config to a s3 bucket.
+# Ignition supports s3 out-of-the-box.
+resource "aws_s3_bucket_object" "ignition_vault_with_tags" {
+  count   = "${var.s3_bucket_tags ? 1 : 0}"
+  bucket  = "${var.ignition_bucket_id}"
+  key     = "${var.cluster_name}-ignition-vault.json"
+  content = "${var.user_data}"
+  acl     = "private"
+
+  server_side_encryption = "AES256"
+
+  tags = "${merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-ignition-vault"
+    )
+  )}"
+}
+
+# To avoid 16kb user_data limit upload CoreOS ignition config to a s3 bucket.
+# Ignition supports s3 out-of-the-box.
+resource "aws_s3_bucket_object" "ignition_vault_without_tags" {
+  count   = "${var.s3_bucket_tags ? 0 : 1}"
+  bucket  = "${var.ignition_bucket_id}"
+  key     = "${var.cluster_name}-ignition-vault.json"
+  content = "${var.user_data}"
+  acl     = "private"
+
+  server_side_encryption = "AES256"
+}
+
+data "ignition_config" "s3" {
+  replace {
+    source       = "${format("s3://%s/%s", var.ignition_bucket_id, local.s3_ignition_vault_key)}"
+    verification = "sha512-${sha512(var.user_data)}"
+  }
 }

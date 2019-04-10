@@ -22,6 +22,10 @@ variable "cluster_name" {
   type = "string"
 }
 
+variable "ignition_bucket_id" {
+  type = "string"
+}
+
 variable "instance_type" {
   type = "string"
 }
@@ -51,6 +55,11 @@ variable "ipam_network_cidr" {
 variable "volume_size_etcd" {
   type    = "string"
   default = 10
+}
+
+variable "volume_size_logs" {
+  type    = "string"
+  default = 5
 }
 
 variable "volume_size_root" {
@@ -95,3 +104,5 @@ variable "worker_subnet_ids" {
 variable "route53_enabled" {
   default = false
 }
+
+variable "s3_bucket_tags" {}
