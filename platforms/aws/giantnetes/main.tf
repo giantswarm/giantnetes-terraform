@@ -77,6 +77,7 @@ locals {
     "BastionLogPriority"           = "${var.bastion_log_priority}"
     "BaseDomain"                   = "${var.base_domain}"
     "CalicoCIDR"                   = "${var.calico_cidr}"
+    "CalicoMTU"                    = "${var.calico_mtu}"
     "CloudwatchForwarderEnabled"   = "${var.bastion_log_priority != "none" ? "true" : "false" }"
     "ClusterName"                  = "${var.cluster_name}"
     "DockerCIDR"                   = "${var.docker_cidr}"

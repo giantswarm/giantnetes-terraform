@@ -176,6 +176,11 @@ variable "calico_cidr" {
   default     = "192.168.0.0/16"
 }
 
+variable "calico_mtu" {
+  description = "MTU used for Calico interfaces"
+  default     = "1440"
+}
+
 variable "docker_cidr" {
   description = "CIDR for Docker."
   default     = "172.17.0.1/16"

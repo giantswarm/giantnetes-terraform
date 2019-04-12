@@ -34,6 +34,8 @@ storage:
             # essential.
             typha_service_name: "none"
 
+            veth_mtu: "{{.CalicoMTU}}"
+
             # The CNI network configuration to install on each node.  The special
             # values in this config will be automatically populated.
             cni_network_config: |-
@@ -45,8 +47,8 @@ storage:
                     "type": "calico",
                     "log_level": "info",
                     "datastore_type": "kubernetes",
-                    "nodename": "__KUBERNETES_NODE_NAME__",
-                    "mtu": 1500,
+                    "nodename": "__KUBERNETES_NODE_NAME__",          
+                    "mtu": __CNI_MTU__,
                     "ipam": {
                       "type": "host-local",
                       "subnet": "usePodCidr"
@@ -667,7 +669,7 @@ storage:
             calico_backend: "bird"
 
             # Configure the MTU to use
-            veth_mtu: "1440"
+            veth_mtu: "{{.CalicoMTU}}"
 
             # The CNI network configuration to install on each node.  The special
             # values in this config will be automatically populated.

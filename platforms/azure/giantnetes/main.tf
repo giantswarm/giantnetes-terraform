@@ -75,6 +75,7 @@ locals {
     "APIDomainName"            = "${var.api_dns}.${var.base_domain}"
     "BaseDomain"               = "${var.base_domain}"
     "BastionUsers"             = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
+    "CalicoMTU"                = "${var.calico_mtu}"
     "ClusterName"              = "${var.cluster_name}"
     "DockerCIDR"               = "${var.docker_cidr}"
     "DockerRegistry"           = "${var.docker_registry}"
