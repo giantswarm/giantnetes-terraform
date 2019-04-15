@@ -47,7 +47,7 @@ storage:
                     "type": "calico",
                     "log_level": "info",
                     "datastore_type": "kubernetes",
-                    "nodename": "__KUBERNETES_NODE_NAME__",          
+                    "nodename": "__KUBERNETES_NODE_NAME__",
                     "mtu": __CNI_MTU__,
                     "ipam": {
                       "type": "host-local",
@@ -822,7 +822,7 @@ storage:
                         value: "autodetect"
                       # Enable IPIP
                       - name: CALICO_IPV4POOL_IPIP
-                        value: "Always"
+                        value: "CrossSubnet"
                       # Set MTU for tunnel device used if ipip is enabled
                       - name: FELIX_IPINIPMTU
                         valueFrom:
@@ -2794,7 +2794,7 @@ storage:
     - path: /etc/sysctl.d/hardening.conf
       filesystem: root
       mode: 0600
-      contents: 
+      contents:
         inline: |
           fs.inotify.max_user_watches = 16384
           kernel.kptr_restrict = 2
