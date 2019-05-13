@@ -26,7 +26,7 @@ resource "aws_instance" "vault" {
   instance_type = "${var.instance_type}"
 
   associate_public_ip_address = false
-  iam_instance_profile        = "${aws_iam_instance_profile.vault.id}"
+  iam_instance_profile        = "${var.vault_auto_unseal ? aws_iam_instance_profile.vault.id : ""}"
   source_dest_check           = false
   subnet_id                   = "${var.vault_subnet_ids[count.index]}"
   vpc_security_group_ids      = ["${aws_security_group.vault.id}"]

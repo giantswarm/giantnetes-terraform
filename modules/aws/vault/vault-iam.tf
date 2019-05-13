@@ -1,6 +1,7 @@
 resource "aws_iam_role" "vault" {
-  name = "${var.cluster_name}-vault"
-  path = "/"
+  count = "${var.vault_auto_unseal ? 1 : 0}"
+  name  = "${var.cluster_name}-vault"
+  path  = "/"
 
   lifecycle {
     create_before_destroy = true
@@ -24,6 +25,8 @@ EOF
 }
 
 data "aws_iam_policy_document" "vault-kms-unseal" {
+  count = "${var.vault_auto_unseal ? 1 : 0}"
+
   statement {
     sid       = "VaultKMSUnseal"
     effect    = "Allow"
@@ -38,14 +41,16 @@ data "aws_iam_policy_document" "vault-kms-unseal" {
 }
 
 resource "aws_iam_role_policy" "vault-kms-unseal" {
+  count  = "${var.vault_auto_unseal ? 1 : 0}"
   name   = "${var.cluster_name}-vault-kms-unseal"
   role   = "${aws_iam_role.vault.id}"
   policy = "${data.aws_iam_policy_document.vault-kms-unseal.json}"
 }
 
 resource "aws_iam_role_policy" "vault-s3-ignition" {
-  name = "${var.cluster_name}-vault-s3-ignition"
-  role = "${aws_iam_role.vault.id}"
+  count = "${var.vault_auto_unseal ? 1 : 0}"
+  name  = "${var.cluster_name}-vault-s3-ignition"
+  role  = "${aws_iam_role.vault.id}"
 
   policy = <<EOF
 {
@@ -66,8 +71,9 @@ EOF
 }
 
 resource "aws_iam_instance_profile" "vault" {
-  name = "${var.cluster_name}-vault"
-  role = "${aws_iam_role.vault.name}"
+  count = "${var.vault_auto_unseal ? 1 : 0}"
+  name  = "${var.cluster_name}-vault"
+  role  = "${aws_iam_role.vault.name}"
 
   lifecycle {
     create_before_destroy = true
