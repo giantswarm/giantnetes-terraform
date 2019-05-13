@@ -2280,6 +2280,25 @@ storage:
           vnetName: {{ .AzureVnetName }}
           routeTableName: {{ .AzureRoutable }}
     {{- end }}
+    - path: /etc/kubernetes/config/audit-webhook-kube-config.yaml
+      filesystem: root
+      mode: 0600
+      contents:
+        inline: |
+          apiVersion: v1
+          clusters:
+          - cluster:
+              server: http://0.0.0.0:{{ .K8SAUDITWEBHOOKPORT }}/auditk8s
+            name: audit-webhook-service
+          contexts:
+          - context:
+              cluster: audit-webhook-service
+              user: ""
+            name: default-context
+          current-context: default-context
+          kind: Config
+          preferences: {}
+          users: []
     - path: /etc/kubernetes/kubeconfig/kube-proxy.yaml
       filesystem: root
       mode: 0644
