@@ -2288,7 +2288,7 @@ storage:
           apiVersion: v1
           clusters:
           - cluster:
-              server: http://0.0.0.0:{{ .K8SAUDITWEBHOOKPORT }}/auditk8s
+              server: http://0.0.0.0:{{ .K8SAuditWebhookPort }}/auditk8s
             name: audit-webhook-service
           contexts:
           - context:
