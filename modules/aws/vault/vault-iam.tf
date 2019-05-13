@@ -1,7 +1,6 @@
 resource "aws_iam_role" "vault" {
-  count = "${var.vault_auto_unseal ? 1 : 0}"
-  name  = "${var.cluster_name}-vault"
-  path  = "/"
+  name = "${var.cluster_name}-vault"
+  path = "/"
 
   lifecycle {
     create_before_destroy = true
@@ -48,9 +47,8 @@ resource "aws_iam_role_policy" "vault-kms-unseal" {
 }
 
 resource "aws_iam_role_policy" "vault-s3-ignition" {
-  count = "${var.vault_auto_unseal ? 1 : 0}"
-  name  = "${var.cluster_name}-vault-s3-ignition"
-  role  = "${aws_iam_role.vault.id}"
+  name = "${var.cluster_name}-vault-s3-ignition"
+  role = "${aws_iam_role.vault.id}"
 
   policy = <<EOF
 {
