@@ -69,9 +69,8 @@ EOF
 }
 
 resource "aws_iam_instance_profile" "vault" {
-  count = "${var.vault_auto_unseal ? 1 : 0}"
-  name  = "${var.cluster_name}-vault"
-  role  = "${aws_iam_role.vault.name}"
+  name = "${var.cluster_name}-vault"
+  role = "${aws_iam_role.vault.name}"
 
   lifecycle {
     create_before_destroy = true
