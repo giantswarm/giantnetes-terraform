@@ -24,6 +24,8 @@ EOF
 }
 
 data "aws_iam_policy_document" "vault-kms-unseal" {
+  count = "${var.vault_auto_unseal ? 1 : 0}"
+
   statement {
     sid       = "VaultKMSUnseal"
     effect    = "Allow"
@@ -38,6 +40,7 @@ data "aws_iam_policy_document" "vault-kms-unseal" {
 }
 
 resource "aws_iam_role_policy" "vault-kms-unseal" {
+  count  = "${var.vault_auto_unseal ? 1 : 0}"
   name   = "${var.cluster_name}-vault-kms-unseal"
   role   = "${aws_iam_role.vault.id}"
   policy = "${data.aws_iam_policy_document.vault-kms-unseal.json}"
