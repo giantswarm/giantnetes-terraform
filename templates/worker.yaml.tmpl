@@ -193,6 +193,8 @@ storage:
           TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem
           MaxAuthTries 5
           LoginGraceTime 60
+          AllowTcpForwarding no
+          AllowAgentForwarding no
 
     - path: /opt/get-ca.sh
       filesystem: root
