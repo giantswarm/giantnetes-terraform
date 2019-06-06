@@ -8,7 +8,7 @@ Terraform manifests for installing Giant Swarm's control plane.
 install terraform plugin: `terraform-provider-ct`
 ```
 mkdir -p ${HOME}/.terraform.d/plugins/linux_amd64
-go get -u github.com/coreos/terraform-provider-ct
+go get -u github.com/poseidon/terraform-provider-ct
 ln -sf ${GOPATH}/bin/terraform-provider-ct ${HOME}/.terraform.d/plugins/linux_amd64/terraform-provider-ct
 ```
 install terraform plugin: `terraform-provider-gotemplate`
