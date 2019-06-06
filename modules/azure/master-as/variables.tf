@@ -33,7 +33,7 @@ variable "master_count" {
 
 variable "network_interface_ids" {
   type        = "list"
-  description = "List of NICs to use for Vault VMs"
+  description = "List of NICs to use for Master VMs"
 }
 
 variable "platform_fault_domain_count" {
