@@ -21,7 +21,7 @@ data "aws_subnet" "worker_subnets" {
 }
 
 resource "aws_instance" "vault" {
-  count         = "${var.vault_count}"
+  count         = length("${aws_security_group.vault}")
   ami           = "${var.container_linux_ami_id}"
   instance_type = "${var.instance_type}"
 
@@ -29,7 +29,7 @@ resource "aws_instance" "vault" {
   iam_instance_profile        = "${aws_iam_instance_profile.vault.id}"
   source_dest_check           = false
   subnet_id                   = "${var.vault_subnet_ids[count.index]}"
-  vpc_security_group_ids      = ["${aws_security_group.vault.id}"]
+  vpc_security_group_ids      = ["${aws_security_group.vault[count.index].id}"]
 
   lifecycle {
     # Vault provisioned also by Ansible,
@@ -37,7 +37,7 @@ resource "aws_instance" "vault" {
     ignore_changes = ["ami", "user_data"]
   }
 
-  root_block_device = {
+  root_block_device {
     volume_type = "${var.volume_type}"
     volume_size = "${var.volume_size_root}"
   }
@@ -55,16 +55,17 @@ resource "aws_ebs_volume" "vault_etcd" {
   size              = "${var.volume_size_etcd}"
   type              = "${var.volume_type}"
 
-  tags {
+  tags = {
     Name                         = "${var.cluster_name}-vault"
     "giantswarm.io/installation" = "${var.cluster_name}"
   }
 }
 
 resource "aws_volume_attachment" "vault_etcd_ebs" {
+  count         = "${var.vault_count}"
   device_name = "/dev/xvdc"
   volume_id   = "${aws_ebs_volume.vault_etcd.id}"
-  instance_id = "${aws_instance.vault.id}"
+  instance_id = "${aws_instance.vault[count.index].id}"
 
   # Allows reattaching volume.
   skip_destroy = true
@@ -75,22 +76,24 @@ resource "aws_ebs_volume" "vault_logs" {
   size              = "${var.volume_size_logs}"
   type              = "${var.volume_type}"
 
-  tags {
+  tags = {
     Name                         = "${var.cluster_name}-vault"
     "giantswarm.io/installation" = "${var.cluster_name}"
   }
 }
 
 resource "aws_volume_attachment" "vault_logs_ebs" {
+  count         = "${var.vault_count}"
   device_name = "/dev/xvdh"
   volume_id   = "${aws_ebs_volume.vault_logs.id}"
-  instance_id = "${aws_instance.vault.id}"
+  instance_id = "${aws_instance.vault[count.index].id}"
 
   # Allows reattaching volume.
   skip_destroy = true
 }
 
 resource "aws_security_group" "vault" {
+  count         = "${var.vault_count}"
   name   = "${var.cluster_name}-vault"
   vpc_id = "${var.vpc_id}"
 
@@ -132,7 +135,7 @@ resource "aws_security_group" "vault" {
     from_port   = 10300
     to_port     = 10300
     protocol    = "tcp"
-    cidr_blocks = ["${data.aws_subnet.worker_subnets.*.cidr_block}"]
+    cidr_blocks = "${data.aws_subnet.worker_subnets.*.cidr_block}"
   }
 
   # Allow cert-exporter from worker nodes.
@@ -140,10 +143,10 @@ resource "aws_security_group" "vault" {
     from_port   = 9005
     to_port     = 9005
     protocol    = "tcp"
-    cidr_blocks = ["${data.aws_subnet.worker_subnets.*.cidr_block}"]
+    cidr_blocks = "${data.aws_subnet.worker_subnets.*.cidr_block}"
   }
 
-  tags {
+  tags = {
     Name                         = "${var.cluster_name}-vault"
     "giantswarm.io/installation" = "${var.cluster_name}"
   }

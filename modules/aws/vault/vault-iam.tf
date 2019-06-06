@@ -29,7 +29,7 @@ data "aws_iam_policy_document" "vault-kms-unseal" {
   statement {
     sid       = "VaultKMSUnseal"
     effect    = "Allow"
-    resources = ["arn:${var.arn_region}:kms:${var.aws_region}:${var.aws_account}:key/${aws_kms_key.vault-unseal-key.id}"]
+    resources = ["arn:${var.arn_region}:kms:${var.aws_region}:${var.aws_account}:key/${aws_kms_key.vault-unseal-key[count.index].id}"]
 
     actions = [
       "kms:Encrypt",
@@ -43,7 +43,7 @@ resource "aws_iam_role_policy" "vault-kms-unseal" {
   count  = "${var.vault_auto_unseal ? 1 : 0}"
   name   = "${var.cluster_name}-vault-kms-unseal"
   role   = "${aws_iam_role.vault.id}"
-  policy = "${data.aws_iam_policy_document.vault-kms-unseal.json}"
+  policy = "${data.aws_iam_policy_document.vault-kms-unseal[count.index].json}"
 }
 
 resource "aws_iam_role_policy" "vault-s3-ignition" {

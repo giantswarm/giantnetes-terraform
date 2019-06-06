@@ -2,7 +2,7 @@ resource "aws_elb" "worker" {
   name                      = "${var.cluster_name}-worker"
   cross_zone_load_balancing = true
   internal                  = false
-  subnets                   = ["${var.elb_subnet_ids}"]
+  subnets                   = "${var.elb_subnet_ids}"
   security_groups           = ["${aws_security_group.worker_elb.id}"]
 
   listener {

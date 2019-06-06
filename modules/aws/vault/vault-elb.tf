@@ -1,7 +1,7 @@
 resource "aws_elb" "vault" {
   name            = "${var.cluster_name}-vault"
   internal        = true
-  subnets         = ["${var.elb_subnet_ids}"]
+  subnets         = "${var.elb_subnet_ids}"
   security_groups = ["${aws_security_group.vault_elb.id}"]
 
   listener {
@@ -19,15 +19,16 @@ resource "aws_elb" "vault" {
     interval            = 5
   }
 
-  tags {
+  tags = {
     Name                         = "${var.cluster_name}-vault"
     "giantswarm.io/installation" = "${var.cluster_name}"
   }
 }
 
 resource "aws_elb_attachment" "vault" {
+  count         = "${var.vault_count}"
   elb      = "${aws_elb.vault.id}"
-  instance = "${aws_instance.vault.id}"
+  instance = "${aws_instance.vault[count.index].id}"
 }
 
 resource "aws_security_group" "vault_elb" {
@@ -55,7 +56,7 @@ resource "aws_security_group" "vault_elb" {
     cidr_blocks = ["${var.ipam_network_cidr}"]
   }
 
-  tags {
+  tags = {
     Name                         = "${var.cluster_name}-vault-elb"
     "giantswarm.io/installation" = "${var.cluster_name}"
   }

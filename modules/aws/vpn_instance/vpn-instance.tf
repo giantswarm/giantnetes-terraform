@@ -19,14 +19,14 @@ resource "aws_instance" "vpn_instance" {
   associate_public_ip_address = true
   source_dest_check           = false
   subnet_id                   = "${var.bastion_subnet_ids[count.index]}"
-  vpc_security_group_ids      = ["${aws_security_group.vpn_instance.id}"]
+  vpc_security_group_ids      = ["${aws_security_group.vpn_instance[count.index].id}"]
 
-  root_block_device = {
+  root_block_device {
     volume_type = "${var.volume_type}"
     volume_size = "${var.volume_size_root}"
   }
 
-  user_data = "${data.ignition_config.s3.rendered}"
+  user_data = "${data.ignition_config.s3[count.index].rendered}"
 
   tags = {
     Name                         = "${var.cluster_name}-vpn-instance${count.index}"
@@ -41,8 +41,8 @@ resource "aws_eip" "vpn_eip" {
 
 resource "aws_eip_association" "vpn_eip" {
   count         = "${var.vpn_instance_enabled ? 1 : 0}"
-  instance_id   = "${aws_instance.vpn_instance.id}"
-  allocation_id = "${aws_eip.vpn_eip.id}"
+  instance_id   = "${aws_instance.vpn_instance[count.index].id}"
+  allocation_id = "${aws_eip.vpn_eip[count.index].id}"
 }
 
 resource "aws_security_group" "vpn_instance" {
@@ -92,7 +92,7 @@ resource "aws_security_group" "vpn_instance" {
     self        = true
   }
 
-  tags {
+  tags = {
     Name                         = "${var.cluster_name}-vpn-instance"
     "giantswarm.io/installation" = "${var.cluster_name}"
   }
