@@ -540,7 +540,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:v1.13.4"
+      Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:v1.14.1"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -588,7 +588,7 @@ systemd:
       --network-plugin=cni \
       --register-node=true \
       --kubeconfig=/etc/kubernetes/kubeconfig/kubelet.yaml \
-      --node-labels="node-role.kubernetes.io/worker,role=worker,ip=${DEFAULT_IPV4}" \
+      --node-labels="node.kubernetes.io/worker,node-role.kubernetes.io/worker,kubernetes.io/role=worker,role=worker,ip=${DEFAULT_IPV4}" \
       --v=2"
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
