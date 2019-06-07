@@ -2,8 +2,8 @@ resource "aws_subnet" "bastion" {
   count = "${length(var.subnets_bastion)}"
 
   vpc_id            = "${aws_vpc.cluster_vpc.id}"
-  availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
-  cidr_block        = "${element(var.subnets_bastion, count.index)}"
+  availability_zone = "${data.aws_availability_zones.available.names[count.index]}"
+  cidr_block        = "${var.subnets_bastion[count.index]}"
 
   tags = "${merge(
     local.common_tags,
@@ -16,6 +16,6 @@ resource "aws_subnet" "bastion" {
 resource "aws_route_table_association" "bastion" {
   count = "${length(var.subnets_bastion)}"
 
-  subnet_id      = "${element(aws_subnet.bastion.*.id,count.index)}"
-  route_table_id = "${var.with_public_access == 0 ? element(aws_route_table.cluster_vpc_private.*.id,count.index) : element(aws_route_table.cluster_vpc_public.*.id,count.index)}"
+  subnet_id      = "${aws_subnet.bastion[count.index].id}"
+  route_table_id = "${var.with_public_access == "0" ? aws_route_table.cluster_vpc_private[count.index].id : aws_route_table.cluster_vpc_public[count.index].id}"
 }
