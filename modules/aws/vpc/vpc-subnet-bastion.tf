@@ -17,5 +17,5 @@ resource "aws_route_table_association" "bastion" {
   count = "${length(var.subnets_bastion)}"
 
   subnet_id      = "${aws_subnet.bastion[count.index].id}"
-  route_table_id = "${var.with_public_access == "0" ? aws_route_table.cluster_vpc_private[count.index].id : aws_route_table.cluster_vpc_public[count.index].id}"
+  route_table_id = "${var.with_public_access ? aws_route_table.cluster_vpc_public[count.index].id : aws_route_table.cluster_vpc_private[count.index].id}"
 }
