@@ -104,6 +104,7 @@ export TF_VAR_base_domain=\${TF_VAR_cluster_name}.\${TF_VAR_aws_region}.aws.giga
 export TF_VAR_root_dns_zone_id=${E2E_AWS_ROUTE53_ZONE}
 export TF_VAR_nodes_vault_token=
 export TF_VAR_aws_customer_gateway_id=
+export TF_VAR_vpn_instance_enabled=true
 export TF_VAR_worker_count=${WORKER_COUNT}
 export TF_VAR_vault_auto_unseal=false
 
