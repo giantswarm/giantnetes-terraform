@@ -25,7 +25,7 @@ resource "aws_vpn_gateway" "vpn_gw" {
 data "aws_vpn_gateway" "vpn_gw" {
   # Workaround for a bug that claimed to be addressed by 0.12 version.
   # https://github.com/hashicorp/terraform/issues/12570
-  count = "1"
+  count = "${var.aws_customer_gateway_id_0 == "" ? 0 : 1}"
 
   id = "${aws_vpn_gateway.vpn_gw.*.id[count.index]}"
 }
