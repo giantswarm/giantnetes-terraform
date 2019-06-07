@@ -143,7 +143,7 @@ module "bastion" {
   route53_enabled        = "${var.route53_enabled}"
   s3_bucket_tags         = "${var.s3_bucket_tags}"
   user_data              = "${data.ct_config.bastion.rendered}"
-  with_public_access     = "${(var.aws_customer_gateway_id_0 == "") && (var.vpn_instance_enabled) ? true : false }"
+  with_public_access     = "${(var.aws_customer_gateway_id_0 != "") || (var.vpn_instance_enabled) ? false : true }"
   vpc_cidr               = "${var.vpc_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"
 }
