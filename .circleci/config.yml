@@ -42,7 +42,7 @@ jobs:
 
   e2eTestAWSMaster:
     environment:
-      E2E_ENABLE_CONFORMANCE: "yes"
+      E2E_ENABLE_CONFORMANCE: "no"
     <<: *e2eTestAWSMultiMaster
 
   e2eTestAzureSingleMaster: &e2eTestAzureSingleMaster
@@ -65,7 +65,7 @@ jobs:
 
   e2eTestAzureMaster:
     environment:
-      E2E_ENABLE_CONFORMANCE: "yes"
+      E2E_ENABLE_CONFORMANCE: "no"
     <<: *e2eTestAzureMultiMaster
 
 workflows:
