@@ -47,7 +47,7 @@ variable "resource_group_name" {
 
 variable "network_interface_ids" {
   type        = "list"
-  description = "List of NICs to use for Vault VMs"
+  description = "List of NICs to use for Worker VMs"
 }
 
 variable "os_disk_storage_type" {

@@ -19,7 +19,7 @@ resource "aws_instance" "master" {
   subnet_id              = "${var.master_subnet_ids[count.index]}"
   vpc_security_group_ids = ["${aws_security_group.master.id}"]
 
-  root_block_device = {
+  root_block_device {
     volume_type = "${var.volume_type}"
     volume_size = "${var.volume_size_root}"
   }
@@ -36,7 +36,7 @@ resource "aws_instance" "master" {
   # we ignore changes, to avoid rolling all masters at once
   # update is done via tainting masters
   lifecycle {
-    ignore_changes = ["*"]
+    ignore_changes = all
   }
 }
 

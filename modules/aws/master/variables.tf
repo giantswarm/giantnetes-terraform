@@ -51,11 +51,6 @@ variable "user_data" {
   type = "string"
 }
 
-variable "with_public_access" {
-  type    = "string"
-  default = ""
-}
-
 variable "volume_type" {
   type    = "string"
   default = "gp2"

@@ -9,7 +9,7 @@ resource "azurerm_lb" "ingress_lb" {
     private_ip_address_allocation = "dynamic"
   }
 
-  tags {
+  tags = {
     GiantSwarmInstallation = "${var.cluster_name}"
   }
 }
@@ -20,7 +20,7 @@ resource "azurerm_public_ip" "ingress_ip" {
   resource_group_name = "${var.resource_group_name}"
   allocation_method   = "Static"
 
-  tags {
+  tags = {
     GiantSwarmInstallation = "${var.cluster_name}"
   }
 }

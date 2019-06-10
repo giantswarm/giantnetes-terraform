@@ -255,6 +255,7 @@ variable "external_ipsec_subnet_1" {
 ### VPN with custom instance 
 variable "vpn_instance_enabled" {
   default = false
+  type = bool
 }
 
 ## Gridscale
