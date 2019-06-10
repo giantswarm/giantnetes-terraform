@@ -22,17 +22,9 @@ resource "aws_vpn_gateway" "vpn_gw" {
   }
 }
 
-data "aws_vpn_gateway" "vpn_gw" {
-  # Workaround for a bug that claimed to be addressed by 0.12 version.
-  # https://github.com/hashicorp/terraform/issues/12570
-  count = "${var.aws_customer_gateway_id_0 == "" ? 0 : 1}"
-
-  id = "${aws_vpn_gateway.vpn_gw.*.id[count.index]}"
-}
-
 resource "aws_vpn_connection" "aws_vpn_conn_0" {
   count               = "${var.aws_customer_gateway_id_0 == "" ? 0 : 1}"
-  vpn_gateway_id      = "${aws_vpn_gateway.vpn_gw.*.id[count.index]}"
+  vpn_gateway_id      = "${aws_vpn_gateway.vpn_gw[count.index].id}"
   customer_gateway_id = "${var.aws_customer_gateway_id_0}"
   type                = "ipsec.1"
   static_routes_only  = true
@@ -45,7 +37,7 @@ resource "aws_vpn_connection" "aws_vpn_conn_0" {
 
 resource "aws_vpn_connection" "aws_vpn_conn_1" {
   count               = "${var.aws_customer_gateway_id_0 == "" ? 0 : 1}"
-  vpn_gateway_id      = "${aws_vpn_gateway.vpn_gw.*.id[count.index]}"
+  vpn_gateway_id      = "${aws_vpn_gateway.vpn_gw[count.index].id}"
   customer_gateway_id = "${var.aws_customer_gateway_id_1}"
   type                = "ipsec.1"
   static_routes_only  = true
