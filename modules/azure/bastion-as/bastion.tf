@@ -5,7 +5,7 @@ resource "azurerm_availability_set" "bastions" {
   managed                     = true
   platform_fault_domain_count = "${var.platform_fault_domain_count}"
 
-  tags {
+  tags = {
     GiantSwarmInstallation = "${var.cluster_name}"
   }
 }
@@ -52,7 +52,7 @@ resource "azurerm_virtual_machine" "bastion" {
     }
   }
 
-  tags {
+  tags = {
     GiantSwarmInstallation = "${var.cluster_name}"
   }
 }
