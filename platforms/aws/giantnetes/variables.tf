@@ -221,6 +221,7 @@ variable "subnets_elb" {
 
 variable "subnets_vault" {
   description = "CIDR for Vault network."
+  type        = "list"
   default     = ["10.0.3.0/25"]
 }
 
