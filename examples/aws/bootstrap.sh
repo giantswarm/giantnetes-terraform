@@ -11,7 +11,7 @@ export TF_VAR_aws_region=${AWS_DEFAULT_REGION}
 # needs to be unique within the aws account
 export TF_VAR_cluster_name=<cluster name>
 
-# will be added within the installation process
+# will be added within the installation process ('cluster token' output by hive bootstrapping)
 export TF_VAR_nodes_vault_token=
 
 # Precreated AWS customers gateways. Leave blank to disable VPN setup (bastions with public ips).
@@ -25,8 +25,7 @@ export TF_VAR_base_domain=${TF_VAR_cluster_name}.${TF_VAR_aws_region}.aws.gigant
 export TF_VAR_root_dns_zone_id=<aws route53 zone id>
 
 # (Only for VPN case) Make sure bastion subnets do not intersect.
-export TF_VAR_subnet_bastion_0=<bastion subnet cidr 1>
-export TF_VAR_subnet_bastion_1=<bastion subnet cidr 2>
+export TF_VAR_subnets_bastion='["<bastion subnet cidr 1>", "<bastion subnet cidr 2>"]'
 
 # Overwrite any parameters from "platforms/aws/giantnetes/variables.tf" here.
 
