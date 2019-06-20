@@ -121,6 +121,20 @@ terraform plan .
 terraform apply .
 ```
 
+### Recreate the new masters to complete cluster bootstrapping
+
+```
+source bootstrap.sh
+
+```
+
+```
+terraform taint module.master.aws_instance.master[0]
+terraform taint module.master.aws_instance.master[1]
+terraform taint module.master.aws_instance.master[2]
+terraform apply ./
+```
+
 ## Upload variables and configuration
 
 Create `terraform` folder in [installations repository](https://github.com/giantswarm/installations) under particular installation folder. Copy variables and configuration.
@@ -203,15 +217,15 @@ As each master is single ec2 instance, normal `terraform apply` operation would 
 
 ```
 # update first master
-terraform taint --module="master" aws_instance.master.0
+terraform taint module.master.aws_instance.master[0]
 terraform apply ./
 
 # update second master
-terraform taint --module="master" aws_instance.master.1
+terraform taint module.master.aws_instance.master[1]
 terraform apply ./
 
 # update third master
-terraform taint --module="master" aws_instance.master.2
+terraform taint module.master.aws_instance.master[2]
 terraform apply ./
 
 ```
