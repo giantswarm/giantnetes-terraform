@@ -14,7 +14,7 @@ module "container_linux" {
 
 # Get ami ID for specific Container Linux version.
 data "aws_ami" "coreos_ami" {
-  owners = ["595879546273"]
+  owners = ["${var.ami_owner}"]
 
   filter {
     name   = "name"
