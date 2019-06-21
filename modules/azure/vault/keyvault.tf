@@ -11,7 +11,7 @@ resource "azurerm_key_vault" "vault" {
     name = "standard"
   }
 
-  tags {
+  tags = {
     Name                   = "${var.cluster_name}"
     GiantSwarmInstallation = "${var.cluster_name}"
   }
@@ -24,7 +24,7 @@ resource "azurerm_key_vault" "vault" {
 
 resource "azurerm_key_vault_access_policy" "runner" {
   count               = "${var.vault_auto_unseal ? 1 : 0}"
-  vault_name          = "${azurerm_key_vault.vault.name}"
+  vault_name          = "${azurerm_key_vault.vault[count.index].name}"
   resource_group_name = "${var.resource_group_name}"
 
   tenant_id = "${var.tenant_id}"
@@ -40,11 +40,11 @@ resource "azurerm_key_vault_access_policy" "runner" {
 
 resource "azurerm_key_vault_access_policy" "vault" {
   count               = "${var.vault_auto_unseal ? 1 : 0}"
-  vault_name          = "${azurerm_key_vault.vault.name}"
+  vault_name          = "${azurerm_key_vault.vault[count.index].name}"
   resource_group_name = "${var.resource_group_name}"
 
   tenant_id = "${var.tenant_id}"
-  object_id = "${azurerm_user_assigned_identity.vault.principal_id}"
+  object_id = "${azurerm_user_assigned_identity.vault[count.index].principal_id}"
 
   key_permissions = [
     "get",
@@ -62,7 +62,7 @@ resource "azurerm_key_vault_access_policy" "vault" {
 resource "azurerm_key_vault_key" "generated" {
   count        = "${var.vault_auto_unseal ? 1 : 0}"
   name         = "${var.cluster_name}-vault-unseal-key"
-  key_vault_id = "${azurerm_key_vault.vault.id}"
+  key_vault_id = "${azurerm_key_vault.vault[count.index].id}"
   key_type     = "RSA"
   key_size     = 2048
 

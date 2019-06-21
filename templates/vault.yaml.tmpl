@@ -61,6 +61,18 @@ systemd:
           [Service]
           Restart=always
           RestartSec=5
+    - name: os-hardening.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Apply os hardening
+        [Service]
+        Type=oneshot
+        ExecStartPre=-/bin/bash -c "gpasswd -d core rkt; gpasswd -d core docker; gpasswd -d core wheel"
+        ExecStartPre=/bin/bash -c "until [ -f '/etc/sysctl.d/hardening.conf' ]; do echo Waiting for sysctl file; sleep 1s;done;"
+        ExecStart=/usr/sbin/sysctl -p /etc/sysctl.d/hardening.conf
+        [Install]
+        WantedBy=multi-user.target
 
 storage:
   filesystems:
@@ -77,6 +89,35 @@ storage:
         wipe_filesystem: false
         label: var-log
   files:
+    - path: /etc/ssh/sshd_config
+      filesystem: root
+      mode: 0600
+      contents:
+        inline: |
+          # Use most defaults for sshd configuration.
+          Subsystem sftp internal-sftp
+          ClientAliveInterval 180
+          UseDNS no
+          UsePAM yes
+          PrintLastLog no # handled by PAM
+          PrintMotd no # handled by PAM
+          # Non defaults (#100)
+          ClientAliveCountMax 2
+          PasswordAuthentication no
+          TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem
+          MaxAuthTries 5
+          LoginGraceTime 60
+          AllowTcpForwarding no
+          AllowAgentForwarding no
+    - path: /etc/sysctl.d/hardening.conf
+      filesystem: root
+      mode: 0600
+      contents: 
+        inline: |
+          net.ipv4.conf.all.rp_filter = 1
+          net.ipv4.conf.all.arp_ignore = 1
+          net.ipv4.conf.all.arp_announce = 2
+
     {{ if .VaultAutoUnseal -}}
     - path: /etc/vault/vault-auto-unseal.hcl
       filesystem: root

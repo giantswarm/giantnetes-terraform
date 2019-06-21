@@ -36,6 +36,6 @@ variable "vpc_cidr" {
 }
 
 variable "with_public_access" {
-  type    = "string"
-  default = ""
+  type    = bool
+  default = false
 }

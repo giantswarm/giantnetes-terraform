@@ -19,7 +19,7 @@ output "bastion_nsg_name" {
 }
 
 output "bastion_network_interface_ids" {
-  value = ["${azurerm_network_interface.bastion.*.id}"]
+  value = "${azurerm_network_interface.bastion.*.id}"
 }
 
 output "vault_subnet" {
@@ -71,11 +71,11 @@ output "worker_nsg_name" {
 }
 
 output "worker_network_interface_ids" {
-  value = ["${azurerm_network_interface.worker.*.id}"]
+  value = "${azurerm_network_interface.worker.*.id}"
 }
 
 output "master_network_interface_ids" {
-  value = ["${azurerm_network_interface.master.*.id}"]
+  value = "${azurerm_network_interface.master.*.id}"
 }
 
 output "api_backend_address_pool_id" {

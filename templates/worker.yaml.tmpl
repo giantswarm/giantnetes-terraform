@@ -191,6 +191,10 @@ storage:
           ClientAliveCountMax 2
           PasswordAuthentication no
           TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem
+          MaxAuthTries 5
+          LoginGraceTime 60
+          AllowTcpForwarding no
+          AllowAgentForwarding no
 
     - path: /opt/get-ca.sh
       filesystem: root
@@ -242,6 +246,9 @@ storage:
           net.ipv4.tcp_timestamps = 0
           net.ipv6.conf.all.accept_redirects = 0
           net.ipv6.conf.default.accept_redirects = 0
+          net.ipv4.conf.all.rp_filter = 1
+          net.ipv4.conf.all.arp_ignore = 1
+          net.ipv4.conf.all.arp_announce = 2
 
     - path: /etc/audit/rules.d/10-docker.rules
       filesystem: root
@@ -540,7 +547,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:v1.13.4"
+      Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:v1.14.3"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -588,7 +595,7 @@ systemd:
       --network-plugin=cni \
       --register-node=true \
       --kubeconfig=/etc/kubernetes/kubeconfig/kubelet.yaml \
-      --node-labels="node-role.kubernetes.io/worker,role=worker,ip=${DEFAULT_IPV4}" \
+      --node-labels="node.kubernetes.io/worker,node-role.kubernetes.io/worker,kubernetes.io/role=worker,role=worker,ip=${DEFAULT_IPV4}" \
       --v=2"
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME

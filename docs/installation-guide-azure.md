@@ -185,15 +185,15 @@ source bootstrap.sh
 ##### Taint machines so they are recreated
 
 ```
-terraform taint -module="bastion" "azurerm_virtual_machine.bastion.0"
-terraform taint -module="bastion" "azurerm_virtual_machine.bastion.1"
-terraform taint -module="master" "azurerm_virtual_machine.master.0"
-terraform taint -module="master" "azurerm_virtual_machine.master.1"
-terraform taint -module="master" "azurerm_virtual_machine.master.2"
-terraform taint -module="worker" "azurerm_virtual_machine.worker.0"
-terraform taint -module="worker" "azurerm_virtual_machine.worker.1"
-terraform taint -module="worker" "azurerm_virtual_machine.worker.2"
-terraform taint -module="worker" "azurerm_virtual_machine.worker.3"
+terraform taint module.bastion.azurerm_virtual_machine.bastion[0]
+terraform taint module.bastion.azurerm_virtual_machine.bastion[1]
+terraform taint module.master.azurerm_virtual_machine.master[0]
+terraform taint module.master.azurerm_virtual_machine.master[1]
+terraform taint module.master.azurerm_virtual_machine.master[2]
+terraform taint module.worker.azurerm_virtual_machine.worker[0]
+terraform taint module.worker.azurerm_virtual_machine.worker[1]
+terraform taint module.worker.azurerm_virtual_machine.worker[2]
+terraform taint module.worker.azurerm_virtual_machine.worker[3]
 ```
 
 ##### Apply terraform

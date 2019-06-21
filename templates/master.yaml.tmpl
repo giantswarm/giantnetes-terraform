@@ -16,11 +16,11 @@ storage:
           #   - Made install-cni initContainer.
           #   - Added critical pod priority to calico-node daemonSet and calico-kube-controllers 'priorityClassName: system-cluster-critical'.
           #
-          # Calico Version v3.4.0
-          # https://docs.projectcalico.org/v3.4/releases#v3.4.0
+          # Calico Version v3.6.1
+          # https://docs.projectcalico.org/v3.4/releases#v3.6.1
           # This manifest includes the following component versions:
-          #   calico/node:v3.4.0
-          #   calico/cni:v3.4.0
+          #   calico/node:v3.6.1
+          #   calico/cni:v3.6.1
 
           # This ConfigMap is used to configure a self-hosted Calico installation.
           kind: ConfigMap
@@ -122,7 +122,7 @@ storage:
                   cluster-autoscaler.kubernetes.io/safe-to-evict: 'true'
               spec:
                 nodeSelector:
-                  beta.kubernetes.io/os: linux
+                  kubernetes.io/os: linux
                 hostNetwork: true
                 tolerations:
                   # Mark the pod as a critical add-on for rescheduling.
@@ -133,7 +133,7 @@ storage:
                 serviceAccountName: calico-node
                 priorityClassName: system-cluster-critical
                 containers:
-                - image: {{.DockerRegistry}}/giantswarm/typha:v3.4.0
+                - image: {{.DockerRegistry}}/giantswarm/typha:v3.6.1
                   name: calico-typha
                   ports:
                   - containerPort: 5473
@@ -227,7 +227,7 @@ storage:
                   scheduler.alpha.kubernetes.io/critical-pod: ''
               spec:
                 nodeSelector:
-                  beta.kubernetes.io/os: linux
+                  kubernetes.io/os: linux
                 hostNetwork: true
                 tolerations:
                   # Make sure calico-node gets scheduled on all nodes.
@@ -247,7 +247,7 @@ storage:
                   # This container installs the Calico CNI binaries
                   # and CNI network config file on each node.
                   - name: install-cni
-                    image: {{.DockerRegistry}}/giantswarm/cni:v3.4.0
+                    image: {{.DockerRegistry}}/giantswarm/cni:v3.6.1
                     command: ["/install-cni.sh"]
                     env:
                       # Name of the CNI config file to create.
@@ -284,7 +284,7 @@ storage:
                   # container programs network policy and routes on each
                   # host.
                   - name: calico-node
-                    image: {{.DockerRegistry}}/giantswarm/node:v3.4.0
+                    image: {{.DockerRegistry}}/giantswarm/node:v3.6.1
                     env:
                       # Use Kubernetes API as the backing datastore.
                       - name: DATASTORE_TYPE
@@ -518,8 +518,8 @@ storage:
 
           ---
 
-          # Calico Version v3.4.0
-          # https://docs.projectcalico.org/v3.4/releases#v3.4.0
+          # Calico Version v3.6.1
+          # https://docs.projectcalico.org/v3.4/releases#v3.6.1
           kind: ClusterRole
           apiVersion: rbac.authorization.k8s.io/v1
           metadata:
@@ -640,12 +640,12 @@ storage:
           #  - Added resource limits to install-cni.
           #  - Added critical pod priority to calico-node daemonSet and calico-kube-controllers 'priorityClassName: system-cluster-critical'.
           #
-          # Calico Version v3.4.0
-          # https://docs.projectcalico.org/v3.4/releases#v3.4.0
+          # Calico Version v3.6.1
+          # https://docs.projectcalico.org/v3.6/releases#v3.6.1
           # This manifest includes the following component versions:
-          #   calico/node:v3.4.0
-          #   calico/cni:v3.4.0
-          #   calico/kube-controllers:v3.4.0
+          #   calico/node:v3.6.1
+          #   calico/cni:v3.6.1
+          #   calico/kube-controllers:v3.6.1
 
           # This ConfigMap is used to configure a self-hosted Calico installation.
           kind: ConfigMap
@@ -756,7 +756,7 @@ storage:
                   scheduler.alpha.kubernetes.io/critical-pod: ''
               spec:
                 nodeSelector:
-                  beta.kubernetes.io/os: linux
+                  kubernetes.io/os: linux
                 hostNetwork: true
                 tolerations:
                   # Make sure calico-node gets scheduled on all nodes.
@@ -777,7 +777,7 @@ storage:
                   # container programs network policy and routes on each
                   # host.
                   - name: calico-node
-                    image: {{.DockerRegistry}}/giantswarm/node:v3.4.0
+                    image: {{.DockerRegistry}}/giantswarm/node:v3.6.1
                     env:
                       # The location of the Calico etcd cluster.
                       - name: ETCD_ENDPOINTS
@@ -891,7 +891,7 @@ storage:
                   # This container installs the Calico CNI binaries
                   # and CNI network config file on each node.
                   - name: install-cni
-                    image: {{.DockerRegistry}}/giantswarm/cni:v3.4.0
+                    image: {{.DockerRegistry}}/giantswarm/cni:v3.6.1
                     command: ["/install-cni.sh"]
                     env:
                       # Name of the CNI config file to create.
@@ -1006,7 +1006,7 @@ storage:
                 priorityClassName: system-cluster-critical
                 containers:
                   - name: calico-kube-controllers
-                    image: {{.DockerRegistry}}/giantswarm/kube-controllers:v3.4.0
+                    image: {{.DockerRegistry}}/giantswarm/kube-controllers:v3.6.1
                     env:
                       # The location of the Calico etcd cluster.
                       - name: ETCD_ENDPOINTS
@@ -1067,8 +1067,8 @@ storage:
 
           ---
 
-          # Calico Version v3.4.0
-          # https://docs.projectcalico.org/v3.4/releases#v3.4.0
+          # Calico Version v3.6.1
+          # https://docs.projectcalico.org/v3.4/releases#v3.6.1
 
           ---
 
@@ -1421,7 +1421,7 @@ storage:
                 serviceAccountName: kube-proxy
                 containers:
                 - name: kube-proxy
-                  image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.13.4
+                  image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.14.3
                   command:
                   - /hyperkube
                   - proxy
@@ -2481,7 +2481,7 @@ storage:
             priorityClassName: system-node-critical
             containers:
               - name: k8s-api-server
-                image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.13.4
+                image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.14.3
                 env:
                 - name: HOST_IP
                   valueFrom:
@@ -2514,7 +2514,6 @@ storage:
                 - --runtime-config=api/all=true
                 - --logtostderr=true
                 - --profiling=false
-                - --repair-malformed-updates=false
                 - --service-account-lookup=true
                 - --tls-cert-file=/etc/kubernetes/ssl/apiserver-crt.pem
                 - --tls-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
@@ -2575,7 +2574,7 @@ storage:
             priorityClassName: system-node-critical
             containers:
               - name: k8s-controller-manager
-                image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.13.4
+                image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.14.3
                 command:
                 - /hyperkube
                 - controller-manager
@@ -2651,7 +2650,7 @@ storage:
             priorityClassName: system-node-critical
             containers:
               - name: k8s-scheduler
-                image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.13.4
+                image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.14.3
                 command:
                 - /hyperkube
                 - scheduler
@@ -2760,6 +2759,8 @@ storage:
           ClientAliveCountMax 2
           PasswordAuthentication no
           TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem
+          MaxAuthTries 5
+          LoginGraceTime 60
     - path: /opt/get-ca.sh
       filesystem: root
       mode: 0770
@@ -2823,6 +2824,9 @@ storage:
           net.ipv4.tcp_timestamps = 0
           net.ipv6.conf.all.accept_redirects = 0
           net.ipv6.conf.default.accept_redirects = 0
+          net.ipv4.conf.all.rp_filter = 1
+          net.ipv4.conf.all.arp_ignore = 1
+          net.ipv4.conf.all.arp_announce = 2
 
     - path: /etc/audit/rules.d/10-docker.rules
       filesystem: root
@@ -3138,7 +3142,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       LimitNOFILE=40000
-      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.3.10
+      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.3.13
       Environment=NAME=%p.service
       EnvironmentFile=/etc/network-environment
       ExecStartPre=-/usr/bin/docker stop  $NAME
@@ -3258,7 +3262,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:v1.13.4"
+      Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:v1.14.3"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -3308,7 +3312,7 @@ systemd:
       --register-node=true \
       --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
       --kubeconfig=/etc/kubernetes/kubeconfig/kubelet.yaml \
-      --node-labels="node-role.kubernetes.io/master,role=master,ip=${DEFAULT_IPV4},master-id={{.MasterID}}" \
+      --node-labels="node.kubernetes.io/master,node-role.kubernetes.io/master,kubernetes.io/role=master,role=master,ip=${DEFAULT_IPV4},master-id={{.MasterID}}" \
       --v=2"
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME

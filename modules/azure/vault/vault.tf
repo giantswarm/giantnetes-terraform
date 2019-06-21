@@ -5,7 +5,7 @@ resource "azurerm_user_assigned_identity" "vault" {
 
   name = "${var.cluster_name}-keyvault-id"
 
-  tags {
+  tags = {
     Name                   = "${var.cluster_name}"
     GiantSwarmInstallation = "${var.cluster_name}"
   }
@@ -37,9 +37,9 @@ resource "azurerm_virtual_machine" "vault_with_msi" {
   network_interface_ids = ["${var.network_interface_ids[0]}"]
   vm_size               = "${var.vm_size}"
 
-  identity = {
+  identity {
     type         = "UserAssigned"
-    identity_ids = ["${azurerm_user_assigned_identity.vault.id}"]
+    identity_ids = ["${azurerm_user_assigned_identity.vault[count.index].id}"]
   }
 
   lifecycle {
@@ -99,7 +99,7 @@ resource "azurerm_virtual_machine" "vault_with_msi" {
     }
   }
 
-  tags {
+  tags = {
     GiantSwarmInstallation = "${var.cluster_name}"
   }
 }
@@ -145,6 +145,14 @@ resource "azurerm_virtual_machine" "vault_without_msi" {
     disk_size_gb    = "${azurerm_managed_disk.vault_data.disk_size_gb}"
   }
 
+  storage_data_disk {
+    name            = "${azurerm_managed_disk.logs_data.name}"
+    managed_disk_id = "${azurerm_managed_disk.logs_data.id}"
+    create_option   = "Attach"
+    lun             = 1
+    disk_size_gb    = "${azurerm_managed_disk.logs_data.disk_size_gb}"
+  }
+
   os_profile {
     computer_name  = "vault"
     admin_username = "core"
@@ -161,7 +169,7 @@ resource "azurerm_virtual_machine" "vault_without_msi" {
     }
   }
 
-  tags {
+  tags = {
     GiantSwarmInstallation = "${var.cluster_name}"
   }
 }

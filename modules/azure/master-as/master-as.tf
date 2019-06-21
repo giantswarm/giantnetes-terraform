@@ -5,7 +5,7 @@ resource "azurerm_availability_set" "masters" {
   managed                     = true
   platform_fault_domain_count = "${var.platform_fault_domain_count}"
 
-  tags {
+  tags = {
     GiantSwarmInstallation = "${var.cluster_name}"
   }
 }
@@ -94,13 +94,13 @@ resource "azurerm_virtual_machine" "master" {
     }
   }
 
-  tags {
+  tags = {
     GiantSwarmInstallation = "${var.cluster_name}"
   }
 
   # we ignore changes, to avoid rolling all masters at once
   # update is done via tainting masters
   lifecycle {
-    ignore_changes = ["*"]
+    ignore_changes = all
   }
 }

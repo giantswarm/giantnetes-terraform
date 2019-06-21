@@ -1,5 +1,5 @@
 provider "azurerm" {
-  version = "=1.22.1"
+  version = "~> 1.30.1"
 
   environment = "${var.azure_cloud}"
 }
@@ -249,8 +249,8 @@ module "vpn" {
   vpn_right_subnet_cidr_1     = "${var.vpn_right_subnet_cidr_1}"
 }
 
-terraform = {
-  required_version = ">= 0.11.0"
+terraform {
+  required_version = ">= 0.12.0"
 
   backend "azurerm" {}
 }

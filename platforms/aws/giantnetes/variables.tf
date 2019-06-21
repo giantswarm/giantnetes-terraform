@@ -226,6 +226,7 @@ variable "subnets_elb" {
 
 variable "subnets_vault" {
   description = "CIDR for Vault network."
+  type        = "list"
   default     = ["10.0.3.0/25"]
 }
 
@@ -260,6 +261,7 @@ variable "external_ipsec_subnet_1" {
 ### VPN with custom instance 
 variable "vpn_instance_enabled" {
   default = false
+  type = bool
 }
 
 ## Gridscale
