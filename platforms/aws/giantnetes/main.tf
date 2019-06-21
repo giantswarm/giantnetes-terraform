@@ -1,5 +1,5 @@
 provider "aws" {
-  version = "~> 2.13.0"
+  version = "~> 2.16.0"
 
   # Make sure to define profile in ~/.aws/config
   profile = "${var.cluster_name}"
