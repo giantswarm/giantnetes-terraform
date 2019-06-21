@@ -83,7 +83,6 @@ resource "azurerm_virtual_machine" "vault_with_msi" {
     disk_size_gb    = "${azurerm_managed_disk.logs_data.disk_size_gb}"
   }
 
-
   os_profile {
     computer_name  = "vault"
     admin_username = "core"
