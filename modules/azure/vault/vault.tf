@@ -75,7 +75,7 @@ resource "azurerm_virtual_machine" "vault_with_msi" {
     disk_size_gb    = "${azurerm_managed_disk.vault_data.disk_size_gb}"
   }
 
-  storage_logs_disk {
+  storage_data_disk {
     name            = "${azurerm_managed_disk.logs_data.name}"
     managed_disk_id = "${azurerm_managed_disk.logs_data.id}"
     create_option   = "Attach"
@@ -146,7 +146,7 @@ resource "azurerm_virtual_machine" "vault_without_msi" {
     disk_size_gb    = "${azurerm_managed_disk.vault_data.disk_size_gb}"
   }
 
-  storage_logs_disk {
+  storage_data_disk {
     name            = "${azurerm_managed_disk.logs_data.name}"
     managed_disk_id = "${azurerm_managed_disk.logs_data.id}"
     create_option   = "Attach"
