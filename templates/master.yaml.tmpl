@@ -2146,8 +2146,8 @@ storage:
             #!/bin/bash
             set -eu
 
-            # k8s 1.12.2
-            KUBECTL_IMAGE=quay.io/giantswarm/docker-kubectl:f5cae44c480bd797dc770dd5f62d40b74063c0d7
+            # k8s 1.14.1
+            KUBECTL_IMAGE=quay.io/giantswarm/docker-kubectl:1.14.1
             KUBECTL="/usr/bin/docker run --net=host --rm
             -e KUBECONFIG=/etc/kubernetes/kubeconfig/addons.yaml
             -v /etc/kubernetes:/etc/kubernetes
