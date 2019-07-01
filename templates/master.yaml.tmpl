@@ -2146,8 +2146,8 @@ storage:
             #!/bin/bash
             set -eu
 
-            # k8s 1.12.2
-            KUBECTL_IMAGE=quay.io/giantswarm/docker-kubectl:f5cae44c480bd797dc770dd5f62d40b74063c0d7
+            # k8s 1.14.1
+            KUBECTL_IMAGE=quay.io/giantswarm/docker-kubectl:1.14.1
             KUBECTL="/usr/bin/docker run --net=host --rm
             -e KUBECONFIG=/etc/kubernetes/kubeconfig/addons.yaml
             -v /etc/kubernetes:/etc/kubernetes
@@ -2156,6 +2156,19 @@ storage:
             /usr/bin/docker pull $KUBECTL_IMAGE
 
             while ! curl --output /dev/null --silent --head --insecure "https://{{ .APIDomainName }}"; do sleep 1 && echo 'Waiting for master'; done
+
+            # label namespaces (required for network egress policies)
+            NAMESPACES="default giantswarm kube-system" 
+            for namespace in ${NAMESPACES}
+            do
+                while
+                    $KUBECTL label namespace ${namespace} name=${namespace}
+                    [ "$?" -ne "0" ]
+                do
+                    echo "failed to label namespace ${namespace}, retrying in 5 sec"
+                    sleep 5s
+                done
+            done
 
             # apply Security bootstrap (RBAC and PSP)
             SECURITY_FILES="rbac-roles.yaml
