@@ -2175,10 +2175,7 @@ storage:
             NAMESPACES="default giantswarm kube-system" 
             for namespace in ${NAMESPACES}
             do
-                while
-                    $KUBECTL get namespaces -l name=${namespace} | grep ${namespace}
-                    [ "$?" -ne "0" ]
-                do
+                if ! $KUBECTL get namespaces -l name=${namespace} | grep ${namespace}; then
                     while
                         $KUBECTL label namespace ${namespace} name=${namespace}
                         [ "$?" -ne "0" ]
@@ -2186,7 +2183,7 @@ storage:
                         echo "failed to label namespace ${namespace}, retrying in 5 sec"
                         sleep 5s
                     done
-                done
+                fi
             done
 
             # apply Security bootstrap (RBAC and PSP)
