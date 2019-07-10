@@ -170,6 +170,14 @@ aws s3 sync s3://$CLUSTER-access-logs .
 terraform destroy ./
 ```
 
+Then remove dynamodb lock table:
+
+```
+aws dynamodb delete-table --table-name ${CLUSTER}-lock
+```
+
+And finally delete the bucket `${CLUSTER}-state` from the AWS console (versioned buckets cannot be deleted using the AWS CLI)
+
 ## Enable access logs for state bucket
 
 For enabling the access logs in the terraform state bucket, modify the placeholders in `examples/logging-policy.json`
