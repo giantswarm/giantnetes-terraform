@@ -225,6 +225,11 @@ variable "k8s_api_ip" {
   default     = "172.31.0.1"
 }
 
+variable "k8s_audit_webhook_port" {
+  description = "Port for audit webhook streaming."
+  default     = "30771"
+}
+
 ### VPN ###
 
 # NOTE: VPN is disabled by default.
