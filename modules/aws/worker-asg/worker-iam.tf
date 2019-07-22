@@ -79,8 +79,8 @@ resource "aws_iam_role_policy" "worker" {
        "s3:GetObject"
      ],
      "Resource": [
-       "arn:aws:logs:${var.arn_region}:*:*",
-       "arn:aws:s3:::*"
+       "arn:${var.arn_region}:logs:${var.aws_region}:*:*",
+       "arn:${var.arn_region}:s3:::*"
      ]
     }
   ]

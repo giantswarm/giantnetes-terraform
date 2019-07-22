@@ -19,8 +19,8 @@ set -o nounset
 set -o pipefail
 
 WORKDIR=$(pwd)
-BUILDDIR=${WORKDIR}/build
-CLUSTER=e2eterraform$(echo ${CIRCLE_SHA1} | cut -c 1-6)
+TFDIR=${WORKDIR}/platforms/azure/giantnetes
+CLUSTER=e2eterraform$(echo ${CIRCLE_SHA1} | cut -c 1-5)${MASTER_COUNT}
 SSH_USER="e2e"
 KUBECTL_IMAGE="quay.io/giantswarm/docker-kubectl:8cabd75bacbcdad7ac5d85efc3ca90c2fabf023b"
 KUBECTL_CMD="/usr/bin/docker run --net=host --rm
@@ -28,6 +28,8 @@ KUBECTL_CMD="/usr/bin/docker run --net=host --rm
 -v /etc/kubernetes:/etc/kubernetes
 -v /srv:/srv $KUBECTL_IMAGE"
 WORKER_COUNT=1
+
+export TF_VAR_master_count=${MASTER_COUNT}
 
 # Please set any non empty value to E2E_ENABLE_CONFORMANCE in CircleCI
 # to enable full run of e2e conformance tests.
@@ -86,14 +88,10 @@ stage-preflight() {
   [ ! -z "${CIRCLE_SHA1+x}" ] || fail "variable CIRCLE_SHA1 is not set"
 }
 
-stage-prepare-builddir() {
-  msg "Creating and switching to build directory..."
-  [ -d ${BUILDDIR} ] && rm -rf ${BUILDDIR}
-  mkdir -p ${BUILDDIR}
+stage-prepare() {
+  mkdir -p ${TFDIR}
 
-  touch ${BUILDDIR}/backend.tf
-
-  cat > ${BUILDDIR}/envs.sh << EOF
+  cat > ${TFDIR}/bootstrap.sh << EOF
 export ARM_CLIENT_ID=${E2E_SP_APP_ID}
 export ARM_CLIENT_SECRET=${E2E_SP_PASSWORD}
 export ARM_TENANT_ID=${E2E_SP_TENANT_ID}
@@ -109,16 +107,20 @@ export TF_VAR_root_dns_zone_name="azure.gigantic.io"
 export TF_VAR_nodes_vault_token=
 export TF_VAR_worker_count=${WORKER_COUNT}
 export TF_VAR_delete_data_disks_on_termination="true"
-# TODO: Remove this as soon as 1995.0.0 available.
-export TF_VAR_container_linux_version=1995.0.0
-export TF_VAR_container_linux_channel=alpha
+export TF_VAR_vault_auto_unseal=false
+
+terraform init ./
 EOF
+
+  # This removes the configuration of the backend to init Terraform
+  # with the local backend
+  sed -i '/backend "azurerm" {}/d' ${WORKDIR}/platforms/azure/giantnetes/main.tf
 }
 
 stage-prepare-ssh(){
-    ssh-keygen -t rsa -N "" -f ${BUILDDIR}/${SSH_USER}.key
+    ssh-keygen -t rsa -N "" -f ${TFDIR}/${SSH_USER}.key
 
-    ssh_pub_key=$(cat ${BUILDDIR}/${SSH_USER}.key.pub)
+    ssh_pub_key=$(cat ${TFDIR}/${SSH_USER}.key.pub)
 
     # TODO Add after second line.
     cat > ${WORKDIR}/ignition/bastion-users.yaml << EOF
@@ -129,7 +131,7 @@ passwd:
       - "sudo"
       - "docker"
     ssh_authorized_keys:
-      - $(cat ${BUILDDIR}/${SSH_USER}.key.pub)
+      - $(cat ${TFDIR}/${SSH_USER}.key.pub)
 EOF
     cat > ${WORKDIR}/ignition/users.yaml << EOF
 passwd:
@@ -139,31 +141,29 @@ passwd:
       - "sudo"
       - "docker"
     ssh_authorized_keys:
-      - $(cat ${BUILDDIR}/${SSH_USER}.key.pub)
+      - $(cat ${TFDIR}/${SSH_USER}.key.pub)
 EOF
     eval "$(ssh-agent)"
-    ssh-add ${BUILDDIR}/${SSH_USER}.key
+    ssh-add ${TFDIR}/${SSH_USER}.key
 }
 
 stage-terraform-only-vault() {
-  cd ${BUILDDIR}
-
-  source envs.sh
-  terraform init ../platforms/azure/giantnetes
-  terraform apply -auto-approve -target="module.dns" ../platforms/azure/giantnetes
-  terraform apply -auto-approve -target="module.vnet" ../platforms/azure/giantnetes
-  terraform apply -auto-approve -target="module.bastion" ../platforms/azure/giantnetes
-  terraform apply -auto-approve -target="module.vault" ../platforms/azure/giantnetes
+  cd ${TFDIR}
+  pwd
+  source bootstrap.sh
+  terraform apply -auto-approve -target="module.dns" ./
+  terraform apply -auto-approve -target="module.vnet" ./
+  terraform apply -auto-approve -target="module.bastion" ./
+  terraform apply -auto-approve -target="module.vault" ./
 
   cd -
 }
 
 stage-terraform() {
-  cd ${BUILDDIR}
+  cd ${TFDIR}
 
-  source envs.sh
-  terraform init ../platforms/azure/giantnetes
-  terraform apply -auto-approve ../platforms/azure/giantnetes
+  source bootstrap.sh
+  terraform apply -auto-approve ./
 
   cd -
 }
@@ -229,7 +229,7 @@ EOF
     exec_on vault1 vault operator unseal ${unseal_key}
 
     # Insert vault token in envs file.
-    sed -i "s/export TF_VAR_nodes_vault_token=.*/export TF_VAR_nodes_vault_token=${VAULT_TOKEN}/" ${BUILDDIR}/envs.sh
+    sed -i "s/export TF_VAR_nodes_vault_token=.*/export TF_VAR_nodes_vault_token=${VAULT_TOKEN}/" ${TFDIR}/bootstrap.sh
 
     cd ${WORKDIR}
 }
@@ -247,10 +247,9 @@ stage-debug() {
 stage-destroy() {
   stage-debug || true
   
-  cd ${BUILDDIR}
-  source envs.sh
-  terraform init ../platforms/azure/giantnetes
-  terraform destroy -force ../platforms/azure/giantnetes
+  cd ${TFDIR}
+  source bootstrap.sh
+  terraform destroy -force ./
 
   cd -
 }
@@ -259,7 +258,7 @@ stage-destroy() {
 # will be in ready state and timeout after 3 minutes.
 stage-wait-kubernetes-nodes(){
     local nodes_num_actual=$(exec_on master1 ${KUBECTL_CMD} get node | tail -n +2 | grep -v NotReady | wc -l)
-    local nodes_num_expected=$((${WORKER_COUNT} + 1))
+    local nodes_num_expected=$((${WORKER_COUNT} + ${MASTER_COUNT}))
 
     local tries=0
     until [ ${nodes_num_expected} -eq ${nodes_num_actual} ]; do
@@ -301,7 +300,7 @@ main() {
       exit
   fi
 
-  stage-prepare-builddir
+  stage-prepare
   stage-prepare-ssh
   trap "stage-destroy" EXIT
   stage-terraform-only-vault

@@ -5,7 +5,7 @@ resource "azurerm_availability_set" "masters" {
   managed                     = true
   platform_fault_domain_count = "${var.platform_fault_domain_count}"
 
-  tags {
+  tags = {
     GiantSwarmInstallation = "${var.cluster_name}"
   }
 }
@@ -71,18 +71,18 @@ resource "azurerm_virtual_machine" "master" {
   }
 
   storage_data_disk {
-    name            = "${azurerm_managed_disk.master_etcd.name}"
-    managed_disk_id = "${azurerm_managed_disk.master_etcd.id}"
+    name            = "${element(azurerm_managed_disk.master_etcd.*.name,count.index)}"
+    managed_disk_id = "${element(azurerm_managed_disk.master_etcd.*.id,count.index)}"
     create_option   = "Attach"
     lun             = 1
-    disk_size_gb    = "${azurerm_managed_disk.master_etcd.disk_size_gb}"
+    disk_size_gb    = "${element(azurerm_managed_disk.master_etcd.*.disk_size_gb,count.index)}"
   }
 
   os_profile {
     computer_name  = "master${count.index}"
     admin_username = "core"
     admin_password = ""
-    custom_data    = "${base64encode("${data.ignition_config.loader.rendered}")}"
+    custom_data    = "${base64encode("${element(data.ignition_config.loader.*.rendered, count.index)}")}"
   }
 
   os_profile_linux_config {
@@ -94,7 +94,13 @@ resource "azurerm_virtual_machine" "master" {
     }
   }
 
-  tags {
+  tags = {
     GiantSwarmInstallation = "${var.cluster_name}"
+  }
+
+  # we ignore changes, to avoid rolling all masters at once
+  # update is done via tainting masters
+  lifecycle {
+    ignore_changes = all
   }
 }

@@ -3,7 +3,7 @@ resource "aws_elb" "master_api" {
   cross_zone_load_balancing = true
   idle_timeout              = 3600
   internal                  = true
-  subnets                   = ["${var.elb_subnet_ids}"]
+  subnets                   = "${var.elb_subnet_ids}"
   security_groups           = ["${aws_security_group.master_elb_api.id}"]
 
   listener {

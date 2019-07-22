@@ -1,3 +1,15 @@
+variable "arn_region" {
+  type = "string"
+}
+
+variable "aws_account" {
+  type = "string"
+}
+
+variable "aws_region" {
+  type = "string"
+}
+
 variable "elb_subnet_ids" {
   type = "list"
 }
@@ -10,7 +22,15 @@ variable "cluster_name" {
   type = "string"
 }
 
+variable "ignition_bucket_id" {
+  type = "string"
+}
+
 variable "instance_type" {
+  type = "string"
+}
+
+variable "iam_region" {
   type = "string"
 }
 
@@ -37,6 +57,11 @@ variable "volume_size_etcd" {
   default = 10
 }
 
+variable "volume_size_logs" {
+  type    = "string"
+  default = 5
+}
+
 variable "volume_size_root" {
   type    = "string"
   default = 8
@@ -60,6 +85,10 @@ variable "vault_subnet_ids" {
   type = "list"
 }
 
+variable "vault_auto_unseal" {
+  default = true
+}
+
 variable "vpc_cidr" {
   type = "string"
 }
@@ -75,3 +104,5 @@ variable "worker_subnet_ids" {
 variable "route53_enabled" {
   default = false
 }
+
+variable "s3_bucket_tags" {}

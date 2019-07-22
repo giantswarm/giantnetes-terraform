@@ -80,13 +80,13 @@ resource "aws_launch_configuration" "worker" {
 
   associate_public_ip_address = false
 
-  root_block_device = {
+  root_block_device {
     volume_type = "${var.volume_type}"
     volume_size = "${var.volume_size_root}"
   }
 
   # Docker volume.
-  ebs_block_device = {
+  ebs_block_device {
     device_name           = "${var.volume_docker}"
     delete_on_termination = true
     volume_type           = "${var.volume_type}"

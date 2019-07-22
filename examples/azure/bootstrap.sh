@@ -45,3 +45,9 @@ export TF_VAR_root_dns_zone_name="azure.gigantic.io"
 # export TF_VAR_bastion_cidr=<bastion subnet>
 
 # Override here any option from platforms/azure/variables.tf
+
+terraform init -backend=true \
+-backend-config="storage_account_name=${TF_VAR_cluster_name}terraform" \
+-backend-config="key=terraform" \
+-backend-config="container_name=${TF_VAR_cluster_name}-state" \
+ ./

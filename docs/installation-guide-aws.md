@@ -3,10 +3,12 @@
 ## Prerequisites
 
 Common:
+
 - `aws` cli
 - `terraform-provider-ct`. See [README.md](https://github.com/giantswarm/giantnetes-terraform/blob/master/README.md) for installation.
 
-## Multi-master 
+## Multi-master
+
 By default terraform will create multi-master cluster with 3 master nodes, single master mode can be enabled by setting terraform variable `master_count=1` or export env variable `export TF_VAR_master_count=1`.
 
 ### Create S3 bucket and DynamoDB table for terraform state
@@ -20,6 +22,7 @@ export AWS_PROFILE=${CLUSTER}
 ```
 
 Let's create the bucket for terraform state.
+
 ```
 aws s3 mb s3://$CLUSTER-state --region $AWS_DEFAULT_REGION
 
@@ -37,37 +40,29 @@ aws dynamodb create-table --region $AWS_DEFAULT_REGION \
     --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
 ```
 
-### Prepare terraform build directory
+### Vault auto-unseal
+
+Auto-unseal is configured by default. In case installation region doesn't support KMS service, override `TF_VAR_vault_auto_unseal=false` in `bootstrap.sh` 
+
+### Prepare terraform
 
 ```
-mkdir -p build
-cp -r examples/aws/example-build/* build
-cd build
+cp -r examples/aws/* ./platforms/aws/giantnetes/
+cd ./platforms/aws/giantnetes/
 ```
 
-Put proper values in `backend.tf` and make sure backend configuration linked properly.
+Edit `bootstrap.sh`.
 
 ```
-cat ../platforms/aws/giantnetes/backend.tf
+source bootstrap.sh
 ```
 
-Put proper values in `provider.tf` and make sure provider configuration linked properly.
-
-```
-cat ../platforms/aws/giantnetes/provider.tf
-```
-
-Edit `envs.sh`.
-
-```
-source envs.sh
-```
 Useful links to avoid possible network overlapping [VPN subnets](https://github.com/giantswarm/giantswarm/wiki/Giant-Swarm-VPN)
-NOTE: Reexecute `source envs.sh` in every new console.
+NOTE: Reexecute `source bootstrap.sh` in every new console.
 
 ### Configure ssh users
 
-Add bastion users to `build/bastion-users.yaml`. All other vms take users configuration from `build/users.yaml`, so please modify it too.
+Add bastion users to `ignition/bastion-users.yaml`. All other vms take users configuration from `ignition/users.yaml`, so please modify it too.
 
 ### Route53 DNS zone setup
 
@@ -75,7 +70,7 @@ Giantnetes requires real DNS domain, so it's mandatory to have existing DNS zone
 
 #### Parent DNS zone in Route53
 
-Set id of the zone in `TF_VAR_root_dns_zone_id` in `envs.sh`.
+Set id of the zone in `TF_VAR_root_dns_zone_id` in `bootstrap.sh`.
 
 #### Parent DNS zone outside Route53
 
@@ -84,6 +79,7 @@ Leave `TF_VAR_root_dns_zone_id` empty and make delegation [manually](http://docs
 ## Install
 
 Install consists two stages:
+
 - Vault (only needed because we bootstrapping Vault manually)
 - Kubernetes
 
@@ -92,9 +88,12 @@ Masters and workers will be created within the Vault stage and expectedly will f
 ### Stage: Vault
 
 ```
-terraform init ../platforms/aws/giantnetes
-terraform plan ../platforms/aws/giantnetes
-terraform apply ../platforms/aws/giantnetes
+source bootstrap.sh
+```
+
+```
+terraform plan ./
+terraform apply ./
 ```
 
 It should create all cluster resources. Please note masters and worker vms are created, but will fail. This is expected behaviour.
@@ -109,32 +108,43 @@ To get passphrase login to AWS console, switch to VPC service and open VPN conne
 
 How to do that see [here](https://github.com/giantswarm/aws-terraform/blob/master/docs/install-g8s-on-aws.md#install-vault-with-hive-ansible)
 
-Set "TF_VAR_nodes_vault_token" in envs.sh with node token that was outputed by Ansible.
+Set "TF_VAR_nodes_vault_token" in bootstrap.sh with node token that was outputed by Ansible.
 
 ### Stage: Kubernetes
 
 ```
-source envs.sh
+source bootstrap.sh
 ```
 
 ```
-terraform init ../platforms/aws/giantnetes
-terraform plan ../platforms/aws/giantnetes
-terraform apply ../platforms/aws/giantnetes
+terraform plan .
+terraform apply .
+```
+
+### Recreate the new masters to complete cluster bootstrapping
+
+```
+source bootstrap.sh
+
+```
+
+```
+terraform taint module.master.aws_instance.master[0]
+terraform taint module.master.aws_instance.master[1]
+terraform taint module.master.aws_instance.master[2]
+terraform apply ./
 ```
 
 ## Upload variables and configuration
 
-Create `terraform` folder in [installations repositry](https://github.com/giantswarm/installations) under particular installation folder. Copy variables and configuration.
+Create `terraform` folder in [installations repository](https://github.com/giantswarm/installations) under particular installation folder. Copy variables and configuration.
 
 ```
 export CLUSTER=cluster1
 export INSTALLATIONS=<installations_repo_path>
 
 mkdir ${INSTALLATIONS}/${CLUSTER}/terraform
-for i in envs.sh backend.tf provider.tf; do
-  cp ${i} ${INSTALLATIONS}/${CLUSTER}/terraform/
-done
+cp bootstrap.sh ${INSTALLATIONS}/${CLUSTER}/terraform/
 
 cd ${INSTALLATIONS}
 git checkout -b "${cluster}_terraform"
@@ -144,11 +154,10 @@ git commit -S -m "Add ${CLUSTER} terraform variables and configuration"
 
 Create PR with related changes.
 
-
 ## Deletion
 
 ```
-source envs.sh
+source bootstrap.sh
 ```
 
 Before delete all resources, you could want to keep access logs.
@@ -158,15 +167,22 @@ aws s3 sync s3://$CLUSTER-access-logs .
 ```
 
 ```
-terraform init ../platforms/aws/giantnetes
-terraform destroy ../platforms/aws/giantnetes
+terraform destroy ./
 ```
 
+Then remove dynamodb lock table:
+
+```
+aws dynamodb delete-table --table-name ${CLUSTER}-lock
+```
+
+And finally delete the bucket `${CLUSTER}-state` from the AWS console (versioned buckets cannot be deleted using the AWS CLI)
 
 ## Enable access logs for state bucket
 
 For enabling the access logs in the terraform state bucket, modify the placeholders in `examples/logging-policy.json`
 (For convention use `<cluster-name>-state-logs` as prefix).
+
 ```
 aws s3api put-bucket-logging --bucket $CLUSTER-state --bucket-logging-status file://examples/logging-policy.json
 ```
@@ -176,8 +192,7 @@ aws s3api put-bucket-logging --bucket $CLUSTER-state --bucket-logging-status fil
 ### Prepare variables and configuration.
 
 ```
-mkdir build
-cd build
+cd platforms/aws/giantnetes
 ```
 
 ```
@@ -188,7 +203,7 @@ cp ${INSTALLATIONS}/${CLUSTER}/terraform/* .
 ```
 
 ```
-source envs.sh
+source bootstrap.sh
 ```
 
 ### Apply latest state
@@ -196,28 +211,32 @@ source envs.sh
 Check resources that has been changed.
 
 ```
-terraform init ../platforms/aws/giantnetes
-terraform plan ../platforms/aws/giantnetes
-terraform apply ../platforms/aws/giantnetes
+source bootstrap.sh
+```
+
+```
+terraform plan ./
+terraform apply ./
 ```
 
 ### Update masters
+
 As each master is single ec2 instance, normal `terraform apply` operation would cause all of 3 masters to go offline which is not desirable. In order to avoid that, master instance ignore changes by default. If you want to update them you need to taint each of them and then run `terraform apply` command:
+
 ```
 # update first master
-terraform taint --module="master" aws_instance.master.0
-terraform apply ../platforms/aws/giantnetes
+terraform taint module.master.aws_instance.master[0]
+terraform apply ./
 
 # update second master
-terraform taint --module="master" aws_instance.master.1
-terraform apply ../platforms/aws/giantnetes
+terraform taint module.master.aws_instance.master[1]
+terraform apply ./
 
 # update third master
-terraform taint --module="master" aws_instance.master.2
-terraform apply ../platforms/aws/giantnetes
+terraform taint module.master.aws_instance.master[2]
+terraform apply ./
 
 ```
-
 
 ### Vault update
 
@@ -232,4 +251,3 @@ TBD
 Host cluster AWS VPC setup
 
 ![Giant Swarm AWS VPC setup](https://github.com/giantswarm/giantnetes-terraform/blob/master/docs/media/aws-vpc-setup.png?raw=true)
-

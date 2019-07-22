@@ -5,7 +5,7 @@ resource "azurerm_availability_set" "workers" {
   managed                     = true
   platform_fault_domain_count = "${var.platform_fault_domain_count}"
 
-  tags {
+  tags = {
     GiantSwarmInstallation = "${var.cluster_name}"
   }
 }
@@ -81,7 +81,7 @@ resource "azurerm_virtual_machine" "worker" {
     }
   }
 
-  tags {
+  tags = {
     GiantSwarmInstallation = "${var.cluster_name}"
   }
 }

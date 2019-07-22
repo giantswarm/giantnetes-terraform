@@ -46,10 +46,22 @@ variable "nodes_vault_token" {
   description = "Vault token used by nodes for bootstrapping. Should be defined after Vault is installed."
 }
 
+variable "master_count" {
+  type        = "string"
+  description = "Number of master nodes to be created. Allowed values are 1 or 3."
+  default     = "3"
+}
+
 variable "worker_count" {
   type        = "string"
   description = "Number of worker nodes to be created."
   default     = "3"
+}
+
+variable "terraform_group_id" {
+  type        = "string"
+  description = "Active Directory group ID with access to Key Vault"
+  default     = ""
 }
 
 ### Compute and Storage ###
@@ -72,6 +84,10 @@ variable "vault_vm_size" {
 variable "vault_storage_type" {
   type    = "string"
   default = "Premium_LRS"
+}
+
+variable "vault_auto_unseal" {
+  default = true
 }
 
 variable "master_vm_size" {
@@ -165,6 +181,11 @@ variable "master_id" {
 
 ### Network ###
 
+variable "calico_mtu" {
+  description = "MTU used for Calico interfaces"
+  default     = "1500"
+}
+
 variable "vnet_cidr" {
   description = "CIDR for VMs internal virtual network."
   default     = "10.0.0.0/16"
@@ -204,39 +225,9 @@ variable "k8s_api_ip" {
   default     = "172.31.0.1"
 }
 
-variable "subnet_bastion_0" {
-  description = "CIDR for bastion network 0."
-  default     = "10.0.1.0/25"
-}
-
-variable "subnet_bastion_1" {
-  description = "CIDR for bastion network 1."
-  default     = "10.0.1.128/25"
-}
-
-variable "subnet_lb_0" {
-  description = "CIDR for load balancer network 0."
-  default     = "10.0.2.0/25"
-}
-
-variable "subnet_lb_1" {
-  description = "CIDR for load balancer network 1."
-  default     = "10.0.2.128/25"
-}
-
-variable "subnet_vault_0" {
-  description = "CIDR for Vault network."
-  default     = "10.0.3.0/25"
-}
-
-variable "subnet_worker_0" {
-  description = "CIDR for worker network 0."
-  default     = "10.0.5.0/25"
-}
-
-variable "subnet_worker_1" {
-  description = "CIDR for worker network 1."
-  default     = "10.0.5.128/25"
+variable "k8s_audit_webhook_port" {
+  description = "Port for audit webhook streaming."
+  default     = "30771"
 }
 
 ### VPN ###

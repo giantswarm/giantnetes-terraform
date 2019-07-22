@@ -3,9 +3,14 @@ resource "azurerm_network_security_group" "worker" {
   location            = "${var.location}"
   resource_group_name = "${var.resource_group_name}"
 
-  tags {
+  tags = {
     GiantSwarmInstallation = "${var.cluster_name}"
   }
+}
+
+resource "azurerm_subnet_network_security_group_association" "worker" {
+  subnet_id                 = "${azurerm_subnet.worker_subnet.id}"
+  network_security_group_id = "${azurerm_network_security_group.worker.id}"
 }
 
 resource "azurerm_network_security_rule" "master_ingress_api" {

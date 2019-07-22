@@ -3,8 +3,24 @@
 ## Prerequisites
 
 Common:
+
 - `az` cli installed (See [azure docs](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest))
 - `az login` executed (To switch to German cloud `az cloud set --name AzureGermanCloud`)
+
+## Multi-master 
+By default terraform will create multi-master cluster with 3 master nodes, single master mode can be enabled by setting terraform variable `master_count=1` or export env variable `export TF_VAR_master_count=1`.
+
+## Vault auto-unseal
+In case Azure Cloud supports MSI (Managed Service Identities), `vault` can be provisioned with additional resources for `auto-unseal`. This process requires master key to be inside the Key Vault. `create key` operation requires respective access policy for the identity, which is running provisioning. Therefore, special `terraform` group should be created in the Active Directory for respective subscription:
+  - group name: `terraform`
+  - members: SREs, who can run terraform manually; `conveyor` service principal; e2e service principal in case of Giant Swarm subscription.
+
+After group is created, `Object ID` value should be assigned for `TF_VAR_terraform_group_id` in `bootstrap.sh` file:
+```
+export TF_VAR_terraform_group_id=<group_id>
+```
+
+In case cloud doesn't support MSI (Azure Germany, Azure Stack etc), vault should be provisioned with [hive](https://github.com/giantswarm/giantnetes-terraform/blob/master/docs/installation-guide-azure.md#provision-vault-with-ansible<Paste>).
 
 ### Create storage account for terraform state
 
@@ -58,30 +74,26 @@ Please save these and storage credentials above in keepass (e.g. "<cluster name>
 ### Prepare terraform environment
 
 ```
-mkdir -p build
-cp -r examples/azure/example-build/* build
-cd build
+cp -r examples/azure/* ./platforms/azure/giantnetes/
+cd ./platforms/aws/giantnetes/
 ```
 
-Replace `<cluster_name>` in `backend.tf` and make sure backend configuration linked properly. Carefull, the `storage_account_name` doesnt have dash `-` between the cluster_name.
-
-```
-cat ../platforms/azure/giantnetes/backend.tf
-```
-
-Edit `envs.sh`. DO NOT PUT passwords and keys into `envs.sh` as it will be stored as plain text.
+Edit `bootstrap.sh`. DO NOT PUT passwords and keys into `bootstrap.sh` as it will be stored as plain text.
 
 Command below will ask for:
+
 - storage account access key
 - service principal secret key
 
-For German cloud add following two variables into `envs.sh`
+For German cloud add following two variables into `bootstrap.sh`
+
 ```
 export ARM_ENVIRONMENT="german"
 export TF_VAR_azure_cloud=AZUREGERMANCLOUD
 ```
 
 Optionally for VPN support add following variables. `bastion_cidr` should be unique and a part of `vnet_cidr` (10.0.0.0/16 by default). Recommended to use /28 subnets from range 10.0.4.0/22 (e.g. 10.0.4.0/28, 10.0.4.16/28, etc.).
+
 ```
 export TF_VAR_vpn_enabled=1
 export TF_VAR_vpn_right_gateway_address_0=<ip address of first IPSec server>
@@ -90,21 +102,23 @@ export TF_VAR_bastion_cidr=<bastion subnet>
 ```
 
 ```
-source envs.sh
+bootstrap envs.sh
 ```
 
-NOTE: Reexecute `source envs.sh` everytime if opening new console.
+NOTE: Reexecute `source bootstrap.sh` everytime if opening new console.
 
 ### Configure ssh users
 
-Add bastion users to `build/bastion-users.yaml`. All other vms take users configuration from `build/users.yaml`, so please modify it too.
+Add bastion users to `ignition/bastion-users.yaml`. All other vms take users configuration from `ignition/users.yaml`, so please modify it too.
 
 ## Install
 
 Terraform has one manifest:
+
 - platforms/azure/giantnetes - all cluster resources
 
 Install consists two stages:
+
 - Vault (only needed because we bootstrapping Vault manually)
 - Kubernetes
 
@@ -117,9 +131,12 @@ Master and workers will be created with in the Vault stage and expectedly will f
 **Always** answer "No" for copying state, we are using different keys for the state!
 
 ```
-terraform init ../platforms/azure/giantnetes
-terraform plan ../platforms/azure/giantnetes
-terraform apply ../platforms/azure/giantnetes
+source bootstrap.sh
+```
+
+```
+terraform plan ./
+terraform apply ./
 ```
 
 It should create all cluster resources. Please note master and worker vms are created, but will fail. This is expected behaviour.
@@ -127,10 +144,12 @@ It should create all cluster resources. Please note master and worker vms are cr
 #### (Optional) Connect to VPN
 
 If VPN enabled, two additional manual steps are required:
+
 1. Create Azure VPN connection with shared key.
 2. Create new IPSec connection in onpremise VPN server.
 
 For step one execute following commands.
+
 ```
 az network vpn-connection create \
   -g ${NAME} \
@@ -153,25 +172,28 @@ Step two is individual and depends on your setup.
 
 How to do that see [here](https://github.com/giantswarm/hive/#install-insecure-vault)
 
-When done make sure to update "TF_VAR_nodes_vault_token" in envs.sh with node token that was outputed by Ansible.
+When done make sure to update "TF_VAR_nodes_vault_token" in bootstrap.sh with node token that was outputed by Ansible.
 
 ### Stage: Kubernetes
 
 ```
-source envs.sh
+source bootstrap.sh
 ```
 
 #### Install master and workers
 
 ##### Taint machines so they are recreated
+
 ```
-terraform taint -module="bastion" "azurerm_virtual_machine.bastion.0"
-terraform taint -module="bastion" "azurerm_virtual_machine.bastion.1"
-terraform taint -module="master" "azurerm_virtual_machine.master"
-terraform taint -module="worker" "azurerm_virtual_machine.worker.0"
-terraform taint -module="worker" "azurerm_virtual_machine.worker.1"
-terraform taint -module="worker" "azurerm_virtual_machine.worker.2"
-terraform taint -module="worker" "azurerm_virtual_machine.worker.3"
+terraform taint module.bastion.azurerm_virtual_machine.bastion[0]
+terraform taint module.bastion.azurerm_virtual_machine.bastion[1]
+terraform taint module.master.azurerm_virtual_machine.master[0]
+terraform taint module.master.azurerm_virtual_machine.master[1]
+terraform taint module.master.azurerm_virtual_machine.master[2]
+terraform taint module.worker.azurerm_virtual_machine.worker[0]
+terraform taint module.worker.azurerm_virtual_machine.worker[1]
+terraform taint module.worker.azurerm_virtual_machine.worker[2]
+terraform taint module.worker.azurerm_virtual_machine.worker[3]
 ```
 
 ##### Apply terraform
@@ -179,13 +201,15 @@ terraform taint -module="worker" "azurerm_virtual_machine.worker.3"
 **Always** answer "No" for copying state, we are using different keys for the state!
 
 ```
-terraform init ../platforms/azure/giantnetes
-terraform plan ../platforms/azure/giantnetes
-terraform apply ../platforms/azure/giantnetes
+source bootstrap.sh
+```
+
+```
+terraform plan ./
+terraform apply ./
 ```
 
 ## Upload variables and configuration
-
 
 Create `terraform` folder in [installations repositry](https://github.com/giantswarm/installations) under particular installation folder. Copy variables and configuration.
 
@@ -194,9 +218,7 @@ export CLUSTER=cluster1
 export INSTALLATIONS=<installations_repo_path>
 
 mkdir ${INSTALLATIONS}/${CLUSTER}/terraform
-for i in envs.sh backend.tf provider.tf; do
-  cp ${i} ${INSTALLATIONS}/${CLUSTER}/terraform/
-done
+cp bootstrap.sh ${INSTALLATIONS}/${CLUSTER}/terraform/
 
 cd ${INSTALLATIONS}
 git checkout -b "${cluster}_terraform"
@@ -215,6 +237,7 @@ az group delete -n <cluster name>
 ```
 
 Delete service principal.
+
 ```
 az ad sp list --output=table | grep <cluster name> | awk '{print $1}'
 az ad sp delete --id <appid>
@@ -225,11 +248,7 @@ az ad sp delete --id <appid>
 ### Prepare variables and configuration.
 
 ```
-mkdir build
-cd build
-```
-
-```
+cd ./platforms/azure/giantnetes/
 export NAME=cluster1
 export INSTALLATIONS=<installations_repo_path>
 
@@ -237,7 +256,7 @@ cp ${INSTALLATIONS}/${CLUSTER}/terraform/* .
 ```
 
 ```
-source envs.sh
+source bootstrap.sh
 ```
 
 ### Apply latest state
@@ -245,15 +264,20 @@ source envs.sh
 Check resources that has been changed.
 
 ```
-terraform init ../platforms/azure/giantnetes
-terraform plan ../platforms/azure/giantnetes
+terraform plan ./
 ```
 
-#### Update master
+#### Update masters
 
 ```
-terraform taint -module="master" azurerm_virtual_machine.master
-terraform apply ../platforms/azure/giantnetes
+terraform taint -module="master" azurerm_virtual_machine.master.0
+terraform apply ./
+
+terraform taint -module="master" azurerm_virtual_machine.master.1
+terraform apply ./
+
+terraform taint -module="master" azurerm_virtual_machine.master.2
+terraform apply ./
 ```
 
 ### Update workers
@@ -262,7 +286,7 @@ Select worker (e.g. last worker with index 3) for update and delete VM and OS di
 
 ```
 terraform taint -module="worker" "azurerm_virtual_machine.worker.3"
-terraform apply ../platforms/azure/giantnetes
+terraform apply ./
 ```
 
 Repeat for other workers.
@@ -270,7 +294,7 @@ Repeat for other workers.
 ### Update everything else
 
 ```
-terraform apply ../platforms/azure/giantnetes
+terraform apply ./
 ```
 
 ## Known issues

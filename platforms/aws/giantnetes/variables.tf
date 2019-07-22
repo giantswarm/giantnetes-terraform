@@ -79,6 +79,10 @@ variable "vault_instance_type" {
   default = "t2.medium"
 }
 
+variable "vault_auto_unseal" {
+  default = true
+}
+
 variable "master_instance" {
   type = "map"
 
@@ -99,10 +103,9 @@ variable "worker_instance" {
 }
 
 ### Container Linux ###
-## temporary until 1995.x will be in stable, as older version have disk timeout issues
 variable "container_linux_channel" {
   description = "Container linux channel (e.g. stable, beta, alpha)."
-  default     = "alpha"
+  default     = "stable"
 }
 
 variable "container_linux_version" {
@@ -173,6 +176,11 @@ variable "calico_cidr" {
   default     = "192.168.0.0/16"
 }
 
+variable "calico_mtu" {
+  description = "MTU used for Calico interfaces"
+  default     = "1440"
+}
+
 variable "docker_cidr" {
   description = "CIDR for Docker."
   default     = "172.17.0.1/16"
@@ -199,6 +207,11 @@ variable "k8s_api_ip" {
   default     = "172.31.0.1"
 }
 
+variable "k8s_audit_webhook_port" {
+  description = "Port for audit webhook streaming."
+  default     = "30771"
+}
+
 variable "subnets_bastion" {
   description = "CIDR for bastion networks"
   type        = "list"
@@ -213,6 +226,7 @@ variable "subnets_elb" {
 
 variable "subnets_vault" {
   description = "CIDR for Vault network."
+  type        = "list"
   default     = ["10.0.3.0/25"]
 }
 
@@ -247,6 +261,7 @@ variable "external_ipsec_subnet_1" {
 ### VPN with custom instance 
 variable "vpn_instance_enabled" {
   default = false
+  type = bool
 }
 
 ## Gridscale

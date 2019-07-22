@@ -1,3 +1,10 @@
+provider "aws" {
+  version = "~> 2.16.0"
+
+  # Make sure to define profile in ~/.aws/config
+  profile = "${var.cluster_name}"
+}
+
 module "container_linux" {
   source = "../../../modules/container-linux"
 
@@ -7,6 +14,8 @@ module "container_linux" {
 
 # Get ami ID for specific Container Linux version.
 data "aws_ami" "coreos_ami" {
+  owners = ["${var.ami_owner}"]
+
   filter {
     name   = "name"
     values = ["CoreOS-${var.container_linux_channel}-${module.container_linux.coreos_version}-*"]
@@ -48,7 +57,7 @@ module "vpc" {
   subnets_worker     = "${var.subnets_worker}"
   subnets_vault      = "${var.subnets_vault}"
   vpc_cidr           = "${var.vpc_cidr}"
-  with_public_access = "${var.aws_customer_gateway_id_0 == "" ? 1 : 0 }"
+  with_public_access = "${var.aws_customer_gateway_id_0 == "" ? true : false }"
 }
 
 # Create S3 bucket for ignition configs.
@@ -63,12 +72,14 @@ module "s3" {
 locals {
   ignition_data = {
     "APIDomainName"                = "${var.api_dns}.${var.base_domain}"
+    "AWSRegion"                    = "${var.aws_region}"
     "BastionUsers"                 = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
     "BastionSubnet0"               = "${element(var.subnets_bastion,0)}"
     "BastionSubnet1"               = "${element(var.subnets_bastion,1)}"
     "BastionLogPriority"           = "${var.bastion_log_priority}"
     "BaseDomain"                   = "${var.base_domain}"
     "CalicoCIDR"                   = "${var.calico_cidr}"
+    "CalicoMTU"                    = "${var.calico_mtu}"
     "CloudwatchForwarderEnabled"   = "${var.bastion_log_priority != "none" ? "true" : "false" }"
     "ClusterName"                  = "${var.cluster_name}"
     "DockerCIDR"                   = "${var.docker_cidr}"
@@ -88,6 +99,7 @@ locals {
     "G8SVaultToken"                = "${var.nodes_vault_token}"
     "ImagePullProgressDeadline"    = "${var.image_pull_progress_deadline}"
     "K8SAPIIP"                     = "${var.k8s_api_ip}"
+    "K8SAuditWebhookPort"          = "${var.k8s_audit_webhook_port}"
     "K8SDNSIP"                     = "${var.k8s_dns_ip}"
     "K8SServiceCIDR"               = "${var.k8s_service_cidr}"
     "MasterCount"                  = "${var.master_count}"
@@ -97,6 +109,7 @@ locals {
     "PodInfraImage"                = "${var.pod_infra_image}"
     "Provider"                     = "aws"
     "Users"                        = "${file("${path.module}/../../../ignition/users.yaml")}"
+    "VaultAutoUnseal"              = "${var.vault_auto_unseal}"
     "VaultDomainName"              = "${var.vault_dns}.${var.base_domain}"
     "WorkerMountDocker"            = "${var.worker_instance["volume_docker"]}"
   }
@@ -132,7 +145,7 @@ module "bastion" {
   route53_enabled        = "${var.route53_enabled}"
   s3_bucket_tags         = "${var.s3_bucket_tags}"
   user_data              = "${data.ct_config.bastion.rendered}"
-  with_public_access     = "${(var.aws_customer_gateway_id_0 == "") && (var.vpn_instance_enabled == 0) ? 1 : 0 }"
+  with_public_access     = "${(var.aws_customer_gateway_id_0 != "") || (var.vpn_instance_enabled) ? false : true }"
   vpc_cidr               = "${var.vpc_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"
 }
@@ -189,16 +202,23 @@ data "ct_config" "vault" {
 module "vault" {
   source = "../../../modules/aws/vault"
 
+  arn_region             = "${var.arn_region}"
+  aws_account            = "${var.aws_account}"
+  aws_region             = "${var.aws_region}"
   cluster_name           = "${var.cluster_name}"
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
+  ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
+  iam_region             = "${var.iam_region}"
   instance_type          = "${var.vault_instance_type}"
   user_data              = "${data.ct_config.vault.rendered}"
   route53_enabled        = "${var.route53_enabled}"
+  s3_bucket_tags         = "${var.s3_bucket_tags}"
   vault_count            = "1"
   vault_dns              = "${var.vault_dns}"
   vault_subnet_ids       = "${module.vpc.vault_subnet_ids}"
+  vault_auto_unseal      = "${var.vault_auto_unseal}"
   vpc_cidr               = "${var.vpc_cidr}"
   ipam_network_cidr      = "${var.ipam_network_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"
@@ -261,6 +281,7 @@ module "worker" {
   source = "../../../modules/aws/worker-asg"
 
   aws_account            = "${var.aws_account}"
+  aws_region             = "${var.aws_region}"
   cluster_name           = "${var.cluster_name}"
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
@@ -292,4 +313,10 @@ module "vpn" {
   aws_private_route_table_ids = "${module.vpc.private_route_table_ids}"
   aws_vpn_name                = "Giant Swarm <-> ${var.cluster_name}"
   aws_vpn_vpc_id              = "${module.vpc.vpc_id}"
+}
+
+terraform {
+  required_version = ">= 0.12.0"
+
+  backend "s3" {}
 }

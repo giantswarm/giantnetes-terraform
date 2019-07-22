@@ -19,7 +19,7 @@ resource "aws_route53_zone" "public" {
   comment = "{\"last_updated\":\"${timestamp()}\",\"managed_by\":\"terraform\"}"
   name    = "${var.zone_name}"
 
-  tags {
+  tags = {
     Name                         = "${var.zone_name}"
     "giantswarm.io/installation" = "${var.cluster_name}"
   }
@@ -35,7 +35,7 @@ resource "aws_route53_record" "delegation" {
   name    = "${var.zone_name}"
   type    = "NS"
   ttl     = "300"
-  records = ["${aws_route53_zone.public.name_servers}"]
+  records = "${aws_route53_zone.public[count.index].name_servers}"
 }
 
 output "public_dns_zone_id" {

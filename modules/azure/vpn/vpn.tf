@@ -1,9 +1,9 @@
 resource "azurerm_public_ip" "public_ip" {
-  count                        = "${var.vpn_enabled}"
-  name                         = "${var.cluster_name}-vpn-public-ip"
-  location                     = "${var.location}"
-  resource_group_name          = "${var.resource_group_name}"
-  public_ip_address_allocation = "Dynamic"
+  count               = "${var.vpn_enabled}"
+  name                = "${var.cluster_name}-vpn-public-ip"
+  location            = "${var.location}"
+  resource_group_name = "${var.resource_group_name}"
+  allocation_method   = "Dynamic"
 }
 
 resource "azurerm_virtual_network_gateway" "gateway" {
@@ -24,7 +24,7 @@ resource "azurerm_virtual_network_gateway" "gateway" {
 
   ip_configuration {
     name                          = "${var.cluster_name}-vpn-gateway-ip-config"
-    public_ip_address_id          = "${azurerm_public_ip.public_ip.id}"
+    public_ip_address_id          = "${azurerm_public_ip.public_ip[count.index].id}"
     private_ip_address_allocation = "Dynamic"
     subnet_id                     = "${var.subnet_id}"
   }

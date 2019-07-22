@@ -2,6 +2,10 @@ variable "arn_region" {
   type = "string"
 }
 
+variable "aws_region" {
+  type = "string"
+}
+
 variable "ingress_dns" {
   type = "string"
 }
@@ -44,11 +48,6 @@ variable "worker_subnet_ids" {
 
 variable "user_data" {
   type = "string"
-}
-
-variable "with_public_access" {
-  type    = "string"
-  default = ""
 }
 
 variable "volume_type" {

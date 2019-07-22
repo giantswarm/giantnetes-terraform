@@ -38,6 +38,16 @@ systemd:
         Where=/var/lib/etcd
         [Install]
         WantedBy=multi-user.target
+    - name: var-log.mount
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Mount disk to /var/log
+        Before=docker.service
+        [Mount]
+        What=/dev/disk/by-label/var-log
+        Where=/var/log
+        Type=ext4
     - name: docker.service
       command: start
       dropins:
@@ -51,6 +61,18 @@ systemd:
           [Service]
           Restart=always
           RestartSec=5
+    - name: os-hardening.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Apply os hardening
+        [Service]
+        Type=oneshot
+        ExecStartPre=-/bin/bash -c "gpasswd -d core rkt; gpasswd -d core docker; gpasswd -d core wheel"
+        ExecStartPre=/bin/bash -c "until [ -f '/etc/sysctl.d/hardening.conf' ]; do echo Waiting for sysctl file; sleep 1s;done;"
+        ExecStart=/usr/sbin/sysctl -p /etc/sysctl.d/hardening.conf
+        [Install]
+        WantedBy=multi-user.target
 
 storage:
   filesystems:
@@ -60,4 +82,62 @@ storage:
         format: ext4
         wipe_filesystem: false
         label: var-lib-etcd
+    - name: logs
+      mount:
+        device: {{if eq .Provider "azure" }}/dev/sdd{{else}}/dev/xvdh{{end}}
+        format: ext4
+        wipe_filesystem: false
+        label: var-log
+  files:
+    - path: /etc/ssh/sshd_config
+      filesystem: root
+      mode: 0600
+      contents:
+        inline: |
+          # Use most defaults for sshd configuration.
+          Subsystem sftp internal-sftp
+          ClientAliveInterval 180
+          UseDNS no
+          UsePAM yes
+          PrintLastLog no # handled by PAM
+          PrintMotd no # handled by PAM
+          # Non defaults (#100)
+          ClientAliveCountMax 2
+          PasswordAuthentication no
+          TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem
+          MaxAuthTries 5
+          LoginGraceTime 60
+          AllowTcpForwarding no
+          AllowAgentForwarding no
+    - path: /etc/sysctl.d/hardening.conf
+      filesystem: root
+      mode: 0600
+      contents: 
+        inline: |
+          net.ipv4.conf.all.rp_filter = 1
+          net.ipv4.conf.all.arp_ignore = 1
+          net.ipv4.conf.all.arp_announce = 2
+
+    {{ if .VaultAutoUnseal -}}
+    - path: /etc/vault/vault-auto-unseal.hcl
+      filesystem: root
+      mode: 0400
+      contents:
+        inline: |
+          
+          {{ if eq .Provider "aws" -}}
+          seal "awskms" {
+            region = "{{ .AWSRegion }}"
+            kms_key_id = "alias/{{ .ClusterName }}-vault-unseal-key"
+            endpoint= "kms.{{ .AWSRegion }}.amazonaws.com"
+          }
+          {{ end -}}
+          {{ if eq .Provider "azure" -}}
+          seal "azurekeyvault" {
+            vault_name     = "gs-{{ .ClusterName }}-vault"
+            key_name       = "{{ .ClusterName }}-vault-unseal-key"
+            tenant_id      = "{{ .AzureSPTenantID }}"
+          }
+          {{ end -}}
+    {{- end }}
 {{ .BastionUsers }}

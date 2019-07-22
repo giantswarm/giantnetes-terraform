@@ -3,9 +3,14 @@ resource "azurerm_network_security_group" "bastion" {
   location            = "${var.location}"
   resource_group_name = "${var.resource_group_name}"
 
-  tags {
+  tags = {
     GiantSwarmInstallation = "${var.cluster_name}"
   }
+}
+
+resource "azurerm_subnet_network_security_group_association" "bastion" {
+  subnet_id                 = "${azurerm_subnet.bastion_subnet.id}"
+  network_security_group_id = "${azurerm_network_security_group.bastion.id}"
 }
 
 resource "azurerm_network_security_rule" "bastion_ingress_ssh" {

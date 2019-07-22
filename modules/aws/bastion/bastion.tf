@@ -2,7 +2,7 @@ locals {
   default_ssh_access_subnet = "0.0.0.0/0"
 
   # If behind VPN allow SSH access only from VPN subnet.
-  ssh_access_subnet = "${var.with_public_access == 0 ? var.external_ipsec_subnet : local.default_ssh_access_subnet}"
+  ssh_access_subnet = "${var.with_public_access ? local.default_ssh_access_subnet : var.external_ipsec_subnet}"
 
   # In China there is no tags for s3 buckets
   s3_ignition_bastion_key = "${element(concat(aws_s3_bucket_object.ignition_bastion_with_tags.*.key, aws_s3_bucket_object.ignition_bastion_without_tags.*.key), 0)}"
@@ -26,7 +26,7 @@ resource "aws_instance" "bastion" {
   subnet_id                   = "${var.bastion_subnet_ids[count.index]}"
   vpc_security_group_ids      = ["${aws_security_group.bastion.id}"]
 
-  root_block_device = {
+  root_block_device {
     volume_type = "${var.volume_type}"
     volume_size = "${var.volume_size_root}"
   }
@@ -76,7 +76,7 @@ resource "aws_security_group" "bastion" {
     self        = true
   }
 
-  tags {
+  tags = {
     Name                         = "${var.cluster_name}-bastion"
     "giantswarm.io/installation" = "${var.cluster_name}"
   }

@@ -8,7 +8,7 @@ resource "azurerm_lb" "vault_lb" {
     subnet_id = "${azurerm_subnet.vault_subnet.id}"
   }
 
-  tags {
+  tags = {
     GiantSwarmInstallation = "${var.cluster_name}"
   }
 }

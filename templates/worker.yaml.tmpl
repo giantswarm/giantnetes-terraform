@@ -59,7 +59,7 @@ storage:
           clientConnection:
             kubeconfig: /etc/kubernetes/kubeconfig/kube-proxy.yaml
           kind: KubeProxyConfiguration
-          mode: ipvs
+          mode: iptables
           resourceContainer: /kube-proxy
           clusterCIDR: {{ .CalicoCIDR }}
     - path: /etc/kubernetes/kubeconfig/kube-proxy.yaml
@@ -181,7 +181,6 @@ storage:
       contents:
         inline:  |
           # Use most defaults for sshd configuration.
-          UsePrivilegeSeparation sandbox
           Subsystem sftp internal-sftp
           ClientAliveInterval 180
           UseDNS no
@@ -192,6 +191,10 @@ storage:
           ClientAliveCountMax 2
           PasswordAuthentication no
           TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem
+          MaxAuthTries 5
+          LoginGraceTime 60
+          AllowTcpForwarding no
+          AllowAgentForwarding no
 
     - path: /opt/get-ca.sh
       filesystem: root
@@ -243,6 +246,9 @@ storage:
           net.ipv4.tcp_timestamps = 0
           net.ipv6.conf.all.accept_redirects = 0
           net.ipv6.conf.default.accept_redirects = 0
+          net.ipv4.conf.all.rp_filter = 1
+          net.ipv4.conf.all.arp_ignore = 1
+          net.ipv4.conf.all.arp_announce = 2
 
     - path: /etc/audit/rules.d/10-docker.rules
       filesystem: root
@@ -407,6 +413,24 @@ systemd:
         Environment="DOCKER_CGROUPS=--exec-opt native.cgroupdriver=cgroupfs --log-opt max-size=50m --log-opt max-file=2 --log-opt labels=io.kubernetes.container.hash,io.kubernetes.container.name,io.kubernetes.pod.name,io.kubernetes.pod.namespace,io.kubernetes.pod.uid"
         Environment="DOCKER_OPT_BIP=--bip={{ .DockerCIDR }}"
         Environment="DOCKER_OPTS=--live-restore --userland-proxy=false --icc=false"
+{{if eq .Provider "aws" }}
+  - name: set-hostname.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=set proper hostname for k8s
+      Requires=wait-for-domains.service
+      After=wait-for-domains.service
+      Before=k8s-kubelet.service
+
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStart=/bin/bash -c "hostnamectl set-hostname $(curl http://169.254.169.254/latest/meta-data/local-hostname)"
+
+      [Install]
+      WantedBy=multi-user.target
+{{end}}
   - name: k8s-setup-network-env.service
     enabled: true
     contents: |
@@ -452,7 +476,7 @@ systemd:
       --net=host \
       -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
       -v /etc/kubernetes/ssl/calico/:/etc/kubernetes/ssl/calico/ \
-      quay.io/giantswarm/certctl:b8074296d25d1c907bafed843411413fbcdbfff3 \
+      quay.io/giantswarm/certctl:2a6615f61499cd09a8d5ced9a5fade322d2de254 \
       issue \
       --vault-addr=https://{{ .VaultDomainName }} \
       --vault-token=${VAULT_TOKEN} \
@@ -495,7 +519,7 @@ systemd:
       --net=host \
       -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
       -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
-      quay.io/giantswarm/certctl:b8074296d25d1c907bafed843411413fbcdbfff3 \
+      quay.io/giantswarm/certctl:2a6615f61499cd09a8d5ced9a5fade322d2de254 \
       issue \
       --vault-addr=https://{{ .VaultDomainName }} \
       --vault-token=${VAULT_TOKEN} \
@@ -523,7 +547,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:v1.13.1"
+      Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:v1.14.3"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
@@ -571,7 +595,7 @@ systemd:
       --network-plugin=cni \
       --register-node=true \
       --kubeconfig=/etc/kubernetes/kubeconfig/kubelet.yaml \
-      --node-labels="node-role.kubernetes.io/worker,role=worker,ip=${DEFAULT_IPV4}" \
+      --node-labels="node.kubernetes.io/worker,node-role.kubernetes.io/worker,kubernetes.io/role=worker,role=worker,ip=${DEFAULT_IPV4}" \
       --v=2"
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME

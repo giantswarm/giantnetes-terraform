@@ -14,12 +14,12 @@ resource "azurerm_network_interface" "bastion" {
 }
 
 resource "azurerm_public_ip" "bastion_public_ip" {
-  count                        = "${var.vpn_enabled ? 0 : var.bastion_count}"
-  name                         = "${var.cluster_name}-bastion-public-ip-${count.index}"
-  location                     = "${var.location}"
-  resource_group_name          = "${var.resource_group_name}"
-  public_ip_address_allocation = "Static"
-  idle_timeout_in_minutes      = 30
+  count                   = "${var.vpn_enabled ? 0 : var.bastion_count}"
+  name                    = "${var.cluster_name}-bastion-public-ip-${count.index}"
+  location                = "${var.location}"
+  resource_group_name     = "${var.resource_group_name}"
+  allocation_method       = "Static"
+  idle_timeout_in_minutes = 30
 }
 
 resource "azurerm_dns_a_record" "bastion_dns" {

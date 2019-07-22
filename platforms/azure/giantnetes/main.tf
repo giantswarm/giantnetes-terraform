@@ -1,3 +1,11 @@
+provider "azurerm" {
+  version = "~> 1.30.1"
+
+  environment = "${var.azure_cloud}"
+}
+
+data "azurerm_client_config" "current" {}
+
 module "container_linux" {
   source = "../../../modules/container-linux"
 
@@ -35,7 +43,7 @@ module "vnet" {
   etcd_dns            = "${var.etcd_dns}"
   ingress_dns         = "${var.ingress_dns}"
   location            = "${var.azure_location}"
-  master_count        = "1"
+  master_count        = "${var.master_count}"
   worker_count        = "${var.worker_count}"
   resource_group_name = "${module.resource_group.name}"
   vault_dns           = "${var.vault_dns}"
@@ -67,6 +75,7 @@ locals {
     "APIDomainName"            = "${var.api_dns}.${var.base_domain}"
     "BaseDomain"               = "${var.base_domain}"
     "BastionUsers"             = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
+    "CalicoMTU"                = "${var.calico_mtu}"
     "ClusterName"              = "${var.cluster_name}"
     "DockerCIDR"               = "${var.docker_cidr}"
     "DockerRegistry"           = "${var.docker_registry}"
@@ -75,13 +84,15 @@ locals {
     "ETCDInitialClusterSingle" = "etcd1=https://etcd1.${var.base_domain}:2380"
     "G8SVaultToken"            = "${var.nodes_vault_token}"
     "K8SAPIIP"                 = "${var.k8s_api_ip}"
+    "K8SAuditWebhookPort"      = "${var.k8s_audit_webhook_port}"
     "K8SDNSIP"                 = "${var.k8s_dns_ip}"
     "K8SServiceCIDR"           = "${var.k8s_service_cidr}"
-    "MasterCount"              = "1"                                                                                                                                   # 1 for now
+    "MasterCount"              = "${var.master_count}"
     "MasterID"                 = "${var.master_id}"
     "PodCIDR"                  = "${var.pod_cidr}"
     "Provider"                 = "azure"
     "Users"                    = "${file("${path.module}/../../../ignition/users.yaml")}"
+    "VaultAutoUnseal"          = "${var.vault_auto_unseal}"
     "VaultDomainName"          = "${var.vault_dns}.${var.base_domain}"
   }
 }
@@ -141,7 +152,11 @@ module "vault" {
   os_disk_storage_type    = "${var.os_disk_storage_type}"
   resource_group_name     = "${module.resource_group.name}"
   storage_type            = "${var.vault_storage_type}"
+  terraform_group_id      = "${var.terraform_group_id}"
+  tenant_id               = "${data.azurerm_client_config.current.tenant_id}"
   user_data               = "${data.ct_config.vault.rendered}"
+  vault_subnet            = "${module.vnet.vault_subnet}"
+  vault_auto_unseal       = "${var.vault_auto_unseal}"
   vm_size                 = "${var.vault_vm_size}"
 }
 
@@ -171,8 +186,7 @@ module "master" {
   etcd_disk_size              = "10"
   location                    = "${var.azure_location}"
 
-  # Only single master supported.
-  master_count                = "1"
+  master_count                = "${var.master_count}"
   resource_group_name         = "${module.resource_group.name}"
   os_disk_storage_type        = "${var.os_disk_storage_type}"
   platform_fault_domain_count = "${var.platform_fault_domain_count}"
@@ -233,4 +247,10 @@ module "vpn" {
   vpn_right_subnet_cidr_0     = "${var.vpn_right_subnet_cidr_0}"
   vpn_right_gateway_address_1 = "${var.vpn_right_gateway_address_1}"
   vpn_right_subnet_cidr_1     = "${var.vpn_right_subnet_cidr_1}"
+}
+
+terraform {
+  required_version = ">= 0.12.0"
+
+  backend "azurerm" {}
 }

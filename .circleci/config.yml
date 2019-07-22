@@ -2,15 +2,15 @@ version: 2
 jobs:
   build:
     docker:
-      - image: alpine:3.8
+      - image: quay.io/giantswarm/docker-terraform-and-stuff:latest
     steps:
       - checkout
       - run:
           # Get terraform binary
           command: |
-            TF_VERSION=${TF_VERSION:-"0.11.7"}
+            TF_VERSION=${TF_VERSION:-"0.12.1"}
             wget https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
-            unzip terraform_${TF_VERSION}_linux_amd64.zip -d /bin
+            unzip -o terraform_${TF_VERSION}_linux_amd64.zip -d /bin
       - run:
           # Delete symlinks for backend configuration as we OK with local state files here.
           command: |
@@ -24,7 +24,7 @@ jobs:
 
   e2eTestAWSSingleMaster: &e2eTestAWSSingleMaster
     docker:
-      - image: quay.io/giantswarm/docker-terraform-and-stuff
+      - image: quay.io/giantswarm/docker-terraform-and-stuff:latest
     environment:
       MASTER_COUNT: 1
     steps:
@@ -33,7 +33,7 @@ jobs:
 
   e2eTestAWSMultiMaster: &e2eTestAWSMultiMaster
     docker:
-      - image: quay.io/giantswarm/docker-terraform-and-stuff
+      - image: quay.io/giantswarm/docker-terraform-and-stuff:latest
     environment:
       MASTER_COUNT: 3
     steps:
@@ -42,20 +42,31 @@ jobs:
 
   e2eTestAWSMaster:
     environment:
-      E2E_ENABLE_CONFORMANCE: "yes"
+      E2E_ENABLE_CONFORMANCE: "no"
     <<: *e2eTestAWSMultiMaster
 
-  e2eTestAzure: &e2eTestAzure
+  e2eTestAzureSingleMaster: &e2eTestAzureSingleMaster
     docker:
-      - image: quay.io/giantswarm/docker-terraform-and-stuff
+      - image: quay.io/giantswarm/docker-terraform-and-stuff:latest
+    environment:
+      MASTER_COUNT: 1
+    steps:
+    - checkout
+    - run: ./misc/e2e-azure.sh
+
+  e2eTestAzureMultiMaster: &e2eTestAzureMultiMaster
+    docker:
+      - image: quay.io/giantswarm/docker-terraform-and-stuff:latest
+    environment:
+      MASTER_COUNT: 3
     steps:
     - checkout
     - run: ./misc/e2e-azure.sh
 
   e2eTestAzureMaster:
     environment:
-      E2E_ENABLE_CONFORMANCE: "yes"
-    <<: *e2eTestAzure
+      E2E_ENABLE_CONFORMANCE: "no"
+    <<: *e2eTestAzureMultiMaster
 
 workflows:
   version: 2
@@ -80,7 +91,11 @@ workflows:
           requires:
           - hold
 
-      - e2eTestAzure:
+      - e2eTestAzureSingleMaster:
+          requires:
+          - hold
+
+      - e2eTestAzureMultiMaster:
           requires:
           - hold
 
