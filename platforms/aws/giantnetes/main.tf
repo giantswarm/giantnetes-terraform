@@ -109,7 +109,6 @@ locals {
     "PodInfraImage"                = "${var.pod_infra_image}"
     "Provider"                     = "aws"
     "Users"                        = "${file("${path.module}/../../../ignition/users.yaml")}"
-    "VaultAutoUnseal"              = "${var.vault_auto_unseal}"
     "VaultDomainName"              = "${var.vault_dns}.${var.base_domain}"
     "WorkerMountDocker"            = "${var.worker_instance["volume_docker"]}"
   }
@@ -202,15 +201,11 @@ data "ct_config" "vault" {
 module "vault" {
   source = "../../../modules/aws/vault"
 
-  arn_region             = "${var.arn_region}"
-  aws_account            = "${var.aws_account}"
-  aws_region             = "${var.aws_region}"
   cluster_name           = "${var.cluster_name}"
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
-  iam_region             = "${var.iam_region}"
   instance_type          = "${var.vault_instance_type}"
   user_data              = "${data.ct_config.vault.rendered}"
   route53_enabled        = "${var.route53_enabled}"
@@ -218,7 +213,6 @@ module "vault" {
   vault_count            = "1"
   vault_dns              = "${var.vault_dns}"
   vault_subnet_ids       = "${module.vpc.vault_subnet_ids}"
-  vault_auto_unseal      = "${var.vault_auto_unseal}"
   vpc_cidr               = "${var.vpc_cidr}"
   ipam_network_cidr      = "${var.ipam_network_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"

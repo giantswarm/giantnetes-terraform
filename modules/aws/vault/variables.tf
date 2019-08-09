@@ -1,12 +1,4 @@
-variable "arn_region" {
-  type = "string"
-}
-
-variable "aws_account" {
-  type = "string"
-}
-
-variable "aws_region" {
+variable "iam_region" {
   type = "string"
 }
 
@@ -27,10 +19,6 @@ variable "ignition_bucket_id" {
 }
 
 variable "instance_type" {
-  type = "string"
-}
-
-variable "iam_region" {
   type = "string"
 }
 
@@ -83,10 +71,6 @@ variable "vault_port" {
 
 variable "vault_subnet_ids" {
   type = "list"
-}
-
-variable "vault_auto_unseal" {
-  default = true
 }
 
 variable "vpc_cidr" {

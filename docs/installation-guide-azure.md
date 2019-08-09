@@ -10,18 +10,6 @@ Common:
 ## Multi-master 
 By default terraform will create multi-master cluster with 3 master nodes, single master mode can be enabled by setting terraform variable `master_count=1` or export env variable `export TF_VAR_master_count=1`.
 
-## Vault auto-unseal
-In case Azure Cloud supports MSI (Managed Service Identities), `vault` can be provisioned with additional resources for `auto-unseal`. This process requires master key to be inside the Key Vault. `create key` operation requires respective access policy for the identity, which is running provisioning. Therefore, special `terraform` group should be created in the Active Directory for respective subscription:
-  - group name: `terraform`
-  - members: SREs, who can run terraform manually; `conveyor` service principal; e2e service principal in case of Giant Swarm subscription.
-
-After group is created, `Object ID` value should be assigned for `TF_VAR_terraform_group_id` in `bootstrap.sh` file:
-```
-export TF_VAR_terraform_group_id=<group_id>
-```
-
-In case cloud doesn't support MSI (Azure Germany, Azure Stack etc), vault should be provisioned with [hive](https://github.com/giantswarm/giantnetes-terraform/blob/master/docs/installation-guide-azure.md#provision-vault-with-ansible<Paste>).
-
 ### Create storage account for terraform state
 
 ```
@@ -171,8 +159,6 @@ Step two is individual and depends on your setup.
 #### Provision Vault with Ansible
 
 How to do that see [here](https://github.com/giantswarm/hive/#install-insecure-vault)
-
-When done make sure to update "TF_VAR_nodes_vault_token" in bootstrap.sh with node token that was outputed by Ansible.
 
 ### Stage: Kubernetes
 

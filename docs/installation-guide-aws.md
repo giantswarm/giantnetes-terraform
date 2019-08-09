@@ -42,7 +42,7 @@ aws dynamodb create-table --region $AWS_DEFAULT_REGION \
 
 ### Vault auto-unseal
 
-Auto-unseal is configured by default. In case installation region doesn't support KMS service, override `TF_VAR_vault_auto_unseal=false` in `bootstrap.sh` 
+Auto-unseal with [transit unseal](https://www.vaultproject.io/docs/configuration/seal/transit.html) is configured by default.  
 
 ### Prepare terraform
 
@@ -106,9 +106,7 @@ To get passphrase login to AWS console, switch to VPC service and open VPN conne
 
 #### Provision Vault with Ansible
 
-How to do that see [here](https://github.com/giantswarm/aws-terraform/blob/master/docs/install-g8s-on-aws.md#install-vault-with-hive-ansible)
-
-Set "TF_VAR_nodes_vault_token" in bootstrap.sh with node token that was outputed by Ansible.
+How to do that see [here](https://github.com/giantswarm/hive/#install-insecure-vault)
 
 ### Stage: Kubernetes
 
