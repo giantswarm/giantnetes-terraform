@@ -206,6 +206,7 @@ module "vault" {
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
+  iam_region             = "${var.iam_region}"
   instance_type          = "${var.vault_instance_type}"
   user_data              = "${data.ct_config.vault.rendered}"
   route53_enabled        = "${var.route53_enabled}"
