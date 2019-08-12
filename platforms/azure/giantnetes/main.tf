@@ -151,7 +151,6 @@ module "vault" {
   os_disk_storage_type    = "${var.os_disk_storage_type}"
   resource_group_name     = "${module.resource_group.name}"
   storage_type            = "${var.vault_storage_type}"
-  terraform_group_id      = "${var.terraform_group_id}"
   user_data               = "${data.ct_config.vault.rendered}"
   vm_size                 = "${var.vault_vm_size}"
 }
