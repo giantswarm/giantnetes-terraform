@@ -301,7 +301,7 @@ main() {
   # In Azure we don't have this issue, because terraform actually wait when OS is ready.
   counter=5;
   vault_address="vault1.${CLUSTER}.${E2E_AWS_REGION}.aws.gigantic.io"
-  while ! nc -z ${vault_address} 22 && [ $counter -gt 0 ]; do 
+  while ! ssh -o ConnectTimeout=3 ${vault_address}  && [ $counter -gt 0 ]; do 
       echo "Waiting for vault to be ready..."
       sleep 30 
       ((counter--)) 
