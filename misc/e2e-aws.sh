@@ -299,7 +299,14 @@ main() {
   stage-terraform-only-vault
   # Let Vault VM start.
   # In Azure we don't have this issue, because terraform actually wait when OS is ready.
-  sleep 60
+  counter=5;
+  vault_address="vault1.${CLUSTER}.${E2E_AWS_REGION}.aws.gigantic.io"
+  while ! nc -z ${vault_address} 22 && [ $counter -gt 0 ]; do 
+      echo "Waiting for vault to be ready..."
+      sleep 30 
+      ((counter--)) 
+  done
+
   stage-vault
   stage-terraform
 
