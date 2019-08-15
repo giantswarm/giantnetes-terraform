@@ -1,3 +1,15 @@
+variable "arn_region" {
+  type = "string"
+}
+
+variable "aws_account" {
+  type = "string"
+}
+
+variable "aws_region" {
+  type = "string"
+}
+
 variable "iam_region" {
   type = "string"
 }
