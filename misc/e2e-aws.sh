@@ -195,6 +195,7 @@ bare_metal: False
 EOF
 
     # Bootstrap insecure Vault.
+    export VAULT_UNSEAL_TOKEN=${E2E_VAULT_UNSEAL_TOKEN} # comes from CI env variables
     export ANSIBLE_HOST_KEY_CHECKING=False
     ansible-playbook -i hosts_inventory/${CLUSTER} -e dc=${CLUSTER} bootstrap1.yml
 
