@@ -105,7 +105,6 @@ export TF_VAR_root_dns_zone_id=${E2E_AWS_ROUTE53_ZONE}
 export TF_VAR_nodes_vault_token=
 export TF_VAR_aws_customer_gateway_id=
 export TF_VAR_worker_count=${WORKER_COUNT}
-export TF_VAR_vault_auto_unseal=false
 
 terraform init ./
 EOF
@@ -196,6 +195,10 @@ bare_metal: False
 EOF
 
     # Bootstrap insecure Vault.
+    # Use default unseal
+    export VAULT_UNSEAL_TOKEN=token
+    sed -i '/^seal/,$ d' config/vault/vault_unsecure.hcl
+    sed -i '/^seal/,$ d' config/vault/vault.hcl
     export ANSIBLE_HOST_KEY_CHECKING=False
     ansible-playbook -i hosts_inventory/${CLUSTER} -e dc=${CLUSTER} bootstrap1.yml
 
@@ -300,7 +303,14 @@ main() {
   stage-terraform-only-vault
   # Let Vault VM start.
   # In Azure we don't have this issue, because terraform actually wait when OS is ready.
-  sleep 60
+  counter=5;
+  vault_address="vault1.${CLUSTER}.${E2E_AWS_REGION}.aws.gigantic.io"
+  while ! ssh -o ConnectTimeout=3 ${vault_address}  && [ $counter -gt 0 ]; do 
+      echo "Waiting for vault to be ready..."
+      sleep 30 
+      ((counter--)) 
+  done
+
   stage-vault
   stage-terraform
 

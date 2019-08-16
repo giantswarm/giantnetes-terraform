@@ -14,7 +14,7 @@ resource "aws_instance" "vpn_instance" {
   count                = "${var.vpn_instance_enabled ? 1 : 0}"
   ami                  = "${var.container_linux_ami_id}"
   instance_type        = "${var.instance_type}"
-  iam_instance_profile = "${aws_iam_instance_profile.vpn_instance.name}"
+  iam_instance_profile = "${aws_iam_instance_profile.vpn_instance[count.index].name}"
 
   associate_public_ip_address = true
   source_dest_check           = false
@@ -112,7 +112,7 @@ resource "aws_route53_record" "vpn_instance" {
 # To avoid 16kb user_data limit upload CoreOS ignition config to a s3 bucket.
 # Ignition supports s3 out-of-the-box.
 resource "aws_s3_bucket_object" "ignition_vpn_instance_with_tags" {
-  count   = "${var.s3_bucket_tags && !var.vpn_instance_enabled ? 1 : 0}"
+  count   = "${var.s3_bucket_tags && ! var.vpn_instance_enabled ? 1 : 0}"
   bucket  = "${var.ignition_bucket_id}"
   key     = "${var.cluster_name}-ignition-vpn-instance.json"
   content = "${var.user_data}"
@@ -129,7 +129,7 @@ resource "aws_s3_bucket_object" "ignition_vpn_instance_with_tags" {
 }
 
 resource "aws_s3_bucket_object" "ignition_vpn_instance_without_tags" {
-  count   = "${!var.s3_bucket_tags && var.vpn_instance_enabled ? 1 : 0}"
+  count   = "${! var.s3_bucket_tags && var.vpn_instance_enabled ? 1 : 0}"
   bucket  = "${var.ignition_bucket_id}"
   key     = "${var.cluster_name}-ignition-vpn-instance.json"
   content = "${var.user_data}"

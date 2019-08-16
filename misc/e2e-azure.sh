@@ -107,7 +107,6 @@ export TF_VAR_root_dns_zone_name="azure.gigantic.io"
 export TF_VAR_nodes_vault_token=
 export TF_VAR_worker_count=${WORKER_COUNT}
 export TF_VAR_delete_data_disks_on_termination="true"
-export TF_VAR_vault_auto_unseal=false
 
 terraform init ./
 EOF
@@ -199,6 +198,10 @@ EOF
     # Bootstrap insecure Vault.
     echo "waiting for vault node 6min"
     sleep 6m
+    # Use default unseal
+    export VAULT_UNSEAL_TOKEN=token
+    sed -i '/^seal/,$ d' config/vault/vault_unsecure.hcl
+    sed -i '/^seal/,$ d' config/vault/vault.hcl
     export ANSIBLE_HOST_KEY_CHECKING=False
     ansible-playbook -i hosts_inventory/${CLUSTER} -e dc=${CLUSTER} bootstrap1.yml
 

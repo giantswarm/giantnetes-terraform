@@ -58,12 +58,6 @@ variable "worker_count" {
   default     = "3"
 }
 
-variable "terraform_group_id" {
-  type        = "string"
-  description = "Active Directory group ID with access to Key Vault"
-  default     = ""
-}
-
 ### Compute and Storage ###
 
 variable "bastion_vm_size" {
@@ -84,10 +78,6 @@ variable "vault_vm_size" {
 variable "vault_storage_type" {
   type    = "string"
   default = "Premium_LRS"
-}
-
-variable "vault_auto_unseal" {
-  default = true
 }
 
 variable "master_vm_size" {

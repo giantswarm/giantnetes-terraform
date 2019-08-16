@@ -92,7 +92,6 @@ locals {
     "PodCIDR"                  = "${var.pod_cidr}"
     "Provider"                 = "azure"
     "Users"                    = "${file("${path.module}/../../../ignition/users.yaml")}"
-    "VaultAutoUnseal"          = "${var.vault_auto_unseal}"
     "VaultDomainName"          = "${var.vault_dns}.${var.base_domain}"
   }
 }
@@ -152,11 +151,7 @@ module "vault" {
   os_disk_storage_type    = "${var.os_disk_storage_type}"
   resource_group_name     = "${module.resource_group.name}"
   storage_type            = "${var.vault_storage_type}"
-  terraform_group_id      = "${var.terraform_group_id}"
-  tenant_id               = "${data.azurerm_client_config.current.tenant_id}"
   user_data               = "${data.ct_config.vault.rendered}"
-  vault_subnet            = "${module.vnet.vault_subnet}"
-  vault_auto_unseal       = "${var.vault_auto_unseal}"
   vm_size                 = "${var.vault_vm_size}"
 }
 
