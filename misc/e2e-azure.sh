@@ -198,8 +198,11 @@ EOF
     # Bootstrap insecure Vault.
     echo "waiting for vault node 6min"
     sleep 6m
+    # Use default unseal
+    export VAULT_UNSEAL_TOKEN=token
+    sed -i '/^seal/,$ d' config/vault/vault_unsecure.hcl
+    sed -i '/^seal/,$ d' config/vault/vault.hcl
     export ANSIBLE_HOST_KEY_CHECKING=False
-    export VAULT_UNSEAL_TOKEN=${E2E_VAULT_UNSEAL_TOKEN} # comes from CI env variables
     ansible-playbook -i hosts_inventory/${CLUSTER} -e dc=${CLUSTER} bootstrap1.yml
 
     # Init Vault with one unencrypted unseal key.
