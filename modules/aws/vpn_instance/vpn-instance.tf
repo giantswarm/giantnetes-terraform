@@ -14,7 +14,7 @@ resource "aws_instance" "vpn_instance" {
   count                = "${var.vpn_instance_enabled ? 1 : 0}"
   ami                  = "${var.container_linux_ami_id}"
   instance_type        = "${var.instance_type}"
-  iam_instance_profile = "${aws_iam_instance_profile.vpn_instance.name}"
+  iam_instance_profile = "${aws_iam_instance_profile.vpn_instance[count.index].name}"
 
   associate_public_ip_address = true
   source_dest_check           = false
