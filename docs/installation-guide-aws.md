@@ -127,9 +127,9 @@ source bootstrap.sh
 ```
 
 ```
-terraform taint module.master.aws_instance.master[0]
-terraform taint module.master.aws_instance.master[1]
-terraform taint module.master.aws_instance.master[2]
+terraform taint "module.master.aws_instance.master[0]"
+terraform taint "module.master.aws_instance.master[1]"
+terraform taint "module.master.aws_instance.master[2]"
 terraform apply ./
 ```
 
