@@ -209,7 +209,7 @@ EOF
 
     ansible-playbook -i hosts_inventory/${CLUSTER} -e dc=${CLUSTER} bootstrap.yml
 
-    scp -oProxyJump=${SSH_USER}@bastion1.${base_domain} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${SSH_USER}@vault1.${base_domain}:/tmp/vault/vault_initialized.json .
+    scp -o ProxyCommand="ssh -W %h:%p -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${SSH_USER}@bastion1.${base_domain}" ${SSH_USER}@vault1.${base_domain}:/tmp/vault/vault_initialized.json .
     VAULT_TOKEN=$(cat vault_initialized.json | jq .root_token )
 
     # Insert vault token in envs file.
