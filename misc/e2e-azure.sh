@@ -196,44 +196,26 @@ bare_metal: False
 EOF
 
     # Bootstrap insecure Vault.
-    echo "waiting for vault node 6min"
-    sleep 6m
-    # Use default unseal
+    export CI_RUN=true
+    export ANSIBLE_HOST_KEY_CHECKING=False
+    # Setup requirered env variables
+    export ETCD_BACKUP_AWS_ACCESS_KEY="test"
+    export ETCD_BACKUP_AWS_SECRET_KEY="test"
+    export OPSCTL_GITHUB_TOKEN="test"
     export VAULT_UNSEAL_TOKEN=token
+
+    # Use default unseal method
     sed -i '/^seal/,$ d' config/vault/vault_unsecure.hcl
     sed -i '/^seal/,$ d' config/vault/vault.hcl
-    export ANSIBLE_HOST_KEY_CHECKING=False
-    ansible-playbook -i hosts_inventory/${CLUSTER} -e dc=${CLUSTER} bootstrap1.yml
 
-    # Init Vault with one unencrypted unseal key.
-    # NOTE: sed here is to filter ANSI escape codes and color codes.
-    init_output=$(exec_on vault1 vault operator init -key-shares=1 -key-threshold=1 |\
-        sed -r -e 's/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g' -e 's/[\x01-\x1F\x7F]//g')
+    ansible-playbook -i hosts_inventory/${CLUSTER} -e dc=${CLUSTER} bootstrap.yml
 
-    local unseal_key=$(echo ${init_output} | awk '{ print $4 }')
-    local root_token=$(echo ${init_output} | awk '{ print $8 }')
-
-    msg "Vault unseal key: ${unseal_key}"
-    msg "Vault root token: ${root_token}"
-
-    exec_on vault1 vault operator unseal ${unseal_key}
-
-    # Bootstrap secure Vault.
-    export VAULT_TOKEN="${root_token}"
-    export ETCD_BACKUP_AWS_ACCESS_KEY="foo"
-    export ETCD_BACKUP_AWS_SECRET_KEY="bar"
-    export AWS_ACCESS_KEY="foo"
-    export AWS_SECRET_KEY="bar"
-    # Skip etcd_backup step.
-    sed -i '/etcd_backup.yml/d' bootstrap2.yml
-    ansible-playbook -i hosts_inventory/${CLUSTER} -e dc=${CLUSTER} bootstrap2.yml
-    unset AWS_ACCESS_KEY AWS_SECRET_KEY
-
-    exec_on vault1 vault operator unseal ${unseal_key}
+    scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ProxyCommand="ssh -W %h:%p -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${SSH_USER}@bastion1.${base_domain}" ${SSH_USER}@vault1.${base_domain}:/tmp/vault/vault_initialized.json .
+    VAULT_TOKEN=$(cat vault_initialized.json | jq .root_token )
 
     # Insert vault token in envs file.
     sed -i "s/export TF_VAR_nodes_vault_token=.*/export TF_VAR_nodes_vault_token=${VAULT_TOKEN}/" ${TFDIR}/bootstrap.sh
-
+    
     cd ${WORKDIR}
 }
 
