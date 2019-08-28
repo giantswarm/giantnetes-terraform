@@ -10,6 +10,10 @@ variable "aws_region" {
   type = "string"
 }
 
+variable "iam_region" {
+  type = "string"
+}
+
 variable "elb_subnet_ids" {
   type = "list"
 }
@@ -27,10 +31,6 @@ variable "ignition_bucket_id" {
 }
 
 variable "instance_type" {
-  type = "string"
-}
-
-variable "iam_region" {
   type = "string"
 }
 
@@ -83,10 +83,6 @@ variable "vault_port" {
 
 variable "vault_subnet_ids" {
   type = "list"
-}
-
-variable "vault_auto_unseal" {
-  default = true
 }
 
 variable "vpc_cidr" {

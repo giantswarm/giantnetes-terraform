@@ -42,7 +42,7 @@ aws dynamodb create-table --region $AWS_DEFAULT_REGION \
 
 ### Vault auto-unseal
 
-Auto-unseal is configured by default. In case installation region doesn't support KMS service, override `TF_VAR_vault_auto_unseal=false` in `bootstrap.sh` 
+Auto-unseal with [transit unseal](https://www.vaultproject.io/docs/configuration/seal/transit.html) is configured by default.  
 
 ### Prepare terraform
 
@@ -83,7 +83,7 @@ Install consists two stages:
 - Vault (only needed because we bootstrapping Vault manually)
 - Kubernetes
 
-Master and workers will be created within the Vault stage and expectedly will fail (and recreated later). This is done to keep single Terraform state and simplify cluster management after installation. Master and workers will be reprovisioned with right configuration in the second state called Kubernetes.
+Masters and workers will be created within the Vault stage and expectedly will fail (and recreated later). This is done to keep single Terraform state and simplify cluster management after installation. Masters and workers will be reprovisioned with right configuration in the second state called Kubernetes.
 
 ### Stage: Vault
 
@@ -96,7 +96,7 @@ terraform plan ./
 terraform apply ./
 ```
 
-It should create all cluster resources. Please note master and worker vms are created, but will fail. This is expected behaviour.
+It should create all cluster resources. Please note masters and worker vms are created, but will fail. This is expected behaviour.
 
 #### Configure IPsec
 
@@ -106,9 +106,7 @@ To get passphrase login to AWS console, switch to VPC service and open VPN conne
 
 #### Provision Vault with Ansible
 
-How to do that see [here](https://github.com/giantswarm/aws-terraform/blob/master/docs/install-g8s-on-aws.md#install-vault-with-hive-ansible)
-
-Set "TF_VAR_nodes_vault_token" in bootstrap.sh with node token that was outputed by Ansible.
+How to do that see [here](https://github.com/giantswarm/hive/#install-insecure-vault)
 
 ### Stage: Kubernetes
 
@@ -129,9 +127,9 @@ source bootstrap.sh
 ```
 
 ```
-terraform taint module.master.aws_instance.master[0]
-terraform taint module.master.aws_instance.master[1]
-terraform taint module.master.aws_instance.master[2]
+terraform taint "module.master.aws_instance.master[0]"
+terraform taint "module.master.aws_instance.master[1]"
+terraform taint "module.master.aws_instance.master[2]"
 terraform apply ./
 ```
 

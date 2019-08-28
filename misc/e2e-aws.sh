@@ -105,7 +105,6 @@ export TF_VAR_root_dns_zone_id=${E2E_AWS_ROUTE53_ZONE}
 export TF_VAR_nodes_vault_token=
 export TF_VAR_aws_customer_gateway_id=
 export TF_VAR_worker_count=${WORKER_COUNT}
-export TF_VAR_vault_auto_unseal=false
 
 terraform init ./
 EOF
@@ -196,32 +195,22 @@ bare_metal: False
 EOF
 
     # Bootstrap insecure Vault.
+    export CI_RUN=true
     export ANSIBLE_HOST_KEY_CHECKING=False
-    ansible-playbook -i hosts_inventory/${CLUSTER} -e dc=${CLUSTER} bootstrap1.yml
+    # Setup requirered env variables
+    export ETCD_BACKUP_AWS_ACCESS_KEY="test"
+    export ETCD_BACKUP_AWS_SECRET_KEY="test"
+    export OPSCTL_GITHUB_TOKEN="test"
+    export VAULT_UNSEAL_TOKEN=token
 
-    # Init Vault with one unencrypted unseal key.
-    # NOTE: sed here is to filter ANSI escape codes and color codes.
-    init_output=$(exec_on vault1 vault operator init -key-shares=1 -key-threshold=1 |\
-        sed -r -e 's/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g' -e 's/[\x01-\x1F\x7F]//g')
+    # Use default unseal method
+    sed -i '/^seal/,$ d' config/vault/vault_unsecure.hcl
+    sed -i '/^seal/,$ d' config/vault/vault.hcl
 
-    local unseal_key=$(echo ${init_output} | awk '{ print $4 }')
-    local root_token=$(echo ${init_output} | awk '{ print $8 }')
+    ansible-playbook -i hosts_inventory/${CLUSTER} -e dc=${CLUSTER} bootstrap.yml
 
-    msg "Vault unseal key: ${unseal_key}"
-    msg "Vault root token: ${root_token}"
-
-    exec_on vault1 vault operator unseal ${unseal_key}
-
-    # Bootstrap secure Vault.
-    export VAULT_TOKEN="${root_token}"
-    export ETCD_BACKUP_AWS_ACCESS_KEY="$E2E_AWS_ACCESS_KEY"
-    export ETCD_BACKUP_AWS_SECRET_KEY="$E2E_AWS_SECRET_KEY"
-    export AWS_ACCESS_KEY="$E2E_AWS_ACCESS_KEY"
-    export AWS_SECRET_KEY="$E2E_AWS_SECRET_KEY"
-    ansible-playbook -i hosts_inventory/${CLUSTER} -e dc=${CLUSTER} bootstrap2.yml
-    unset ETCD_BACKUP_AWS_ACCESS_KEY ETCD_BACKUP_AWS_SECRET_KEY AWS_ACCESS_KEY AWS_SECRET_KEY
-
-    exec_on vault1 vault operator unseal ${unseal_key}
+    scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ProxyCommand="ssh -W %h:%p -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${SSH_USER}@bastion1.${base_domain}" ${SSH_USER}@vault1.${base_domain}:/tmp/vault/vault_initialized.json .
+    VAULT_TOKEN=$(cat vault_initialized.json | jq .root_token )
 
     # Insert vault token in envs file.
     sed -i "s/export TF_VAR_nodes_vault_token=.*/export TF_VAR_nodes_vault_token=${VAULT_TOKEN}/" ${TFDIR}/bootstrap.sh
@@ -300,7 +289,14 @@ main() {
   stage-terraform-only-vault
   # Let Vault VM start.
   # In Azure we don't have this issue, because terraform actually wait when OS is ready.
-  sleep 60
+  counter=5;
+  vault_address="vault1.${CLUSTER}.${E2E_AWS_REGION}.aws.gigantic.io"
+  while ! ssh -o ConnectTimeout=3 ${vault_address}  && [ $counter -gt 0 ]; do 
+      echo "Waiting for vault to be ready..."
+      sleep 30 
+      ((counter--)) 
+  done
+
   stage-vault
   stage-terraform
 

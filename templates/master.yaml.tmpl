@@ -655,7 +655,7 @@ storage:
             namespace: kube-system
           data:
             # Configure this with the location of your etcd cluster.
-            etcd_endpoints: "https://etcd.{{ .BaseDomain }}:2379"
+            etcd_endpoints: "{{ if eq .MasterCount "3" }}{{.ETCDEndpoints}}{{else}}https://etcd1.{{ .BaseDomain }}:2379{{end}}"
 
             # If you're using TLS enabled etcd uncomment the following.
             # You must also populate the Secret below with these files.
