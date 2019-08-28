@@ -133,6 +133,12 @@ variable "api_dns" {
   default     = "g8s"
 }
 
+variable "api_external_dns" {
+  type        = "string"
+  description = "External FQDN for api (i.e. k8s)."
+  default     = "k8s"
+}
+
 variable "etcd_dns" {
   type        = "string"
   description = "FQDN for etcd (i.e. etcd). '__MASTER_ID__' wil be replaced with id of master"

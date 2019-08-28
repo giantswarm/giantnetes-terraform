@@ -82,6 +82,7 @@ locals {
     "ETCDDomainName"           = "${var.etcd_dns}.${var.base_domain}"
     "ETCDInitialClusterMulti"  = "etcd1=https://etcd1.${var.base_domain}:2380,etcd2=https://etcd2.${var.base_domain}:2380,etcd3=https://etcd3.${var.base_domain}:2380"
     "ETCDInitialClusterSingle" = "etcd1=https://etcd1.${var.base_domain}:2380"
+    "ExternalAPIDomainName"    = "${var.external_api_dns}.${var.api_dns}.${var.base_domain}"
     "G8SVaultToken"            = "${var.nodes_vault_token}"
     "K8SAPIIP"                 = "${var.k8s_api_ip}"
     "K8SAuditWebhookPort"      = "${var.k8s_audit_webhook_port}"
