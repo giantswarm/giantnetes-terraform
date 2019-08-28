@@ -143,8 +143,8 @@ variable "api_dns" {
 
 variable "api_external_dns" {
   type        = "string"
-  description = "External FQDN for api (i.e. k8s)."
-  default     = "k8s"
+  description = "External FQDN for api (i.e. external-k8s)."
+  default     = "external-k8s"
 }
 
 variable "etcd_dns" {
