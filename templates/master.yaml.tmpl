@@ -3149,7 +3149,7 @@ systemd:
           --ttl=8760h \
           --crt-file=/etc/kubernetes/ssl/etcd/server-crt.pem \
           --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
-          --alt-names=localhost,etcd.{{ .BaseDomain }} \
+          --alt-names=localhost,etcd{{ .MasterID }}.{{ .BaseDomain }} \
           --key-file=/etc/kubernetes/ssl/etcd/server-key.pem \
           --ca-file=/etc/kubernetes/ssl/etcd/server-ca.pem); \
         done; \
