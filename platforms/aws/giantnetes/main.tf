@@ -12,6 +12,30 @@ module "container_linux" {
   coreos_version = "${var.container_linux_version}"
 }
 
+# Get ami ID for specific Container Linux version.
+data "aws_ami" "coreos_ami" {
+  owners = ["${var.ami_owner}"]
+
+  filter {
+    name   = "name"
+    values = ["CoreOS-${var.container_linux_channel}-${module.container_linux.coreos_version}-*"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  filter {
+    name   = "owner-id"
+    values = ["${var.ami_owner}"]
+  }
+}
 
 module "dns" {
   source = "../../../modules/aws/dns"
@@ -111,7 +135,7 @@ module "bastion" {
   bastion_count          = "2"
   bastion_subnet_ids     = "${module.vpc.bastion_subnet_ids}"
   cluster_name           = "${var.cluster_name}"
-  container_linux_ami_id = "ami-034fd8c3f4026eb39"
+  container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   forward_logs_enabled   = "${var.bastion_forward_logs_enabled}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
@@ -147,7 +171,7 @@ module "vpn_instance" {
   aws_account            = "${var.aws_account}"
   bastion_subnet_ids     = "${module.vpc.bastion_subnet_ids}"
   cluster_name           = "${var.cluster_name}"
-  container_linux_ami_id = "ami-034fd8c3f4026eb39"
+  container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   external_vpn_cidr_0    = "${var.external_ipsec_public_ip_0}/32"
   external_vpn_cidr_1    = "${var.external_ipsec_public_ip_1}/32"
@@ -181,7 +205,7 @@ module "vault" {
   aws_account            = "${var.aws_account}"
   aws_region             = "${var.aws_region}"
   cluster_name           = "${var.cluster_name}"
-  container_linux_ami_id = "ami-034fd8c3f4026eb39"
+  container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
@@ -220,7 +244,7 @@ module "master" {
   api_dns                = "${var.api_dns}"
   aws_account            = "${var.aws_account}"
   cluster_name           = "${var.cluster_name}"
-  container_linux_ami_id = "ami-034fd8c3f4026eb39"
+  container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
   etcd_dns               = "${var.etcd_dns}"
@@ -257,7 +281,7 @@ module "worker" {
   aws_account            = "${var.aws_account}"
   aws_region             = "${var.aws_region}"
   cluster_name           = "${var.cluster_name}"
-  container_linux_ami_id = "ami-034fd8c3f4026eb39"
+  container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
