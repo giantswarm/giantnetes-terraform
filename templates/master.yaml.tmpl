@@ -1695,6 +1695,23 @@ storage:
       mode: 0644
       contents:
         inline: |
+          ## giantswarm-clusterapi cluster role for readonly API access
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: giantswarm-clusterapi-readonly
+            namespace: giantswarm-clusterapi
+            labels:
+              scope: control-plane
+              type: external
+              level: readonly
+          rules:
+          - apiGroups:
+            - ""
+            resources:
+            - nodes
+            verbs:
+            - list
           ## CoreDNS
           apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRole
@@ -1814,6 +1831,25 @@ storage:
       mode: 0644
       contents:
         inline: |
+          ## Bind all service accounts in giantswarm-clusterapi namespace to
+          ## giantswarm-cluster-readonly cluster role
+          kind: ClusterRoleBinding
+          apiVersion: rbac.authorization.k8s.io/v1
+          metadata:
+            name: giantswarm-clusterapi-readonly
+            namespace: giantswarm-clusterapi
+            labels:
+              scope: control-plane
+              type: external
+              level: readonly
+          subjects:
+          - kind: Group
+            name: "system:serviceaccounts:giantswarm-clusterapi"
+            namespace: giantswarm-clusterapi
+          roleRef:
+            kind: ClusterRole
+            name: giantswarm-clusterapi-readonly
+            apiGroup: rbac.authorization.k8s.io
           ## User
           kind: ClusterRoleBinding
           apiVersion: rbac.authorization.k8s.io/v1
