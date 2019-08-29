@@ -1706,6 +1706,7 @@ storage:
             labels:
               k8s-app: nginx-ingress-controller
           spec:
+            externalTrafficPolicy: Local
             type: NodePort
             ports:
             - name: http
