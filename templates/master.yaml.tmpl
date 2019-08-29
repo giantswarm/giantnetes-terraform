@@ -2161,22 +2161,26 @@ storage:
 
             while ! curl --output /dev/null --silent --head --insecure "https://{{ .APIDomainName }}"; do sleep 1 && echo 'Waiting for master'; done
 
-            # Create giantswarm namespace
-            while
-                $KUBECTL get namespace giantswarm
-                [ "$?" -ne "0" ]
+            # Create giantswarm and giantswarm-clusterapi namespaces
+            NAMESPACES="giantswarm giantswarm-clusterapi"
+            for namespace in ${NAMESPACES}
             do
-                while
-                    $KUBECTL create namespace giantswarm
-                    [ "$?" -ne "0" ]
-                do
-                    echo "failed to create namespace giantswarm, retrying in 5 sec"
-                    sleep 5s
-                done
+              while
+                  $KUBECTL get namespace ${namespace}
+                  [ "$?" -ne "0" ]
+              do
+                  while
+                      $KUBECTL create namespace ${namespace}
+                      [ "$?" -ne "0" ]
+                  do
+                      echo "failed to create namespace ${namespace}, retrying in 5 sec"
+                      sleep 5s
+                  done
+              done
             done
 
             # label namespaces (required for network egress policies)
-            NAMESPACES="default giantswarm kube-system" 
+            NAMESPACES="default giantswarm giantswarm-clusterapi kube-system" 
             for namespace in ${NAMESPACES}
             do
                 if ! $KUBECTL get namespaces -l name=${namespace} | grep ${namespace}; then
