@@ -4,6 +4,11 @@ provider "azurerm" {
   environment = "${var.azure_cloud}"
 }
 
+locals {
+  k8s_api_external_access_whitelist = "${var.external_ipsec_public_ip_0},${var.external_ipsec_public_ip_1}${var.k8s_api_external_access_whitelist != "" ? ",${var.k8s_api_external_access_whitelist}" : ""}"
+}
+
+
 data "azurerm_client_config" "current" {}
 
 module "container_linux" {
@@ -84,6 +89,7 @@ locals {
     "ETCDInitialClusterSingle" = "etcd1=https://etcd1.${var.base_domain}:2380"
     "G8SVaultToken"            = "${var.nodes_vault_token}"
     "K8SAPIIP"                 = "${var.k8s_api_ip}"
+    "K8SAPIExternalWhitelist"  = "${local.k8s_api_external_access_whitelist}"
     "K8SAuditWebhookPort"      = "${var.k8s_audit_webhook_port}"
     "K8SDNSIP"                 = "${var.k8s_dns_ip}"
     "K8SServiceCIDR"           = "${var.k8s_service_cidr}"

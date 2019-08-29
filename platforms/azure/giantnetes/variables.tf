@@ -247,3 +247,26 @@ variable "vpn_right_subnet_cidr_1" {
   description = "CIDR of the remote IPSec network."
   default     = "172.18.0.5/32"
 }
+
+### VPN with custom instance 
+
+## Gridscale
+variable "external_ipsec_public_ip_0" {
+  description = "External public ip from VPN 0 - Gridscale"
+  type        = "string"
+  default     = "185.102.95.187"
+}
+
+## Vultr
+variable "external_ipsec_public_ip_1" {
+  description = "External public cidr from VPN 1 - Vultr"
+  type        = "string"
+  default     = "95.179.153.65"
+}
+
+### External Kubernetes API Access
+variable "k8s_api_external_access_whitelist" {
+  description = "Comma separated list of networks for k8s API external access"
+  type        = "string"
+  default     = ""
+}

@@ -1552,6 +1552,36 @@ storage:
               targetPort: 8080
             selector:
               k8s-app: default-http-backend
+    - path: /srv/ingress-giantswarm-clusterapi.yaml
+      filesystem: root
+      mode: 0644
+      contents:
+        inline:  |
+          apiVersion: extensions/v1beta1
+          kind: Ingress
+          metadata:
+            annotations:
+              kubernetes.io/ingress.class: nginx
+              kubernetes.io/tls-acme: "true"
+              nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+              nginx.ingress.kubernetes.io/whitelist-source-range: {{ .K8SAPIExternalWhitelist }}
+            labels:
+              app: giantswarm-clusterapi
+            name: giantswarm-clusterapi
+            namespace: default
+          spec:
+            rules:
+            - host: giantswarm-clusterapi.{{ .APIDomainName }}
+              http:
+                paths:
+                - backend:
+                    serviceName: kubernetes
+                    servicePort: 443
+                  path: /
+            tls:
+            - hosts:
+              - giantswarm-clusterapi.{{ .APIDomainName }}
+              secretName: giantswarm-clusterapi-certs
     - path: /srv/ingress-controller-cm.yaml
       filesystem: root
       mode: 0644
@@ -1676,6 +1706,7 @@ storage:
             labels:
               k8s-app: nginx-ingress-controller
           spec:
+            externalTrafficPolicy: Local
             type: NodePort
             ports:
             - name: http
@@ -1695,6 +1726,24 @@ storage:
       mode: 0644
       contents:
         inline: |
+          ## giantswarm-clusterapi cluster role for readonly API access
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: giantswarm-clusterapi-readonly
+            namespace: giantswarm-clusterapi
+            labels:
+              scope: control-plane
+              type: external
+              level: readonly
+          rules:
+          - apiGroups:
+            - ""
+            resources:
+            - nodes
+            verbs:
+            - list
+          ---
           ## CoreDNS
           apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRole
@@ -1814,6 +1863,26 @@ storage:
       mode: 0644
       contents:
         inline: |
+          ## Bind all service accounts in giantswarm-clusterapi namespace to
+          ## giantswarm-cluster-readonly cluster role
+          kind: ClusterRoleBinding
+          apiVersion: rbac.authorization.k8s.io/v1
+          metadata:
+            name: giantswarm-clusterapi-readonly
+            namespace: giantswarm-clusterapi
+            labels:
+              scope: control-plane
+              type: external
+              level: readonly
+          subjects:
+          - kind: Group
+            name: "system:serviceaccounts:giantswarm-clusterapi"
+            namespace: giantswarm-clusterapi
+          roleRef:
+            kind: ClusterRole
+            name: giantswarm-clusterapi-readonly
+            apiGroup: rbac.authorization.k8s.io
+          ---
           ## User
           kind: ClusterRoleBinding
           apiVersion: rbac.authorization.k8s.io/v1
@@ -2161,22 +2230,26 @@ storage:
 
             while ! curl --output /dev/null --silent --head --insecure "https://{{ .APIDomainName }}"; do sleep 1 && echo 'Waiting for master'; done
 
-            # Create giantswarm namespace
-            while
-                $KUBECTL get namespace giantswarm
-                [ "$?" -ne "0" ]
+            # Create giantswarm and giantswarm-clusterapi namespaces
+            NAMESPACES="giantswarm giantswarm-clusterapi"
+            for namespace in ${NAMESPACES}
             do
-                while
-                    $KUBECTL create namespace giantswarm
-                    [ "$?" -ne "0" ]
-                do
-                    echo "failed to create namespace giantswarm, retrying in 5 sec"
-                    sleep 5s
-                done
+              while
+                  $KUBECTL get namespace ${namespace}
+                  [ "$?" -ne "0" ]
+              do
+                  while
+                      $KUBECTL create namespace ${namespace}
+                      [ "$?" -ne "0" ]
+                  do
+                      echo "failed to create namespace ${namespace}, retrying in 5 sec"
+                      sleep 5s
+                  done
+              done
             done
 
             # label namespaces (required for network egress policies)
-            NAMESPACES="default giantswarm kube-system" 
+            NAMESPACES="default giantswarm giantswarm-clusterapi kube-system" 
             for namespace in ${NAMESPACES}
             do
                 if ! $KUBECTL get namespaces -l name=${namespace} | grep ${namespace}; then
@@ -2282,7 +2355,8 @@ storage:
              ingress-controller-cm.yaml
              ingress-controller-sa.yaml
              ingress-controller-dep.yaml
-             ingress-controller-svc.yaml"
+             ingress-controller-svc.yaml
+             ingress-giantswarm-clusterapi.yaml"
 
             for manifest in $MANIFESTS
             do

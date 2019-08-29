@@ -257,7 +257,7 @@ variable "external_ipsec_subnet_1" {
 ### VPN with custom instance 
 variable "vpn_instance_enabled" {
   default = false
-  type = bool
+  type    = bool
 }
 
 ## Gridscale
@@ -288,4 +288,11 @@ variable "image_pull_progress_deadline" {
 
 variable "pod_infra_image" {
   default = "giantswarm/pause-amd64:3.1"
+}
+
+### External Kubernetes API Access
+variable "k8s_api_external_access_whitelist" {
+  description = "Comma separated list of networks for k8s API external access"
+  type        = "string"
+  default     = ""
 }
