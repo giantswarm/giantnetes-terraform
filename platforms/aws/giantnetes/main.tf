@@ -5,6 +5,10 @@ provider "aws" {
   profile = "${var.cluster_name}"
 }
 
+locals {
+  k8s_api_external_access_whitelist = "${var.external_ipsec_public_ip_0},${var.external_ipsec_public_ip_1}${var.k8s_api_external_access_whitelist != "" ? ",${var.k8s_api_external_access_whitelist}" : ""}"
+}
+
 module "container_linux" {
   source = "../../../modules/container-linux"
 
@@ -99,6 +103,7 @@ locals {
     "G8SVaultToken"                = "${var.nodes_vault_token}"
     "ImagePullProgressDeadline"    = "${var.image_pull_progress_deadline}"
     "K8SAPIIP"                     = "${var.k8s_api_ip}"
+    "K8SAPIExternalWhitelist"      = "${local.k8s_api_external_access_whitelist}"
     "K8SAuditWebhookPort"          = "${var.k8s_audit_webhook_port}"
     "K8SDNSIP"                     = "${var.k8s_dns_ip}"
     "K8SServiceCIDR"               = "${var.k8s_service_cidr}"

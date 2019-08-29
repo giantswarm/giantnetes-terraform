@@ -289,3 +289,10 @@ variable "image_pull_progress_deadline" {
 variable "pod_infra_image" {
   default = "giantswarm/pause-amd64:3.1"
 }
+
+## external
+variable "k8s_api_external_access_whitelist" {
+  description = "Comma separated list of networks for k8s API external access"
+  type        = "string"
+  default     = ""
+}

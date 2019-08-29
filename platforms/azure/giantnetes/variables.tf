@@ -247,3 +247,10 @@ variable "vpn_right_subnet_cidr_1" {
   description = "CIDR of the remote IPSec network."
   default     = "172.18.0.5/32"
 }
+
+## external
+variable "k8s_api_external_access_whitelist" {
+  description = "Comma separated list of networks for k8s API external access"
+  type        = "string"
+  default     = ""
+}
