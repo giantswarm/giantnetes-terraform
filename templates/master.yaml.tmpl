@@ -1758,7 +1758,6 @@ storage:
             - clusterroles
             - clusterrolebindings
             - clusters
-            - configmaps
             - cronjobs
             - daemonsets
             - deployments
@@ -1782,6 +1781,62 @@ storage:
             verbs:
             - get
             - list
+          - apiGroups:
+            - ""
+            resources:
+            - configmaps
+            verbs:
+            - list
+          - apiGroups:
+            - ""
+            resources:
+            - configmaps
+            resourceNames:
+            - api-configmap
+            - app-operator
+            - aws-operator-configmap
+            - azure-operator-configmap
+            - bridge-operator-configmap
+            - cert-operator-configmap
+            - chart-operator
+            - cluster-operator-configmap
+            - cluster-service-configmap
+            - credentiald-configmap
+            - desmotes-configmap
+            - flannel-operator-configmap
+            - giantswarm-incubator
+            - giantswarm-incubator-test
+            - happa-configmap
+            - ingress-operator-configmap
+            - kubernetesd-configmap
+            - kvm-operator-configmap
+            - node-operator-configmap
+            - passage-configmap
+            - passage-nginx-config
+            - pv-cleaner-operator-configmap
+            - release-operator-configmap
+            - calico-config
+            - coredns
+            - ingress-controller-leader-nginx
+            - ingress-nginx
+            - ingress-nginx-tcp-services
+            - kube-proxy
+            - alertmanager
+            - alertmanager-templates
+            - elasticsearch
+            - fluentbit-config
+            - fluentd-config
+            - grafana-dashboards-json
+            - grafana-dashboards-main
+            - grafana-datasources
+            - ingress-exporter-configmap
+            - kibana
+            - prometheus
+            - prometheus-recording-rules
+            - prometheus-rules
+            - prometheus-rules-test-env
+            verbs:
+            - get
           - apiGroups:
             - ""
             resources:
