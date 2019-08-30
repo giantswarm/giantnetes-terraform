@@ -1739,9 +1739,90 @@ storage:
           rules:
           - apiGroups:
             - ""
+            - apiregistration.k8s.io
+            - batch
+            - certmanager.k8s.io
+            - cluster.k8s.io
+            - clusterissuers
+            - coordination.k8s.io
+            - extensions
+            - issuers
+            - networking.k8s.io
+            - rbac.authorization
+            - scheduling.k8s.io
+            - storage.k8s.io
             resources:
+            - apiservices
+            - certificate
+            - componentstatus
+            - clusterroles
+            - clusterrolebindings
+            - clusters
+            - configmaps
+            - cronjobs
+            - daemonsets
+            - deployments
+            - endpoints
+            - ingresses
+            - leases
+            - machinedeployments
+            - namespaces
+            - networkpolicies
+            - nodeconfigs
             - nodes
+            - pods
+            - podsecuritypolicies
+            - priorityclasses
+            - replicasets
+            - roles
+            - rolebindings
+            - serviceaccounts
+            - services
+            - storageclass
             verbs:
+            - get
+            - list
+          - apiGroups:
+            - ""
+            resources:
+            - secrets
+            verbs:
+            - list
+          - apiGroups:
+            - application.giantswarm.io
+            - cluster.giantswarm.io
+            - core.giantswarm.io
+            - provider.giantswarm.io
+            resources:
+            - apps
+            - appcatalogs
+            - awsclusterconfigs
+            - awsconfigs
+            - awses
+            - azureclusterconfigs
+            - certconfigs
+            - certificates
+            - chartconfigs
+            - charts
+            - clusterissuers
+            - componentstatus
+            - drainerconfigs
+            - flannelconfigs
+            - ingressconfigs
+            - issuers
+            - kvmclusterconfigs
+            - kvmconfigs
+            - nodeconfigs
+            - releasecycles
+            - releases
+            - storageconfigs
+            - storagepoolclaims
+            - storagepools
+            - volumepolicies
+            - volumesnapshotdatas
+            - volumesnapshots
+            verbs:
+            - get
             - list
           ---
           ## CoreDNS
