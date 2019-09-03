@@ -69,6 +69,17 @@ exec_on(){
         ${SSH_USER}@${host}.${base_domain} "PATH=\$PATH:/opt/bin $*"
 }
 
+source_bootstrap() {
+ # Do not fail on pipefails/errors in source
+  set +o errexit
+  set +o nounset
+  set +o pipefail
+  source bootstrap.sh
+  set -o errexit
+  set -o nounset
+  set -o pipefail
+}
+
 stage-preflight() {
   PROGS=( git terraform terraform-provider-ct terraform-provider-gotemplate az ansible-playbook ssh-keygen )
   for prog in ${PROGS[@]}; do
@@ -149,7 +160,7 @@ EOF
 stage-terraform-only-vault() {
   cd ${TFDIR}
   pwd
-  source bootstrap.sh
+  source_bootstrap
   terraform apply -auto-approve -target="module.dns" ./
   terraform apply -auto-approve -target="module.vnet" ./
   terraform apply -auto-approve -target="module.bastion" ./
@@ -161,7 +172,7 @@ stage-terraform-only-vault() {
 stage-terraform() {
   cd ${TFDIR}
 
-  source bootstrap.sh
+  source_bootstrap
   terraform apply -auto-approve ./
 
   cd -
@@ -233,7 +244,7 @@ stage-destroy() {
   stage-debug || true
   
   cd ${TFDIR}
-  source bootstrap.sh
+  source_bootstrap
   terraform destroy -force ./
 
   cd -
