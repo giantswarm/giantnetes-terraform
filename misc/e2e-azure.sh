@@ -70,7 +70,7 @@ exec_on(){
 }
 
 source_bootstrap() {
- # Do not fail on pipefails/errors in source
+  # Do not fail on pipefails/errors in bootstrap
   set +o errexit
   set +o nounset
   set +o pipefail
