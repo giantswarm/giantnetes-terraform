@@ -119,15 +119,35 @@ locals {
   }
 }
 
-# Generate ignition config.
-data "gotemplate" "bastion" {
-  template = "${path.module}/../../../templates/bastion.yaml.tmpl"
-  data     = "${jsonencode(local.ignition_data)}"
+# Render files before referencing them in main state
+# It should be applied before main apply
+# terraform apply -target="module.ignition" ./ 
+# The limitation comes from the fact, that terraform functions
+# do not participate in calculation of the graph state
+module "ignition" {
+  source = "../../../modules/ignition"
+
+  ignition_data = "${local.ignition_data}"
+}
+
+# List with base64 encoded files, injected into main templates
+locals {
+  Files = {
+      "conf/hardening.conf" = filebase64("../../../files/conf/hardening.conf")
+      "conf/journald-cloudwatch.conf" = filebase64("../../../files/conf/journald-cloudwatch.conf")
+      "conf/sshd_config" = filebase64("../../../files/conf/sshd_config")
+  }
+
+  ignition = "${ merge( local.ignition_data, { Files=local.Files })}"
+
+  rendered = {
+    bastions = templatefile("../../../templates/bastion.yaml.tmpl", "${local.ignition}")
+  }
 }
 
 # Convert ignition config to raw json.
 data "ct_config" "bastion" {
-  content      = "${data.gotemplate.bastion.rendered}"
+  content      = "${local.rendered.bastions}"
   platform     = "ec2"
   pretty_print = false
 }
@@ -148,7 +168,7 @@ module "bastion" {
   instance_type          = "${var.bastion_instance_type}"
   route53_enabled        = "${var.route53_enabled}"
   s3_bucket_tags         = "${var.s3_bucket_tags}"
-  user_data              = "${data.ct_config.bastion.rendered}"
+  user_data              = "${data.ct_config.bastion.rendered}" 
   with_public_access     = "${(var.aws_customer_gateway_id_0 != "") || (var.vpn_instance_enabled) ? false : true }"
   vpc_cidr               = "${var.vpc_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"

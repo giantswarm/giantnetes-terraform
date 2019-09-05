@@ -28,9 +28,9 @@ systemd:
         ExecStart=/usr/sbin/sysctl -p /etc/sysctl.d/hardening.conf
         [Install]
         WantedBy=multi-user.target
-    {{if eq .Provider "aws" -}}
+    %{ if Provider == "aws" }
     - name: journald-cloudwatch-logs.service
-      enabled: {{ .CloudwatchForwarderEnabled }}
+      enabled: ${ CloudwatchForwarderEnabled }
       contents: |
         [Unit]
         Description=journald cloudwatch forwarder
@@ -54,45 +54,36 @@ systemd:
 
         [Install]
         WantedBy=multi-user.target
-    {{end }}
+    %{ endif }
 storage:
   files:
-    - path: /etc/ssh/sshd_config
-      filesystem: root
-      mode: 0600
+    - filesystem: root
+      path: /etc/ssh/sshd_config
+      mode: 384
+      user:
+        id: 0
+      group:
+        id: 0
       contents:
-        inline: |
-          # Use most defaults for sshd configuration.
-          Subsystem sftp internal-sftp
-          ClientAliveInterval 180
-          UseDNS no
-          UsePAM yes
-          PrintLastLog no # handled by PAM
-          PrintMotd no # handled by PAM
-          # Non defaults (#100)
-          ClientAliveCountMax 2
-          PasswordAuthentication no
-          MaxAuthTries 5
-          LoginGraceTime 60
-    - path: /etc/sysctl.d/hardening.conf
-      filesystem: root
-      mode: 0600
-      contents: 
-        inline: |
-          net.ipv4.conf.all.rp_filter = 1
-          net.ipv4.conf.all.arp_ignore = 1
-          net.ipv4.conf.all.arp_announce = 2
-
-    {{if eq .Provider "aws" -}}
-    - path: /etc/journald-cloudwatch.conf
-      filesystem: root
-      mode: 0544
+        source: "data:text/plain;charset=utf-8;base64,${ lookup(Files, "conf/sshd_config", "no_file_found")}"
+    - filesystem: root
+      path: /etc/sysctl.d/hardening.conf
+      mode: 384
+      user:
+        id: 0
+      group:
+        id: 0
       contents:
-        inline: |
-          log_group = "{{ .ClusterName }}_bastion"
-          state_file = "/var/lib/cloudwatch-logs/state"
-          log_stream = "{{ .ClusterName }}_bastion"
-          journal_dir = "/var/log/journal"
-          log_priority = "{{ .BastionLogPriority }}"
-    {{- end }}
-{{ .BastionUsers }}
+        source: "data:text/plain;charset=utf-8;base64,${ lookup(Files, "conf/hardening.conf", "no_file_found")}"
+    %{ if Provider == "aws" }
+    - filesystem: root
+      path: /etc/journald-cloudwatch.conf
+      mode: 384
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,${ lookup(Files, "conf/journald-cloudwatch.conf", "no_file_found")}"
+    %{ endif }
+${ BastionUsers }
