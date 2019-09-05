@@ -1,4 +1,5 @@
 .terraform
+files
 terraform.tfstate*
 generated
 platforms/aws/giantnetes/bootstrap.sh
