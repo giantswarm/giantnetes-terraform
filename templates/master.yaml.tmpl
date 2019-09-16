@@ -47,7 +47,7 @@ storage:
                     "type": "calico",
                     "log_level": "info",
                     "datastore_type": "kubernetes",
-                    "nodename": "__KUBERNETES_NODE_NAME__",          
+                    "nodename": "__KUBERNETES_NODE_NAME__",
                     "mtu": __CNI_MTU__,
                     "ipam": {
                       "type": "host-local",
@@ -1064,6 +1064,32 @@ storage:
           metadata:
             name: calico-kube-controllers
             namespace: kube-system
+
+          ---
+
+          # this manifest applies a PodSecurityPolicy to Calico controllers.
+          apiVersion: extensions/v1beta1
+          kind: PodSecurityPolicy
+          metadata:
+            name: calico-kube-controllers-psp
+          spec:
+            privileged: true
+            fsGroup:
+              rule: RunAsAny
+            runAsUser:
+              rule: RunAsAny
+            runAsGroup:
+              rule: RunAsAny
+            seLinux:
+              rule: RunAsAny
+            supplementalGroups:
+              rule: RunAsAny
+            volumes:
+              - 'secret'
+              - 'hostPath'
+            hostNetwork: true
+            hostIPC: false
+            hostPID: false
 
           ---
 
@@ -2387,7 +2413,7 @@ storage:
             done
 
             # label namespaces (required for network egress policies)
-            NAMESPACES="default giantswarm giantswarm-clusterapi kube-system" 
+            NAMESPACES="default giantswarm giantswarm-clusterapi kube-system"
             for namespace in ${NAMESPACES}
             do
                 if ! $KUBECTL get namespaces -l name=${namespace} | grep ${namespace}; then
@@ -3059,7 +3085,7 @@ storage:
     - path: /etc/sysctl.d/hardening.conf
       filesystem: root
       mode: 0600
-      contents: 
+      contents:
         inline: |
           fs.inotify.max_user_watches = 16384
           kernel.kptr_restrict = 2
