@@ -1003,6 +1003,9 @@ storage:
                   - key: node-role.kubernetes.io/master
                     effect: NoSchedule
                 serviceAccountName: calico-kube-controllers
+                securityContext:
+                  runAsUser: 0
+                  runAsGroup: 0
                 priorityClassName: system-cluster-critical
                 containers:
                   - name: calico-kube-controllers
