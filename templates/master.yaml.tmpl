@@ -2709,6 +2709,37 @@ storage:
       contents:
         inline: |
           VAULT_TOKEN={{ .G8SVaultToken }}
+    - path: /etc/kubernetes/manifests/k8s-api-healthz.yaml
+      filesystem: root
+      mode: 0600
+      contents:
+        inline: |
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            name: k8s-api-healthz
+            namespace: kube-system
+            annotations:
+              scheduler.alpha.kubernetes.io/critical-pod: ''
+          spec:
+            hostNetwork: true
+            priorityClassName: system-node-critical
+            containers:
+              - name: k8s-api-healthz
+                image: {{.DockerRegistry}}/giantswarm/k8s-api-healthz:6d8a2834361d336524702b0b2e485a75cc07652d
+                resources:
+                  requests:
+                    cpu: 50m
+                    memory: 20Mi
+                volumeMounts:
+                - mountPath: /etc/kubernetes/ssl/
+                  name: ssl-certs-kubernetes
+                  readOnly: true
+            volumes:
+            - hostPath:
+                path: /etc/kubernetes/ssl
+              name: ssl-certs-kubernetes
+
     - path: /etc/kubernetes/manifests/k8s-api-server.yaml
       filesystem: root
       mode: 0600
