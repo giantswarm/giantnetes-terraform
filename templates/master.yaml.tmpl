@@ -2726,7 +2726,15 @@ storage:
             priorityClassName: system-node-critical
             containers:
               - name: k8s-api-healthz
-                image: {{.DockerRegistry}}/giantswarm/k8s-api-healthz:6d8a2834361d336524702b0b2e485a75cc07652d
+                env:
+                - name: HOST_IP
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: status.podIP
+                command:
+                  - /k8s-api-healthz
+                  - --api-endpoint="https://$(HOST_IP):443/healthz"
+                image: {{.DockerRegistry}}/giantswarm/k8s-api-healthz:1c0cdf1ed5ee18fdf59063ecdd84bf3787f80fac
                 resources:
                   requests:
                     cpu: 50m
