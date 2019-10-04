@@ -56,8 +56,9 @@ resource "azurerm_lb_probe" "api_lb" {
   name                = "api-lb-probe-443-up"
   loadbalancer_id     = "${azurerm_lb.api_lb.id}"
   resource_group_name = "${var.resource_group_name}"
-  protocol            = "tcp"
-  port                = 443
+  protocol            = "Http"
+  port                = 8089
+  request_path        = "/healthz"
   interval_in_seconds = 5
   number_of_probes    = 2
 }
