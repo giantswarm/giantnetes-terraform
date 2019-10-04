@@ -3387,7 +3387,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       LimitNOFILE=40000
-      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.3.13
+      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.4.1
       Environment=NAME=%p.service
       EnvironmentFile=/etc/network-environment
       ExecStartPre=-/usr/bin/docker stop  $NAME
