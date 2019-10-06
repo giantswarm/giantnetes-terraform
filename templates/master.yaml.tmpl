@@ -1425,10 +1425,10 @@ storage:
                 serviceAccountName: kube-proxy
                 containers:
                 - name: kube-proxy
-                  image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.14.3
+                  image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.15.4
                   command:
                   - /hyperkube
-                  - proxy
+                  - kube-proxy
                   - --proxy-mode=iptables
                   - --config=/etc/kubernetes/config/kube-proxy.yaml
                   - --v=2
@@ -2765,7 +2765,7 @@ storage:
             priorityClassName: system-node-critical
             containers:
               - name: k8s-api-server
-                image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.14.3
+                image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.15.4
                 env:
                 - name: HOST_IP
                   valueFrom:
@@ -2773,7 +2773,7 @@ storage:
                       fieldPath: status.podIP
                 command:
                 - /hyperkube
-                - apiserver
+                - kube-apiserver
                 - --allow-privileged=true
                 - --anonymous-auth=false
                 - --kubelet-https=true
@@ -2858,10 +2858,10 @@ storage:
             priorityClassName: system-node-critical
             containers:
               - name: k8s-controller-manager
-                image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.14.3
+                image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.15.4
                 command:
                 - /hyperkube
-                - controller-manager
+                - kube-controller-manager
                 - --master=https://{{ .APIDomainName }}:443
                 - --logtostderr=true
                 - --v=2
@@ -2934,10 +2934,10 @@ storage:
             priorityClassName: system-node-critical
             containers:
               - name: k8s-scheduler
-                image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.14.3
+                image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.15.4
                 command:
                 - /hyperkube
-                - scheduler
+                - kube-scheduler
                 - --config=/etc/kubernetes/config/scheduler-config.yaml
                 - --v=2
                 resources:
@@ -3426,7 +3426,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       LimitNOFILE=40000
-      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.3.13
+      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.4.1
       Environment=NAME=%p.service
       EnvironmentFile=/etc/network-environment
       ExecStartPre=-/usr/bin/docker stop  $NAME
@@ -3546,7 +3546,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:v1.14.3"
+      Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:v1.15.4"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE
