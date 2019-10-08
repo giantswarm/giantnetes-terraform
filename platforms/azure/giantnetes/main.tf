@@ -105,7 +105,7 @@ locals {
 # Generate ignition config.
 data "gotemplate" "bastion" {
   template = "${path.module}/../../../templates/bastion.yaml.tmpl"
-  data     = "${jsonencode(local.ignition_data)}"
+  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="bastion"}))}"
 }
 
 # Convert ignition config to raw json and merge users part.
@@ -135,7 +135,7 @@ module "bastion" {
 # Generate ignition config.
 data "gotemplate" "vault" {
   template = "${path.module}/../../../templates/vault.yaml.tmpl"
-  data     = "${jsonencode(local.ignition_data)}"
+  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="vault"}))}"
 }
 
 # Convert ignition config to raw json and merge users part.
@@ -164,7 +164,7 @@ module "vault" {
 # Generate ignition config.
 data "gotemplate" "master" {
   template = "${path.module}/../../../templates/master.yaml.tmpl"
-  data     = "${jsonencode(local.ignition_data)}"
+  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="bastion"}))}"
 }
 
 # Convert ignition config to raw json and merge users part.
@@ -204,7 +204,7 @@ module "master" {
 # Generate ignition config.
 data "gotemplate" "worker" {
   template = "${path.module}/../../../templates/worker.yaml.tmpl"
-  data     = "${jsonencode(local.ignition_data)}"
+  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="bastion"}))}"
 }
 
 # Convert ignition config to raw json and merge users part.

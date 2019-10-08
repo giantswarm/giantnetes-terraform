@@ -1,0 +1,270 @@
+## giantswarm-clusterapi cluster role for readonly API access
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: giantswarm-clusterapi-readonly
+  namespace: giantswarm-clusterapi
+  labels:
+    scope: control-plane
+    type: external
+    level: readonly
+rules:
+- apiGroups:
+  - ""
+  - apiregistration.k8s.io
+  - batch
+  - certmanager.k8s.io
+  - cluster.k8s.io
+  - clusterissuers
+  - coordination.k8s.io
+  - extensions
+  - issuers
+  - networking.k8s.io
+  - rbac.authorization
+  - scheduling.k8s.io
+  - storage.k8s.io
+  resources:
+  - apiservices
+  - certificate
+  - componentstatus
+  - clusterroles
+  - clusterrolebindings
+  - clusters
+  - cronjobs
+  - daemonsets
+  - deployments
+  - endpoints
+  - ingresses
+  - leases
+  - machinedeployments
+  - namespaces
+  - networkpolicies
+  - nodeconfigs
+  - nodes
+  - persistentvolumes
+  - persistentvolumeclaims
+  - pods
+  - podsecuritypolicies
+  - priorityclasses
+  - replicasets
+  - roles
+  - rolebindings
+  - serviceaccounts
+  - services
+  - storageclass
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  resourceNames:
+  - api-configmap
+  - app-operator
+  - aws-operator-configmap
+  - azure-operator-configmap
+  - bridge-operator-configmap
+  - cert-operator-configmap
+  - chart-operator
+  - cluster-operator-configmap
+  - cluster-service-configmap
+  - credentiald-configmap
+  - desmotes-configmap
+  - flannel-operator-configmap
+  - giantswarm-incubator
+  - giantswarm-incubator-test
+  - happa-configmap
+  - ingress-operator-configmap
+  - kubernetesd-configmap
+  - kvm-operator-configmap
+  - node-operator-configmap
+  - passage-configmap
+  - passage-nginx-config
+  - pv-cleaner-operator-configmap
+  - release-operator-configmap
+  - calico-config
+  - coredns
+  - ingress-controller-leader-nginx
+  - ingress-nginx
+  - ingress-nginx-tcp-services
+  - kube-proxy
+  - alertmanager
+  - alertmanager-templates
+  - elasticsearch
+  - fluentbit-config
+  - fluentd-config
+  - grafana-dashboards-json
+  - grafana-dashboards-main
+  - grafana-datasources
+  - ingress-exporter-configmap
+  - kibana
+  - prometheus
+  - prometheus-recording-rules
+  - prometheus-rules
+  - prometheus-rules-test-env
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - list
+- apiGroups:
+  - application.giantswarm.io
+  - cluster.giantswarm.io
+  - core.giantswarm.io
+  - provider.giantswarm.io
+  resources:
+  - apps
+  - appcatalogs
+  - awsclusterconfigs
+  - awsconfigs
+  - awses
+  - azureclusterconfigs
+  - certconfigs
+  - certificates
+  - chartconfigs
+  - charts
+  - clusterissuers
+  - componentstatus
+  - drainerconfigs
+  - flannelconfigs
+  - ingressconfigs
+  - issuers
+  - kvmclusterconfigs
+  - kvmconfigs
+  - nodeconfigs
+  - releasecycles
+  - releases
+  - storageconfigs
+  - storagepoolclaims
+  - storagepools
+  - volumepolicies
+  - volumesnapshotdatas
+  - volumesnapshots
+  verbs:
+  - get
+  - list
+---
+## CoreDNS
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    kubernetes.io/bootstrapping: rbac-defaults
+  name: system:coredns
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - endpoints
+  - services
+  - pods
+  - namespaces
+  verbs:
+  - list
+  - watch
+---
+## IC
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: nginx-ingress-controller
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+      - endpoints
+      - nodes
+      - pods
+      - secrets
+    verbs:
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - nodes
+    verbs:
+      - get
+  - apiGroups:
+      - ""
+    resources:
+      - services
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - "extensions"
+    resources:
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+        - events
+    verbs:
+        - create
+        - patch
+  - apiGroups:
+      - "extensions"
+    resources:
+      - ingresses/status
+    verbs:
+      - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: nginx-ingress-role
+  namespace: kube-system
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+      - pods
+      - secrets
+      - namespaces
+    verbs:
+      - get
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    resourceNames:
+      # Defaults to "<election-id>-<ingress-class>"
+      # Here: "<ingress-controller-leader>-<nginx>"
+      # This has to be adapted if you change either parameter
+      # when launching the nginx-ingress-controller.
+      - "ingress-controller-leader-nginx"
+    verbs:
+      - get
+      - update
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - create
+  - apiGroups:
+      - ""
+    resources:
+      - endpoints
+    verbs:
+      - get
+      - create
+      - update

@@ -1,0 +1,5 @@
+#!/bin/bash
+iptables -t nat -A POSTROUTING -d {{.ExternalVpnGridscaleSourceIp}}/32 -j SNAT --to-source __PRIVATE_IP__
+iptables -t nat -A POSTROUTING -j MASQUERADE -s {{.ExternalVpnGridscaleSourceIp}}
+iptables -t nat -A POSTROUTING -d {{.ExternalVpnVultrSourceIp}}/32 -j SNAT --to-source __PRIVATE_IP__
+iptables -t nat -A POSTROUTING -j MASQUERADE -s {{.ExternalVpnVultrSourceIp}}

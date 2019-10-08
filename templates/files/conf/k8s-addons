@@ -1,0 +1,146 @@
+#!/bin/bash
+set -eu
+# k8s 1.14.1
+KUBECTL_IMAGE=quay.io/giantswarm/docker-kubectl:1.14.1
+KUBECTL="/usr/bin/docker run --net=host --rm
+-e KUBECONFIG=/etc/kubernetes/kubeconfig/addons.yaml
+-v /etc/kubernetes:/etc/kubernetes
+-v /srv:/srv $KUBECTL_IMAGE"
+/usr/bin/docker pull $KUBECTL_IMAGE
+
+while ! curl --output /dev/null --silent --head --insecure "https://{{ .APIDomainName }}"; do sleep 1 && echo 'Waiting for master'; done
+
+# Create giantswarm and giantswarm-clusterapi namespaces
+NAMESPACES="giantswarm giantswarm-clusterapi"
+for namespace in ${NAMESPACES}
+do
+  while
+      $KUBECTL get namespace ${namespace}
+      [ "$?" -ne "0" ]
+  do
+      while
+          $KUBECTL create namespace ${namespace}
+          [ "$?" -ne "0" ]
+      do
+          echo "failed to create namespace ${namespace}, retrying in 5 sec"
+          sleep 5s
+      done
+  done
+done
+
+# label namespaces (required for network egress policies)
+NAMESPACES="default giantswarm giantswarm-clusterapi kube-system" 
+for namespace in ${NAMESPACES}
+do
+    if ! $KUBECTL get namespaces -l name=${namespace} | grep ${namespace}; then
+        while
+            $KUBECTL label namespace ${namespace} name=${namespace}
+            [ "$?" -ne "0" ]
+        do
+            echo "failed to label namespace ${namespace}, retrying in 5 sec"
+            sleep 5s
+        done
+    fi
+done
+
+# apply Security bootstrap (RBAC and PSP)
+SECURITY_FILES="rbac-roles.yaml
+ rbac-bindings.yaml
+ psp-policies.yaml
+ psp-roles.yaml
+ psp-bindings.yaml"
+for manifest in $SECURITY_FILES
+do
+    while
+        $KUBECTL apply -f /srv/$manifest
+        [ "$?" -ne "0" ]
+    do
+        echo "failed to apply /srv/$manifest, retrying in 5 sec"
+        sleep 5s
+    done
+done
+
+# apply priority classes
+PRIORITY_CLASSES_FILE="priority_classes.yaml"
+while
+    $KUBECTL apply -f /srv/${PRIORITY_CLASSES_FILE}
+    [ "$?" -ne "0" ]
+do
+    echo "failed to apply /srv/${PRIORITY_CLASSES_FILE}, retrying in 5 sec"
+    sleep 5s
+done
+
+# create kube-proxy configmap
+while
+    # XXX: Why we do piping here?
+    $KUBECTL create configmap kube-proxy \
+        --from-file=kube-proxy.yaml=/srv/kube-proxy-config.yaml -o yaml --dry-run | \
+    /usr/bin/docker run -e KUBECONFIG=/etc/kubernetes/kubeconfig/addons.yaml \
+        -v /etc/kubernetes:/etc/kubernetes \
+        -i --log-driver=none -a stdin -a stdout -a stderr --net=host --rm \
+        $KUBECTL_IMAGE apply -n kube-system -f -
+    [ "$?" -ne "0" ]
+do
+    echo "failed to configure kube-proxy from /srv/kube-proxy-confg.yaml, retrying in 5 sec"
+    sleep 5s
+done
+
+# apply kube-proxy
+KUBE_PROXY_MANIFESTS="kube-proxy-sa.yaml kube-proxy-ds.yaml"
+for manifest in $KUBE_PROXY_MANIFESTS
+do
+    while
+        $KUBECTL apply -f /srv/$manifest
+        [ "$?" -ne "0" ]
+    do
+        echo "failed to apply /srv/$manifest, retrying in 5 sec"
+        sleep 5s
+    done
+done
+
+# restart ds to apply config from configmap
+$KUBECTL delete pods -l k8s-app=kube-proxy -n kube-system
+# apply calico CNI
+CALICO_FILE="calico-all.yaml"
+while
+    $KUBECTL apply -f /srv/$CALICO_FILE
+    [ "$?" -ne "0" ]
+do
+    echo "failed to apply /srv/$CALICO_FILE, retrying in 5 sec"
+    sleep 5s
+done
+
+# wait for healthy calico - we check for pods - desired vs ready
+while
+    $KUBECTL -n kube-system get ds calico-node &>/dev/null
+    RET_CODE_1=$?
+    eval $($KUBECTL -n kube-system get ds calico-node | tail -1 | awk '{print "[ \"" $2"\" -eq \""$4"\" ] "}')
+    RET_CODE_2=$?
+    [ "$RET_CODE_1" -ne "0" ] || [ "$RET_CODE_2" -ne "0" ]
+do
+    echo "Waiting for calico to be ready . . "
+    sleep 3s
+done
+
+# apply k8s addons
+MANIFESTS="default-storage-class.yaml
+ coredns-all.yaml
+ default-backend-dep.yaml
+ default-backend-svc.yaml
+ ingress-controller-cm.yaml
+ ingress-controller-sa.yaml
+ ingress-controller-dep.yaml
+ ingress-controller-svc.yaml
+ ingress-giantswarm-clusterapi.yaml"
+for manifest in $MANIFESTS
+do
+    while
+        $KUBECTL apply -f /srv/$manifest
+        [ "$?" -ne "0" ]
+    do
+        echo "failed to apply /srv/$manifest, retrying in 5 sec"
+        sleep 5s
+    done
+done
+
+echo "Addons successfully installed"
