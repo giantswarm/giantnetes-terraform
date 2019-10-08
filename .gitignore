@@ -1,5 +1,4 @@
 .terraform
-/files
 terraform.tfstate*
 /ignition
 platforms/aws/giantnetes/bootstrap.sh
