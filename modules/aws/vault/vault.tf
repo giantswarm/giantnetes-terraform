@@ -91,7 +91,7 @@ resource "aws_volume_attachment" "vault_logs_ebs" {
 }
 
 resource "aws_security_group" "vault" {
-  count         = "${var.vault_count}"
+  count  = "${var.vault_count}"
   name   = "${var.cluster_name}-vault"
   vpc_id = "${var.vpc_id}"
 
