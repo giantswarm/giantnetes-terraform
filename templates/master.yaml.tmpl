@@ -888,7 +888,7 @@ systemd:
 
       [Install]
       WantedBy=multi-user.target
-{{if eq .Provider "aws"}}
+{{if eq .Provider "aws" -}}
   - name: set-hostname.service
     enabled: true
     contents: |

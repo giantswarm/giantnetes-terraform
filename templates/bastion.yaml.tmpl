@@ -28,7 +28,7 @@ systemd:
         ExecStart=/usr/sbin/sysctl -p /etc/sysctl.d/hardening.conf
         [Install]
         WantedBy=multi-user.target
-    {{ if eq .Provider "aws" }}
+    {{ if eq .Provider "aws" -}}
     - name: journald-cloudwatch-logs.service
       enabled: {{ .CloudwatchForwarderEnabled }}
       contents: |
