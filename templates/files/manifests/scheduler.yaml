@@ -10,10 +10,10 @@ spec:
   priorityClassName: system-node-critical
   containers:
     - name: k8s-scheduler
-      image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.14.3
+      image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.15.4
       command:
       - /hyperkube
-      - scheduler
+      - kube-scheduler
       - --config=/etc/kubernetes/config/scheduler.yaml
       - --v=2
       resources:

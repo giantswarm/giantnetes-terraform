@@ -97,6 +97,10 @@ variable "worker_subnet_ids" {
   type = "list"
 }
 
+variable "worker_subnet_count" {
+  default = 3
+}
+
 variable "route53_enabled" {
   default = false
 }

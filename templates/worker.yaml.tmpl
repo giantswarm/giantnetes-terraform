@@ -3,284 +3,166 @@ storage:
     {{if eq .Provider "azure" -}}
     - path: /etc/kubernetes/config/azure.yaml
       filesystem: root
-      mode: 0600
-      contents: 
-        inline: |
-          cloud: {{ .AzureCloud }}
-          tenantId: {{ .AzureSPTenantID }}
-          subscriptionId: {{ .AzureSPSubscriptionID }}
-          aadClientId: {{ .AzureSPAADClientID }}
-          aadClientSecret: {{ .AzureSPAADClientSecret }}
-          resourceGroup: {{ .AzureResourceGroup }}
-          location: {{ .AzureLocation }}
-          subnetName: {{ .AzureSubnetName }}
-          securityGroupName: {{ .AzureSecGroupName }}
-          vnetName: {{ .AzureVnetName }}
-          routeTableName: {{ .AzureRoutable }}
+      mode: 384
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "config/azure.yaml" }}"
     {{ end -}}
+
     - path: /etc/kubernetes/config/kubelet.yaml.tmpl
       filesystem: root
-      mode: 0644
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
       contents:
-        inline: |
-          kind: KubeletConfiguration
-          apiVersion: kubelet.config.k8s.io/v1beta1
-          address: ${DEFAULT_IPV4}
-          port: 10250
-          healthzBindAddress: ${DEFAULT_IPV4}
-          healthzPort: 10248
-          clusterDNS:
-            - {{ .K8SDNSIP }}
-          clusterDomain: cluster.local
-          featureGates:
-            ExpandPersistentVolumes: true
-          staticPodPath: /etc/kubernetes/manifests
-          evictionSoft:
-            memory.available:  "500Mi"
-          evictionHard:
-            memory.available:  "200Mi"
-          evictionSoftGracePeriod:
-            memory.available:  "5s"
-          evictionMaxPodGracePeriod: 60
-          authentication:
-            anonymous:
-              enabled: true # Defaults to false as of 1.10
-            webhook:
-              enabled: false # Deafults to true as of 1.10
-          authorization:
-            mode: AlwaysAllow # Deafults to webhook as of 1.10
-          readOnlyPort: 10255 # Used by heapster. Defaults to 0 (disabled) as of 1.10. Needed for metrics.
-    - path: /etc/kubernetes/config/proxy-config.yaml
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "config/kubelet-worker.yaml.tmpl" }}"
+
+    - path: /etc/kubernetes/config/kube-proxy.yaml
       filesystem: root
-      mode: 0644
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
       contents:
-        inline: |
-          apiVersion: kubeproxy.config.k8s.io/v1alpha1
-          clientConnection:
-            kubeconfig: /etc/kubernetes/kubeconfig/kube-proxy.yaml
-          kind: KubeProxyConfiguration
-          mode: iptables
-          resourceContainer: /kube-proxy
-          clusterCIDR: {{ .CalicoCIDR }}
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "config/kube-proxy.yaml" }}"
+
     - path: /etc/kubernetes/kubeconfig/kube-proxy.yaml
       filesystem: root
-      mode: 0644
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
       contents:
-        inline:  |
-          apiVersion: v1
-          kind: Config
-          users:
-          - name: proxy
-            user:
-              client-certificate: /etc/kubernetes/ssl/worker-crt.pem
-              client-key: /etc/kubernetes/ssl/worker-key.pem
-          clusters:
-          - name: local
-            cluster:
-              certificate-authority: /etc/kubernetes/ssl/worker-ca.pem
-              server: https://{{ .APIDomainName }}
-          contexts:
-          - context:
-              cluster: local
-              user: proxy
-            name: service-account-context
-          current-context: service-account-context
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "kubeconfig/kube-proxy.yaml" }}"
+
     - path: /etc/kubernetes/kubeconfig/kubelet.yaml
       filesystem: root
-      mode: 0644
-      contents: 
-        inline: |
-          apiVersion: v1
-          kind: Config
-          users:
-          - name: kubelet
-            user:
-              client-certificate: /etc/kubernetes/ssl/worker-crt.pem
-              client-key: /etc/kubernetes/ssl/worker-key.pem
-          clusters:
-          - name: local
-            cluster:
-              certificate-authority: /etc/kubernetes/ssl/worker-ca.pem
-              server: https://{{ .APIDomainName }}
-          contexts:
-          - context:
-              cluster: local
-              user: kubelet
-            name: service-account-context
-          current-context: service-account-context
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "kubeconfig/kubelet-worker.yaml" }}"
+
     - path: /opt/wait-for-domains
       filesystem: root
-      mode: 0544
-      contents: 
-        inline: |
-          #!/bin/bash
-          {{if eq .Provider "azure" }}
-          # On Azure wait for waagent.service to finish provisioning.
-          WAA_FILE="/var/lib/waagent/provisioned"
-          until test -f ${WAA_FILE}; do
-              echo "Waiting for waagent.service to finish provisioning."
-              sleep 5
-          done
-          sleep 30s
-          {{end}}
-          domains="{{ .APIDomainName }} {{ .VaultDomainName }}"
-
-          for domain in $domains; do
-            until nslookup $domain; do
-                echo "Waiting for domain $domain to be available"
-                sleep 5
-            done
-
-            echo "Successfully resolved domain $domain"
-          done
+      mode: 356
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/wait-for-domains" }}"
 
     - path: /etc/tokens/node
       filesystem: root
-      owner: root
-      mode: 0400
+      mode: 256
+      user:
+        id: 0
+      group:
+        id: 0
       contents:
-        inline:  |
-          VAULT_TOKEN={{ .G8SVaultToken }}
+        source: "data:,VAULT_TOKEN={{ .G8SVaultToken }}"
 
     - path: /etc/profile.d/confirm-shutdown.sh
       filesystem: root
-      mode: 0444
+      mode: 292
+      user:
+        id: 0
+      group:
+        id: 0
       contents:
-        inline: |
-          alias sudo="sudo "
-          alias shutdown="/opt/bin/confirm /usr/sbin/shutdown"
-          alias reboot="/opt/bin/confirm /usr/sbin/reboot"
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/confirm-shutdown.sh" }}"
 
     - path: /etc/profile.d/setup-terminal.sh
       filesystem: root
-      mode: 0444
+      mode: 292
+      user:
+        id: 0
+      group:
+        id: 0
       contents:
-        inline: |
-          export PS1="WARNING: CONTROL-PLANE WORKER | $PS1"
+        source: "data:text/plain;charset=utf-8;base64,ZXhwb3J0IFBTMT0iV0FSTklORzogQ09OVFJPTC1QTEFORSBXT1JLRVIgfCAkUFMxIg=="
 
     - path: /opt/bin/confirm
       filesystem: root
-      mode: 0555
+      mode: 292
+      user:
+        id: 0
+      group:
+        id: 0
       contents:
-        inline: |
-          #!/usr/bin/env bash
-          echo "About to execute $1 command"
-          echo -n "Would you like to proceed y/N? "
-          read reply
-
-          if [ "$reply" = y -o "$reply" = Y ]
-          then
-            $1 "${@:2}"
-          else
-            echo "$1 ${@:2} cancelled"
-          fi
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/confirm" }}"
 
     - path: /etc/ssh/sshd_config
       filesystem: root
-      mode: 0600
+      mode: 384
+      user:
+        id: 0
+      group:
+        id: 0
       contents:
-        inline:  |
-          # Use most defaults for sshd configuration.
-          Subsystem sftp internal-sftp
-          ClientAliveInterval 180
-          UseDNS no
-          UsePAM yes
-          PrintLastLog no # handled by PAM
-          PrintMotd no # handled by PAM
-          # Non defaults (#100)
-          ClientAliveCountMax 2
-          PasswordAuthentication no
-          TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem
-          MaxAuthTries 5
-          LoginGraceTime 60
-          AllowTcpForwarding no
-          AllowAgentForwarding no
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/sshd_config" }}"
 
     - path: /opt/get-ca.sh
       filesystem: root
-      mode: 0770
+      mode: 504
+      user:
+        id: 0
+      group:
+        id: 0
       contents:
-        inline:  |
-          #!/bin/bash
-
-          if [ -z "$1" ] || [ -z "$2" ]
-          then
-                  echo "Insufficient number of args"
-                  echo "$0 <ive_ip_address>:<port> <output_file>"
-                  exit
-          fi
-          echo Connecting to $1
-          echo -n | openssl s_client -showcerts -connect $1 2>err.txt 1>out.txt
-          if [ "$?" -ne "0" ]
-          then
-                  cat err.txt
-                  exit
-          fi
-          echo -n Generating Certificate
-          grep -in "\-----.*CERTIFICATE-----"  out.txt | cut -f 1 -d ":" 1> out1.txt
-          let start_line=`tail -n 2 out1.txt | head -n 1`
-          let end_line=`tail -n 1 out1.txt`
-          if [ -z "$start_line" ]
-          then
-                  echo "error"
-                  exit
-          fi
-          let nof_lines=$end_line-$start_line+1
-          #echo "from $start_line to $end_line total lines $nof_lines"
-          echo -n " .... "
-          head -n $end_line out.txt | tail -n $nof_lines 1> out1.txt
-          openssl x509 -in out1.txt -outform pem -out $2
-          echo done.
-          rm out.txt out1.txt err.txt
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/get-ca.sh" }}"
 
     - path: /etc/sysctl.d/hardening.conf
       filesystem: root
-      mode: 0600
-      contents: 
-        inline: |
-          fs.inotify.max_user_watches = 16384
-          kernel.kptr_restrict = 2
-          kernel.sysrq = 0
-          net.ipv4.conf.all.send_redirects = 0
-          net.ipv4.conf.default.accept_redirects = 0
-          net.ipv4.tcp_timestamps = 0
-          net.ipv6.conf.all.accept_redirects = 0
-          net.ipv6.conf.default.accept_redirects = 0
-          net.ipv4.conf.all.rp_filter = 1
-          net.ipv4.conf.all.arp_ignore = 1
-          net.ipv4.conf.all.arp_announce = 2
+      mode: 384
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/hardening.conf" }}"
 
     - path: /etc/audit/rules.d/10-docker.rules
       filesystem: root
-      mode: 0644
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
       contents:
-        inline:  |
-          -w /usr/bin/docker -k docker
-          -w /var/lib/docker -k docker
-          -w /etc/docker -k docker
-          -w /etc/systemd/system/docker.service.d/10-giantswarm-extra-args.conf -k docker
-          -w /etc/systemd/system/docker.service.d/01-wait-docker.conf -k docker
-          -w /usr/lib/systemd/system/docker.service -k docker
-          -w /usr/lib/systemd/system/docker.socket -k docker
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/10-docker.rules" }}"
+
 
     - path: /etc/systemd/system/audit-rules.service.d/10-Wait-For-Docker.conf
       filesystem: root
-      mode: 0644
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
       contents:
-        inline:  |
-          [Service]
-          ExecStartPre=/bin/bash -c "while [ ! -f /etc/audit/rules.d/10-docker.rules ]; do echo 'Waiting for /etc/audit/rules.d/10-docker.rules to be written' && sleep 1; done"
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/audit-docker-wait.conf" }}"
 
     - path : /etc/modules-load.d/ipvs.conf
       filesystem: root
-      mode: 0644
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
       contents:
-        inline: |
-          ip_vs
-          ip_vs_rr
-          ip_vs_wrr
-          ip_vs_sh
-          nf_conntrack_ipv4
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/ipvs.conf" }}"
+
 systemd:
   units:
   - name: update-engine.service
@@ -547,7 +429,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:v1.14.3"
+      Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:v1.15.4"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/docker pull $IMAGE

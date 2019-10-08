@@ -37,7 +37,7 @@ data:
           "type": "calico",
           "log_level": "info",
           "datastore_type": "kubernetes",
-          "nodename": "__KUBERNETES_NODE_NAME__",          
+          "nodename": "__KUBERNETES_NODE_NAME__",
           "mtu": __CNI_MTU__,
           "ipam": {
             "type": "host-local",
@@ -990,6 +990,9 @@ spec:
         - key: node-role.kubernetes.io/master
           effect: NoSchedule
       serviceAccountName: calico-kube-controllers
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
       priorityClassName: system-cluster-critical
       containers:
         - name: calico-kube-controllers
@@ -1053,6 +1056,65 @@ metadata:
   namespace: kube-system
 
 ---
+
+# this manifest applies a PodSecurityPolicy to Calico controllers.
+apiVersion: extensions/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: calico-kube-controllers-psp
+spec:
+  privileged: true
+  fsGroup:
+    rule: RunAsAny
+  runAsUser:
+    rule: RunAsAny
+  runAsGroup:
+    rule: RunAsAny
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  volumes:
+    - 'secret'
+    - 'hostPath'
+  hostNetwork: true
+  hostIPC: false
+  hostPID: false
+
+---
+
+# This manifest creates a clusterrole for the PSP
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+name: calico-kube-controllers-psp
+rules:
+- apiGroups:
+    - extensions
+  resources:
+    - podsecuritypolicies
+  verbs:
+    - use
+  resourceNames:
+    - calico-kube-controllers-psp
+
+---
+
+# This manifest binds the clusterrole to the SA to
+# enable the PSP.
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: calico-kube-controllers-psp
+subjects:
+  - kind: ServiceAccount
+    name: calico-kube-controllers
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: calico-kube-controllers-psp
+  apiGroup: rbac.authorization.k8s.io
+
 
 # Calico Version v3.6.1
 # https://docs.projectcalico.org/v3.4/releases#v3.6.1

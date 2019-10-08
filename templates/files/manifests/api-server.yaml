@@ -10,7 +10,7 @@ spec:
   priorityClassName: system-node-critical
   containers:
     - name: k8s-api-server
-      image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.14.3
+      image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.15.4
       env:
       - name: HOST_IP
         valueFrom:
@@ -18,7 +18,7 @@ spec:
             fieldPath: status.podIP
       command:
       - /hyperkube
-      - apiserver
+      - kube-apiserver
       - --allow-privileged=true
       - --anonymous-auth=false
       - --kubelet-https=true

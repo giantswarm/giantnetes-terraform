@@ -61,7 +61,7 @@ module "vpc" {
   subnets_worker     = "${var.subnets_worker}"
   subnets_vault      = "${var.subnets_vault}"
   vpc_cidr           = "${var.vpc_cidr}"
-  with_public_access = "${var.aws_customer_gateway_id_0 == "" ? true : false }"
+  with_public_access = "${var.aws_customer_gateway_id_0 == "" ? true : false}"
 }
 
 # Create S3 bucket for ignition configs.
@@ -78,13 +78,13 @@ locals {
     "APIDomainName"                = "${var.api_dns}.${var.base_domain}"
     "AWSRegion"                    = "${var.aws_region}"
     "BastionUsers"                 = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
-    "BastionSubnet0"               = "${element(var.subnets_bastion,0)}"
-    "BastionSubnet1"               = "${element(var.subnets_bastion,1)}"
+    "BastionSubnet0"               = "${element(var.subnets_bastion, 0)}"
+    "BastionSubnet1"               = "${element(var.subnets_bastion, 1)}"
     "BastionLogPriority"           = "${var.bastion_log_priority}"
     "BaseDomain"                   = "${var.base_domain}"
     "CalicoCIDR"                   = "${var.calico_cidr}"
     "CalicoMTU"                    = "${var.calico_mtu}"
-    "CloudwatchForwarderEnabled"   = "${var.bastion_log_priority != "none" ? "true" : "false" }"
+    "CloudwatchForwarderEnabled"   = "${var.bastion_log_priority != "none" ? "true" : "false"}"
     "ClusterName"                  = "${var.cluster_name}"
     "DockerCIDR"                   = "${var.docker_cidr}"
     "DockerRegistry"               = "${var.docker_registry}"
@@ -95,11 +95,11 @@ locals {
     "ExternalVpnGridscaleIp"       = "${var.external_ipsec_public_ip_0}"
     "ExternalVpnGridscalePassword" = "${var.external_ipsec_password}"
     "ExternalVpnGridscaleSubnet"   = "${var.external_ipsec_subnet_0}"
-    "ExternalVpnGridscaleSourceIp" = "${cidrhost("${var.external_ipsec_subnet_0}",1)}"
+    "ExternalVpnGridscaleSourceIp" = "${cidrhost("${var.external_ipsec_subnet_0}", 1)}"
     "ExternalVpnVultrIp"           = "${var.external_ipsec_public_ip_1}"
     "ExternalVpnVultrPassword"     = "${var.external_ipsec_password}"
     "ExternalVpnVultrSubnet"       = "${var.external_ipsec_subnet_1}"
-    "ExternalVpnVultrSourceIp"     = "${cidrhost("${var.external_ipsec_subnet_1}",1)}"
+    "ExternalVpnVultrSourceIp"     = "${cidrhost("${var.external_ipsec_subnet_1}", 1)}"
     "G8SVaultToken"                = "${var.nodes_vault_token}"
     "ImagePullProgressDeadline"    = "${var.image_pull_progress_deadline}"
     "K8SAPIIP"                     = "${var.k8s_api_ip}"
@@ -149,7 +149,7 @@ module "bastion" {
   route53_enabled        = "${var.route53_enabled}"
   s3_bucket_tags         = "${var.s3_bucket_tags}"
   user_data              = "${data.ct_config.bastion.rendered}"
-  with_public_access     = "${(var.aws_customer_gateway_id_0 != "") || (var.vpn_instance_enabled) ? false : true }"
+  with_public_access     = "${(var.aws_customer_gateway_id_0 != "") || (var.vpn_instance_enabled) ? false : true}"
   vpc_cidr               = "${var.vpc_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"
 }
@@ -226,6 +226,7 @@ module "vault" {
   ipam_network_cidr      = "${var.ipam_network_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"
   worker_subnet_ids      = "${module.vpc.worker_subnet_ids}"
+  worker_subnet_count    = length("${module.vpc.worker_subnet_ids}")
 }
 
 # Generate ignition config.

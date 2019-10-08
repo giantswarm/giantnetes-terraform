@@ -33,10 +33,10 @@ spec:
       serviceAccountName: kube-proxy
       containers:
       - name: kube-proxy
-        image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.14.3
+        image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.15.4
         command:
         - /hyperkube
-        - proxy
+        - kube-proxy
         - --proxy-mode=iptables
         - --config=/etc/kubernetes/config/kube-proxy.yaml
         - --v=2

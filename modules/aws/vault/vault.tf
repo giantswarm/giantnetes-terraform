@@ -13,9 +13,7 @@ data "aws_availability_zones" "available" {}
 # "Recreate" worker subnets in order to lookup CIDR blocks for security group
 # node-exporter ruler.
 data "aws_subnet" "worker_subnets" {
-  # Workaround for a bug that claimed to be addressed by 0.12 version.
-  # https://github.com/hashicorp/terraform/issues/12570
-  count = "2"
+  count = "${var.worker_subnet_count}"
 
   id = "${var.worker_subnet_ids[count.index]}"
 }
@@ -51,7 +49,7 @@ resource "aws_instance" "vault" {
 }
 
 resource "aws_ebs_volume" "vault_etcd" {
-  availability_zone = "${element(data.aws_availability_zones.available.names,0)}"
+  availability_zone = "${element(data.aws_availability_zones.available.names, 0)}"
   size              = "${var.volume_size_etcd}"
   type              = "${var.volume_type}"
 
@@ -62,7 +60,7 @@ resource "aws_ebs_volume" "vault_etcd" {
 }
 
 resource "aws_volume_attachment" "vault_etcd_ebs" {
-  count         = "${var.vault_count}"
+  count       = "${var.vault_count}"
   device_name = "/dev/xvdc"
   volume_id   = "${aws_ebs_volume.vault_etcd.id}"
   instance_id = "${aws_instance.vault[count.index].id}"
@@ -72,7 +70,7 @@ resource "aws_volume_attachment" "vault_etcd_ebs" {
 }
 
 resource "aws_ebs_volume" "vault_logs" {
-  availability_zone = "${element(data.aws_availability_zones.available.names,0)}"
+  availability_zone = "${element(data.aws_availability_zones.available.names, 0)}"
   size              = "${var.volume_size_logs}"
   type              = "${var.volume_type}"
 
@@ -83,7 +81,7 @@ resource "aws_ebs_volume" "vault_logs" {
 }
 
 resource "aws_volume_attachment" "vault_logs_ebs" {
-  count         = "${var.vault_count}"
+  count       = "${var.vault_count}"
   device_name = "/dev/xvdh"
   volume_id   = "${aws_ebs_volume.vault_logs.id}"
   instance_id = "${aws_instance.vault[count.index].id}"
