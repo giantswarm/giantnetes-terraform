@@ -81,7 +81,7 @@ source_bootstrap() {
 }
 
 stage-preflight() {
-  PROGS=( git terraform terraform-provider-ct terraform-provider-gotemplate az ansible-playbook ssh-keygen )
+  PROGS=( git terraform terraform-provider-gotemplate az ansible-playbook ssh-keygen )
   for prog in ${PROGS[@]}; do
     msg "Checking $prog"
     which $prog &>/dev/null || fail "$prog not installed"
