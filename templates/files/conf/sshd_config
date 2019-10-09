@@ -14,3 +14,10 @@ LoginGraceTime 60
 AllowTcpForwarding no
 AllowAgentForwarding no
 {{ end }}
+{{ if or (eq .NodeType "master") (eq .NodeType "worker") }}
+TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem
+{{ end }}
+{{ if eq .NodeType "worker" }}
+AllowTcpForwarding no
+AllowAgentForwarding no
+{{ end }}
