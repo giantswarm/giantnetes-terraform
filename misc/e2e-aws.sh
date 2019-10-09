@@ -137,7 +137,7 @@ passwd:
     groups:
       - "sudo"
       - "docker"
-    ssh_authorized_keys:
+    sshAuthorizedKeys:
       - $(cat ${TFDIR}/${SSH_USER}.key.pub)
 EOF
     cat > ${WORKDIR}/ignition/users.yaml << EOF
@@ -147,7 +147,7 @@ passwd:
     groups:
       - "sudo"
       - "docker"
-    ssh_authorized_keys:
+    sshAuthorizedKeys:
       - $(cat ${TFDIR}/${SSH_USER}.key.pub)
 EOF
 
