@@ -1,4 +1,5 @@
 #!/bin/bash
+
 if [ -z "$1" ] || [ -z "$2" ]
 then
         echo "Insufficient number of args"
@@ -29,6 +30,6 @@ let nof_lines=$end_line-$start_line+1
 #echo "from $start_line to $end_line total lines $nof_lines"
 echo -n " .... "
 head -n $end_line out.txt | tail -n $nof_lines 1> out1.txt
-openssl x509 -in out1.txt -outfo$ pem -out $2
+openssl x509 -in out1.txt -outform pem -out $2
 echo done.
-$ out.txt out1.txt err.txt
+rm out.txt out1.txt err.txt

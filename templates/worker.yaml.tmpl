@@ -1,3 +1,5 @@
+ignition:
+  version: "2.2.0"
 storage:
   files:
     {{if eq .Provider "azure" -}}
@@ -40,7 +42,7 @@ storage:
       group:
         id: 0
       contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "kubeconfig/kube-proxy.yaml" }}"
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "kubeconfig/kube-proxy-worker.yaml" }}"
 
     - path: /etc/kubernetes/kubeconfig/kubelet.yaml
       filesystem: root
@@ -295,7 +297,7 @@ systemd:
         Environment="DOCKER_CGROUPS=--exec-opt native.cgroupdriver=cgroupfs --log-opt max-size=50m --log-opt max-file=2 --log-opt labels=io.kubernetes.container.hash,io.kubernetes.container.name,io.kubernetes.pod.name,io.kubernetes.pod.namespace,io.kubernetes.pod.uid"
         Environment="DOCKER_OPT_BIP=--bip={{ .DockerCIDR }}"
         Environment="DOCKER_OPTS=--live-restore --userland-proxy=false --icc=false"
-{{if eq .Provider "aws" -}}
+{{if eq .Provider "aws" }}
   - name: set-hostname.service
     enabled: true
     contents: |
