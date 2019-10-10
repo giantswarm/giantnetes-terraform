@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: k8s-api-server
+  namespace: kube-system
+  annotations:
+    scheduler.alpha.kubernetes.io/critical-pod: ''
+spec:
+  hostNetwork: true
+  priorityClassName: system-node-critical
+  containers:
+    - name: k8s-api-server
+      image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.15.4
+      env:
+      - name: HOST_IP
+        valueFrom:
+          fieldRef:
+            fieldPath: status.podIP
+      command:
+      - /hyperkube
+      - kube-apiserver
+      - --allow-privileged=true
+      - --anonymous-auth=false
+      - --kubelet-https=true
+      - --secure-port=443
+      - --insecure-port=0
+      {{ if eq .Provider "aws" -}}
+      - --cloud-provider=aws
+      {{ else -}}
+      - --cloud-provider=azure
+      - --cloud-config=/etc/kubernetes/config/azure.yaml
+      {{ end -}}
+      - --bind-address=$(HOST_IP)
+      - --etcd-prefix=giantswarm.io
+      - --authorization-mode=RBAC
+      - --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,PodSecurityPolicy,PersistentVolumeClaimResize,DefaultStorageClass,Priority,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook
+      - --service-cluster-ip-range={{ .K8SServiceCIDR }}
+      - --etcd-servers=https://{{if eq .Provider "azure" }}127.0.0.1{{else}}{{ .ETCDDomainName }}{{end}}:2379
+      - --etcd-cafile=/etc/kubernetes/ssl/etcd/server-ca.pem
+      - --etcd-certfile=/etc/kubernetes/ssl/etcd/server-crt.pem
+      - --etcd-keyfile=/etc/kubernetes/ssl/etcd/server-key.pem
+      - --advertise-address=$(HOST_IP)
+      - --runtime-config=api/all=true
+      - --logtostderr=true
+      - --profiling=false
+      - --service-account-lookup=true
+      - --tls-cert-file=/etc/kubernetes/ssl/apiserver-crt.pem
+      - --tls-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
+      - --client-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
+      - --service-account-key-file=/etc/kubernetes/ssl/service-account-key.pem
+      - --feature-gates=TTLAfterFinished=true
+      - --audit-log-path=/var/log/apiserver/audit.log
+      - --audit-log-maxage=30
+      - --audit-log-maxbackup=30
+      - --audit-log-maxsize=100
+      - --audit-policy-file=/etc/kubernetes/config/audit-policy.yaml
+      resources:
+        requests:
+          cpu: 300m
+          memory: 300Mi
+      livenessProbe:
+        tcpSocket:
+          port: 443
+        initialDelaySeconds: 15
+        timeoutSeconds: 15
+      ports:
+      - containerPort: 443
+        hostPort: 443
+        name: https
+      volumeMounts:
+      - mountPath: /var/log/apiserver/
+        name: apiserver-log
+      - mountPath: /etc/kubernetes/ssl/
+        name: ssl-certs-kubernetes
+        readOnly: true
+      - mountPath: /etc/kubernetes/config/
+        name: k8s-config
+        readOnly: true
+  volumes:
+  - hostPath:
+      path: /var/log/apiserver/
+    name: apiserver-log
+  - hostPath:
+      path: /etc/kubernetes/ssl
+    name: ssl-certs-kubernetes
+  - hostPath:
+      path: /etc/kubernetes/config
+    name: k8s-config

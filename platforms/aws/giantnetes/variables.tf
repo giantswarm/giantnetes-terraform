@@ -133,12 +133,6 @@ variable "api_dns" {
   default     = "g8s"
 }
 
-variable "etcd_dns" {
-  type        = "string"
-  description = "FQDN for etcd (i.e. etcd). '__MASTER_ID__' wil be replaced with id of master"
-  default     = "etcd__MASTER_ID__"
-}
-
 variable "ingress_dns" {
   type        = "string"
   description = "FQDN for ingress (i.e. ingress)."
@@ -152,12 +146,6 @@ variable "root_dns_zone_id" {
 
 variable "route53_enabled" {
   default = true
-}
-
-### Machine ID ###
-variable "master_id" {
-  description = "Define master id in multi-master cluster."
-  default     = "__MASTER_ID__"
 }
 
 ### Network ###

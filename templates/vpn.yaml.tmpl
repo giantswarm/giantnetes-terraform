@@ -1,3 +1,5 @@
+ignition:
+  version: "2.2.0"
 systemd:
   units:
     - name: update-engine.service
@@ -83,91 +85,62 @@ storage:
   files:
     - path: /etc/ssh/sshd_config
       filesystem: root
-      mode: 0600
+      mode: 384
+      user:
+        id: 0
+      group:
+        id: 0
       contents:
-        inline: |
-          # Use most defaults for sshd configuration.
-          Subsystem sftp internal-sftp
-          ClientAliveInterval 180
-          UseDNS no
-          UsePAM yes
-          PrintLastLog no # handled by PAM
-          PrintMotd no # handled by PAM
-          # Non defaults (#100)
-          ClientAliveCountMax 2
-          PasswordAuthentication no
-          MaxAuthTries 5
-          LoginGraceTime 60
-          AllowTcpForwarding no
-          AllowAgentForwarding no
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/sshd_config" }}"
 
     - path: /etc/sysctl.d/hardening.conf
       filesystem: root
-      mode: 0600
-      contents: 
-        inline: |
-          net.ipv4.conf.all.rp_filter = 1
-          net.ipv4.conf.all.arp_ignore = 1
-          net.ipv4.conf.all.arp_announce = 2
+      mode: 384
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/hardening.conf" }}"
 
     - path: /opt/bin/template-ipsec-config
       filesystem: root
-      mode: 0700
+      mode: 448
+      user:
+        id: 0
+      group:
+        id: 0
       contents:
-        inline: |
-          #!/bin/bash 
-          while ! curl --connect-timeout 5 http://169.254.169.254 >/dev/null; do sleep 1s; echo "waiting for vpc endpoint"; done;
-
-          PRIVATE_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4) 
-          PUBLIC_IP=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
-
-          sed -i "s/__PRIVATE_IP__/${PRIVATE_IP}/g" /etc/strongswan/vpn-config.conf /etc/strongswan/ipsec.secrets /opt/bin/setup-iptables
-          sed -i "s/__PUBLIC_IP__/${PUBLIC_IP}/g" /etc/strongswan/vpn-config.conf /etc/strongswan/ipsec.secrets
-
-          echo "Files /etc/strongswan/vpn-config.conf /etc/strongswan/ipsec.secrets succesfully templated."
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/template-ipsec-config" }}"
 
     - path: /opt/bin/setup-iptables
       filesystem: root
-      mode: 0700
+      mode: 448
+      user:
+        id: 0
+      group:
+        id: 0
       contents:
-        inline: |
-          #!/bin/bash
-          iptables -t nat -A POSTROUTING -d {{.ExternalVpnGridscaleSourceIp}}/32 -j SNAT --to-source __PRIVATE_IP__
-          iptables -t nat -A POSTROUTING -j MASQUERADE -s {{.ExternalVpnGridscaleSourceIp}}
-          iptables -t nat -A POSTROUTING -d {{.ExternalVpnVultrSourceIp}}/32 -j SNAT --to-source __PRIVATE_IP__
-          iptables -t nat -A POSTROUTING -j MASQUERADE -s {{.ExternalVpnVultrSourceIp}}
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/setup-iptables" }}"
 
     - path: /etc/strongswan/vpn-config.conf
       filesystem: root
-      mode: 0600
+      mode: 448
+      user:
+        id: 0
+      group:
+        id: 0
       contents:
-        inline: |
-          conn gridscale
-             left=__PRIVATE_IP__
-             leftid=__PUBLIC_IP__
-             leftsubnet={{.BastionSubnet0}}
-             right={{.ExternalVpnGridscaleIp}}
-             rightsubnet={{.ExternalVpnGridscaleSubnet}}
-             keyexchange=ikev2
-             forceencaps=yes
-             auto=start
-             keyingtries=%forever
-          conn vultr
-             left=__PRIVATE_IP__
-             leftid=__PUBLIC_IP__
-             leftsubnet={{.BastionSubnet0}}
-             right={{.ExternalVpnVultrIp}}
-             rightsubnet={{.ExternalVpnVultrSubnet}}
-             keyexchange=ikev2
-             forceencaps=yes
-             auto=start
-             keyingtries=%forever
-          
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/vpn-config.conf" }}"
+
     - path: /etc/strongswan/ipsec.secrets
       filesystem: root
-      mode: 0600
+      mode: 448
+      user:
+        id: 0
+      group:
+        id: 0
       contents:
-        inline: |
-          __PRIVATE_IP__ {{.ExternalVpnGridscaleIp}} : PSK "{{.ExternalVpnGridscalePassword}}"
-          __PRIVATE_IP__ {{.ExternalVpnVultrIp}} : PSK "{{.ExternalVpnVultrPassword}}"
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/ipsec.secrets" }}"
+
 {{ .BastionUsers }}

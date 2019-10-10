@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: k8s-controller-manager
+  namespace: kube-system
+  annotations:
+    scheduler.alpha.kubernetes.io/critical-pod: ''
+spec:
+  hostNetwork: true
+  priorityClassName: system-node-critical
+  containers:
+    - name: k8s-controller-manager
+      image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.15.4
+      command:
+      - /hyperkube
+      - kube-controller-manager
+      - --master=https://{{ .APIDomainName }}:443
+      - --logtostderr=true
+      - --v=2
+      {{ if eq .Provider "aws" -}}
+      - --cloud-provider=aws
+      {{ else -}}
+      - --cloud-provider=azure
+      - --cloud-config=/etc/kubernetes/config/azure.yaml
+      - --allocate-node-cidrs=true
+      - --cluster-cidr={{ .PodCIDR }}
+      {{ end -}}
+      - --profiling=false
+      - --terminated-pod-gc-threshold=10
+      - --use-service-account-credentials=true
+      - --feature-gates=ExpandPersistentVolumes=true,TTLAfterFinished=true
+      - --kubeconfig=/etc/kubernetes/kubeconfig/controller-manager.yaml
+      - --root-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
+      - --service-account-private-key-file=/etc/kubernetes/ssl/service-account-key.pem
+      resources:
+        requests:
+          cpu: 200m
+          memory: 200Mi
+      livenessProbe:
+        httpGet:
+          host: 127.0.0.1
+          path: /healthz
+          port: 10251
+        initialDelaySeconds: 15
+        timeoutSeconds: 15
+      volumeMounts:
+      - mountPath: /etc/kubernetes/ssl/
+        name: ssl-certs-kubernetes
+        readOnly: true
+      - mountPath: /etc/kubernetes/secrets/
+        name: k8s-secrets
+        readOnly: true
+      - mountPath: /etc/kubernetes/config/
+        name: k8s-config
+        readOnly: true
+      - mountPath: /etc/kubernetes/kubeconfig/
+        name: k8s-kubeconfig
+        readOnly: true
+  volumes:
+  - hostPath:
+      path: /etc/kubernetes/ssl
+    name: ssl-certs-kubernetes
+  - hostPath:
+      path: /etc/kubernetes/config
+    name: k8s-config
+  - hostPath:
+      path: /etc/kubernetes/kubeconfig
+    name: k8s-kubeconfig
+  - hostPath:
+      path: /etc/kubernetes/secrets
+    name: k8s-secrets

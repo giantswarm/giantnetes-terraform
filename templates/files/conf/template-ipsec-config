@@ -1,0 +1,10 @@
+#!/bin/bash 
+while ! curl --connect-timeout 5 http://169.254.169.254 >/dev/null; do sleep 1s; echo "waiting for vpc endpoint"; done;
+
+PRIVATE_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4) 
+PUBLIC_IP=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
+
+sed -i "s/__PRIVATE_IP__/${PRIVATE_IP}/g" /etc/strongswan/vpn-config.conf /etc/strongswan/ipsec.secrets /opt/bin/setup-iptables
+sed -i "s/__PUBLIC_IP__/${PUBLIC_IP}/g" /etc/strongswan/vpn-config.conf /etc/strongswan/ipsec.secrets
+
+echo "Files /etc/strongswan/vpn-config.conf /etc/strongswan/ipsec.secrets succesfully templated."

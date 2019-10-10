@@ -1,0 +1,23 @@
+# Use most defaults for sshd configuration.
+Subsystem sftp internal-sftp
+ClientAliveInterval 180
+UseDNS no
+UsePAM yes
+PrintLastLog no # handled by PAM
+PrintMotd no # handled by PAM
+# Non defaults (#100)
+ClientAliveCountMax 2
+PasswordAuthentication no
+MaxAuthTries 5
+LoginGraceTime 60
+{{ if eq .NodeType "vpn_instance" }}
+AllowTcpForwarding no
+AllowAgentForwarding no
+{{ end }}
+{{ if or (eq .NodeType "master") (eq .NodeType "worker") }}
+TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem
+{{ end }}
+{{ if eq .NodeType "worker" }}
+AllowTcpForwarding no
+AllowAgentForwarding no
+{{ end }}

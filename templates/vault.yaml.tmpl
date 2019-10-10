@@ -1,3 +1,5 @@
+ignition:
+  version: "2.2.0"
 systemd:
   units:
     - name: update-engine.service
@@ -89,32 +91,23 @@ storage:
         wipe_filesystem: false
         label: var-log
   files:
-    - path: /etc/ssh/sshd_config
-      filesystem: root
-      mode: 0600
+    - filesystem: root
+      path: /etc/ssh/sshd_config
+      mode: 384
+      user:
+        id: 0
+      group:
+        id: 0
       contents:
-        inline: |
-          # Use most defaults for sshd configuration.
-          Subsystem sftp internal-sftp
-          ClientAliveInterval 180
-          UseDNS no
-          UsePAM yes
-          PrintLastLog no # handled by PAM
-          PrintMotd no # handled by PAM
-          # Non defaults (#100)
-          ClientAliveCountMax 2
-          PasswordAuthentication no
-          TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem
-          MaxAuthTries 5
-          LoginGraceTime 60
-          AllowTcpForwarding no
-          AllowAgentForwarding no
-    - path: /etc/sysctl.d/hardening.conf
-      filesystem: root
-      mode: 0600
-      contents: 
-        inline: |
-          net.ipv4.conf.all.rp_filter = 1
-          net.ipv4.conf.all.arp_ignore = 1
-          net.ipv4.conf.all.arp_announce = 2
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/sshd_config" }}"
+    - filesystem: root
+      path: /etc/sysctl.d/hardening.conf
+      mode: 384
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/hardening.conf" }}"
+
 {{ .BastionUsers }}

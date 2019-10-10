@@ -1,6 +1,6 @@
 .terraform
 terraform.tfstate*
-generated
+/ignition
 platforms/aws/giantnetes/bootstrap.sh
 platforms/aws/giantnetes/terraform-secrets.yaml
 platforms/azure/giantnetes/bootstrap.sh

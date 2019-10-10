@@ -6,14 +6,14 @@ locals {
 resource "local_file" "master_ignition" {
   count = "${var.master_count}"
 
-  content  = "${replace(var.user_data, "__MASTER_ID__", count.index+1)}"
+  content  = "${var.user_data[ count.index]}"
   filename = "${path.cwd}/generated/master-ignition${count.index}.yaml"
 }
 
 resource "azurerm_storage_blob" "ignition_blob" {
   count = "${var.master_count}"
 
-  name = "master-ignition${count.index}-${md5(var.user_data)}.yaml"
+  name = "master-ignition${count.index}-${md5(var.user_data[count.index])}.yaml"
 
   resource_group_name    = "${var.resource_group_name}"
   storage_account_name   = "${var.storage_acc}"

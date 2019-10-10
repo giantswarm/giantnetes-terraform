@@ -88,7 +88,6 @@ locals {
     "ClusterName"                  = "${var.cluster_name}"
     "DockerCIDR"                   = "${var.docker_cidr}"
     "DockerRegistry"               = "${var.docker_registry}"
-    "ETCDDomainName"               = "${var.etcd_dns}.${var.base_domain}"
     "ETCDEndpoints"                = "https://etcd1.${var.base_domain}:2379,https://etcd2.${var.base_domain}:2379,https://etcd3.${var.base_domain}:2379"
     "ETCDInitialClusterMulti"      = "etcd1=https://etcd1.${var.base_domain}:2380,etcd2=https://etcd2.${var.base_domain}:2380,etcd3=https://etcd3.${var.base_domain}:2380"
     "ETCDInitialClusterSingle"     = "etcd1=https://etcd1.${var.base_domain}:2380"
@@ -108,7 +107,6 @@ locals {
     "K8SDNSIP"                     = "${var.k8s_dns_ip}"
     "K8SServiceCIDR"               = "${var.k8s_service_cidr}"
     "MasterCount"                  = "${var.master_count}"
-    "MasterID"                     = "${var.master_id}"
     "MasterMountDocker"            = "${var.master_instance["volume_docker"]}"
     "MasterMountETCD"              = "${var.master_instance["volume_etcd"]}"
     "PodInfraImage"                = "${var.pod_infra_image}"
@@ -122,14 +120,8 @@ locals {
 # Generate ignition config.
 data "gotemplate" "bastion" {
   template = "${path.module}/../../../templates/bastion.yaml.tmpl"
-  data     = "${jsonencode(local.ignition_data)}"
-}
-
-# Convert ignition config to raw json.
-data "ct_config" "bastion" {
-  content      = "${data.gotemplate.bastion.rendered}"
-  platform     = "ec2"
-  pretty_print = false
+  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="bastion"}))}"
+  is_ignition = true
 }
 
 module "bastion" {
@@ -148,7 +140,7 @@ module "bastion" {
   instance_type          = "${var.bastion_instance_type}"
   route53_enabled        = "${var.route53_enabled}"
   s3_bucket_tags         = "${var.s3_bucket_tags}"
-  user_data              = "${data.ct_config.bastion.rendered}"
+  user_data              = "${data.gotemplate.bastion.rendered}"
   with_public_access     = "${(var.aws_customer_gateway_id_0 != "") || (var.vpn_instance_enabled) ? false : true}"
   vpc_cidr               = "${var.vpc_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"
@@ -157,14 +149,8 @@ module "bastion" {
 # Generate ignition config.
 data "gotemplate" "vpn_instance" {
   template = "${path.module}/../../../templates/vpn.yaml.tmpl"
-  data     = "${jsonencode(local.ignition_data)}"
-}
-
-# Convert ignition config to raw json.
-data "ct_config" "vpn_instance" {
-  content      = "${data.gotemplate.vpn_instance.rendered}"
-  platform     = "ec2"
-  pretty_print = false
+  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="vpn_instance"}))}"
+  is_ignition = true
 }
 
 module "vpn_instance" {
@@ -185,7 +171,7 @@ module "vpn_instance" {
   instance_type          = "${var.bastion_instance_type}"
   route53_enabled        = "${var.route53_enabled}"
   s3_bucket_tags         = "${var.s3_bucket_tags}"
-  user_data              = "${data.ct_config.vpn_instance.rendered}"
+  user_data              = "${data.gotemplate.vpn_instance.rendered}"
   vpc_cidr               = "${var.vpc_cidr}"
   vpc_id                 = "${module.vpc.vpc_id}"
 }
@@ -193,14 +179,8 @@ module "vpn_instance" {
 # Generate ignition config.
 data "gotemplate" "vault" {
   template = "${path.module}/../../../templates/vault.yaml.tmpl"
-  data     = "${jsonencode(local.ignition_data)}"
-}
-
-# Convert ignition config to raw json.
-data "ct_config" "vault" {
-  content      = "${data.gotemplate.vault.rendered}"
-  platform     = "ec2"
-  pretty_print = false
+  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="vault"}))}"
+  is_ignition = true
 }
 
 module "vault" {
@@ -216,7 +196,7 @@ module "vault" {
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
   iam_region             = "${var.iam_region}"
   instance_type          = "${var.vault_instance_type}"
-  user_data              = "${data.ct_config.vault.rendered}"
+  user_data              = "${data.gotemplate.vault.rendered}"
   route53_enabled        = "${var.route53_enabled}"
   s3_bucket_tags         = "${var.s3_bucket_tags}"
   vault_count            = "1"
@@ -231,15 +211,11 @@ module "vault" {
 
 # Generate ignition config.
 data "gotemplate" "master" {
-  template = "${path.module}/../../../templates/master.yaml.tmpl"
-  data     = "${jsonencode(local.ignition_data)}"
-}
+  count = "${var.master_count}"
 
-# Convert ignition config to raw json.
-data "ct_config" "master" {
-  content      = "${data.gotemplate.master.rendered}"
-  platform     = "ec2"
-  pretty_print = false
+  template = "${path.module}/../../../templates/master.yaml.tmpl"
+  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="master", "MasterID"="${count.index+1}", "ETCDDomainName"="etcd${count.index+1}.${var.base_domain}"}))}"
+  is_ignition = true
 }
 
 module "master" {
@@ -253,11 +229,10 @@ module "master" {
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
-  etcd_dns               = "${var.etcd_dns}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
   instance_type          = "${var.master_instance["type"]}"
   route53_enabled        = "${var.route53_enabled}"
-  user_data              = "${data.ct_config.master.rendered}"
+  user_data              = "${data.gotemplate.master.*.rendered}"
   master_subnet_ids      = "${module.vpc.worker_subnet_ids}"
   volume_docker          = "${var.master_instance["volume_docker"]}"
   volume_etcd            = "${var.master_instance["volume_etcd"]}"
@@ -271,14 +246,8 @@ module "master" {
 # Generate ignition config.
 data "gotemplate" "worker" {
   template = "${path.module}/../../../templates/worker.yaml.tmpl"
-  data     = "${jsonencode(local.ignition_data)}"
-}
-
-# Convert ignition config to raw json.
-data "ct_config" "worker" {
-  content      = "${data.gotemplate.worker.rendered}"
-  platform     = "ec2"
-  pretty_print = false
+  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="worker"}))}"
+  is_ignition = true
 }
 
 module "worker" {
@@ -294,7 +263,7 @@ module "worker" {
   ingress_dns            = "${var.ingress_dns}"
   instance_type          = "${var.worker_instance["type"]}"
   route53_enabled        = "${var.route53_enabled}"
-  user_data              = "${data.ct_config.worker.rendered}"
+  user_data              = "${data.gotemplate.worker.rendered}"
   worker_count           = "${var.worker_count}"
   worker_subnet_ids      = "${module.vpc.worker_subnet_ids}"
   volume_docker          = "${var.worker_instance["volume_docker"]}"

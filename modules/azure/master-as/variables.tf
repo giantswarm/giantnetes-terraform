@@ -12,7 +12,7 @@ variable "core_ssh_key" {
 }
 
 variable "user_data" {
-  type        = "string"
+  type        = list(string)
   description = "Generated user data."
 }
 

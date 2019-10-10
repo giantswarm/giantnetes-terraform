@@ -14,10 +14,6 @@ variable "elb_subnet_ids" {
   type = "list"
 }
 
-variable "etcd_dns" {
-  type = "string"
-}
-
 variable "container_linux_ami_id" {
   type = "string"
 }
@@ -48,7 +44,7 @@ variable "master_subnet_ids" {
 }
 
 variable "user_data" {
-  type = "string"
+  type = list(string)
 }
 
 variable "volume_type" {

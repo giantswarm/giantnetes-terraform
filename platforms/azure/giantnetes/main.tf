@@ -45,7 +45,6 @@ module "vnet" {
   bastion_count       = "2"
   bastion_cidr        = "${var.bastion_cidr}"
   cluster_name        = "${var.cluster_name}"
-  etcd_dns            = "${var.etcd_dns}"
   ingress_dns         = "${var.ingress_dns}"
   location            = "${var.azure_location}"
   master_count        = "${var.master_count}"
@@ -84,7 +83,6 @@ locals {
     "ClusterName"              = "${var.cluster_name}"
     "DockerCIDR"               = "${var.docker_cidr}"
     "DockerRegistry"           = "${var.docker_registry}"
-    "ETCDDomainName"           = "${var.etcd_dns}.${var.base_domain}"
     "ETCDInitialClusterMulti"  = "etcd1=https://etcd1.${var.base_domain}:2380,etcd2=https://etcd2.${var.base_domain}:2380,etcd3=https://etcd3.${var.base_domain}:2380"
     "ETCDInitialClusterSingle" = "etcd1=https://etcd1.${var.base_domain}:2380"
     "G8SVaultToken"            = "${var.nodes_vault_token}"
@@ -94,7 +92,6 @@ locals {
     "K8SDNSIP"                 = "${var.k8s_dns_ip}"
     "K8SServiceCIDR"           = "${var.k8s_service_cidr}"
     "MasterCount"              = "${var.master_count}"
-    "MasterID"                 = "${var.master_id}"
     "PodCIDR"                  = "${var.pod_cidr}"
     "Provider"                 = "azure"
     "Users"                    = "${file("${path.module}/../../../ignition/users.yaml")}"
@@ -105,14 +102,8 @@ locals {
 # Generate ignition config.
 data "gotemplate" "bastion" {
   template = "${path.module}/../../../templates/bastion.yaml.tmpl"
-  data     = "${jsonencode(local.ignition_data)}"
-}
-
-# Convert ignition config to raw json and merge users part.
-data "ct_config" "bastion" {
-  content      = "${data.gotemplate.bastion.rendered}"
-  platform     = "azure"
-  pretty_print = false
+  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="bastion"}))}"
+  is_ignition = true
 }
 
 module "bastion" {
@@ -128,21 +119,15 @@ module "bastion" {
   platform_fault_domain_count = "${var.platform_fault_domain_count}"
   resource_group_name         = "${module.resource_group.name}"
   os_disk_storage_type        = "${var.os_disk_storage_type}"
-  user_data                   = "${data.ct_config.bastion.rendered}"
+  user_data                   = "${data.gotemplate.bastion.rendered}"
   vm_size                     = "${var.bastion_vm_size}"
 }
 
 # Generate ignition config.
 data "gotemplate" "vault" {
   template = "${path.module}/../../../templates/vault.yaml.tmpl"
-  data     = "${jsonencode(local.ignition_data)}"
-}
-
-# Convert ignition config to raw json and merge users part.
-data "ct_config" "vault" {
-  content      = "${data.gotemplate.vault.rendered}"
-  platform     = "azure"
-  pretty_print = false
+  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="vault"}))}"
+  is_ignition = true
 }
 
 module "vault" {
@@ -157,28 +142,25 @@ module "vault" {
   os_disk_storage_type    = "${var.os_disk_storage_type}"
   resource_group_name     = "${module.resource_group.name}"
   storage_type            = "${var.vault_storage_type}"
-  user_data               = "${data.ct_config.vault.rendered}"
+  user_data               = "${data.gotemplate.vault.rendered}"
   vm_size                 = "${var.vault_vm_size}"
 }
 
 # Generate ignition config.
 data "gotemplate" "master" {
+  count = "${var.master_count}"
+
   template = "${path.module}/../../../templates/master.yaml.tmpl"
-  data     = "${jsonencode(local.ignition_data)}"
+  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="master", "MasterID"="${count.index+1}", "ETCDDomainName"="etcd${count.index+1}.${var.base_domain}"}))}"
+  is_ignition = true
 }
 
-# Convert ignition config to raw json and merge users part.
-data "ct_config" "master" {
-  content      = "${data.gotemplate.master.rendered}"
-  platform     = "azure"
-  pretty_print = false
-}
 
 module "master" {
   source = "../../../modules/azure/master-as"
 
   api_backend_address_pool_id = "${module.vnet.api_backend_address_pool_id}"
-  user_data                   = "${data.ct_config.master.rendered}"
+  user_data                   = "${data.gotemplate.master.*.rendered}"
   cluster_name                = "${var.cluster_name}"
   container_linux_channel     = "${var.container_linux_channel}"
   container_linux_version     = "${module.container_linux.coreos_version}"
@@ -204,21 +186,15 @@ module "master" {
 # Generate ignition config.
 data "gotemplate" "worker" {
   template = "${path.module}/../../../templates/worker.yaml.tmpl"
-  data     = "${jsonencode(local.ignition_data)}"
-}
-
-# Convert ignition config to raw json and merge users part.
-data "ct_config" "worker" {
-  content      = "${data.gotemplate.worker.rendered}"
-  platform     = "azure"
-  pretty_print = false
+  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="worker"}))}"
+  is_ignition = true
 }
 
 module "worker" {
   source = "../../../modules/azure/worker-as"
 
   ingress_backend_address_pool_id = "${module.vnet.ingress_backend_address_pool_id}"
-  user_data                       = "${data.ct_config.worker.rendered}"
+  user_data                       = "${data.gotemplate.worker.rendered}"
   cluster_name                    = "${var.cluster_name}"
   container_linux_channel         = "${var.container_linux_channel}"
   container_linux_version         = "${module.container_linux.coreos_version}"

@@ -1,0 +1,3 @@
+SUBSYSTEM=="block", KERNEL=="sdd", TAG+="systemd"
+SUBSYSTEM=="block", KERNEL=="sdc", TAG+="systemd"
+SUBSYSTEM=="block", KERNEL=="sda6", TAG+="systemd"
