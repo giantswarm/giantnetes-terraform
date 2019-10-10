@@ -88,7 +88,6 @@ locals {
     "ClusterName"                  = "${var.cluster_name}"
     "DockerCIDR"                   = "${var.docker_cidr}"
     "DockerRegistry"               = "${var.docker_registry}"
-    "ETCDDomainName"               = "${var.etcd_dns}.${var.base_domain}"
     "ETCDEndpoints"                = "https://etcd1.${var.base_domain}:2379,https://etcd2.${var.base_domain}:2379,https://etcd3.${var.base_domain}:2379"
     "ETCDInitialClusterMulti"      = "etcd1=https://etcd1.${var.base_domain}:2380,etcd2=https://etcd2.${var.base_domain}:2380,etcd3=https://etcd3.${var.base_domain}:2380"
     "ETCDInitialClusterSingle"     = "etcd1=https://etcd1.${var.base_domain}:2380"
@@ -108,7 +107,6 @@ locals {
     "K8SDNSIP"                     = "${var.k8s_dns_ip}"
     "K8SServiceCIDR"               = "${var.k8s_service_cidr}"
     "MasterCount"                  = "${var.master_count}"
-    "MasterID"                     = "${var.master_id}"
     "MasterMountDocker"            = "${var.master_instance["volume_docker"]}"
     "MasterMountETCD"              = "${var.master_instance["volume_etcd"]}"
     "PodInfraImage"                = "${var.pod_infra_image}"
@@ -213,8 +211,10 @@ module "vault" {
 
 # Generate ignition config.
 data "gotemplate" "master" {
+  count = "${var.master_count}"
+
   template = "${path.module}/../../../templates/master.yaml.tmpl"
-  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="master"}))}"
+  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="master", "MasterID"="${count.index+1}", "ETCDDomainName"="etcd${count.index+1}.${var.base_domain}"}))}"
   is_ignition = true
 }
 
@@ -229,11 +229,10 @@ module "master" {
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
-  etcd_dns               = "${var.etcd_dns}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
   instance_type          = "${var.master_instance["type"]}"
   route53_enabled        = "${var.route53_enabled}"
-  user_data              = "${data.gotemplate.master.rendered}"
+  user_data              = "${data.gotemplate.master.*.rendered}"
   master_subnet_ids      = "${module.vpc.worker_subnet_ids}"
   volume_docker          = "${var.master_instance["volume_docker"]}"
   volume_etcd            = "${var.master_instance["volume_etcd"]}"

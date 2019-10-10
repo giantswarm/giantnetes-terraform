@@ -19,11 +19,6 @@ variable "cluster_name" {
   type = "string"
 }
 
-variable "etcd_dns" {
-  type    = "string"
-  default = "etcd"
-}
-
 variable "ingress_dns" {
   type    = "string"
   default = "ingress.g8s"

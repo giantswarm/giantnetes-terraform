@@ -164,7 +164,7 @@ resource "aws_s3_bucket_object" "ignition_master_with_tags" {
   count   = "${var.s3_bucket_tags ? var.master_count : 0}"
   bucket  = "${var.ignition_bucket_id}"
   key     = "${var.cluster_name}-ignition-master${count.index+1}.json"
-  content = "${replace(var.user_data, "__MASTER_ID__",count.index+1)}"
+  content = "${var.user_data[count.index]}"
   acl     = "private"
 
   server_side_encryption = "AES256"
@@ -183,7 +183,7 @@ resource "aws_s3_bucket_object" "ignition_master_without_tags" {
   count   = "${var.s3_bucket_tags ? 0 : var.master_count}"
   bucket  = "${var.ignition_bucket_id}"
   key     = "${var.cluster_name}-ignition-master${count.index+1}.json"
-  content = "${replace(var.user_data, "__MASTER_ID__",count.index+1)}"
+  content = "${var.user_data[count.index]}"
   acl     = "private"
 
   server_side_encryption = "AES256"
@@ -199,6 +199,6 @@ data "ignition_config" "s3" {
 
   replace {
     source       = "${format("s3://%s/%s", var.ignition_bucket_id, element(local.s3_ignition_master_keys, count.index))}"
-    verification = "sha512-${sha512(replace(var.user_data, "__MASTER_ID__",count.index+1))}"
+    verification = "sha512-${sha512(var.user_data[count.index])}"
   }
 }
