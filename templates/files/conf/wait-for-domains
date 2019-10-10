@@ -8,7 +8,11 @@ until test -f ${WAA_FILE}; do
 done
 sleep 30s
 {{end}}
+{{ if eq .NodeType "master" }}
 domains="{{ .ETCDDomainName }} {{ .APIDomainName }} {{ .VaultDomainName }}"
+{{ else }}
+domains="{{ .APIDomainName }} {{ .VaultDomainName }}"
+{{ end }}
 for domain in $domains; do
   until nslookup $domain; do
       echo "Waiting for domain $domain to be available"
