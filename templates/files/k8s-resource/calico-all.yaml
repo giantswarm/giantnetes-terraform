@@ -1084,10 +1084,10 @@ spec:
 ---
 
 # This manifest creates a clusterrole for the PSP
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-name: calico-kube-controllers-psp
+  name: calico-kube-controllers-psp
 rules:
 - apiGroups:
     - extensions
@@ -1102,7 +1102,7 @@ rules:
 
 # This manifest binds the clusterrole to the SA to
 # enable the PSP.
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: calico-kube-controllers-psp
