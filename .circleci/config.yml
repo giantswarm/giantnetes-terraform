@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: quay.io/giantswarm/docker-terraform-and-stuff:latest
+      - image: quay.io/giantswarm/docker-terraform-and-stuff:a702e7132ffb63e07ab1e68d31a1f89ce6415e31
     steps:
       - checkout
       - run:
@@ -22,9 +22,18 @@ jobs:
           # Run terraform syntax check
           command: terraform fmt -write=false -diff=true -check=true
 
+  e2eTestAWSSingleMaster: &e2eTestAWSSingleMaster
+    docker:
+      - image: quay.io/giantswarm/docker-terraform-and-stuff:a702e7132ffb63e07ab1e68d31a1f89ce6415e31
+    environment:
+      MASTER_COUNT: 1
+    steps:
+    - checkout
+    - run: ./misc/e2e-aws.sh
+
   e2eTestAWSMultiMaster: &e2eTestAWSMultiMaster
     docker:
-      - image: quay.io/giantswarm/docker-terraform-and-stuff:latest
+      - image: quay.io/giantswarm/docker-terraform-and-stuff:a702e7132ffb63e07ab1e68d31a1f89ce6415e31
     environment:
       MASTER_COUNT: 3
       LOGENTRIES_ENABLED: "false"
@@ -37,9 +46,18 @@ jobs:
       E2E_ENABLE_CONFORMANCE: "no"
     <<: *e2eTestAWSMultiMaster
 
+  e2eTestAzureSingleMaster: &e2eTestAzureSingleMaster
+    docker:
+      - image: quay.io/giantswarm/docker-terraform-and-stuff:a702e7132ffb63e07ab1e68d31a1f89ce6415e31
+    environment:
+      MASTER_COUNT: 1
+    steps:
+    - checkout
+    - run: ./misc/e2e-azure.sh
+
   e2eTestAzureMultiMaster: &e2eTestAzureMultiMaster
     docker:
-      - image: quay.io/giantswarm/docker-terraform-and-stuff:latest
+      - image: quay.io/giantswarm/docker-terraform-and-stuff:a702e7132ffb63e07ab1e68d31a1f89ce6415e31
     environment:
       MASTER_COUNT: 3
       LOGENTRIES_ENABLED: "false"
