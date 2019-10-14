@@ -114,6 +114,11 @@ variable "docker_registry" {
   default = "quay.io"
 }
 
+variable "hyperkube_version" {
+  type    = "string"
+  default = "v1.15.4"
+}
+
 ### DNS ###
 
 variable "base_domain" {
