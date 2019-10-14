@@ -106,6 +106,7 @@ locals {
     "K8SAuditWebhookPort"          = "${var.k8s_audit_webhook_port}"
     "K8SDNSIP"                     = "${var.k8s_dns_ip}"
     "K8SServiceCIDR"               = "${var.k8s_service_cidr}"
+    "K8sVersion"                   = "${var.hyperkube_version}"
     "MasterCount"                  = "${var.master_count}"
     "MasterMountDocker"            = "${var.master_instance["volume_docker"]}"
     "MasterMountETCD"              = "${var.master_instance["volume_etcd"]}"

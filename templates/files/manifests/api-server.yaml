@@ -10,7 +10,7 @@ spec:
   priorityClassName: system-node-critical
   containers:
     - name: k8s-api-server
-      image: {{.DockerRegistry}}/giantswarm/hyperkube:v1.15.4
+      image: {{.DockerRegistry}}/giantswarm/hyperkube:{{ .K8sVersion }}
       env:
       - name: HOST_IP
         valueFrom:
