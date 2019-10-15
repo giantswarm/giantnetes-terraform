@@ -120,7 +120,7 @@ export TF_VAR_worker_count=${WORKER_COUNT}
 export TF_VAR_delete_data_disks_on_termination="true"
 # export logs in CI
 export TF_VAR_logentries_enabled=${LOGENTRIES_ENABLED}
-export TF_VAR_logentries_prefix=${LOGENTRIES_PREFIX}
+export TF_VAR_logentries_prefix=${CLUSTER}
 export TF_VAR_logentries_token=${LOGENTRIES_TOKEN}
 
 terraform init ./
