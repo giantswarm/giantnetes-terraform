@@ -200,7 +200,7 @@ stage-vault() {
     # Download Ansible playbooks for Vault bootstrap.
     local tmp=$(mktemp -d)
     cd $tmp
-    git clone --depth 1 --quiet https://taylorbot:${E2E_GITHUB_TOKEN}@github.com/giantswarm/hive.git
+    git clone --depth 1 --quiet --single-branch --branch issue-7186-python3 https://taylorbot:${E2E_GITHUB_TOKEN}@github.com/giantswarm/hive.git
     cd hive
 
     # Prepare configuration for Ansible.
@@ -318,10 +318,10 @@ main() {
   # In Azure we don't have this issue, because terraform actually wait when OS is ready.
   counter=5;
   vault_address="vault1.${CLUSTER}.${E2E_AWS_REGION}.aws.gigantic.io"
-  while ! ssh -o ConnectTimeout=3 ${vault_address}  && [ $counter -gt 0 ]; do 
+  while ! ssh -o ConnectTimeout=3 ${vault_address}  && [ $counter -gt 0 ]; do
       echo "Waiting for vault to be ready..."
-      sleep 30 
-      ((counter--)) 
+      sleep 30
+      ((counter--))
   done
 
   stage-vault

@@ -201,7 +201,7 @@ stage-vault() {
     # Download Ansible playbooks for Vault bootstrap.
     local tmp=$(mktemp -d)
     cd $tmp
-    git clone --depth 1 --quiet https://taylorbot:${E2E_GITHUB_TOKEN}@github.com/giantswarm/hive.git
+    git clone --depth 1 --quiet --single-branch --branch issue-7186-python3 https://taylorbot:${E2E_GITHUB_TOKEN}@github.com/giantswarm/hive.git
     cd hive
 
     # Prepare configuration for Ansible.
@@ -242,7 +242,7 @@ EOF
 
     # Insert vault token in envs file.
     sed -i "s/export TF_VAR_nodes_vault_token=.*/export TF_VAR_nodes_vault_token=${VAULT_TOKEN}/" ${TFDIR}/bootstrap.sh
-    
+
     cd ${WORKDIR}
 }
 
@@ -258,7 +258,7 @@ stage-debug() {
 
 stage-destroy() {
   stage-debug || true
-  
+
   cd ${TFDIR}
   source_bootstrap
   terraform destroy -force ./
