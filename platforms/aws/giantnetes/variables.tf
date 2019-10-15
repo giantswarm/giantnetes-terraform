@@ -292,18 +292,18 @@ variable "k8s_api_external_access_whitelist" {
 
 ### CI
 variable "logentries_enabled" {
-    default = false
-    type    = bool
+  default = false
+  type    = bool
 }
 
 variable "logentries_prefix" {
-    description = "Prefix string, appended to log lines"
-    type = string
-    default = "none"
+  description = "Prefix string, appended to log lines"
+  type        = string
+  default     = "none"
 }
 
 variable "logentries_token" {
-    description = "Token, used to authorize in logging service"
-    type = string
-    default = "none"
+  description = "Token, used to authorize in logging service"
+  type        = string
+  default     = "none"
 }

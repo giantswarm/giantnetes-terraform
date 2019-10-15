@@ -106,8 +106,8 @@ locals {
 
 # Generate ignition config.
 data "gotemplate" "bastion" {
-  template = "${path.module}/../../../templates/bastion.yaml.tmpl"
-  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="bastion"}))}"
+  template    = "${path.module}/../../../templates/bastion.yaml.tmpl"
+  data        = "${jsonencode(merge(local.ignition_data, { "NodeType" = "bastion" }))}"
   is_ignition = true
 }
 
@@ -130,8 +130,8 @@ module "bastion" {
 
 # Generate ignition config.
 data "gotemplate" "vault" {
-  template = "${path.module}/../../../templates/vault.yaml.tmpl"
-  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="vault"}))}"
+  template    = "${path.module}/../../../templates/vault.yaml.tmpl"
+  data        = "${jsonencode(merge(local.ignition_data, { "NodeType" = "vault" }))}"
   is_ignition = true
 }
 
@@ -155,8 +155,8 @@ module "vault" {
 data "gotemplate" "master" {
   count = "${var.master_count}"
 
-  template = "${path.module}/../../../templates/master.yaml.tmpl"
-  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="master", "MasterID"="${count.index+1}", "ETCDDomainName"="etcd${count.index+1}.${var.base_domain}"}))}"
+  template    = "${path.module}/../../../templates/master.yaml.tmpl"
+  data        = "${jsonencode(merge(local.ignition_data, { "NodeType" = "master", "MasterID" = "${count.index + 1}", "ETCDDomainName" = "etcd${count.index + 1}.${var.base_domain}" }))}"
   is_ignition = true
 }
 
@@ -190,8 +190,8 @@ module "master" {
 
 # Generate ignition config.
 data "gotemplate" "worker" {
-  template = "${path.module}/../../../templates/worker.yaml.tmpl"
-  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="worker"}))}"
+  template    = "${path.module}/../../../templates/worker.yaml.tmpl"
+  data        = "${jsonencode(merge(local.ignition_data, { "NodeType" = "worker" }))}"
   is_ignition = true
 }
 
