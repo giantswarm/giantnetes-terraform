@@ -116,6 +116,10 @@ export TF_VAR_root_dns_zone_id=${E2E_AWS_ROUTE53_ZONE}
 export TF_VAR_nodes_vault_token=
 export TF_VAR_aws_customer_gateway_id=
 export TF_VAR_worker_count=${WORKER_COUNT}
+# export logs in CI
+export TF_VAR_logentries_enabled=${LOGENTRIES_ENABLED}
+export TF_VAR_logentries_prefix=${LOGENTRIES_PREFIX}
+export TF_VAR_logentries_token=${LOGENTRIES_TOKEN}
 
 terraform init ./
 EOF

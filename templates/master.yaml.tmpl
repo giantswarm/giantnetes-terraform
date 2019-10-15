@@ -520,6 +520,18 @@ storage:
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/ipvs.conf" }}"
 
+{{ if .LogentriesEnabled }}
+    - path: /opt/bin/logentries.sh
+      filesystem: root
+      mode: 0555
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/logentries.sh" }}"
+{{ end }}
+
 systemd:
   units:
   - name: etcd2.service
@@ -1062,6 +1074,21 @@ systemd:
       ExecStart=/opt/install-debug-tools
       [Install]
       WantedBy=multi-user.target
+{{ if .LogentriesEnabled }}
+    - name: logentries.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Logentries
+
+        [Service]
+        Environment=LOGENTRIES_PREFIX={{ .LogentriesPrefix }}
+        Environment=LOGENTRIES_TOKEN={{ .LogentriesToken }}
+        ExecStart=/bin/sh /opt/bin/logentries.sh ${LOGENTRIES_PREFIX} ${LOGENTRIES_TOKEN}
+
+        [Install]
+        WantedBy=multi-user.target
+{{ end }}
 storage:
   filesystems:
     - name: docker
