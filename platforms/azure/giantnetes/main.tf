@@ -1,5 +1,5 @@
 provider "azurerm" {
-  version = "~> 1.30.1"
+  version = "~> 1.35.0"
 
   environment = "${var.azure_cloud}"
 }
