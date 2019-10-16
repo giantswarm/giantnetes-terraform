@@ -123,7 +123,7 @@ variable "docker_registry" {
 }
 variable "hyperkube_version" {
   type    = "string"
-  default = "v1.15.4"
+  default = "v1.15.5"
 }
 
 ### DNS ###
@@ -240,7 +240,7 @@ variable "vpn_right_subnet_cidr_1" {
   default     = "172.18.0.5/32"
 }
 
-### VPN with custom instance 
+### VPN with custom instance
 
 ## Gridscale
 variable "external_ipsec_public_ip_0" {
