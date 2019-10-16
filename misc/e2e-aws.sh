@@ -175,11 +175,11 @@ stage-terraform-only-vault() {
   cd ${TFDIR}
 
   source_bootstrap
-  terraform apply -auto-approve -target="module.dns" ./
-  terraform apply -auto-approve -target="module.vpc" ./
-  terraform apply -auto-approve -target="module.s3" ./
-  terraform apply -auto-approve -target="module.bastion" ./
-  terraform apply -auto-approve -target="module.vault" ./
+  TF_LOG=TRACE terraform apply -auto-approve -target="module.dns" ./
+  TF_LOG=TRACE terraform apply -auto-approve -target="module.vpc" ./
+  TF_LOG=TRACE terraform apply -auto-approve -target="module.s3" ./
+  TF_LOG=TRACE terraform apply -auto-approve -target="module.bastion" ./
+  TF_LOG=TRACE terraform apply -auto-approve -target="module.vault" ./
 
   cd -
 }
@@ -188,7 +188,7 @@ stage-terraform() {
   cd ${TFDIR}
 
   source_bootstrap
-  terraform apply -auto-approve ./
+  TF_LOG=TRACE terraform apply -auto-approve ./
 
   cd -
 }
@@ -259,7 +259,7 @@ stage-destroy() {
 
   cd ${TFDIR}
   source_bootstrap
-  terraform destroy -force ./
+  TF_LOG=TRACE terraform destroy -force ./
 
   cd -
 }
