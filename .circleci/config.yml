@@ -8,7 +8,7 @@ jobs:
       - run:
           # Get terraform binary
           command: |
-            TF_VERSION=${TF_VERSION:-"0.12.1"}
+            TF_VERSION=${TF_VERSION:-"0.12.10"}
             wget https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
             unzip -o terraform_${TF_VERSION}_linux_amd64.zip -d /bin
       - run:
