@@ -1,31 +1,9 @@
-resource "aws_elb" "worker" {
-  name                      = "${var.cluster_name}-worker"
-  cross_zone_load_balancing = true
-  internal                  = false
-  subnets                   = "${var.elb_subnet_ids}"
-  security_groups           = ["${aws_security_group.worker_elb.id}"]
-
-  listener {
-    instance_port     = 30010
-    instance_protocol = "tcp"
-    lb_port           = 80
-    lb_protocol       = "tcp"
-  }
-
-  listener {
-    instance_port     = 30011
-    instance_protocol = "tcp"
-    lb_port           = 443
-    lb_protocol       = "tcp"
-  }
-
-  health_check {
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 4
-    target              = "TCP:30011"
-    interval            = 5
-  }
+resource "aws_lb" "worker" {
+  name                             = "${var.cluster_name}-worker"
+  enable_cross_zone_load_balancing = true
+  internal                         = false
+  subnets                          = "${var.elb_subnet_ids}"
+  load_balancer_type = "network"
 
   tags = "${merge(
     local.common_tags,
@@ -35,42 +13,43 @@ resource "aws_elb" "worker" {
   )}"
 }
 
-resource "aws_proxy_protocol_policy" "worker" {
-  load_balancer  = "${aws_elb.worker.name}"
-  instance_ports = ["30010", "30011"]
+resource "aws_lb_listener" "worker_80" {
+  load_balancer_arn = "${aws_lb.worker.arn}"
+  port              = "80"
+  protocol          = "TCP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = "${aws_lb_target_group.worker_80.arn}"
+  }
 }
 
-resource "aws_security_group" "worker_elb" {
-  name   = "${var.cluster_name}-worker-elb"
-  vpc_id = "${var.vpc_id}"
+resource "aws_lb_listener" "worker_443" {
+  load_balancer_arn = "${aws_lb.worker.arn}"
+  port              = "443"
+  protocol          = "TCP"
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+  default_action {
+    type             = "forward"
+    target_group_arn = "${aws_lb_target_group.worker_443.arn}"
   }
+}
 
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+resource "aws_lb_target_group" "worker_80" {
+  name        = "worker"
+  port        = 30010
+  protocol    = "TCP"
+  target_type = "instance"
+  vpc_id      = "${var.vpc_id}"
+}
 
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 
-  tags = "${merge(
-    local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-worker-elb"
-    )
-  )}"
+resource "aws_lb_target_group" "worker_443" {
+  name        = "worker"
+  port        = 30011
+  protocol    = "TCP"
+  target_type = "instance"
+  vpc_id      = "${var.vpc_id}"
 }
 
 resource "aws_route53_record" "worker-wildcard" {
@@ -80,8 +59,8 @@ resource "aws_route53_record" "worker-wildcard" {
   type    = "A"
 
   alias {
-    name                   = "${aws_elb.worker.dns_name}"
-    zone_id                = "${aws_elb.worker.zone_id}"
+    name                   = "${aws_lb.worker.dns_name}"
+    zone_id                = "${aws_lb.worker.zone_id}"
     evaluate_target_health = false
   }
 }
@@ -93,8 +72,8 @@ resource "aws_route53_record" "worker-ingress" {
   type    = "A"
 
   alias {
-    name                   = "${aws_elb.worker.dns_name}"
-    zone_id                = "${aws_elb.worker.zone_id}"
+    name                   = "${aws_lb.worker.dns_name}"
+    zone_id                = "${aws_lb.worker.zone_id}"
     evaluate_target_health = false
   }
 }
