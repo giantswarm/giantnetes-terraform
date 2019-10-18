@@ -520,6 +520,18 @@ storage:
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/ipvs.conf" }}"
 
+{{ if .LogentriesEnabled }}
+    - path: /opt/bin/logentries.sh
+      filesystem: root
+      mode: 0555
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/logentries.sh" }}"
+{{ end }}
+
 systemd:
   units:
   - name: etcd2.service
