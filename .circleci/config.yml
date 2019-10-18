@@ -71,10 +71,6 @@ workflows:
           requires:
           - hold
 
-      - e2eTestAzureMultiMaster:
-          requires:
-          - hold
-
       # Test w/o approval for master branch.
       - e2eTestAWSMaster:
           filters:
