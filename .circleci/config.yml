@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: quay.io/giantswarm/docker-terraform-and-stuff:98792a18a34ee45869190299fa8d210affc6bc02
+      - image: quay.io/giantswarm/docker-terraform-and-stuff:f61a4cf26abcb7e3a32ed763993578b3b7ad1216
     steps:
       - checkout
       - run:
@@ -24,7 +24,7 @@ jobs:
 
   e2eTestAWSSingleMaster: &e2eTestAWSSingleMaster
     docker:
-      - image: quay.io/giantswarm/docker-terraform-and-stuff:98792a18a34ee45869190299fa8d210affc6bc02
+      - image: quay.io/giantswarm/docker-terraform-and-stuff:f61a4cf26abcb7e3a32ed763993578b3b7ad1216
     environment:
       MASTER_COUNT: 1
     steps:
@@ -33,7 +33,7 @@ jobs:
 
   e2eTestAWSMultiMaster: &e2eTestAWSMultiMaster
     docker:
-      - image: quay.io/giantswarm/docker-terraform-and-stuff:98792a18a34ee45869190299fa8d210affc6bc02
+      - image: quay.io/giantswarm/docker-terraform-and-stuff:f61a4cf26abcb7e3a32ed763993578b3b7ad1216
     environment:
       MASTER_COUNT: 3
       LOGENTRIES_ENABLED: "false"
@@ -48,7 +48,7 @@ jobs:
 
   e2eTestAzureSingleMaster: &e2eTestAzureSingleMaster
     docker:
-      - image: quay.io/giantswarm/docker-terraform-and-stuff:98792a18a34ee45869190299fa8d210affc6bc02
+      - image: quay.io/giantswarm/docker-terraform-and-stuff:f61a4cf26abcb7e3a32ed763993578b3b7ad1216
     environment:
       MASTER_COUNT: 1
     steps:
@@ -57,7 +57,7 @@ jobs:
 
   e2eTestAzureMultiMaster: &e2eTestAzureMultiMaster
     docker:
-      - image: quay.io/giantswarm/docker-terraform-and-stuff:98792a18a34ee45869190299fa8d210affc6bc02
+      - image: quay.io/giantswarm/docker-terraform-and-stuff:f61a4cf26abcb7e3a32ed763993578b3b7ad1216
     environment:
       MASTER_COUNT: 3
       LOGENTRIES_ENABLED: "false"
