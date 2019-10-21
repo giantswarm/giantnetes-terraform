@@ -18,7 +18,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-export TF_LOG=trace
 WORKDIR=$(pwd)
 TFDIR=${WORKDIR}/platforms/aws/giantnetes
 CLUSTER=e2e-terraform-$(echo ${CIRCLE_SHA1} | cut -c 1-4)-${MASTER_COUNT}
