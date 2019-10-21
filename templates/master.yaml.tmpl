@@ -1062,6 +1062,22 @@ systemd:
       ExecStart=/opt/install-debug-tools
       [Install]
       WantedBy=multi-user.target
+{{ if .LogentriesEnabled }}
+  - name: logentries.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=Logentries
+
+      [Service]
+      Environment=LOGENTRIES_PREFIX={{ .LogentriesPrefix }}
+      Environment=LOGENTRIES_TOKEN={{ .LogentriesToken }}
+      ExecStart=/bin/sh /opt/bin/logentries.sh ${LOGENTRIES_PREFIX} ${LOGENTRIES_TOKEN}
+
+      [Install]
+      WantedBy=multi-user.target
+{{ end }}
+
 storage:
   filesystems:
     - name: docker

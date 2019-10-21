@@ -27,6 +27,7 @@ jobs:
       - image: quay.io/giantswarm/docker-terraform-and-stuff:latest
     environment:
       MASTER_COUNT: 3
+      LOGENTRIES_ENABLED: "false"
     steps:
     - checkout
     - run: ./misc/e2e-aws.sh
@@ -41,6 +42,7 @@ jobs:
       - image: quay.io/giantswarm/docker-terraform-and-stuff:latest
     environment:
       MASTER_COUNT: 3
+      LOGENTRIES_ENABLED: "false"
     steps:
     - checkout
     - run: ./misc/e2e-azure.sh

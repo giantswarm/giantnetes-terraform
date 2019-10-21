@@ -107,6 +107,9 @@ locals {
     "K8SDNSIP"                     = "${var.k8s_dns_ip}"
     "K8SServiceCIDR"               = "${var.k8s_service_cidr}"
     "K8sVersion"                   = "${var.hyperkube_version}"
+    "LogentriesEnabled"            = "${var.logentries_enabled}"
+    "LogentriesPrefix"             = "${var.logentries_prefix}"
+    "LogentriesToken"              = "${var.logentries_token}"
     "MasterCount"                  = "${var.master_count}"
     "MasterMountDocker"            = "${var.master_instance["volume_docker"]}"
     "MasterMountETCD"              = "${var.master_instance["volume_etcd"]}"
@@ -120,8 +123,8 @@ locals {
 
 # Generate ignition config.
 data "gotemplate" "bastion" {
-  template = "${path.module}/../../../templates/bastion.yaml.tmpl"
-  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="bastion"}))}"
+  template    = "${path.module}/../../../templates/bastion.yaml.tmpl"
+  data        = "${jsonencode(merge(local.ignition_data, { "NodeType" = "bastion" }))}"
   is_ignition = true
 }
 
@@ -149,8 +152,8 @@ module "bastion" {
 
 # Generate ignition config.
 data "gotemplate" "vpn_instance" {
-  template = "${path.module}/../../../templates/vpn.yaml.tmpl"
-  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="vpn_instance"}))}"
+  template    = "${path.module}/../../../templates/vpn.yaml.tmpl"
+  data        = "${jsonencode(merge(local.ignition_data, { "NodeType" = "vpn_instance" }))}"
   is_ignition = true
 }
 
@@ -179,8 +182,8 @@ module "vpn_instance" {
 
 # Generate ignition config.
 data "gotemplate" "vault" {
-  template = "${path.module}/../../../templates/vault.yaml.tmpl"
-  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="vault"}))}"
+  template    = "${path.module}/../../../templates/vault.yaml.tmpl"
+  data        = "${jsonencode(merge(local.ignition_data, { "NodeType" = "vault" }))}"
   is_ignition = true
 }
 
@@ -214,8 +217,8 @@ module "vault" {
 data "gotemplate" "master" {
   count = "${var.master_count}"
 
-  template = "${path.module}/../../../templates/master.yaml.tmpl"
-  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="master", "MasterID"="${count.index+1}", "ETCDDomainName"="etcd${count.index+1}.${var.base_domain}"}))}"
+  template    = "${path.module}/../../../templates/master.yaml.tmpl"
+  data        = "${jsonencode(merge(local.ignition_data, { "NodeType" = "master", "MasterID" = "${count.index + 1}", "ETCDDomainName" = "etcd${count.index + 1}.${var.base_domain}" }))}"
   is_ignition = true
 }
 
@@ -246,8 +249,8 @@ module "master" {
 
 # Generate ignition config.
 data "gotemplate" "worker" {
-  template = "${path.module}/../../../templates/worker.yaml.tmpl"
-  data     = "${jsonencode(merge(local.ignition_data, {"NodeType"="worker"}))}"
+  template    = "${path.module}/../../../templates/worker.yaml.tmpl"
+  data        = "${jsonencode(merge(local.ignition_data, { "NodeType" = "worker" }))}"
   is_ignition = true
 }
 

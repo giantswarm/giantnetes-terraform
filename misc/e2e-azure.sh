@@ -118,6 +118,10 @@ export TF_VAR_root_dns_zone_name="azure.gigantic.io"
 export TF_VAR_nodes_vault_token=
 export TF_VAR_worker_count=${WORKER_COUNT}
 export TF_VAR_delete_data_disks_on_termination="true"
+# export logs in CI
+export TF_VAR_logentries_enabled=${LOGENTRIES_ENABLED}
+export TF_VAR_logentries_prefix="azure-${CLUSTER}"
+export TF_VAR_logentries_token=${LOGENTRIES_TOKEN}
 
 terraform init ./
 EOF
