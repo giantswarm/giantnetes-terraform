@@ -67,6 +67,9 @@ spec:
         - mountPath: /etc/kubernetes/ssl
           name: ssl-certs-kubernetes
           readOnly: true
+        - mountPath: /lib/modules
+          name: lib-modules
+          readOnly: true
       volumes:
       - name: k8s-config
         configMap:
@@ -83,3 +86,6 @@ spec:
       - hostPath:
           path: /usr/share/ca-certificates
         name: ssl-certs-host
+      - hostPath:
+          path: /lib/modules/
+        name: lib-modules
