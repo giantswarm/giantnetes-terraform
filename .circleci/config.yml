@@ -22,15 +22,6 @@ jobs:
           # Run terraform syntax check
           command: terraform fmt -write=false -diff=true -check=true
 
-  e2eTestAWSSingleMaster: &e2eTestAWSSingleMaster
-    docker:
-      - image: quay.io/giantswarm/docker-terraform-and-stuff:2828030db4f83256fb76ffc0e4841f0cdeeab9c5
-    environment:
-      MASTER_COUNT: 1
-    steps:
-    - checkout
-    - run: ./misc/e2e-aws.sh
-
   e2eTestAWSMultiMaster: &e2eTestAWSMultiMaster
     docker:
       - image: quay.io/giantswarm/docker-terraform-and-stuff:2828030db4f83256fb76ffc0e4841f0cdeeab9c5
@@ -45,15 +36,6 @@ jobs:
     environment:
       E2E_ENABLE_CONFORMANCE: "no"
     <<: *e2eTestAWSMultiMaster
-
-  e2eTestAzureSingleMaster: &e2eTestAzureSingleMaster
-    docker:
-      - image: quay.io/giantswarm/docker-terraform-and-stuff:2828030db4f83256fb76ffc0e4841f0cdeeab9c5
-    environment:
-      MASTER_COUNT: 1
-    steps:
-    - checkout
-    - run: ./misc/e2e-azure.sh
 
   e2eTestAzureMultiMaster: &e2eTestAzureMultiMaster
     docker:
