@@ -4,7 +4,6 @@ metadata:
   name: metrics-server
   namespace: kube-system
   labels:
-    giantswarm.io/service-type: managed
     app: metrics-server
 ---
 apiVersion: v1
@@ -13,7 +12,6 @@ metadata:
   name: metrics-server
   namespace: kube-system
   labels:
-    giantswarm.io/service-type: managed
     app: metrics-server
 spec:
   ports:
@@ -29,7 +27,6 @@ metadata:
   name: metrics-server
   namespace: kube-system
   labels:
-    giantswarm.io/service-type: managed
     app: metrics-server
 spec:
   replicas: 1
@@ -46,7 +43,6 @@ spec:
       annotations:
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
       labels:
-        giantswarm.io/service-type: managed
         app: metrics-server
     spec:
       serviceAccountName: metrics-server
@@ -71,7 +67,6 @@ kind: APIService
 metadata:
   name: v1beta1.metrics.k8s.io
   labels:
-    giantswarm.io/service-type: managed
     app: metrics-server
 spec:
   service:
