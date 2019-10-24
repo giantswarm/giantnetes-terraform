@@ -54,6 +54,13 @@ spec:
       - --audit-log-maxbackup=30
       - --audit-log-maxsize=100
       - --audit-policy-file=/etc/kubernetes/config/audit-policy.yaml
+      - --requestheader-client-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
+      - --requestheader-allowed-names=aggregator,{{ .APIDomainName }},{{ .WorkerDomainName }}
+      - --requestheader-extra-headers-prefix=X-Remote-Extra-
+      - --requestheader-group-headers=X-Remote-Group
+      - --requestheader-username-headers=X-Remote-User
+      - --proxy-client-cert-file=/etc/kubernetes/ssl/apiserver-crt.pem
+      - --proxy-client-key-file=/etc/kubernetes/ssl/apiserver-key.pem
       resources:
         requests:
           cpu: 300m

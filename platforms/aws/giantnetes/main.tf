@@ -115,6 +115,7 @@ locals {
     "Users"                        = "${file("${path.module}/../../../ignition/users.yaml")}"
     "VaultDomainName"              = "${var.vault_dns}.${var.base_domain}"
     "WorkerMountDocker"            = "${var.worker_instance["volume_docker"]}"
+    "WorkerDomainName"             = "worker.${var.base_domain}"
   }
 }
 
