@@ -1,6 +1,15 @@
 ignition:
   version: "2.2.0"
 storage:
+  directories:
+    - path: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
+      filesystem: root
+      mode: 755
+      user:
+        id: 0
+      group:
+        id: 0
+      overwrite: false
   files:
     {{if eq .Provider "azure" -}}
     - path: /etc/kubernetes/config/azure.yaml
@@ -463,7 +472,7 @@ systemd:
       -v /var/lib/docker/:/var/lib/docker:rw,rshared \
       -v /var/lib/kubelet/:/var/lib/kubelet:rw,rshared \
       -v /var/log:/var/log:rw \
-      -v /var/libexec/kubelet-plugins/volume/exec/:/usr/libexec/kubernetes/kubelet-plugins/volume/exec \
+      -v /usr/libexec/kubernetes/kubelet-plugins/volume/exec:/usr/libexec/kubernetes/kubelet-plugins/volume/exec \
       -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
       -v /etc/kubernetes/config/:/etc/kubernetes/config/ \
       -v /etc/kubernetes/kubeconfig/:/etc/kubernetes/kubeconfig/ \
