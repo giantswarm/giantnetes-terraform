@@ -943,6 +943,7 @@ systemd:
       -v /var/lib/calico/:/var/lib/calico/ \
       -v /var/lib/docker/:/var/lib/docker:rw,rshared \
       -v /var/lib/kubelet/:/var/lib/kubelet:rw,rshared \
+      -v /var/libexec/kubelet-plugins/volume/exec/:/usr/libexec/kubernetes/kubelet-plugins/volume/exec \
       -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
       -v /etc/kubernetes/config/:/etc/kubernetes/config/ \
       -v /etc/kubernetes/kubeconfig/:/etc/kubernetes/kubeconfig/ \
