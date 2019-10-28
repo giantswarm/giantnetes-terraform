@@ -10,7 +10,7 @@
 #   - Added resource limits calico-node.
 #   - CALICO_IPV4POOL_CIDR = parameterized.
 #   - Set FELIX_LOGSEVERITYSCREEN to Warning
-#   - Changed flexvol-driver-host hostpath directory to custom one used in our kubelet
+#   - Changed flexvol-driver-host hostpath directory to /var/libexec/kubelet-plugins/volume/exec/nodeagent~uds
 
 # Calico Version v3.9.2
 #  https://docs.projectcalico.org/v3.9/release-notes/#v392
