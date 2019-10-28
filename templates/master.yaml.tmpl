@@ -1,15 +1,6 @@
 ignition:
   version: "2.2.0"
 storage:
-  directories:
-    - path: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
-      filesystem: root
-      mode: 755
-      user:
-        id: 0
-      group:
-        id: 0
-      overwrite: false
   files:
     - path: /srv/calico-all.yaml
       filesystem: root
@@ -952,7 +943,7 @@ systemd:
       -v /var/lib/calico/:/var/lib/calico/ \
       -v /var/lib/docker/:/var/lib/docker:rw,rshared \
       -v /var/lib/kubelet/:/var/lib/kubelet:rw,rshared \
-      -v /usr/libexec/kubernetes/kubelet-plugins/volume/exec:/usr/libexec/kubernetes/kubelet-plugins/volume/exec \
+      -v /var/libexec/kubernetes/kubelet-plugins/volume/exec:/usr/libexec/kubernetes/kubelet-plugins/volume/exec \
       -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
       -v /etc/kubernetes/config/:/etc/kubernetes/config/ \
       -v /etc/kubernetes/kubeconfig/:/etc/kubernetes/kubeconfig/ \
