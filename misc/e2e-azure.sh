@@ -268,7 +268,10 @@ stage-debug() {
 
 stage-destroy() {
   stage-debug || true
+
+  msg "Requesting asyncronous deletion of resource group \"$CLUSTER\""
   az group delete -n "$CLUSTER" -y --no-wait
+  msg "Done"
 }
 
 # stage-wait-kubernetes-nodes will check "kubectl get node" until all nodes
