@@ -132,6 +132,11 @@ EOF
 stage-prepare-ssh(){
     ssh-keygen -t rsa -N "" -f ${TFDIR}/${SSH_USER}.key
 
+    echo "Private key (you can use it to SSH to bastion host:"
+    echo "================================================"
+    cat ${TFDIR}/${SSH_USER}.key
+    echo "================================================"
+
     ssh_pub_key=$(cat ${TFDIR}/${SSH_USER}.key.pub)
 
     cat > ${WORKDIR}/ignition/bastion-users.yaml << EOF
@@ -318,10 +323,10 @@ main() {
   # In Azure we don't have this issue, because terraform actually wait when OS is ready.
   counter=5;
   vault_address="vault1.${CLUSTER}.${E2E_AWS_REGION}.aws.gigantic.io"
-  while ! ssh -o ConnectTimeout=3 ${vault_address}  && [ $counter -gt 0 ]; do 
+  while ! ssh -o ConnectTimeout=3 ${vault_address}  && [ $counter -gt 0 ]; do
       echo "Waiting for vault to be ready..."
-      sleep 30 
-      ((counter--)) 
+      sleep 30
+      ((counter--))
   done
 
   stage-vault

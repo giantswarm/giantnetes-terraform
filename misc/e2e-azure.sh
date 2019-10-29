@@ -134,6 +134,11 @@ EOF
 stage-prepare-ssh(){
     ssh-keygen -t rsa -N "" -f ${TFDIR}/${SSH_USER}.key
 
+    echo "Private key (you can use it to SSH to bastion host:"
+    echo "================================================"
+    cat ${TFDIR}/${SSH_USER}.key
+    echo "================================================"
+
     ssh_pub_key=$(cat ${TFDIR}/${SSH_USER}.key.pub)
 
     # TODO Add after second line.
@@ -276,7 +281,7 @@ stage-wait-kubernetes-nodes(){
     until [ ${nodes_num_expected} -eq ${nodes_num_actual} ]; do
         msg "Waiting all nodes to be ready."
         sleep 30; let tries+=1;
-        [ ${tries} -gt 40 ] && fail "Timeout waiting all nodes to be ready."
+        [ ${tries} -gt 20 ] && fail "Timeout waiting all nodes to be ready."
         local nodes_num_actual=$(exec_on master1 ${KUBECTL_CMD} get node | tail -n +2 | grep -v NotReady | wc -l)
         msg "Expected nodes ${nodes_num_expected}, actual nodes ${nodes_num_actual}."
     done
