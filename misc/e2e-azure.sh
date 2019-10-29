@@ -261,7 +261,7 @@ stage-destroy() {
 
   cd ${TFDIR}
   source_bootstrap
-  terraform destroy -force ./
+  terraform destroy -force -target="module.resource_group" ./
 
   cd -
 }
