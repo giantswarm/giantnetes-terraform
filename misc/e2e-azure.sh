@@ -178,6 +178,11 @@ EOF
     ssh-add ${TFDIR}/${SSH_USER}.key
 }
 
+stage-prepare-az() {
+  # login to az command line (used to destroy the cluster after the test)
+  az login --service-principal -u http://giantnetes-terraform-ci-sp -p $E2E_SP_PASSWORD --tenant $E2E_SP_TENANT_ID
+}
+
 stage-terraform-only-vault() {
   cd ${TFDIR}
   pwd
@@ -263,12 +268,7 @@ stage-debug() {
 
 stage-destroy() {
   stage-debug || true
-
-  cd ${TFDIR}
-  source_bootstrap
-  terraform destroy -force -target="module.resource_group" ./
-
-  cd -
+  az group delete -n "$CLUSTER" -y --no-wait
 }
 
 # stage-wait-kubernetes-nodes will check "kubectl get node" until all nodes
@@ -319,6 +319,7 @@ main() {
 
   stage-prepare
   stage-prepare-ssh
+  stage-prepare-az
   trap "stage-destroy" EXIT
   stage-terraform-only-vault
   stage-vault
