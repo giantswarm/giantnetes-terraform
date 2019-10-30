@@ -73,5 +73,5 @@ spec:
       path: /etc/kubernetes/secrets
     name: k8s-secrets
   - hostPath:
-      path: /var/libexec/kubernetes/kubelet-plugins/volume/exec
+      path: /var/lib/kubelet/plugins/volume/exec
     name: flex-volumes-plugin-dir

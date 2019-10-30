@@ -463,7 +463,7 @@ systemd:
       -v /var/lib/docker/:/var/lib/docker:rw,rshared \
       -v /var/lib/kubelet/:/var/lib/kubelet:rw,rshared \
       -v /var/log:/var/log:rw \
-      -v /var/libexec/kubernetes/kubelet-plugins/volume/exec:/usr/libexec/kubernetes/kubelet-plugins/volume/exec \
+      -v /var/lib/kubelet/plugins/volume/exec:/usr/libexec/kubernetes/kubelet-plugins/volume/exec \
       -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
       -v /etc/kubernetes/config/:/etc/kubernetes/config/ \
       -v /etc/kubernetes/kubeconfig/:/etc/kubernetes/kubeconfig/ \
