@@ -678,7 +678,7 @@ systemd:
       [Service]
       Type=oneshot
       RemainAfterExit=yes
-      Environment="IMAGE=quay.io/giantswarm/k8s-setup-network-environment:38fac9d4d6b76c4414277fdac33747869a611d2b"
+      Environment="IMAGE=quay.io/giantswarm/k8s-setup-network-environment:b0dead85ca84468ca813a61692b86ee929a6ba1b"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/mkdir -p /opt/bin/
