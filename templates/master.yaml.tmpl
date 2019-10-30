@@ -678,7 +678,7 @@ systemd:
       [Service]
       Type=oneshot
       RemainAfterExit=yes
-      Environment="IMAGE=quay.io/giantswarm/k8s-setup-network-environment:1f4ffc52095ac368847ce3428ea99b257003d9b9"
+      Environment="IMAGE=quay.io/giantswarm/k8s-setup-network-environment:b0dead85ca84468ca813a61692b86ee929a6ba1b"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/mkdir -p /opt/bin/
@@ -953,6 +953,7 @@ systemd:
       -v /var/lib/calico/:/var/lib/calico/ \
       -v /var/lib/docker/:/var/lib/docker:rw,rshared \
       -v /var/lib/kubelet/:/var/lib/kubelet:rw,rshared \
+      -v /var/lib/kubelet/plugins/volume/exec:/usr/libexec/kubernetes/kubelet-plugins/volume/exec \
       -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
       -v /etc/kubernetes/config/:/etc/kubernetes/config/ \
       -v /etc/kubernetes/kubeconfig/:/etc/kubernetes/kubeconfig/ \

@@ -56,6 +56,9 @@ spec:
       - mountPath: /etc/kubernetes/kubeconfig/
         name: k8s-kubeconfig
         readOnly: true
+      - mountPath: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
+        name: flex-volumes-plugin-dir
+        readOnly: false
   volumes:
   - hostPath:
       path: /etc/kubernetes/ssl
@@ -69,3 +72,6 @@ spec:
   - hostPath:
       path: /etc/kubernetes/secrets
     name: k8s-secrets
+  - hostPath:
+      path: /var/lib/kubelet/plugins/volume/exec
+    name: flex-volumes-plugin-dir
