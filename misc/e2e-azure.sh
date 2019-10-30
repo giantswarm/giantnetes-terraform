@@ -134,6 +134,11 @@ EOF
 stage-prepare-ssh(){
     ssh-keygen -t rsa -N "" -f ${TFDIR}/${SSH_USER}.key
 
+    echo "Private key (you can use it to SSH to bastion host:"
+    echo "================================================"
+    cat ${TFDIR}/${SSH_USER}.key
+    echo "================================================"
+
     ssh_pub_key=$(cat ${TFDIR}/${SSH_USER}.key.pub)
 
     # TODO Add after second line.
@@ -171,6 +176,11 @@ passwd:
 EOF
     eval "$(ssh-agent)"
     ssh-add ${TFDIR}/${SSH_USER}.key
+}
+
+stage-prepare-az() {
+  # login to az command line (used to destroy the cluster after the test)
+  az login --service-principal -u http://giantnetes-terraform-ci-sp -p $E2E_SP_PASSWORD --tenant $E2E_SP_TENANT_ID
 }
 
 stage-terraform-only-vault() {
@@ -259,11 +269,9 @@ stage-debug() {
 stage-destroy() {
   stage-debug || true
 
-  cd ${TFDIR}
-  source_bootstrap
-  terraform destroy -force ./
-
-  cd -
+  msg "Requesting asyncronous deletion of resource group \"$CLUSTER\""
+  az group delete -n "$CLUSTER" -y --no-wait
+  msg "Done"
 }
 
 # stage-wait-kubernetes-nodes will check "kubectl get node" until all nodes
@@ -314,6 +322,7 @@ main() {
 
   stage-prepare
   stage-prepare-ssh
+  stage-prepare-az
   trap "stage-destroy" EXIT
   stage-terraform-only-vault
   stage-vault

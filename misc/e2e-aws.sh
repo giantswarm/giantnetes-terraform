@@ -132,6 +132,11 @@ EOF
 stage-prepare-ssh(){
     ssh-keygen -t rsa -N "" -f ${TFDIR}/${SSH_USER}.key
 
+    echo "Private key (you can use it to SSH to bastion host:"
+    echo "================================================"
+    cat ${TFDIR}/${SSH_USER}.key
+    echo "================================================"
+
     ssh_pub_key=$(cat ${TFDIR}/${SSH_USER}.key.pub)
 
     cat > ${WORKDIR}/ignition/bastion-users.yaml << EOF
