@@ -3,7 +3,6 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: giantswarm-clusterapi-readonly
-  namespace: giantswarm-clusterapi
   labels:
     scope: control-plane
     type: external
