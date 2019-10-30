@@ -72,6 +72,16 @@ storage:
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/kube-proxy-ds.yaml" }}"
 
+    - path: /srv/metrics-server-all.yaml
+      filesystem: root
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/metrics-server-all.yaml" }}"
+
     {{ if eq .Provider "aws" -}}
     - path: /srv/network-policy.json
       filesystem: root
