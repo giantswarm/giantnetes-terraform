@@ -2,8 +2,8 @@ resource "aws_lb" "worker" {
   name                             = "${var.cluster_name}-worker"
   enable_cross_zone_load_balancing = true
   internal                         = false
-  subnets                          = "${var.elb_subnet_ids}"
-  load_balancer_type = "network"
+  subnets                          = "${var.lb_subnet_ids}"
+  load_balancer_type               = "network"
 
   tags = "${merge(
     local.common_tags,
@@ -36,7 +36,7 @@ resource "aws_lb_listener" "worker_443" {
 }
 
 resource "aws_lb_target_group" "worker_80" {
-  name        = "worker"
+  name        = "worker_80"
   port        = 30010
   protocol    = "TCP"
   target_type = "instance"
@@ -45,7 +45,7 @@ resource "aws_lb_target_group" "worker_80" {
 
 
 resource "aws_lb_target_group" "worker_443" {
-  name        = "worker"
+  name        = "worker_443"
   port        = 30011
   protocol    = "TCP"
   target_type = "instance"
