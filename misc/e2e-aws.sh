@@ -264,7 +264,10 @@ stage-destroy() {
 
   cd ${TFDIR}
   source_bootstrap
-  terraform destroy -force ./
+  # accept that the destroy phase can fail
+  # the pipeline will be considered passed (if the other steps were successful)
+  # and the CI cleaner will get rid of leftovers
+  terraform destroy -force ./ || true
 
   cd -
 }
