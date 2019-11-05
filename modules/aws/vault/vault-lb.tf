@@ -1,24 +1,8 @@
 resource "aws_lb" "vault" {
-  name            = "${var.cluster_name}-vault"
-  internal        = true
-  subnets         = "${var.elb_subnet_ids}"
-  security_groups = ["${aws_security_group.vault_elb.id}"]
-  load_balancer_type               = "network"
-
-  listener {
-    instance_port     = "${var.vault_port}"
-    instance_protocol = "tcp"
-    lb_port           = 443
-    lb_protocol       = "tcp"
-  }
-
-  health_check {
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 4
-    target              = "TCP:${var.vault_port}"
-    interval            = 5
-  }
+  name                = "${var.cluster_name}-vault"
+  internal            = true
+  subnets             = "${var.lb_subnet_ids}"
+  load_balancer_type  = "network"
 
   tags = {
     Name                         = "${var.cluster_name}-vault"
@@ -52,15 +36,15 @@ resource "aws_lb_target_group_attachment" "vault" {
   port             = "${var.vault_port}"
 }
 
-resource "aws_route53_record" "vault-elb" {
+resource "aws_route53_record" "vault-lb" {
   count   = "${var.route53_enabled ? 1 : 0}"
   zone_id = "${var.dns_zone_id}"
   name    = "${var.vault_dns}"
   type    = "A"
 
   alias {
-    name                   = "${aws_elb.vault.dns_name}"
-    zone_id                = "${aws_elb.vault.zone_id}"
+    name                   = "${aws_lb.vault.dns_name}"
+    zone_id                = "${aws_lb.vault.zone_id}"
     evaluate_target_health = false
   }
 }

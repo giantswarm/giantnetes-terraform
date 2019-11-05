@@ -13,30 +13,30 @@ resource "aws_lb" "worker" {
   )}"
 }
 
-resource "aws_lb_listener" "worker_80" {
+resource "aws_lb_listener" "worker-80" {
   load_balancer_arn = "${aws_lb.worker.arn}"
   port              = "80"
   protocol          = "TCP"
 
   default_action {
     type             = "forward"
-    target_group_arn = "${aws_lb_target_group.worker_80.arn}"
+    target_group_arn = "${aws_lb_target_group.worker-80.arn}"
   }
 }
 
-resource "aws_lb_listener" "worker_443" {
+resource "aws_lb_listener" "worker-443" {
   load_balancer_arn = "${aws_lb.worker.arn}"
   port              = "443"
   protocol          = "TCP"
 
   default_action {
     type             = "forward"
-    target_group_arn = "${aws_lb_target_group.worker_443.arn}"
+    target_group_arn = "${aws_lb_target_group.worker-443.arn}"
   }
 }
 
-resource "aws_lb_target_group" "worker_80" {
-  name        = "worker_80"
+resource "aws_lb_target_group" "worker-80" {
+  name        = "worker-80"
   port        = 30010
   protocol    = "TCP"
   target_type = "instance"
@@ -44,8 +44,8 @@ resource "aws_lb_target_group" "worker_80" {
 }
 
 
-resource "aws_lb_target_group" "worker_443" {
-  name        = "worker_443"
+resource "aws_lb_target_group" "worker-443" {
+  name        = "worker-443"
   port        = 30011
   protocol    = "TCP"
   target_type = "instance"

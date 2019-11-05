@@ -3,7 +3,7 @@ resource "aws_lb" "master_api" {
   enable_cross_zone_load_balancing = true
   idle_timeout                     = 3600
   internal                         = true
-  subnets                          = "${var.elb_subnet_ids}"
+  subnets                          = "${var.lb_subnet_ids}"
   load_balancer_type               = "network"
 
   tags = "${merge(

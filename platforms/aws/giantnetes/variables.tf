@@ -207,7 +207,7 @@ variable "subnets_bastion" {
   default     = ["10.0.1.0/25", "10.0.1.128/25"]
 }
 
-variable "subnets_elb" {
+variable "subnets_lb" {
   description = "CIDR for load balancer networks."
   type        = "list"
   default     = ["10.0.2.0/26", "10.0.2.64/26", "10.0.2.128/26"]
