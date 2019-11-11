@@ -751,17 +751,36 @@ subjects:
 {{- end }}
 
 {{ if eq .Provider "aws" -}}
-# Extra changes:
-#  - Added resource limits to calico-node and calico-kube-controllers.
-#  - Added resource limits to install-cni.
-#  - Added critical pod priority to calico-node daemonSet and calico-kube-controllers 'priorityClassName: system-cluster-critical'.
-#
-# Calico Version v3.6.1
-# https://docs.projectcalico.org/v3.6/releases#v3.6.1
+# Source # https://docs.projectcalico.org/v3.9/manifests/calico-etcd.yaml
+# Changed values:
+#   - Adjusted all image references to giantswarm docker registry
+#   - In calico-config ConfigMap:
+#     - Set etcd_endpoints to "{{.ETCDEndpoints}}"
+#     - Set etcd_ca to "/calico-secrets/etcd-ca"
+#     - Set etcd_cert to "/calico-secrets/etcd-cert"
+#     - Set etcd_key to "/calico-secrets/etcd-key"
+#     - Set typha_service_name to "none"
+#     - Set veth_mtu to "{{.CalicoMTU}}"
+#     - Set veth_mtu to "{{.CalicoMTU}}"
+#   - In calico-node daemonset:
+#     - Added resource limits to install-cni container
+#     - Added resource limits calico-node.
+#     - Set CALICO_IPV4POOL_CIDR to {{ .CalicoCIDR }}.
+#     - Set FELIX_LOGSEVERITYSCREEN to "warn"
+#     - Changed etcd-certs volume to hostpath /etc/kubernetes/ssl/calico
+#     - Changed flexvol-driver-host hostpath directory to /var/lib/kubelet/plugins/volume/exec/nodeagent~uds
+#   - In calico-kube-controllers deployment
+#     - Added resources and limits to container
+#     - Changed etcd-certs volume to hostpath /etc/kubernetes/ssl/calico
+#   - In cluster role "calico-kube-controllers", added apiGroup "extensions" to first group (pods, nodes, namespaces, serviceaccounts)
+#   - Added Pod Security Policy + Cluster Role and Cluster Role Binding with names ending with "-psp"
+
+# Calico Version v3.9.3
+#  https://docs.projectcalico.org/v3.9/release-notes/#v393
 # This manifest includes the following component versions:
-#   calico/node:v3.6.1
-#   calico/cni:v3.6.1
-#   calico/kube-controllers:v3.6.1
+#   calico/node:v3.9.3
+#   calico/cni:v3.9.3
+#   calico/pod2daemon-flexvol:v3.9.3
 
 # This ConfigMap is used to configure a self-hosted Calico installation.
 kind: ConfigMap
@@ -779,6 +798,8 @@ data:
   etcd_ca: "/calico-secrets/etcd-ca"
   etcd_cert: "/calico-secrets/etcd-cert"
   etcd_key: "/calico-secrets/etcd-key"
+  # Typha is disabled.
+  typha_service_name: "none"
   # Configure the Calico backend to use.
   calico_backend: "bird"
   # Configure the MTU to use
@@ -788,7 +809,7 @@ data:
   cni_network_config: |-
     {
       "name": "k8s-pod-network",
-      "cniVersion": "0.3.0",
+      "cniVersion": "0.3.1",
       "plugins": [
         {
           "type": "calico",
@@ -838,11 +859,11 @@ data:
 
 ---
 
-# This manifest installs the calico/node container, as well
-# as the Calico CNI plugins and network config on
+# This manifest installs the calico-node container, as well
+# as the CNI plugins and network config on
 # each master and worker node in a Kubernetes cluster.
 kind: DaemonSet
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 metadata:
   name: calico-node
   namespace: kube-system
@@ -880,16 +901,16 @@ spec:
         - effect: NoExecute
           operator: Exists
       serviceAccountName: calico-node
-      priorityClassName: system-cluster-critical
+      priorityClassName: system-node-critical
       # Minimize downtime during a rolling upgrade or deletion; tell Kubernetes to do a "force
       # deletion": https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods.
       terminationGracePeriodSeconds: 0
       containers:
-        # Runs calico/node container on each Kubernetes node.  This
+        # Runs calico-node container on each Kubernetes node.  This
         # container programs network policy and routes on each
         # host.
         - name: calico-node
-          image: {{.DockerRegistry}}/giantswarm/node:v3.6.1
+          image: {{.DockerRegistry}}/giantswarm/node:v3.9.3
           env:
             # The location of the Calico etcd cluster.
             - name: ETCD_ENDPOINTS
@@ -970,10 +991,10 @@ spec:
               cpu: 250m
               memory: 150Mi
           livenessProbe:
-            httpGet:
-              path: /liveness
-              port: 9099
-              host: localhost
+            exec:
+              command:
+                - /bin/calico-node
+                - -felix-live
             periodSeconds: 10
             initialDelaySeconds: 10
             failureThreshold: 6
@@ -999,11 +1020,13 @@ spec:
               readOnly: false
             - mountPath: /calico-secrets
               name: etcd-certs
+            - name: policysync
+              mountPath: /var/run/nodeagent
       initContainers:
-        # This container installs the Calico CNI binaries
+        # This container installs the CNI binaries
         # and CNI network config file on each node.
         - name: install-cni
-          image: {{.DockerRegistry}}/giantswarm/cni:v3.6.1
+          image: {{.DockerRegistry}}/giantswarm/cni:v3.9.3
           command: ["/install-cni.sh"]
           env:
             # Name of the CNI config file to create.
@@ -1046,6 +1069,13 @@ spec:
               name: cni-net-dir
             - mountPath: /calico-secrets
               name: etcd-certs
+        # Adds a Flex Volume Driver that creates a per-pod Unix Domain Socket to allow Dikastes
+        # to communicate with Felix over the Policy Sync API.
+        - name: flexvol-driver
+          image: {{.DockerRegistry}}/giantswarm/pod2daemon-flexvol:v3.9.3
+          volumeMounts:
+            - name: flexvol-driver-host
+              mountPath: /host/driver
       volumes:
         # Used by calico/node.
         - name: lib-modules
@@ -1072,6 +1102,16 @@ spec:
           hostPath:
             path: /run/xtables.lock
             type: FileOrCreate
+        # Used to create per-pod Unix Domain Sockets
+        - name: policysync
+          hostPath:
+            type: DirectoryOrCreate
+            path: /var/run/nodeagent
+        # Used to install Flex Volume Driver
+        - name: flexvol-driver-host
+          hostPath:
+            type: DirectoryOrCreate
+            path: /var/lib/kubelet/plugins/volume/exec/nodeagent~uds
 ---
 
 apiVersion: v1
@@ -1084,15 +1124,13 @@ metadata:
 
 # This manifest deploys the Calico Kubernetes controllers.
 # See https://github.com/projectcalico/kube-controllers
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: calico-kube-controllers
   namespace: kube-system
   labels:
     k8s-app: calico-kube-controllers
-  annotations:
-    scheduler.alpha.kubernetes.io/critical-pod: ''
 spec:
   # The controllers can only have a single active instance.
   replicas: 1
@@ -1104,7 +1142,11 @@ spec:
       namespace: kube-system
       labels:
         k8s-app: calico-kube-controllers
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:
+      nodeSelector:
+        beta.kubernetes.io/os: linux
       # The controllers must run in the host network namespace so that
       # it isn't governed by policy that would prevent it from working.
       hostNetwork: true
@@ -1115,13 +1157,10 @@ spec:
         - key: node-role.kubernetes.io/master
           effect: NoSchedule
       serviceAccountName: calico-kube-controllers
-      securityContext:
-        runAsUser: 0
-        runAsGroup: 0
       priorityClassName: system-cluster-critical
       containers:
         - name: calico-kube-controllers
-          image: {{.DockerRegistry}}/giantswarm/kube-controllers:v3.6.1
+          image: {{.DockerRegistry}}/giantswarm/kube-controllers:v3.9.3
           env:
             # The location of the Calico etcd cluster.
             - name: ETCD_ENDPOINTS
@@ -1183,7 +1222,7 @@ metadata:
 ---
 
 # this manifest applies a PodSecurityPolicy to Calico controllers.
-apiVersion: extensions/v1beta1
+apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
   name: calico-kube-controllers-psp
