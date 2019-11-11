@@ -31,10 +31,18 @@ resource "aws_lb_target_group" "master_api" {
   protocol    = "TCP"
   target_type = "instance"
   vpc_id      = "${var.vpc_id}"
+
+  health_check {
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    protocol            = "HTTP"
+    path                = "/healthz"
+    interval            = 10
+  }
 }
 
 resource "aws_lb_target_group_attachment" "master_api" {
-  count    = "${var.master_count}"
+  count            = "${var.master_count}"
   target_group_arn = "${aws_lb_target_group.master_api.arn}"
   target_id        = "${element(aws_instance.master.*.id, count.index)}"
   port             = 443

@@ -27,6 +27,13 @@ resource "aws_lb_target_group" "vault" {
   protocol    = "TCP"
   target_type = "instance"
   vpc_id      = "${var.vpc_id}"
+
+  health_check {
+    protocol            = "TCP"
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    port                = "${var.vault_port}"
+  }
 }
 
 resource "aws_lb_target_group_attachment" "vault" {

@@ -41,6 +41,13 @@ resource "aws_lb_target_group" "worker-80" {
   protocol    = "TCP"
   target_type = "instance"
   vpc_id      = "${var.vpc_id}"
+
+  health_check {
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    protocol            = "TCP"
+    port                = 30010
+  }
 }
 
 
@@ -50,6 +57,13 @@ resource "aws_lb_target_group" "worker-443" {
   protocol    = "TCP"
   target_type = "instance"
   vpc_id      = "${var.vpc_id}"
+
+  health_check {
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    protocol            = "TCP"
+    port                = 30011
+  }
 }
 
 resource "aws_route53_record" "worker-wildcard" {
