@@ -116,6 +116,10 @@ export TF_VAR_root_dns_zone_id=${E2E_AWS_ROUTE53_ZONE}
 export TF_VAR_nodes_vault_token=
 export TF_VAR_aws_customer_gateway_id=
 export TF_VAR_worker_count=${WORKER_COUNT}
+# export logs in CI
+export TF_VAR_logentries_enabled=${LOGENTRIES_ENABLED}
+export TF_VAR_logentries_prefix="aws-${CLUSTER}"
+export TF_VAR_logentries_token=${LOGENTRIES_TOKEN}
 
 terraform init ./
 EOF
@@ -127,6 +131,11 @@ EOF
 
 stage-prepare-ssh(){
     ssh-keygen -t rsa -N "" -f ${TFDIR}/${SSH_USER}.key
+
+    echo "Private key (you can use it to SSH to bastion host:"
+    echo "================================================"
+    cat ${TFDIR}/${SSH_USER}.key
+    echo "================================================"
 
     ssh_pub_key=$(cat ${TFDIR}/${SSH_USER}.key.pub)
 
@@ -255,7 +264,10 @@ stage-destroy() {
 
   cd ${TFDIR}
   source_bootstrap
-  terraform destroy -force ./
+  # accept that the destroy phase can fail
+  # the pipeline will be considered passed (if the other steps were successful)
+  # and the CI cleaner will get rid of leftovers
+  terraform destroy -force ./ || true
 
   cd -
 }
@@ -270,7 +282,7 @@ stage-wait-kubernetes-nodes(){
     until [ ${nodes_num_expected} -eq ${nodes_num_actual} ]; do
         msg "Waiting all nodes to be ready."
         sleep 30; let tries+=1;
-        [ ${tries} -gt 10 ] && fail "Timeout waiting all nodes to be ready."
+        [ ${tries} -gt 20 ] && fail "Timeout waiting all nodes to be ready."
         local nodes_num_actual=$(exec_on master1 ${KUBECTL_CMD} get node | tail -n +2 | grep -v NotReady | wc -l)
         msg "Expected nodes ${nodes_num_expected}, actual nodes ${nodes_num_actual}."
     done
@@ -314,10 +326,10 @@ main() {
   # In Azure we don't have this issue, because terraform actually wait when OS is ready.
   counter=5;
   vault_address="vault1.${CLUSTER}.${E2E_AWS_REGION}.aws.gigantic.io"
-  while ! ssh -o ConnectTimeout=3 ${vault_address}  && [ $counter -gt 0 ]; do 
+  while ! ssh -o ConnectTimeout=3 ${vault_address}  && [ $counter -gt 0 ]; do
       echo "Waiting for vault to be ready..."
-      sleep 30 
-      ((counter--)) 
+      sleep 30
+      ((counter--))
   done
 
   stage-vault

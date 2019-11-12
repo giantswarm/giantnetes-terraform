@@ -118,6 +118,10 @@ export TF_VAR_root_dns_zone_name="azure.gigantic.io"
 export TF_VAR_nodes_vault_token=
 export TF_VAR_worker_count=${WORKER_COUNT}
 export TF_VAR_delete_data_disks_on_termination="true"
+# export logs in CI
+export TF_VAR_logentries_enabled=${LOGENTRIES_ENABLED}
+export TF_VAR_logentries_prefix="azure-${CLUSTER}"
+export TF_VAR_logentries_token=${LOGENTRIES_TOKEN}
 
 terraform init ./
 EOF
@@ -129,6 +133,11 @@ EOF
 
 stage-prepare-ssh(){
     ssh-keygen -t rsa -N "" -f ${TFDIR}/${SSH_USER}.key
+
+    echo "Private key (you can use it to SSH to bastion host:"
+    echo "================================================"
+    cat ${TFDIR}/${SSH_USER}.key
+    echo "================================================"
 
     ssh_pub_key=$(cat ${TFDIR}/${SSH_USER}.key.pub)
 
@@ -167,6 +176,11 @@ passwd:
 EOF
     eval "$(ssh-agent)"
     ssh-add ${TFDIR}/${SSH_USER}.key
+}
+
+stage-prepare-az() {
+  # login to az command line (used to destroy the cluster after the test)
+  az login --service-principal -u http://giantnetes-terraform-ci-sp -p $E2E_SP_PASSWORD --tenant $E2E_SP_TENANT_ID
 }
 
 stage-terraform-only-vault() {
@@ -238,7 +252,7 @@ EOF
 
     # Insert vault token in envs file.
     sed -i "s/export TF_VAR_nodes_vault_token=.*/export TF_VAR_nodes_vault_token=${VAULT_TOKEN}/" ${TFDIR}/bootstrap.sh
-    
+
     cd ${WORKDIR}
 }
 
@@ -254,12 +268,10 @@ stage-debug() {
 
 stage-destroy() {
   stage-debug || true
-  
-  cd ${TFDIR}
-  source_bootstrap
-  terraform destroy -force ./
 
-  cd -
+  msg "Requesting asyncronous deletion of resource group \"$CLUSTER\""
+  az group delete -n "$CLUSTER" -y --no-wait
+  msg "Done"
 }
 
 # stage-wait-kubernetes-nodes will check "kubectl get node" until all nodes
@@ -272,7 +284,7 @@ stage-wait-kubernetes-nodes(){
     until [ ${nodes_num_expected} -eq ${nodes_num_actual} ]; do
         msg "Waiting all nodes to be ready."
         sleep 30; let tries+=1;
-        [ ${tries} -gt 10 ] && fail "Timeout waiting all nodes to be ready."
+        [ ${tries} -gt 20 ] && fail "Timeout waiting all nodes to be ready."
         local nodes_num_actual=$(exec_on master1 ${KUBECTL_CMD} get node | tail -n +2 | grep -v NotReady | wc -l)
         msg "Expected nodes ${nodes_num_expected}, actual nodes ${nodes_num_actual}."
     done
@@ -310,6 +322,7 @@ main() {
 
   stage-prepare
   stage-prepare-ssh
+  stage-prepare-az
   trap "stage-destroy" EXIT
   stage-terraform-only-vault
   stage-vault
