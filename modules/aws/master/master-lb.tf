@@ -38,6 +38,7 @@ resource "aws_lb_target_group" "master_api" {
     protocol            = "HTTP"
     path                = "/healthz"
     interval            = 10
+    port                = 8089
   }
 }
 
