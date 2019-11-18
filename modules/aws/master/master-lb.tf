@@ -35,7 +35,7 @@ resource "aws_lb_target_group" "master_api" {
   health_check {
     healthy_threshold   = 2
     unhealthy_threshold = 2
-    protocol            = "HTTP"
+    protocol            = "HTTPS"
     path                = "/healthz"
     interval            = 10
     port                = 8089
