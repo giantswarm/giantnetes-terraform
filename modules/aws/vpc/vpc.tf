@@ -90,7 +90,7 @@ resource "aws_nat_gateway" "private_nat_gateway" {
   count = "${length(var.subnets_lb)}"
 
   allocation_id = "${element(aws_eip.private_nat_gateway.*.id, count.index)}"
-  subnet_id     = "${element(aws_subnet.lb.*.id, count.index)}"
+  subnet_id     = "${element(aws_subnet.elb.*.id, count.index)}"
 }
 
 resource "aws_eip" "private_nat_gateway" {

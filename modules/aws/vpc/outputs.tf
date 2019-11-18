@@ -3,7 +3,7 @@ output "bastion_subnet_ids" {
 }
 
 output "lb_subnet_ids" {
-  value = "${aws_subnet.lb.*.id}"
+  value = "${aws_subnet.elb.*.id}"
 }
 
 output "vault_subnet_ids" {
