@@ -26,7 +26,7 @@ resource "aws_lb_listener" "master" {
 }
 
 resource "aws_lb_target_group" "master_api" {
-  name        = "master"
+  name        = "${var.cluster_name}-master"
   port        = 443
   protocol    = "TCP"
   target_type = "instance"
@@ -35,7 +35,7 @@ resource "aws_lb_target_group" "master_api" {
   health_check {
     healthy_threshold   = 2
     unhealthy_threshold = 2
-    protocol            = "HTTPS"
+    protocol            = "HTTP"
     path                = "/healthz"
     interval            = 10
     port                = 8089

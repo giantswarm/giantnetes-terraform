@@ -22,7 +22,7 @@ resource "aws_lb_listener" "vault" {
 }
 
 resource "aws_lb_target_group" "vault" {
-  name        = "vault"
+  name        = "${var.cluster_name}-vault"
   port        = "${var.vault_port}"
   protocol    = "TCP"
   target_type = "instance"

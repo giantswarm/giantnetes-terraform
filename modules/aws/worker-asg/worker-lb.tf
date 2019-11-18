@@ -36,16 +36,23 @@ resource "aws_lb_listener" "worker-443" {
 }
 
 resource "aws_lb_target_group" "worker-80" {
-  name        = "worker-80"
+  name        = "${var.cluster_name}-worker-80"
   port        = 30010
   protocol    = "TCP"
   target_type = "instance"
   vpc_id      = "${var.vpc_id}"
+
+  health_check {
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    protocol            = "TCP"
+    port                = 30010
+  }
 }
 
 
 resource "aws_lb_target_group" "worker-443" {
-  name        = "worker-443"
+  name        = "${var.cluster_name}-worker-443"
   port        = 30011
   protocol    = "TCP"
   target_type = "instance"
