@@ -31,6 +31,11 @@ variable "azure_sp_subscriptionid" {
   description = "Subscription ID of Service Principal for Kubernetes"
 }
 
+variable "azure_sp_partnerid" {
+  type        = "string"
+  description = "Partner ID used for the Azure Partner Program."
+}
+
 variable "azure_sp_aadclientid" {
   type        = "string"
   description = "ID of Service Principal for Kubernetes"

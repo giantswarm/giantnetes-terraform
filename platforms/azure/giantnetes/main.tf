@@ -3,6 +3,7 @@ provider "azurerm" {
   version = "~> 1.33.0"
 
   environment = "${var.azure_cloud}"
+  partner_id  = "${var.azure_sp_partnerid}"
 }
 
 locals {
