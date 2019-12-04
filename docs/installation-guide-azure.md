@@ -5,7 +5,20 @@
 Common:
 
 - `az` cli installed (See [azure docs](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest))
-- `az login` executed (To switch to German cloud `az cloud set --name AzureGermanCloud`)
+- `az login` executed
+
+If you have more than one subscription connected to your user, you have to login to the right one using:
+
+`az login --tenant <directory group URL, i.e. accountgiantswarm.onmicrosoft.com>`
+
+Based on the subscrtiption you want to work on, you might need to adjust the cloud name setting.
+Run the following command to list subscriptions:
+
+`az account list -o table`
+
+Check the `CloudName` column on the subscription you want to work with and run the following command accordingly:
+
+`az cloud set --name <CloudName got from command above, i.e. AzureGermanCloud>`
 
 ## Multi-master 
 By default terraform will create multi-master cluster with 3 master nodes, single master mode can be enabled by setting terraform variable `master_count=1` or export env variable `export TF_VAR_master_count=1`.
