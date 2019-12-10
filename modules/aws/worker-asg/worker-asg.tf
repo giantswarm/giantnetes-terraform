@@ -21,8 +21,9 @@ resource "aws_cloudformation_stack" "worker_asg" {
         "HealthCheckType": "EC2",
         "HealthCheckGracePeriod": 300,
         "LaunchConfigurationName": "${aws_launch_configuration.worker.name}",
-        "LoadBalancerNames": [
-          "${var.cluster_name}-worker"
+        "TargetGroupARNs": [
+          "${aws_lb_target_group.worker-443.arn}", 
+          "${aws_lb_target_group.worker-80.arn}"
         ],
         "MaxSize": "${var.worker_count + 1}",
         "DesiredCapacity": "${var.worker_count}",

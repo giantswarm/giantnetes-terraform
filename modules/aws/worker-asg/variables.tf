@@ -14,7 +14,7 @@ variable "aws_account" {
   type = "string"
 }
 
-variable "elb_subnet_ids" {
+variable "lb_subnet_ids" {
   type = "list"
 }
 

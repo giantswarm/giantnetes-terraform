@@ -2,9 +2,9 @@
 #
 #   * a public route table with the internet gateway as a default route
 #   * a private route table with the private nat gateway as a default route
-#   * elb subnets are using the public route table
+#   * lb subnets are using the public route table
 #   * bastion, vault and worker subnets are using the private route table
-#   * the private nat gateway is in the elb subnet as well (needs to be in a public subnet)
+#   * the private nat gateway is in the lb subnet as well (needs to be in a public subnet)
 
 locals {
   common_tags = "${map(
@@ -87,14 +87,14 @@ resource "aws_internet_gateway" "cluster_vpc" {
 }
 
 resource "aws_nat_gateway" "private_nat_gateway" {
-  count = "${length(var.subnets_elb)}"
+  count = "${length(var.subnets_lb)}"
 
   allocation_id = "${element(aws_eip.private_nat_gateway.*.id, count.index)}"
   subnet_id     = "${element(aws_subnet.elb.*.id, count.index)}"
 }
 
 resource "aws_eip" "private_nat_gateway" {
-  count = "${length(var.subnets_elb)}"
+  count = "${length(var.subnets_lb)}"
   vpc   = true
 
   tags = "${merge(
@@ -118,7 +118,7 @@ resource "aws_route_table" "cluster_vpc_private" {
 }
 
 resource "aws_route_table" "cluster_vpc_public" {
-  count  = "${length(var.subnets_elb)}"
+  count  = "${length(var.subnets_lb)}"
   vpc_id = "${aws_vpc.cluster_vpc.id}"
 
   tags = "${merge(
@@ -130,7 +130,7 @@ resource "aws_route_table" "cluster_vpc_public" {
 }
 
 resource "aws_route" "vpc_local_route" {
-  count = "${length(var.subnets_elb)}"
+  count = "${length(var.subnets_lb)}"
 
   route_table_id         = "${element(aws_route_table.cluster_vpc_public.*.id, count.index)}"
   destination_cidr_block = "0.0.0.0/0"

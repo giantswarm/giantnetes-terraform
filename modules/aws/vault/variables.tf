@@ -14,7 +14,7 @@ variable "iam_region" {
   type = "string"
 }
 
-variable "elb_subnet_ids" {
+variable "lb_subnet_ids" {
   type = "list"
 }
 

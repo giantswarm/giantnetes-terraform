@@ -19,7 +19,7 @@ variable "subnets_bastion" {
   type = "list"
 }
 
-variable "subnets_elb" {
+variable "subnets_lb" {
   type = "list"
 }
 
