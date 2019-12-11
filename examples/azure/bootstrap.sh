@@ -17,7 +17,7 @@ export TF_VAR_azure_sp_aadclientid=<value>
 
 # interactively ask for secret keys
 if [ -z ${TF_VAR_azure_sp_aadclientsecret} ]; then
-  echo "Please enter secret key for service principal:"
+  echo "Please enter the password of the service principal:"
   read TF_VAR_azure_sp_aadclientsecret
   export TF_VAR_azure_sp_aadclientsecret
 fi
@@ -35,13 +35,15 @@ fi
 # TF_VAR_base_domain (replace "azure.gigantic.io" with the custom
 # domain)
 export TF_VAR_base_domain=${TF_VAR_cluster_name}.${TF_VAR_azure_location}.azure.gigantic.io
-# hosted zone name, leave empty to setup DNS manually
+# hosted zone name. This is the zone where the delegated NS records are set.
+# If the installation is in the same subscription, populate the following variable.
+# Otherwise leave empty and create the delegation records manually.
 export TF_VAR_root_dns_zone_name="azure.gigantic.io"
 
 # To enable Site-To-Site IPSec uncomment following options. Make sure that bastion subnet is unique across installations.
 # export TF_VAR_vpn_enabled=1
-# export TF_VAR_vpn_right_gateway_address=<ip address of IPSec server>
-# export TF_VAR_vpn_right_subnet_cidr=<subnet that will be shared by IPSec server>
+# export TF_VAR_vpn_right_gateway_address_0=<ip address of first IPSec server>
+# export TF_VAR_vpn_right_gateway_address_1=<ip address of second IPSec server>
 # export TF_VAR_bastion_cidr=<bastion subnet>
 
 # Override here any option from platforms/azure/variables.tf

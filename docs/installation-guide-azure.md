@@ -65,8 +65,14 @@ az group create -n ${NAME} -l ${REGION}
 
 Create service principal with permissions limited to resource group.
 
+Get the subscription ID you want to work on by choosing the right "id" field from the following command:
+
 ```
-export SUBSCRIPTION_ID=$(az account list | jq '.[0].id' | sed 's/\"//g')
+az account list
+```
+
+```
+export SUBSCRIPTION_ID=<the ID you found with the command above>
 az ad sp create-for-rbac --name=${NAME}-sp --role="Contributor" --scopes="/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${NAME}" --years 10
 ```
 
@@ -76,7 +82,7 @@ Please save these and storage credentials above in keepass (e.g. "<cluster name>
 
 ```
 cp -r examples/azure/* ./platforms/azure/giantnetes/
-cd ./platforms/aws/giantnetes/
+cd ./platforms/azure/giantnetes/
 ```
 
 Edit `bootstrap.sh`. DO NOT PUT passwords and keys into `bootstrap.sh` as it will be stored as plain text.
@@ -86,24 +92,23 @@ Command below will ask for:
 - storage account access key
 - service principal secret key
 
-For German cloud add following two variables into `bootstrap.sh`
+If you need to setup a VPN (mandatory for production installations) you first need to get a /28 subnet unique for this installation.
 
-```
-export ARM_ENVIRONMENT="german"
-export TF_VAR_azure_cloud=AZUREGERMANCLOUD
-```
+Go to https://github.com/giantswarm/giantswarm/wiki/Giant-Swarm-VPN, choose an unused subnet and add it to the page with the new installation name to reserve it.
 
-Optionally for VPN support add following variables. `bastion_cidr` should be unique and a part of `vnet_cidr` (10.0.0.0/16 by default). Recommended to use /28 subnets from range 10.0.4.0/22 (e.g. 10.0.4.0/28, 10.0.4.16/28, etc.).
+Then, set the following variables in the `bootstrap.sh` file:
 
 ```
 export TF_VAR_vpn_enabled=1
-export TF_VAR_vpn_right_gateway_address_0=<ip address of first IPSec server>
-export TF_VAR_vpn_right_gateway_address_1=<ip address of second IPSec server>
-export TF_VAR_bastion_cidr=<bastion subnet>
+export TF_VAR_vpn_right_gateway_address_0=<ip address of first IPSec server (copy this from other installations in the installations repo)>
+export TF_VAR_vpn_right_gateway_address_1=<ip address of second IPSec server (copy this from other installations in the installations repo)>
+export TF_VAR_bastion_cidr=<the subnet you have chosen>
 ```
 
+When you have finished editing the file, source it:
+
 ```
-bootstrap envs.sh
+source bootstrap.sh
 ```
 
 NOTE: Reexecute `source bootstrap.sh` everytime if opening new console.
@@ -144,30 +149,33 @@ It should create all cluster resources. Please note master and worker vms are cr
 
 #### (Optional) Connect to VPN
 
-If VPN enabled, two additional manual steps are required:
+If VPN was enabled, two additional manual steps are required:
 
-1. Create Azure VPN connection with shared key.
-2. Create new IPSec connection in onpremise VPN server.
-
-For step one execute following commands.
+1. Create VPN connection clients on Azure with a shared key you generate randomly.
 
 ```
+export SHARED_KEY=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 50 | head -n 1)
+
+echo $SHARED_KEY
+
 az network vpn-connection create \
   -g ${NAME} \
   --name ${NAME}-vpn-connection-0 \
   --vnet-gateway1 ${NAME}-vpn-gateway \
   --local-gateway2 ${NAME}-vpn-right-gateway-0 \
-  --shared-key <put_your_shared_key1_here>
+  --shared-key $SHARED_KEY
 
 az network vpn-connection create \
   -g ${NAME} \
   --name ${NAME}-vpn-connection-1 \
   --vnet-gateway1 ${NAME}-vpn-gateway \
   --local-gateway2 ${NAME}-vpn-right-gateway-1 \
-  --shared-key <put_your_shared_key2_here>
+  --shared-key $SHARED_KEY
 ```
 
-Step two is individual and depends on your setup.
+2. Update the VPN connection 
+
+Temporarily save the password generated somewhere, then follow the instructions at the following page to update the VPN servers: https://github.com/giantswarm/vpn#configure-new-site2site-vpn-with-aws-installation
 
 #### Provision Vault with Ansible
 
@@ -192,7 +200,6 @@ terraform taint "module.master.azurerm_virtual_machine.master[2]"
 terraform taint "module.worker.azurerm_virtual_machine.worker[0]"
 terraform taint "module.worker.azurerm_virtual_machine.worker[1]"
 terraform taint "module.worker.azurerm_virtual_machine.worker[2]"
-terraform taint "module.worker.azurerm_virtual_machine.worker[3]"
 ```
 
 ##### Apply terraform
