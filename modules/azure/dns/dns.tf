@@ -23,7 +23,7 @@ variable "zone_name" {
 }
 
 resource "azurerm_dns_zone" "dns_zone" {
-  count               = "${var.root_dns_zone_name == "" ? 0 : 1}"
+  count               = "1"
   name                = "${var.zone_name}"
   resource_group_name = "${var.resource_group_name}"
 
