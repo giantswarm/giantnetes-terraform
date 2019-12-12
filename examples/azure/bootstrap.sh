@@ -5,7 +5,7 @@ export TF_VAR_azure_location=<value>
 # needs to be unique within the azure account
 export TF_VAR_cluster_name=<value>
 
-# will be added within the installation process
+# Leave empty at the beginning. After you'll have vault deployed, you will need to copy the "VAULT TOKEN for the g8s host cluster" in here.
 export TF_VAR_nodes_vault_token=
 
 # service principal credentials
