@@ -9,7 +9,7 @@
 locals {
   common_tags = "${map(
     "giantswarm.io/installation", "${var.cluster_name}",
-    "giantswarm.io/installation-type", "control-plane",
+    "giantswarm.io/cluster-type", "control-plane",
     "kubernetes.io/cluster/${var.cluster_name}", "owned"
   )}"
 
