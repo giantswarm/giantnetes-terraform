@@ -372,7 +372,7 @@ systemd:
       --net=host \
       -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
       -v /etc/kubernetes/ssl/calico/:/etc/kubernetes/ssl/calico/ \
-      {{.DockerRegistry}}/giantswarm/certctl:2a6615f61499cd09a8d5ced9a5fade322d2de254 \
+      {{.DockerRegistry}}/giantswarm/certctl:943e40d9c36efc2eec76783d48a891fc6f323493 \
       issue \
       --vault-addr=https://{{ .VaultDomainName }} \
       --vault-token=${VAULT_TOKEN} \
@@ -415,7 +415,7 @@ systemd:
       --net=host \
       -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
       -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
-      {{.DockerRegistry}}/giantswarm/certctl:2a6615f61499cd09a8d5ced9a5fade322d2de254 \
+      {{.DockerRegistry}}/giantswarm/certctl:943e40d9c36efc2eec76783d48a891fc6f323493 \
       issue \
       --vault-addr=https://{{ .VaultDomainName }} \
       --vault-token=${VAULT_TOKEN} \
