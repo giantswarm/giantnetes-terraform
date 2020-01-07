@@ -1,7 +1,8 @@
 #!/bin/bash
 set -eu
-# k8s 1.14.1
-KUBECTL_IMAGE=quay.io/giantswarm/docker-kubectl:1.14.1
+# k8s 1.16.4
+# WHEN UPDATING TAG DONT FORGET TO UPDATE VERSION ABOVE AS WELL
+KUBECTL_IMAGE={{.DockerRegistry}}/giantswarm/docker-kubectl:4377f52eeb22d766bbc59bdf71ce0724af61a4f6
 KUBECTL="/usr/bin/docker run --net=host --rm
 -e KUBECONFIG=/etc/kubernetes/kubeconfig/addons.yaml
 -v /etc/kubernetes:/etc/kubernetes
