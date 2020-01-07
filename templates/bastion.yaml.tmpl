@@ -41,7 +41,7 @@ systemd:
 
         [Service]
         Environment="NAME=%p.service"
-        Environment="IMAGE=quay.io/giantswarm/journald-cloudwatch-logs"
+        Environment="IMAGE={{.DockerRegistry}}/giantswarm/journald-cloudwatch-logs:0.1"
         Restart=always
         RestartSec=10
         TimeoutStopSec=10
