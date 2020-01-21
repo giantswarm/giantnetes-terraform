@@ -1,38 +1,38 @@
 variable "arn_region" {
-  type = "string"
+  type = string
 }
 
 variable "aws_account" {
-  type = "string"
+  type = string
 }
 
 variable "az_count" {
-  type    = "string"
+  type    = string
   default = "2"
 }
 
 variable "cluster_name" {
-  type = "string"
+  type = string
 }
 
 variable "subnets_bastion" {
-  type = "list"
+  type = list
 }
 
 variable "subnets_elb" {
-  type = "list"
+  type = list
 }
 
 variable "subnets_vault" {
-  type = "list"
+  type = list
 }
 
 variable "subnets_worker" {
-  type = "list"
+  type = list
 }
 
 variable "vpc_cidr" {
-  type = "string"
+  type = string
 }
 
 variable "with_public_access" {

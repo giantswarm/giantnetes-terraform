@@ -25,7 +25,7 @@ EOF
 
 resource "aws_iam_role_policy" "worker" {
   name = "${var.cluster_name}-worker"
-  role = "${aws_iam_role.worker.id}"
+  role = aws_iam_role.worker.id
 
   lifecycle {
     create_before_destroy = true
@@ -90,7 +90,7 @@ EOF
 
 resource "aws_iam_instance_profile" "worker" {
   name = "${var.cluster_name}-worker"
-  role = "${aws_iam_role.worker.name}"
+  role = aws_iam_role.worker.name
 
   lifecycle {
     create_before_destroy = true

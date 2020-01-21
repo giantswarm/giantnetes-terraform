@@ -1,54 +1,54 @@
 variable "api_dns" {
-  type    = "string"
+  type    = string
   default = "api"
 }
 
 variable "bastion_count" {
-  type = "string"
+  type = string
 }
 
 variable "bastion_cidr" {
-  type = "string"
+  type = string
 }
 
 variable "base_domain" {
-  type = "string"
+  type = string
 }
 
 variable "cluster_name" {
-  type = "string"
+  type = string
 }
 
 variable "ingress_dns" {
-  type    = "string"
+  type    = string
   default = "ingress.g8s"
 }
 
 variable "resource_group_name" {
-  type = "string"
+  type = string
 }
 
 variable "location" {
-  type = "string"
+  type = string
 }
 
 variable "master_count" {
-  type = "string"
+  type = string
 }
 
 variable "worker_count" {
-  type = "string"
+  type = string
 }
 
 variable "vault_dns" {
-  type    = "string"
+  type    = string
   default = "vault"
 }
 
 variable "vnet_cidr" {
-  type = "string"
+  type = string
 }
 
 variable "vpn_enabled" {
-  type = "string"
+  type = string
 }

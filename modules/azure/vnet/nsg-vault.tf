@@ -1,7 +1,7 @@
 resource "azurerm_network_security_group" "vault" {
   name                = "${var.cluster_name}-vault"
-  location            = "${var.location}"
-  resource_group_name = "${var.resource_group_name}"
+  location            = var.location
+  resource_group_name = var.resource_group_name
 
   tags = {
     GiantSwarmInstallation = "${var.cluster_name}"
@@ -9,8 +9,8 @@ resource "azurerm_network_security_group" "vault" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "vault" {
-  subnet_id                 = "${azurerm_subnet.vault_subnet.id}"
-  network_security_group_id = "${azurerm_network_security_group.vault.id}"
+  subnet_id                 = azurerm_subnet.vault_subnet.id
+  network_security_group_id = azurerm_network_security_group.vault.id
 }
 
 resource "azurerm_network_security_rule" "vault_ingress_ssh" {
@@ -23,9 +23,9 @@ resource "azurerm_network_security_rule" "vault_ingress_ssh" {
   source_port_range           = "*"
   destination_port_range      = "22"
   source_address_prefix       = "*"
-  destination_address_prefix  = "${var.vnet_cidr}"
-  resource_group_name         = "${var.resource_group_name}"
-  network_security_group_name = "${azurerm_network_security_group.vault.name}"
+  destination_address_prefix  = var.vnet_cidr
+  resource_group_name         = var.resource_group_name
+  network_security_group_name = azurerm_network_security_group.vault.name
 }
 
 resource "azurerm_network_security_rule" "vault_ingress_internal_8200" {
@@ -39,8 +39,8 @@ resource "azurerm_network_security_rule" "vault_ingress_internal_8200" {
   destination_port_range      = "8200"
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
-  resource_group_name         = "${var.resource_group_name}"
-  network_security_group_name = "${azurerm_network_security_group.vault.name}"
+  resource_group_name         = var.resource_group_name
+  network_security_group_name = azurerm_network_security_group.vault.name
 }
 
 resource "azurerm_network_security_rule" "vault_ingress_node-exporter" {
@@ -52,10 +52,10 @@ resource "azurerm_network_security_rule" "vault_ingress_node-exporter" {
   protocol                    = "TCP"
   source_port_range           = "*"
   destination_port_range      = "10300"
-  source_address_prefix       = "${azurerm_subnet.worker_subnet.address_prefix}"
-  destination_address_prefix  = "${var.vnet_cidr}"
-  resource_group_name         = "${var.resource_group_name}"
-  network_security_group_name = "${azurerm_network_security_group.vault.name}"
+  source_address_prefix       = azurerm_subnet.worker_subnet.address_prefix
+  destination_address_prefix  = var.vnet_cidr
+  resource_group_name         = var.resource_group_name
+  network_security_group_name = azurerm_network_security_group.vault.name
 }
 
 resource "azurerm_network_security_rule" "vault_ingress_cert-exporter" {
@@ -67,10 +67,10 @@ resource "azurerm_network_security_rule" "vault_ingress_cert-exporter" {
   protocol                    = "TCP"
   source_port_range           = "*"
   destination_port_range      = "9005"
-  source_address_prefix       = "${azurerm_subnet.worker_subnet.address_prefix}"
-  destination_address_prefix  = "${var.vnet_cidr}"
-  resource_group_name         = "${var.resource_group_name}"
-  network_security_group_name = "${azurerm_network_security_group.vault.name}"
+  source_address_prefix       = azurerm_subnet.worker_subnet.address_prefix
+  destination_address_prefix  = var.vnet_cidr
+  resource_group_name         = var.resource_group_name
+  network_security_group_name = azurerm_network_security_group.vault.name
 }
 
 resource "azurerm_network_security_rule" "vault_egress" {
@@ -83,8 +83,8 @@ resource "azurerm_network_security_rule" "vault_egress" {
   source_port_range      = "*"
   destination_port_range = "*"
 
-  source_address_prefix       = "${var.vnet_cidr}"
+  source_address_prefix       = var.vnet_cidr
   destination_address_prefix  = "*"
-  resource_group_name         = "${var.resource_group_name}"
-  network_security_group_name = "${azurerm_network_security_group.vault.name}"
+  resource_group_name         = var.resource_group_name
+  network_security_group_name = azurerm_network_security_group.vault.name
 }

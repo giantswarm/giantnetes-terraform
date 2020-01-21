@@ -16,22 +16,22 @@ locals {
 data "aws_region" "current" {}
 
 resource "aws_instance" "bastion" {
-  count                = "${var.bastion_count}"
-  ami                  = "${var.container_linux_ami_id}"
-  instance_type        = "${var.instance_type}"
-  iam_instance_profile = "${aws_iam_instance_profile.bastion.name}"
+  count                = var.bastion_count
+  ami                  = var.container_linux_ami_id
+  instance_type        = var.instance_type
+  iam_instance_profile = aws_iam_instance_profile.bastion.name
 
-  associate_public_ip_address = "${var.with_public_access}"
+  associate_public_ip_address = var.with_public_access
   source_dest_check           = false
-  subnet_id                   = "${var.bastion_subnet_ids[count.index]}"
+  subnet_id                   = var.bastion_subnet_ids[count.index]
   vpc_security_group_ids      = ["${aws_security_group.bastion.id}"]
 
   root_block_device {
-    volume_type = "${var.volume_type}"
-    volume_size = "${var.volume_size_root}"
+    volume_type = var.volume_type
+    volume_size = var.volume_size_root
   }
 
-  user_data = "${data.ignition_config.s3.rendered}"
+  user_data = data.ignition_config.s3.rendered
 
   tags = {
     Name                         = "${var.cluster_name}-bastion${count.index}"
@@ -41,7 +41,7 @@ resource "aws_instance" "bastion" {
 
 resource "aws_security_group" "bastion" {
   name   = "${var.cluster_name}-bastion"
-  vpc_id = "${var.vpc_id}"
+  vpc_id = var.vpc_id
 
   # Allow all outbound traffic
   egress {
@@ -83,8 +83,8 @@ resource "aws_security_group" "bastion" {
 }
 
 resource "aws_route53_record" "bastion" {
-  count   = "${var.route53_enabled ? var.bastion_count : 0}"
-  zone_id = "${var.dns_zone_id}"
+  count   = var.route53_enabled ? var.bastion_count : 0
+  zone_id = var.dns_zone_id
   name    = "bastion${count.index + 1}"
   type    = "A"
 
@@ -96,27 +96,27 @@ resource "aws_route53_record" "bastion" {
 # To avoid 16kb user_data limit upload CoreOS ignition config to a s3 bucket.
 # Ignition supports s3 out-of-the-box.
 resource "aws_s3_bucket_object" "ignition_bastion_with_tags" {
-  count   = "${var.s3_bucket_tags ? 1 : 0}"
-  bucket  = "${var.ignition_bucket_id}"
+  count   = var.s3_bucket_tags ? 1 : 0
+  bucket  = var.ignition_bucket_id
   key     = "${var.cluster_name}-ignition-bastion.json"
-  content = "${var.user_data}"
+  content = var.user_data
   acl     = "private"
 
   server_side_encryption = "AES256"
 
-  tags = "${merge(
+  tags = merge(
     local.common_tags,
     map(
       "Name", "${var.cluster_name}-ignition-bastion"
     )
-  )}"
+  )
 }
 
 resource "aws_s3_bucket_object" "ignition_bastion_without_tags" {
-  count   = "${var.s3_bucket_tags ? 0 : 1}"
-  bucket  = "${var.ignition_bucket_id}"
+  count   = var.s3_bucket_tags ? 0 : 1
+  bucket  = var.ignition_bucket_id
   key     = "${var.cluster_name}-ignition-bastion.json"
-  content = "${var.user_data}"
+  content = var.user_data
   acl     = "private"
 
   server_side_encryption = "AES256"
@@ -130,8 +130,8 @@ data "ignition_config" "s3" {
 }
 
 resource "aws_vpc_endpoint" "cloudwatch" {
-  count              = "${var.forward_logs_enabled ? 1 : 0}"
-  vpc_id             = "${var.vpc_id}"
+  count              = var.forward_logs_enabled ? 1 : 0
+  vpc_id             = var.vpc_id
   service_name       = "com.amazonaws.${data.aws_region.current.name}.logs"
   vpc_endpoint_type  = "Interface"
   security_group_ids = ["${aws_security_group.bastion.id}"]

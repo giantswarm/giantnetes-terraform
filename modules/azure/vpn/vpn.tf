@@ -1,16 +1,16 @@
 resource "azurerm_public_ip" "public_ip" {
-  count               = "${var.vpn_enabled}"
+  count               = var.vpn_enabled
   name                = "${var.cluster_name}-vpn-public-ip"
-  location            = "${var.location}"
-  resource_group_name = "${var.resource_group_name}"
+  location            = var.location
+  resource_group_name = var.resource_group_name
   allocation_method   = "Dynamic"
 }
 
 resource "azurerm_virtual_network_gateway" "gateway" {
-  count               = "${var.vpn_enabled}"
+  count               = var.vpn_enabled
   name                = "${var.cluster_name}-vpn-gateway"
-  location            = "${var.location}"
-  resource_group_name = "${var.resource_group_name}"
+  location            = var.location
+  resource_group_name = var.resource_group_name
 
   type     = "Vpn"
   vpn_type = "RouteBased"
@@ -24,26 +24,26 @@ resource "azurerm_virtual_network_gateway" "gateway" {
 
   ip_configuration {
     name                          = "${var.cluster_name}-vpn-gateway-ip-config"
-    public_ip_address_id          = "${azurerm_public_ip.public_ip[count.index].id}"
+    public_ip_address_id          = azurerm_public_ip.public_ip[count.index].id
     private_ip_address_allocation = "Dynamic"
-    subnet_id                     = "${var.subnet_id}"
+    subnet_id                     = var.subnet_id
   }
 }
 
 resource "azurerm_local_network_gateway" "local_gateway_0" {
-  count               = "${var.vpn_enabled}"
+  count               = var.vpn_enabled
   name                = "${var.cluster_name}-vpn-right-gateway-0"
-  location            = "${var.location}"
-  resource_group_name = "${var.resource_group_name}"
-  gateway_address     = "${var.vpn_right_gateway_address_0}"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  gateway_address     = var.vpn_right_gateway_address_0
   address_space       = ["${var.vpn_right_subnet_cidr_0}"]
 }
 
 resource "azurerm_local_network_gateway" "local_gateway_1" {
-  count               = "${var.vpn_enabled}"
+  count               = var.vpn_enabled
   name                = "${var.cluster_name}-vpn-right-gateway-1"
-  location            = "${var.location}"
-  resource_group_name = "${var.resource_group_name}"
-  gateway_address     = "${var.vpn_right_gateway_address_1}"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  gateway_address     = var.vpn_right_gateway_address_1
   address_space       = ["${var.vpn_right_subnet_cidr_1}"]
 }

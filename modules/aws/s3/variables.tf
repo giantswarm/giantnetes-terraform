@@ -1,11 +1,11 @@
 variable "aws_account" {
-  type = "string"
+  type = string
 }
 
 variable "cluster_name" {
-  type = "string"
+  type = string
 }
 
 variable "logs_expiration_days" {
-  type = "string"
+  type = string
 }

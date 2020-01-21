@@ -28,16 +28,16 @@ resource "aws_s3_bucket" "logging" {
     enabled = true
 
     expiration {
-      days = "${var.logs_expiration_days}"
+      days = var.logs_expiration_days
     }
   }
 
-  tags = "${merge(
+  tags = merge(
     local.common_tags,
     map(
       "Name", "${var.cluster_name}-access-logs"
     )
-  )}"
+  )
 }
 
 resource "aws_s3_bucket" "ignition" {
@@ -46,7 +46,7 @@ resource "aws_s3_bucket" "ignition" {
   force_destroy = true
 
   logging {
-    target_bucket = "${aws_s3_bucket.logging.id}"
+    target_bucket = aws_s3_bucket.logging.id
     target_prefix = "${var.cluster_name}-ignition-logs/"
   }
 
@@ -58,12 +58,12 @@ resource "aws_s3_bucket" "ignition" {
     }
   }
 
-  tags = "${merge(
+  tags = merge(
     local.common_tags,
     map(
       "Name", "${var.cluster_name}-ignition"
     )
-  )}"
+  )
 }
 
 output "ignition_bucket_id" {
@@ -78,10 +78,10 @@ resource "aws_cloudwatch_log_group" "control-plane" {
   name              = "${var.cluster_name}-control-plane"
   retention_in_days = "90"
 
-  tags = "${merge(
+  tags = merge(
     local.common_tags,
     map(
       "Name", "${var.cluster_name}-ignition"
     )
-  )}"
+  )
 }

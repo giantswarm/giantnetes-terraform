@@ -2,10 +2,10 @@ locals {
   # In China there is no tags for s3 buckets
   s3_ignition_worker_key = "${element(concat(aws_s3_bucket_object.ignition_worker_with_tags.*.key, aws_s3_bucket_object.ignition_worker_without_tags.*.key), 0)}"
 
-  common_tags = "${map(
+  common_tags = map(
     "giantswarm.io/installation", "${var.cluster_name}",
     "kubernetes.io/cluster/${var.cluster_name}", "owned"
-  )}"
+  )
 }
 
 resource "aws_cloudformation_stack" "worker_asg" {
@@ -69,9 +69,9 @@ EOF
 
 resource "aws_launch_configuration" "worker" {
   name_prefix          = "${var.cluster_name}-worker-"
-  iam_instance_profile = "${aws_iam_instance_profile.worker.name}"
-  image_id             = "${var.container_linux_ami_id}"
-  instance_type        = "${var.instance_type}"
+  iam_instance_profile = aws_iam_instance_profile.worker.name
+  image_id             = var.container_linux_ami_id
+  instance_type        = var.instance_type
   security_groups      = ["${aws_security_group.worker.id}"]
 
   lifecycle {
@@ -81,24 +81,24 @@ resource "aws_launch_configuration" "worker" {
   associate_public_ip_address = false
 
   root_block_device {
-    volume_type = "${var.volume_type}"
-    volume_size = "${var.volume_size_root}"
+    volume_type = var.volume_type
+    volume_size = var.volume_size_root
   }
 
   # Docker volume.
   ebs_block_device {
-    device_name           = "${var.volume_docker}"
+    device_name           = var.volume_docker
     delete_on_termination = true
-    volume_type           = "${var.volume_type}"
-    volume_size           = "${var.volume_size_docker}"
+    volume_type           = var.volume_type
+    volume_size           = var.volume_size_docker
   }
 
-  user_data = "${data.ignition_config.s3.rendered}"
+  user_data = data.ignition_config.s3.rendered
 }
 
 resource "aws_security_group" "worker" {
   name   = "${var.cluster_name}-worker"
-  vpc_id = "${var.vpc_id}"
+  vpc_id = var.vpc_id
 
   # Allow all outbound traffic
   egress {
@@ -132,40 +132,40 @@ resource "aws_security_group" "worker" {
     cidr_blocks = ["${var.vpc_cidr}"]
   }
 
-  tags = "${merge(
+  tags = merge(
     local.common_tags,
     map(
       "Name", "${var.cluster_name}-worker"
     )
-  )}"
+  )
 }
 
 # To avoid 16kb user_data limit upload CoreOS ignition config to a s3 bucket.
 # Ignition supports s3 out-of-the-box.
 resource "aws_s3_bucket_object" "ignition_worker_with_tags" {
-  count   = "${var.s3_bucket_tags ? 1 : 0}"
-  bucket  = "${var.ignition_bucket_id}"
+  count   = var.s3_bucket_tags ? 1 : 0
+  bucket  = var.ignition_bucket_id
   key     = "${var.cluster_name}-ignition-worker.json"
-  content = "${var.user_data}"
+  content = var.user_data
   acl     = "private"
 
   server_side_encryption = "AES256"
 
-  tags = "${merge(
+  tags = merge(
     local.common_tags,
     map(
       "Name", "${var.cluster_name}-ignition-worker"
     )
-  )}"
+  )
 }
 
 # To avoid 16kb user_data limit upload CoreOS ignition config to a s3 bucket.
 # Ignition supports s3 out-of-the-box.
 resource "aws_s3_bucket_object" "ignition_worker_without_tags" {
-  count   = "${var.s3_bucket_tags ? 0 : 1}"
-  bucket  = "${var.ignition_bucket_id}"
+  count   = var.s3_bucket_tags ? 0 : 1
+  bucket  = var.ignition_bucket_id
   key     = "${var.cluster_name}-ignition-worker.json"
-  content = "${var.user_data}"
+  content = var.user_data
   acl     = "private"
 
   server_side_encryption = "AES256"
@@ -173,7 +173,7 @@ resource "aws_s3_bucket_object" "ignition_worker_without_tags" {
 
 data "ignition_config" "s3" {
   replace {
-    source       = "${format("s3://%s/%s", var.ignition_bucket_id, local.s3_ignition_worker_key)}"
+    source       = format("s3://%s/%s", var.ignition_bucket_id, local.s3_ignition_worker_key)
     verification = "sha512-${sha512(var.user_data)}"
   }
 }

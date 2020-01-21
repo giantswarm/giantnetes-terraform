@@ -25,7 +25,7 @@ EOF
 
 resource "aws_iam_role_policy" "master" {
   name = "${var.cluster_name}-master"
-  role = "${aws_iam_role.master.id}"
+  role = aws_iam_role.master.id
 
   lifecycle {
     create_before_destroy = true
@@ -69,7 +69,7 @@ EOF
 
 resource "aws_iam_instance_profile" "master" {
   name = "${var.cluster_name}-master"
-  role = "${aws_iam_role.master.name}"
+  role = aws_iam_role.master.name
 
   lifecycle {
     create_before_destroy = true
