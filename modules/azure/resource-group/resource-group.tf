@@ -1,14 +1,14 @@
 variable "location" {
-  type = "string"
+  type = string
 }
 
 variable "cluster_name" {
-  type = "string"
+  type = string
 }
 
 resource "azurerm_resource_group" "cluster_rg" {
-  location = "${var.location}"
-  name     = "${var.cluster_name}"
+  location = var.location
+  name     = var.cluster_name
 
   tags = {
     Name                   = "${var.cluster_name}"

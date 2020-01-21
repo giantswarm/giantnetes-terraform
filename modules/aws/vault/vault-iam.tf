@@ -25,7 +25,7 @@ EOF
 
 resource "aws_iam_role_policy" "vault-s3-ignition" {
   name = "${var.cluster_name}-vault-s3-ignition"
-  role = "${aws_iam_role.vault.id}"
+  role = aws_iam_role.vault.id
 
   policy = <<EOF
 {
@@ -47,7 +47,7 @@ EOF
 
 resource "aws_iam_instance_profile" "vault" {
   name = "${var.cluster_name}-vault"
-  role = "${aws_iam_role.vault.name}"
+  role = aws_iam_role.vault.name
 
   lifecycle {
     create_before_destroy = true

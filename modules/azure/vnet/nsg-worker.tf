@@ -1,7 +1,7 @@
 resource "azurerm_network_security_group" "worker" {
   name                = "${var.cluster_name}-worker"
-  location            = "${var.location}"
-  resource_group_name = "${var.resource_group_name}"
+  location            = var.location
+  resource_group_name = var.resource_group_name
 
   tags = {
     GiantSwarmInstallation = "${var.cluster_name}"
@@ -9,8 +9,8 @@ resource "azurerm_network_security_group" "worker" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "worker" {
-  subnet_id                 = "${azurerm_subnet.worker_subnet.id}"
-  network_security_group_id = "${azurerm_network_security_group.worker.id}"
+  subnet_id                 = azurerm_subnet.worker_subnet.id
+  network_security_group_id = azurerm_network_security_group.worker.id
 }
 
 resource "azurerm_network_security_rule" "master_ingress_api" {
@@ -24,8 +24,8 @@ resource "azurerm_network_security_rule" "master_ingress_api" {
   destination_port_range      = "443"
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
-  resource_group_name         = "${var.resource_group_name}"
-  network_security_group_name = "${azurerm_network_security_group.worker.name}"
+  resource_group_name         = var.resource_group_name
+  network_security_group_name = azurerm_network_security_group.worker.name
 }
 
 resource "azurerm_network_security_rule" "master_ingress_ingress" {
@@ -39,8 +39,8 @@ resource "azurerm_network_security_rule" "master_ingress_ingress" {
   destination_port_range      = "30010-30011"
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
-  resource_group_name         = "${var.resource_group_name}"
-  network_security_group_name = "${azurerm_network_security_group.worker.name}"
+  resource_group_name         = var.resource_group_name
+  network_security_group_name = azurerm_network_security_group.worker.name
 }
 
 resource "azurerm_network_security_rule" "worker_ingress_internal_any" {
@@ -54,8 +54,8 @@ resource "azurerm_network_security_rule" "worker_ingress_internal_any" {
   destination_port_range      = "10-65535"
   source_address_prefix       = "VirtualNetwork"
   destination_address_prefix  = "*"
-  resource_group_name         = "${var.resource_group_name}"
-  network_security_group_name = "${azurerm_network_security_group.worker.name}"
+  resource_group_name         = var.resource_group_name
+  network_security_group_name = azurerm_network_security_group.worker.name
 }
 
 resource "azurerm_network_security_rule" "worker_egress" {
@@ -68,8 +68,8 @@ resource "azurerm_network_security_rule" "worker_egress" {
   source_port_range      = "*"
   destination_port_range = "*"
 
-  source_address_prefix       = "${var.vnet_cidr}"
+  source_address_prefix       = var.vnet_cidr
   destination_address_prefix  = "*"
-  resource_group_name         = "${var.resource_group_name}"
-  network_security_group_name = "${azurerm_network_security_group.worker.name}"
+  resource_group_name         = var.resource_group_name
+  network_security_group_name = azurerm_network_security_group.worker.name
 }

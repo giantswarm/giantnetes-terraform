@@ -1,7 +1,7 @@
 resource "azurerm_network_security_group" "bastion" {
   name                = "${var.cluster_name}-bastion"
-  location            = "${var.location}"
-  resource_group_name = "${var.resource_group_name}"
+  location            = var.location
+  resource_group_name = var.resource_group_name
 
   tags = {
     GiantSwarmInstallation = "${var.cluster_name}"
@@ -9,8 +9,8 @@ resource "azurerm_network_security_group" "bastion" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "bastion" {
-  subnet_id                 = "${azurerm_subnet.bastion_subnet.id}"
-  network_security_group_id = "${azurerm_network_security_group.bastion.id}"
+  subnet_id                 = azurerm_subnet.bastion_subnet.id
+  network_security_group_id = azurerm_network_security_group.bastion.id
 }
 
 resource "azurerm_network_security_rule" "bastion_ingress_ssh" {
@@ -24,9 +24,9 @@ resource "azurerm_network_security_rule" "bastion_ingress_ssh" {
   destination_port_range = "22"
 
   source_address_prefix       = "*"
-  destination_address_prefix  = "${var.vnet_cidr}"
-  resource_group_name         = "${var.resource_group_name}"
-  network_security_group_name = "${azurerm_network_security_group.bastion.name}"
+  destination_address_prefix  = var.vnet_cidr
+  resource_group_name         = var.resource_group_name
+  network_security_group_name = azurerm_network_security_group.bastion.name
 }
 
 resource "azurerm_network_security_rule" "bastion_ingress_internal_any" {
@@ -40,8 +40,8 @@ resource "azurerm_network_security_rule" "bastion_ingress_internal_any" {
   destination_port_range      = "10-65535"
   source_address_prefix       = "VirtualNetwork"
   destination_address_prefix  = "*"
-  resource_group_name         = "${var.resource_group_name}"
-  network_security_group_name = "${azurerm_network_security_group.bastion.name}"
+  resource_group_name         = var.resource_group_name
+  network_security_group_name = azurerm_network_security_group.bastion.name
 }
 
 resource "azurerm_network_security_rule" "bastion_egress" {
@@ -54,8 +54,8 @@ resource "azurerm_network_security_rule" "bastion_egress" {
   source_port_range      = "*"
   destination_port_range = "*"
 
-  source_address_prefix       = "${var.vnet_cidr}"
+  source_address_prefix       = var.vnet_cidr
   destination_address_prefix  = "*"
-  resource_group_name         = "${var.resource_group_name}"
-  network_security_group_name = "${azurerm_network_security_group.bastion.name}"
+  resource_group_name         = var.resource_group_name
+  network_security_group_name = azurerm_network_security_group.bastion.name
 }

@@ -1,5 +1,5 @@
 variable "coreos_channel" {
-  type = "string"
+  type = string
 
   description = <<EOF
 The Container Linux update channel.
@@ -9,7 +9,7 @@ EOF
 }
 
 variable "coreos_version" {
-  type = "string"
+  type = string
 
   description = <<EOF
 The Container Linux version to use. Set to `latest` to select the latest available version for the selected update channel.

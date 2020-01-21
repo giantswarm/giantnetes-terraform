@@ -2,7 +2,7 @@ provider "azurerm" {
   # versions 1.34.0 and 1.35.0 break e2e tests, please don't use them.
   version = "~> 1.33.0"
 
-  environment = "${var.azure_cloud}"
+  environment = var.azure_cloud
 }
 
 locals {
@@ -15,15 +15,15 @@ data "azurerm_client_config" "current" {}
 module "container_linux" {
   source = "../../../modules/container-linux"
 
-  coreos_channel = "${var.container_linux_channel}"
-  coreos_version = "${var.container_linux_version}"
+  coreos_channel = var.container_linux_channel
+  coreos_version = var.container_linux_version
 }
 
 module "resource_group" {
   source = "../../../modules/azure/resource-group"
 
-  location     = "${var.azure_location}"
-  cluster_name = "${var.cluster_name}"
+  location     = var.azure_location
+  cluster_name = var.cluster_name
 }
 
 module "dns" {
@@ -31,37 +31,37 @@ module "dns" {
 
   location = "${var.azure_location}"
 
-  cluster_name        = "${var.cluster_name}"
-  resource_group_name = "${module.resource_group.name}"
-  root_dns_zone_name  = "${var.root_dns_zone_name}"
-  root_dns_zone_rg    = "${var.root_dns_zone_rg}"
-  zone_name           = "${var.base_domain}"
+  cluster_name        = var.cluster_name
+  resource_group_name = module.resource_group.name
+  root_dns_zone_name  = var.root_dns_zone_name
+  root_dns_zone_rg    = var.root_dns_zone_rg
+  zone_name           = var.base_domain
 }
 
 module "vnet" {
   source = "../../../modules/azure/vnet"
 
-  api_dns             = "${var.api_dns}"
-  base_domain         = "${var.base_domain}"
+  api_dns             = var.api_dns
+  base_domain         = var.base_domain
   bastion_count       = "2"
-  bastion_cidr        = "${var.bastion_cidr}"
-  cluster_name        = "${var.cluster_name}"
-  ingress_dns         = "${var.ingress_dns}"
-  location            = "${var.azure_location}"
-  master_count        = "${var.master_count}"
-  worker_count        = "${var.worker_count}"
-  resource_group_name = "${module.resource_group.name}"
-  vault_dns           = "${var.vault_dns}"
-  vnet_cidr           = "${var.vnet_cidr}"
-  vpn_enabled         = "${var.vpn_enabled}"
+  bastion_cidr        = var.bastion_cidr
+  cluster_name        = var.cluster_name
+  ingress_dns         = var.ingress_dns
+  location            = var.azure_location
+  master_count        = var.master_count
+  worker_count        = var.worker_count
+  resource_group_name = module.resource_group.name
+  vault_dns           = var.vault_dns
+  vnet_cidr           = var.vnet_cidr
+  vpn_enabled         = var.vpn_enabled
 }
 
 module "blob" {
   source = "../../../modules/azure/blob"
 
-  cluster_name        = "${var.cluster_name}"
-  azure_location      = "${var.azure_location}"
-  resource_group_name = "${module.resource_group.name}"
+  cluster_name        = var.cluster_name
+  azure_location      = var.azure_location
+  resource_group_name = module.resource_group.name
 }
 
 locals {

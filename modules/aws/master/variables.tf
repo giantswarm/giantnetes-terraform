@@ -1,46 +1,46 @@
 variable "api_dns" {
-  type = "string"
+  type = string
 }
 
 variable "arn_region" {
-  type = "string"
+  type = string
 }
 
 variable "aws_account" {
-  type = "string"
+  type = string
 }
 
 variable "elb_subnet_ids" {
-  type = "list"
+  type = list
 }
 
 variable "container_linux_ami_id" {
-  type = "string"
+  type = string
 }
 
 variable "cluster_name" {
-  type = "string"
+  type = string
 }
 
 variable "ignition_bucket_id" {
-  type = "string"
+  type = string
 }
 
 variable "iam_region" {
-  type = "string"
+  type = string
 }
 
 variable "instance_type" {
-  type = "string"
+  type = string
 }
 
 variable "master_count" {
-  type    = "string"
+  type    = string
   default = 1
 }
 
 variable "master_subnet_ids" {
-  type = "list"
+  type = list
 }
 
 variable "user_data" {
@@ -48,43 +48,43 @@ variable "user_data" {
 }
 
 variable "volume_type" {
-  type    = "string"
+  type    = string
   default = "gp2"
 }
 
 variable "dns_zone_id" {
-  type = "string"
+  type = string
 }
 
 variable "volume_size_docker" {
-  type    = "string"
+  type    = string
   default = 50
 }
 
 variable "volume_size_etcd" {
-  type    = "string"
+  type    = string
   default = 10
 }
 
 variable "volume_size_root" {
-  type    = "string"
+  type    = string
   default = 8
 }
 
 variable "volume_docker" {
-  type = "string"
+  type = string
 }
 
 variable "volume_etcd" {
-  type = "string"
+  type = string
 }
 
 variable "vpc_cidr" {
-  type = "string"
+  type = string
 }
 
 variable "vpc_id" {
-  type = "string"
+  type = string
 }
 
 variable "route53_enabled" {

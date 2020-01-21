@@ -1,31 +1,31 @@
 variable "arn_region" {
-  type    = "string"
+  type    = string
   default = "aws"
 }
 
 variable "cluster_name" {
-  type        = "string"
+  type        = string
   description = "Need to be unique within the account"
 }
 
 variable "aws_region" {
-  type        = "string"
+  type        = string
   description = "An AWS region where the cluster will be built."
 }
 
 variable "aws_account" {
-  type        = "string"
+  type        = string
   description = "An AWS account ID."
 }
 
 variable "ami_owner" {
-  type        = "string"
+  type        = string
   default     = "595879546273"
   description = "ID of the ami owner for CoreOS images."
 }
 
 variable "bastion_log_priority" {
-  type        = "string"
+  type        = string
   default     = "none"
   description = "Default log priority for exported logs (based on journalctl priorities)"
 }
@@ -36,29 +36,29 @@ variable "bastion_forward_logs_enabled" {
 }
 
 variable "iam_region" {
-  type    = "string"
+  type    = string
   default = "ec2.amazonaws.com"
 }
 
 variable "nodes_vault_token" {
-  type        = "string"
+  type        = string
   description = "Vault token used by nodes for bootstrapping. Should be defined after Vault is installed."
 }
 
 variable "master_count" {
-  type        = "string"
+  type        = string
   description = "Number of master nodes to be created. Supported values 1 (single master) or 3 (multi master)."
   default     = "3"
 }
 
 variable "worker_count" {
-  type        = "string"
+  type        = string
   description = "Number of worker nodes to be created."
   default     = "3"
 }
 
 variable "logs_expiration_days" {
-  type        = "string"
+  type        = string
   description = "Number of days access logs will be stored in logging bucket."
   default     = "365"
 }
@@ -70,17 +70,17 @@ variable "s3_bucket_tags" {
 ### Compute and Storage ###
 
 variable "bastion_instance_type" {
-  type    = "string"
+  type    = string
   default = "t2.micro"
 }
 
 variable "vault_instance_type" {
-  type    = "string"
+  type    = string
   default = "t2.medium"
 }
 
 variable "master_instance" {
-  type = "map"
+  type = map
 
   default = {
     type          = "m5.large"
@@ -90,7 +90,7 @@ variable "master_instance" {
 }
 
 variable "worker_instance" {
-  type = "map"
+  type = map
 
   default = {
     type          = "m5.xlarge"
@@ -110,36 +110,36 @@ variable "container_linux_version" {
 }
 
 variable "docker_registry" {
-  type    = "string"
+  type    = string
   default = "quay.io"
 }
 
 variable "hyperkube_version" {
-  type    = "string"
+  type    = string
   default = "v1.15.4"
 }
 
 ### DNS ###
 
 variable "base_domain" {
-  type        = "string"
+  type        = string
   description = "Base domain for g8s cluster (e.g $CLUSTER_NAME.$AWS_REGION.aws.gigantic.io)."
 }
 
 variable "vault_dns" {
-  type        = "string"
+  type        = string
   description = "vault DNS prefix (i.e. vault)."
   default     = "vault"
 }
 
 variable "api_dns" {
-  type        = "string"
+  type        = string
   description = "FQDN for api (i.e. g8s)."
   default     = "g8s"
 }
 
 variable "ingress_dns" {
-  type        = "string"
+  type        = string
   description = "FQDN for ingress (i.e. ingress)."
   default     = "ingress"
 }
@@ -177,7 +177,7 @@ variable "docker_cidr" {
 
 variable "ipam_network_cidr" {
   description = "CIDR for guest VMs internal virtual network."
-  type        = "string"
+  type        = string
   default     = "10.1.0.0/16"
 }
 
@@ -203,25 +203,25 @@ variable "k8s_audit_webhook_port" {
 
 variable "subnets_bastion" {
   description = "CIDR for bastion networks"
-  type        = "list"
+  type        = list
   default     = ["10.0.1.0/25", "10.0.1.128/25"]
 }
 
 variable "subnets_elb" {
   description = "CIDR for load balancer networks."
-  type        = "list"
+  type        = list
   default     = ["10.0.2.0/26", "10.0.2.64/26", "10.0.2.128/26"]
 }
 
 variable "subnets_vault" {
   description = "CIDR for Vault network."
-  type        = "list"
+  type        = list
   default     = ["10.0.3.0/25"]
 }
 
 variable "subnets_worker" {
   description = "CIDR for worker networks"
-  type        = "list"
+  type        = list
   default     = ["10.0.5.0/26", "10.0.5.64/26", "10.0.5.128/26"]
 }
 
@@ -256,21 +256,21 @@ variable "vpn_instance_enabled" {
 ## Gridscale
 variable "external_ipsec_public_ip_0" {
   description = "External public ip from VPN 0 - Gridscale"
-  type        = "string"
+  type        = string
   default     = "185.102.95.187"
 }
 
 ## Vultr
 variable "external_ipsec_public_ip_1" {
   description = "External public cidr from VPN 1 - Vultr"
-  type        = "string"
+  type        = string
   default     = "95.179.153.65"
 }
 
 ## vpn password
 variable "external_ipsec_password" {
   description = "shared password for ipsec connection"
-  type        = "string"
+  type        = string
   default     = "_none_"
 }
 
@@ -286,7 +286,7 @@ variable "pod_infra_image" {
 ### External Kubernetes API Access
 variable "k8s_api_external_access_whitelist" {
   description = "Comma separated list of networks for k8s API external access"
-  type        = "string"
+  type        = string
   default     = ""
 }
 

@@ -1,11 +1,11 @@
 resource "aws_elb" "vault" {
   name            = "${var.cluster_name}-vault"
   internal        = true
-  subnets         = "${var.elb_subnet_ids}"
+  subnets         = var.elb_subnet_ids
   security_groups = ["${aws_security_group.vault_elb.id}"]
 
   listener {
-    instance_port     = "${var.vault_port}"
+    instance_port     = var.vault_port
     instance_protocol = "tcp"
     lb_port           = 443
     lb_protocol       = "tcp"
@@ -26,14 +26,14 @@ resource "aws_elb" "vault" {
 }
 
 resource "aws_elb_attachment" "vault" {
-  count         = "${var.vault_count}"
-  elb      = "${aws_elb.vault.id}"
-  instance = "${aws_instance.vault[count.index].id}"
+  count         = var.vault_count
+  elb      = aws_elb.vault.id
+  instance = aws_instance.vault[count.index].id
 }
 
 resource "aws_security_group" "vault_elb" {
   name   = "${var.cluster_name}-vault-elb"
-  vpc_id = "${var.vpc_id}"
+  vpc_id = var.vpc_id
 
   egress {
     from_port   = 0
@@ -63,14 +63,14 @@ resource "aws_security_group" "vault_elb" {
 }
 
 resource "aws_route53_record" "vault-elb" {
-  count   = "${var.route53_enabled ? 1 : 0}"
-  zone_id = "${var.dns_zone_id}"
-  name    = "${var.vault_dns}"
+  count   = var.route53_enabled ? 1 : 0
+  zone_id = var.dns_zone_id
+  name    = var.vault_dns
   type    = "A"
 
   alias {
-    name                   = "${aws_elb.vault.dns_name}"
-    zone_id                = "${aws_elb.vault.zone_id}"
+    name                   = aws_elb.vault.dns_name
+    zone_id                = aws_elb.vault.zone_id
     evaluate_target_health = false
   }
 }

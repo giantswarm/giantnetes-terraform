@@ -1,5 +1,5 @@
 resource "aws_iam_role" "vpn_instance" {
-  count = "${var.vpn_instance_enabled ? 1 : 0}"
+  count = var.vpn_instance_enabled ? 1 : 0
   name  = "${var.cluster_name}-vpn-instance"
   path  = "/"
 
@@ -25,9 +25,9 @@ EOF
 }
 
 resource "aws_iam_role_policy" "vpn_instance" {
-  count = "${var.vpn_instance_enabled ? 1 : 0}"
+  count = var.vpn_instance_enabled ? 1 : 0
   name  = "${var.cluster_name}-vpn-instance"
-  role  = "${aws_iam_role.vpn_instance[count.index].id}"
+  role  = aws_iam_role.vpn_instance[count.index].id
 
   lifecycle {
     create_before_destroy = true
@@ -48,9 +48,9 @@ EOF
 }
 
 resource "aws_iam_instance_profile" "vpn_instance" {
-  count = "${var.vpn_instance_enabled ? 1 : 0}"
+  count = var.vpn_instance_enabled ? 1 : 0
   name  = "${var.cluster_name}-vpn-instance"
-  role  = "${aws_iam_role.vpn_instance[count.index].name}"
+  role  = aws_iam_role.vpn_instance[count.index].name
 
   lifecycle {
     create_before_destroy = true

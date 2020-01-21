@@ -25,7 +25,7 @@ EOF
 
 resource "aws_iam_role_policy" "bastion" {
   name = "${var.cluster_name}-bastion"
-  role = "${aws_iam_role.bastion.id}"
+  role = aws_iam_role.bastion.id
 
   lifecycle {
     create_before_destroy = true
@@ -59,7 +59,7 @@ EOF
 
 resource "aws_iam_instance_profile" "bastion" {
   name = "${var.cluster_name}-bastion"
-  role = "${aws_iam_role.bastion.name}"
+  role = aws_iam_role.bastion.name
 
   lifecycle {
     create_before_destroy = true

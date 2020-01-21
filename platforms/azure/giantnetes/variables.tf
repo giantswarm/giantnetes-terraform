@@ -1,10 +1,10 @@
 variable "cluster_name" {
-  type        = "string"
+  type        = string
   description = "Need to be unique within the account"
 }
 
 variable "azure_location" {
-  type        = "string"
+  type        = string
   description = "An Azure location where the cluster will be built."
 }
 
@@ -16,44 +16,44 @@ variable "azure_cloud" {
 # Azure has different number of failure domains depending on location.
 # For example, German cloud central location has 2 failure domains.
 variable "platform_fault_domain_count" {
-  type        = "string"
+  type        = string
   description = "Number of failure domains to use for availability sets."
   default     = 3
 }
 
 variable "azure_sp_tenantid" {
-  type        = "string"
+  type        = string
   description = "Tenant ID of Service Principal for Kubernetes"
 }
 
 variable "azure_sp_subscriptionid" {
-  type        = "string"
+  type        = string
   description = "Subscription ID of Service Principal for Kubernetes"
 }
 
 variable "azure_sp_aadclientid" {
-  type        = "string"
+  type        = string
   description = "ID of Service Principal for Kubernetes"
 }
 
 variable "azure_sp_aadclientsecret" {
-  type        = "string"
+  type        = string
   description = "Secret of Service Principal for Kubernetes"
 }
 
 variable "nodes_vault_token" {
-  type        = "string"
+  type        = string
   description = "Vault token used by nodes for bootstrapping. Should be defined after Vault is installed."
 }
 
 variable "master_count" {
-  type        = "string"
+  type        = string
   description = "Number of master nodes to be created. Allowed values are 1 or 3."
   default     = "3"
 }
 
 variable "worker_count" {
-  type        = "string"
+  type        = string
   description = "Number of worker nodes to be created."
   default     = "3"
 }
@@ -61,42 +61,42 @@ variable "worker_count" {
 ### Compute and Storage ###
 
 variable "bastion_vm_size" {
-  type    = "string"
+  type    = string
   default = "Standard_A1"
 }
 
 variable "os_disk_storage_type" {
-  type    = "string"
+  type    = string
   default = "Standard_LRS"
 }
 
 variable "vault_vm_size" {
-  type    = "string"
+  type    = string
   default = "Standard_DS1_v2"
 }
 
 variable "vault_storage_type" {
-  type    = "string"
+  type    = string
   default = "Premium_LRS"
 }
 
 variable "master_vm_size" {
-  type    = "string"
+  type    = string
   default = "Standard_D2s_v3"
 }
 
 variable "master_storage_type" {
-  type    = "string"
+  type    = string
   default = "Premium_LRS"
 }
 
 variable "worker_vm_size" {
-  type    = "string"
+  type    = string
   default = "Standard_D4s_v3"
 }
 
 variable "worker_storage_type" {
-  type    = "string"
+  type    = string
   default = "Standard_LRS"
 }
 
@@ -118,35 +118,35 @@ variable "core_ssh_key" {
 }
 
 variable "docker_registry" {
-  type    = "string"
+  type    = string
   default = "quay.io"
 }
 variable "hyperkube_version" {
-  type    = "string"
+  type    = string
   default = "v1.15.5"
 }
 
 ### DNS ###
 
 variable "base_domain" {
-  type        = "string"
+  type        = string
   description = "Base domain for g8s cluster (i.e. $cluster_name.$azure_location.azure.gigantic.io)."
 }
 
 variable "vault_dns" {
-  type        = "string"
+  type        = string
   description = "vault DNS prefix (i.e. vault)."
   default     = "vault"
 }
 
 variable "api_dns" {
-  type        = "string"
+  type        = string
   description = "FQDN for api (i.e. g8s)."
   default     = "g8s"
 }
 
 variable "ingress_dns" {
-  type        = "string"
+  type        = string
   description = "FQDN for ingress (i.e. ingress)."
   default     = "ingress"
 }
@@ -245,21 +245,21 @@ variable "vpn_right_subnet_cidr_1" {
 ## Gridscale
 variable "external_ipsec_public_ip_0" {
   description = "External public ip from VPN 0 - Gridscale"
-  type        = "string"
+  type        = string
   default     = "185.102.95.187"
 }
 
 ## Vultr
 variable "external_ipsec_public_ip_1" {
   description = "External public cidr from VPN 1 - Vultr"
-  type        = "string"
+  type        = string
   default     = "95.179.153.65"
 }
 
 ### External Kubernetes API Access
 variable "k8s_api_external_access_whitelist" {
   description = "Comma separated list of networks for k8s API external access"
-  type        = "string"
+  type        = string
   default     = ""
 }
 
