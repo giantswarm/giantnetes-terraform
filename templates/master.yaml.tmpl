@@ -678,7 +678,7 @@ systemd:
       [Service]
       Type=oneshot
       RemainAfterExit=yes
-      Environment="IMAGE=quay.io/giantswarm/k8s-setup-network-environment:b0dead85ca84468ca813a61692b86ee929a6ba1b"
+      Environment="IMAGE={{.DockerRegistry}}/giantswarm/k8s-setup-network-environment:68e90113331feca3b9ffe6a75a601b381ba8c1f7"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/mkdir -p /opt/bin/
@@ -722,7 +722,7 @@ systemd:
       Type=oneshot
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/calico/
-      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
+      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt {{.DockerRegistry}}/giantswarm/curl:7.67.0 -k -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/bin/bash -c '\
         RETRY=3;\
         while [ -z "$result" ] && [ $RETRY -gt 0 ]; do\
@@ -734,7 +734,7 @@ systemd:
           --net=host \
           -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
           -v /etc/kubernetes/ssl/calico/:/etc/kubernetes/ssl/calico/ \
-          quay.io/giantswarm/certctl:2a6615f61499cd09a8d5ced9a5fade322d2de254 \
+          {{.DockerRegistry}}/giantswarm/certctl:943e40d9c36efc2eec76783d48a891fc6f323493 \
           issue \
           --vault-addr=https://{{ .VaultDomainName }} \
           --vault-token=${VAULT_TOKEN} \
@@ -766,7 +766,7 @@ systemd:
       Type=oneshot
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/etcd/
-      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
+      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt {{.DockerRegistry}}/giantswarm/curl:7.67.0 -k -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/bin/bash -c '\
         RETRY=3;\
         while [ -z "$result" ] && [ $RETRY -gt 0 ]; do\
@@ -778,7 +778,7 @@ systemd:
           --net=host \
           -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
           -v /etc/kubernetes/ssl/etcd/:/etc/kubernetes/ssl/etcd/ \
-          quay.io/giantswarm/certctl:2a6615f61499cd09a8d5ced9a5fade322d2de254 \
+          {{.DockerRegistry}}/giantswarm/certctl:943e40d9c36efc2eec76783d48a891fc6f323493 \
           issue \
           --vault-addr=https://{{ .VaultDomainName }} \
           --vault-token=${VAULT_TOKEN} \
@@ -1007,7 +1007,7 @@ systemd:
       Type=oneshot
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/
-      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt quay.io/giantswarm/curl -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
+      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt {{.DockerRegistry}}/giantswarm/curl:7.67.0 -k -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
       ExecStartPre=/bin/bash -c '\
         RETRY=3;\
         while [ -z "$rsa_key" ] && [ $RETRY -gt 0 ]; do\
@@ -1031,7 +1031,7 @@ systemd:
       --net=host \
       -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
       -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
-      quay.io/giantswarm/certctl:2a6615f61499cd09a8d5ced9a5fade322d2de254 \
+      {{.DockerRegistry}}/giantswarm/certctl:943e40d9c36efc2eec76783d48a891fc6f323493 \
       issue \
       --vault-addr=${VAULT_ADDR} \
       --vault-token=${VAULT_TOKEN} \
