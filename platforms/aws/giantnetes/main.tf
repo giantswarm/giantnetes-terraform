@@ -3,11 +3,17 @@ provider "aws" {
 
   # Make sure to define profile in ~/.aws/config
   profile = var.cluster_name
-  region = var.aws_region
+  region  = var.aws_region
 }
 
 locals {
   k8s_api_external_access_whitelist = "${var.external_ipsec_public_ip_0},${var.external_ipsec_public_ip_1}${var.k8s_api_external_access_whitelist != "" ? ",${var.k8s_api_external_access_whitelist}" : ""}"
+
+  # VPC subnet has reserved first 4 IPs so we need to use the fifth one (counting from zero it is index 4)
+  # https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html
+  masters_eni_ips = ["${cidrhost(var.subnets_worker[0], 4)}", "${cidrhost(var.subnets_worker[1], 4)}", "${cidrhost(var.subnets_worker[2], 4)}"]
+  masters_eni_gateways = ["${cidrhost(var.subnets_worker[0], 1)}", "${cidrhost(var.subnets_worker[1], 1)}", "${cidrhost(var.subnets_worker[2], 1)}"]
+  masters_eni_subnet_size = "${split("/",var.subnets_worker[0])[1]}"
 }
 
 module "container_linux" {
@@ -112,6 +118,9 @@ locals {
     "LogentriesPrefix"             = "${var.logentries_prefix}"
     "LogentriesToken"              = "${var.logentries_token}"
     "MasterCount"                  = "${var.master_count}"
+    "MasterENIAddressess"          = "${local.masters_eni_ips}"
+    "MasterENIGateways"            = "${local.masters_eni_gateways}"
+    "MasterENISubnetSize"          = "${local.masters_eni_subnet_size}"
     "MasterMountDocker"            = "${var.master_instance["volume_docker"]}"
     "MasterMountETCD"              = "${var.master_instance["volume_etcd"]}"
     "PodInfraImage"                = "${var.pod_infra_image}"
@@ -220,7 +229,13 @@ data "gotemplate" "master" {
 
   template    = "${path.module}/../../../templates/master.yaml.tmpl"
   data        = "${jsonencode(merge(local.ignition_data, { "NodeType" = "master", "MasterID" = "${count.index + 1}", "ETCDDomainName" = "etcd${count.index + 1}.${var.base_domain}" }))}"
-  is_ignition = true
+ # is_ignition = true
+}
+
+resource "local_file" "foo" {
+    content     = "${data.gotemplate.master[0].rendered}"
+    #content     = "FOOO"
+    filename = "/tmp/master.ignition"
 }
 
 module "master" {
@@ -239,6 +254,7 @@ module "master" {
   route53_enabled        = "${var.route53_enabled}"
   user_data              = "${data.gotemplate.master.*.rendered}"
   master_subnet_ids      = "${module.vpc.worker_subnet_ids}"
+  master_eni_ips         = local.masters_eni_ips
   volume_docker          = "${var.master_instance["volume_docker"]}"
   volume_etcd            = "${var.master_instance["volume_etcd"]}"
   vpc_cidr               = "${var.vpc_cidr}"
