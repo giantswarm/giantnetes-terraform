@@ -1,7 +1,7 @@
-resource "aws_elb" "worker" {
-  name                      = "${var.cluster_name}-worker"
+resource "aws_elb" "private_worker" {
+  name                      = "${var.cluster_name}-private-worker"
   cross_zone_load_balancing = true
-  internal                  = false
+  internal                  = true
   subnets                   = var.elb_subnet_ids
   security_groups           = ["${aws_security_group.worker_elb.id}"]
 
@@ -30,18 +30,13 @@ resource "aws_elb" "worker" {
   tags = merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}-worker"
+      "Name", "${var.cluster_name}-private-worker"
     )
   )
 }
 
-resource "aws_proxy_protocol_policy" "worker" {
-  load_balancer  = aws_elb.worker.name
-  instance_ports = ["30010", "30011"]
-}
-
-resource "aws_security_group" "worker_elb" {
-  name   = "${var.cluster_name}-worker-elb"
+resource "aws_security_group" "private_worker_elb" {
+  name   = "${var.cluster_name}-private-worker-elb"
   vpc_id = var.vpc_id
 
   egress {
@@ -55,46 +50,46 @@ resource "aws_security_group" "worker_elb" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["${var.vpc_cidr}"]
   }
 
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["${var.vpc_cidr}"]
   }
 
   tags = merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}-worker-elb"
+      "Name", "${var.cluster_name}-private-worker-elb"
     )
   )
 }
 
-resource "aws_route53_record" "worker-wildcard" {
+resource "aws_route53_record" "private-worker-wildcard" {
   count   = var.route53_enabled ? 1 : 0
-  zone_id = var.dns_zone_id
+  zone_id = var.private_dns_zone_id
   name    = "*"
   type    = "A"
 
   alias {
-    name                   = aws_elb.worker.dns_name
-    zone_id                = aws_elb.worker.zone_id
+    name                   = aws_elb.private_worker.dns_name
+    zone_id                = aws_elb.private_worker.zone_id
     evaluate_target_health = false
   }
 }
 
-resource "aws_route53_record" "worker-ingress" {
+resource "aws_route53_record" "private-worker-ingress" {
   count   = var.route53_enabled ? 1 : 0
-  zone_id = var.dns_zone_id
+  zone_id = var.private_dns_zone_id
   name    = var.ingress_dns
   type    = "A"
 
   alias {
-    name                   = aws_elb.worker.dns_name
-    zone_id                = aws_elb.worker.zone_id
+    name                   = aws_elb.private_worker.dns_name
+    zone_id                = aws_elb.private_worker.zone_id
     evaluate_target_health = false
   }
 }

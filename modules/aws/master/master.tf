@@ -140,18 +140,18 @@ resource "aws_security_group" "master" {
   )
 }
 
-resource "aws_route53_record" "master" {
+resource "aws_route53_record" "private_master" {
   count   = var.route53_enabled ? var.master_count : 0
-  zone_id = var.dns_zone_id
+  zone_id = var.private_dns_zone_id
   name    = "master${count.index+1}"
   type    = "CNAME"
   records = ["${element(aws_instance.master.*.private_dns, count.index)}"]
   ttl     = "30"
 }
 
-resource "aws_route53_record" "etcd" {
+resource "aws_route53_record" "private_etcd" {
   count   = var.route53_enabled ? var.master_count : 0
-  zone_id = var.dns_zone_id
+  zone_id = var.private_dns_zone_id
   name    = "etcd${count.index+1}"
   type    = "CNAME"
   records = ["${element(aws_instance.master.*.private_dns, count.index)}"]

@@ -1,23 +1,26 @@
-variable "cluster_name" {
-  type = string
-}
-
-variable "root_dns_zone_id" {
-  type = string
-}
-
-variable "route53_enabled" {
-  default = true
-}
-
-variable "zone_name" {
-  type = string
-}
-
 resource "aws_route53_zone" "public" {
   count   = var.route53_enabled ? 1 : 0
   comment = "{\"last_updated\":\"${timestamp()}\",\"managed_by\":\"terraform\"}"
   name    = var.zone_name
+
+  tags = {
+    Name                         = "${var.zone_name}"
+    "giantswarm.io/installation" = "${var.cluster_name}"
+  }
+
+  lifecycle {
+    ignore_changes = [comment]
+  }
+}
+
+resource "aws_route53_zone" "private" {
+  count   = var.route53_enabled ? 1 : 0
+  comment = "{\"last_updated\":\"${timestamp()}\",\"managed_by\":\"terraform\"}"
+  name = var.zone_name
+
+  vpc {
+    vpc_id = var.vpc_id
+  }
 
   tags = {
     Name                         = "${var.zone_name}"
