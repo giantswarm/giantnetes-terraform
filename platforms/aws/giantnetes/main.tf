@@ -46,6 +46,7 @@ module "dns" {
   source = "../../../modules/aws/dns"
 
   cluster_name     = "${var.cluster_name}"
+  k8s_api_whitelist= "${var.k8s_api_whitelist}"
   root_dns_zone_id = "${var.root_dns_zone_id}"
   route53_enabled  = "${var.route53_enabled}"
   zone_name        = "${var.base_domain}"

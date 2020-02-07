@@ -2,7 +2,7 @@ resource "aws_elb" "master_api" {
   name                      = "${var.cluster_name}-master-api"
   cross_zone_load_balancing = true
   idle_timeout              = 3600
-  internal                  = true
+  internal                  = false
   subnets                   = var.elb_subnet_ids
   security_groups           = ["${aws_security_group.master_elb_api.id}"]
 
@@ -44,7 +44,7 @@ resource "aws_security_group" "master_elb_api" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["${var.vpc_cidr}"]
+    cidr_blocks = concat(["${var.vpc_cidr}"], split(",", "${var.k8s_api_whitelist}"))
   }
 
   tags = merge(

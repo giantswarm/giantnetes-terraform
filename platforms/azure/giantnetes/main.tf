@@ -31,6 +31,7 @@ module "dns" {
 
   location = "${var.azure_location}"
 
+  k8s_api_whitelist   = var.k8s_api_whitelist
   cluster_name        = var.cluster_name
   resource_group_name = module.resource_group.name
   root_dns_zone_name  = var.root_dns_zone_name

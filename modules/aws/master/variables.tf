@@ -56,6 +56,10 @@ variable "dns_zone_id" {
   type = string
 }
 
+variable "k8s_api_whitelist" {
+  type = string
+}
+
 variable "volume_size_docker" {
   type    = string
   default = 50
