@@ -7,7 +7,7 @@ provider "aws" {
 }
 
 locals {
-  k8s_api_whitelist = "${var.external_ipsec_public_ip_0},${var.external_ipsec_public_ip_1}${var.customer_subnets != "" ? ",${var.customer_subnets}" : ""}"
+  k8s_api_whitelist = "${var.external_ipsec_public_ip_0}/32,${var.external_ipsec_public_ip_1}/32${var.customer_subnets != "" ? ",${var.customer_subnets}" : ""}"
 }
 
 module "container_linux" {
