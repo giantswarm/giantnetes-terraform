@@ -57,7 +57,7 @@ resource "aws_security_group" "private_master_elb_api" {
 
 resource "aws_elb_attachment" "private_master_elb_api" {
   count    = var.master_count
-  elb      = aws_elb.master_api.id
+  elb      = aws_elb.private_master_api.id
   instance = element(aws_instance.master.*.id, count.index)
 }
 
@@ -68,8 +68,8 @@ resource "aws_route53_record" "private_master_elb_api" {
   type    = "A"
 
   alias {
-    name                   = aws_elb.private_master_elb_api.dns_name
-    zone_id                = aws_elb.master_api.zone_id
+    name                   = aws_elb.private_master_api.dns_name
+    zone_id                = aws_elb.private_master_api.zone_id
     evaluate_target_health = false
   }
 }

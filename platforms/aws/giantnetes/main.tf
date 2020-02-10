@@ -237,7 +237,7 @@ module "master" {
   elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
   instance_type          = "${var.master_instance["type"]}"
-  k8s_api_whitelist      = "${var.k8s_api_whitelist}"
+  k8s_api_whitelist      = "${local.k8s_api_whitelist}"
   route53_enabled        = "${var.route53_enabled}"
   user_data              = "${data.gotemplate.master.*.rendered}"
   master_subnet_ids      = "${module.vpc.worker_subnet_ids}"

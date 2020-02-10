@@ -64,11 +64,11 @@ resource "aws_elb_attachment" "public_master_elb_api" {
 resource "aws_route53_record" "public_master_elb_api" {
   count   = var.route53_enabled ? 1 : 0
   zone_id = var.public_dns_zone_id
-  name    = var.public_api_dns
+  name    = var.api_dns
   type    = "A"
 
   alias {
-    name                   = aws_elb.public_master_elb_api.dns_name
+    name                   = aws_elb.public_master_api.dns_name
     zone_id                = aws_elb.public_master_api.zone_id
     evaluate_target_health = false
   }

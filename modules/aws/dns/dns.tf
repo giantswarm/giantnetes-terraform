@@ -41,6 +41,10 @@ resource "aws_route53_record" "delegation" {
   records = aws_route53_zone.public[count.index].name_servers
 }
 
+output "private_dns_zone_id" {
+  value = join(" ", aws_route53_zone.private.*.id)
+}
+
 output "public_dns_zone_id" {
   value = join(" ", aws_route53_zone.public.*.id)
 }
