@@ -30,7 +30,7 @@ resource "aws_elb" "private_master_api" {
 }
 
 resource "aws_security_group" "private_master_elb_api" {
-  name   = "${var.cluster_name}-master-elb-api"
+  name   = "${var.cluster_name}-private-master-elb-api"
   vpc_id = var.vpc_id
 
   egress {
@@ -63,7 +63,7 @@ resource "aws_elb_attachment" "private_master_elb_api" {
 
 resource "aws_route53_record" "private_master_elb_api" {
   count   = var.route53_enabled ? 1 : 0
-  zone_id = var.public_dns_zone_id
+  zone_id = var.private_dns_zone_id
   name    = var.api_dns
   type    = "A"
 

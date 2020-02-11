@@ -30,7 +30,7 @@ resource "aws_elb" "public_master_api" {
 }
 
 resource "aws_security_group" "public_master_elb_api" {
-  name   = "${var.cluster_name}-master-elb-api"
+  name   = "${var.cluster_name}-public-master-elb-api"
   vpc_id = var.vpc_id
 
   egress {
