@@ -1,5 +1,5 @@
 resource "aws_elb" "private_master_api" {
-  name                      = "${var.cluster_name}-master-api"
+  name                      = "${var.cluster_name}-private-master-api"
   cross_zone_load_balancing = true
   idle_timeout              = 3600
   internal                  = true
