@@ -3,7 +3,7 @@ provider "aws" {
 
   # Make sure to define profile in ~/.aws/config
   profile = var.cluster_name
-  region = var.aws_region
+  region  = var.aws_region
 }
 
 locals {
@@ -138,7 +138,7 @@ module "bastion" {
   bastion_subnet_ids     = "${module.vpc.bastion_subnet_ids}"
   cluster_name           = "${var.cluster_name}"
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
-  public_dns_zone_id            = "${module.dns.public_dns_zone_id}"
+  public_dns_zone_id     = "${module.dns.public_dns_zone_id}"
   forward_logs_enabled   = "${var.bastion_forward_logs_enabled}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
   iam_region             = "${var.iam_region}"
