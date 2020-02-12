@@ -884,7 +884,7 @@ systemd:
           --advertise-client-urls=https://{{ .ETCDDomainName }}:2379 \
           --initial-advertise-peer-urls=https://{{ .ETCDDomainName }}:2380 \
           --listen-client-urls=https://0.0.0.0:2379 \
-          --listen-peer-urls=https://${DEFAULT_IPV4}:2380 \
+          --listen-peer-urls=https://{{.MasterENIAddress}}:2380 \
           --initial-cluster-token=k8s-etcd-cluster \
           {{ if eq .MasterCount "3" -}}
           --initial-cluster={{ .ETCDInitialClusterMulti }} \
