@@ -92,7 +92,7 @@ storage:
         id: 0
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/network-policy.json" }}"
-    {{- end }}
+    {{ end }}
     - path: /srv/default-backend-dep.yaml
       filesystem: root
       mode: 420
@@ -811,7 +811,7 @@ systemd:
       ExecStop=/usr/bin/rm -rf /etc/kubernetes/ssl/etcd/
       [Install]
       WantedBy=multi-user.target
-{{- if eq .Provider "aws" -}}
+{{ if eq .Provider "aws" }}
   - name: etcd3-attach-dependencies.service
     enabled: true
     contents: |
@@ -839,7 +839,7 @@ systemd:
                         --volume-tag-value={{.ClusterName}}-master{{.MasterID}}-etcd"
       [Install]
       WantedBy=multi-user.target
-{{- end -}}
+{{ end }}
   - name: etcd3.service
     enabled: true
     contents: |
@@ -886,11 +886,11 @@ systemd:
           --listen-client-urls=https://0.0.0.0:2379 \
           --listen-peer-urls=https://${DEFAULT_IPV4}:2380 \
           --initial-cluster-token=k8s-etcd-cluster \
-          {{- if eq .MasterCount "3" }}
+          {{ if eq .MasterCount "3" -}}
           --initial-cluster={{ .ETCDInitialClusterMulti }} \
-          {{- else }}
+          {{ else -}}
           --initial-cluster={{ .ETCDInitialClusterSingle }} \
-          {{- end }}
+          {{ end -}}
           --initial-cluster-state new \
           --data-dir=/var/lib/etcd \
           --enable-v2
@@ -1014,14 +1014,14 @@ systemd:
       --containerized \
       --enable-server \
       --logtostderr=true \
-      {{- if eq .Provider "aws" -}}
+      {{ if eq .Provider "aws" -}}
       --cloud-provider=aws \
       --image-pull-progress-deadline={{ .ImagePullProgressDeadline }} \
       --pod-infra-container-image={{.DockerRegistry}}/{{ .PodInfraImage }} \
-      {{- else -}}
+      {{ else -}}
       --cloud-provider=azure \
       --cloud-config=/etc/kubernetes/config/azure.yaml \
-      {{- end -}}
+      {{ end -}}
       --network-plugin=cni \
       --register-node=true \
       --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
@@ -1115,7 +1115,7 @@ systemd:
       ExecStart=/opt/install-debug-tools
       [Install]
       WantedBy=multi-user.target
-{{- if .LogentriesEnabled -}}
+{{ if .LogentriesEnabled -}}
   - name: logentries.service
     enabled: true
     contents: |
@@ -1129,8 +1129,8 @@ systemd:
 
       [Install]
       WantedBy=multi-user.target
-{{- end -}}
-{{- if eq .Provider "aws" -}}
+{{ end -}}
+{{ if eq .Provider "aws" -}}
 networkd:
   units:
   - name: 10-eth1.network
@@ -1148,7 +1148,8 @@ networkd:
       [Route]
       Destination=0.0.0.0/0
       Gateway={{.MasterENIGateway}}
-{{- end -}}
+      Table=2
+{{ end -}}
 storage:
   filesystems:
     - name: docker
