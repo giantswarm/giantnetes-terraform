@@ -44,7 +44,7 @@ resource "aws_security_group" "public_master_elb_api" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = split(",", "${var.k8s_api_whitelist}")
+    cidr_blocks = ["0.0.0.0/0"] # temporary allow all due to China case
   }
 
   tags = merge(
