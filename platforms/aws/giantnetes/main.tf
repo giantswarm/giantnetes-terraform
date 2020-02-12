@@ -118,8 +118,6 @@ locals {
     "LogentriesPrefix"             = "${var.logentries_prefix}"
     "LogentriesToken"              = "${var.logentries_token}"
     "MasterCount"                  = "${var.master_count}"
-    "MasterENIAddressess"          = "${local.masters_eni_ips}"
-    "MasterENIGateways"            = "${local.masters_eni_gateways}"
     "MasterENISubnetSize"          = "${local.masters_eni_subnet_size}"
     "MasterMountDocker"            = "${var.master_instance["volume_docker"]}"
     "MasterMountETCD"              = "${var.master_instance["volume_etcd"]}"
@@ -228,14 +226,8 @@ data "gotemplate" "master" {
   count = "${var.master_count}"
 
   template    = "${path.module}/../../../templates/master.yaml.tmpl"
-  data        = "${jsonencode(merge(local.ignition_data, { "NodeType" = "master", "MasterID" = "${count.index + 1}", "ETCDDomainName" = "etcd${count.index + 1}.${var.base_domain}" }))}"
- # is_ignition = true
-}
-
-resource "local_file" "foo" {
-    content     = "${data.gotemplate.master[0].rendered}"
-    #content     = "FOOO"
-    filename = "/tmp/master.ignition"
+  data        = "${jsonencode(merge(local.ignition_data, { "NodeType" = "master", "MasterID" = "${count.index+1}", "ETCDDomainName" = "etcd${count.index + 1}.${var.base_domain}","MasterENIAddress" = "${local.masters_eni_ips[count.index]}", "MasterENIGateway" = "${local.masters_eni_gateways[count.index]}" }))}"
+  is_ignition = true
 }
 
 module "master" {

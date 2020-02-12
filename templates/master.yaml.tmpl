@@ -1139,16 +1139,15 @@ networkd:
       [Match]
       Name=eth1
       [Network]
-      Address={{index .MasterENIAddressess .MasterID}}/{{.MasterENISubnetSize}}
-
+      Address={{.MasterENIAddress}}/{{.MasterENISubnetSize}}
+      
       [RoutingPolicyRule]
       Table=2
-      From={{index .MasterENIAddressess .MasterID}}/32
-
+      From={{.MasterENIAddress}}/32
+      
       [Route]
       Destination=0.0.0.0/0
-      Gateway={{index .MasterENIGateways .MasterID}}
-      Table=2
+      Gateway={{.MasterENIGateway}}
 {{- end -}}
 storage:
   filesystems:
