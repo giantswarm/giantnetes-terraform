@@ -1,10 +1,10 @@
-resource "aws_elb" "master_api" {
-  name                      = "${var.cluster_name}-master-api"
+resource "aws_elb" "public_master_api" {
+  name                      = "${var.cluster_name}-public-master-api"
   cross_zone_load_balancing = true
   idle_timeout              = 3600
-  internal                  = true
+  internal                  = false
   subnets                   = var.elb_subnet_ids
-  security_groups           = ["${aws_security_group.master_elb_api.id}"]
+  security_groups           = ["${aws_security_group.public_master_elb_api.id}"]
 
   listener {
     instance_port     = 443
@@ -24,13 +24,13 @@ resource "aws_elb" "master_api" {
   tags = merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}-master-api"
+      "Name", "${var.cluster_name}-public-master-api"
     )
   )
 }
 
-resource "aws_security_group" "master_elb_api" {
-  name   = "${var.cluster_name}-master-elb-api"
+resource "aws_security_group" "public_master_elb_api" {
+  name   = "${var.cluster_name}-public-master-elb-api"
   vpc_id = var.vpc_id
 
   egress {
@@ -44,32 +44,32 @@ resource "aws_security_group" "master_elb_api" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["${var.vpc_cidr}"]
+    cidr_blocks = ["0.0.0.0/0"] # temporary allow all due to China case
   }
 
   tags = merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}-master-elb-api"
+      "Name", "${var.cluster_name}-public-master-elb-api"
     )
   )
 }
 
-resource "aws_elb_attachment" "master_api" {
+resource "aws_elb_attachment" "public_master_elb_api" {
   count    = var.master_count
-  elb      = aws_elb.master_api.id
+  elb      = aws_elb.public_master_api.id
   instance = element(aws_instance.master.*.id, count.index)
 }
 
-resource "aws_route53_record" "master_api" {
+resource "aws_route53_record" "public_master_elb_api" {
   count   = var.route53_enabled ? 1 : 0
-  zone_id = var.dns_zone_id
+  zone_id = var.public_dns_zone_id
   name    = var.api_dns
   type    = "A"
 
   alias {
-    name                   = aws_elb.master_api.dns_name
-    zone_id                = aws_elb.master_api.zone_id
+    name                   = aws_elb.public_master_api.dns_name
+    zone_id                = aws_elb.public_master_api.zone_id
     evaluate_target_health = false
   }
 }
