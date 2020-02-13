@@ -12,7 +12,7 @@ KUBECTL="/usr/bin/docker run --net=host --rm
 while ! curl --output /dev/null --silent --head --insecure "https://{{ .APIDomainName }}"; do sleep 1 && echo 'Waiting for master'; done
 
 # Create giantswarm and giantswarm-clusterapi namespaces
-NAMESPACES="giantswarm giantswarm-clusterapi"
+NAMESPACES="giantswarm"
 for namespace in ${NAMESPACES}
 do
   while
@@ -30,7 +30,7 @@ do
 done
 
 # label namespaces (required for network egress policies)
-NAMESPACES="default giantswarm giantswarm-clusterapi kube-system" 
+NAMESPACES="default giantswarm kube-system" 
 for namespace in ${NAMESPACES}
 do
     if ! $KUBECTL get namespaces -l name=${namespace} | grep ${namespace}; then
@@ -132,8 +132,7 @@ MANIFESTS="default-storage-class.yaml
  ingress-controller-cm.yaml
  ingress-controller-sa.yaml
  ingress-controller-dep.yaml
- ingress-controller-svc.yaml
- ingress-giantswarm-clusterapi.yaml"
+ ingress-controller-svc.yaml"
 for manifest in $MANIFESTS
 do
     while

@@ -24,10 +24,6 @@ variable "ingress_dns" {
   default = "ingress.g8s"
 }
 
-variable "k8s_api_whitelist" {
-  type = string
-}
-
 variable "resource_group_name" {
   type = string
 }

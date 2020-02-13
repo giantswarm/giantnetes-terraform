@@ -100,7 +100,7 @@ resource "aws_security_group" "vpn_instance" {
 
 resource "aws_route53_record" "vpn_instance" {
   count   = var.route53_enabled && var.vpn_instance_enabled ? 1 : 0
-  zone_id = var.public_dns_zone_id
+  zone_id = var.dns_zone_id
   name    = "vpn-instance${count.index + 1}"
   type    = "A"
 
