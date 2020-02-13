@@ -113,16 +113,6 @@ storage:
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/default-backend-svc.yaml" }}"
 
-    - path: /srv/ingress-giantswarm-clusterapi.yaml
-      filesystem: root
-      mode: 420
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/ingress-giantswarm-clusterapi.yaml" }}"
-
     - path: /srv/ingress-controller-cm.yaml
       filesystem: root
       mode: 420
