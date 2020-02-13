@@ -1,10 +1,10 @@
-resource "aws_elb" "master_api" {
-  name                      = "${var.cluster_name}-master-api"
+resource "aws_elb" "private_master_api" {
+  name                      = "${var.cluster_name}-private-master-api"
   cross_zone_load_balancing = true
   idle_timeout              = 3600
   internal                  = true
   subnets                   = var.elb_subnet_ids
-  security_groups           = ["${aws_security_group.master_elb_api.id}"]
+  security_groups           = ["${aws_security_group.private_master_elb_api.id}"]
 
   listener {
     instance_port     = 443
@@ -29,8 +29,8 @@ resource "aws_elb" "master_api" {
   )
 }
 
-resource "aws_security_group" "master_elb_api" {
-  name   = "${var.cluster_name}-master-elb-api"
+resource "aws_security_group" "private_master_elb_api" {
+  name   = "${var.cluster_name}-private-master-elb-api"
   vpc_id = var.vpc_id
 
   egress {
@@ -55,15 +55,16 @@ resource "aws_security_group" "master_elb_api" {
   )
 }
 
-resource "aws_route53_record" "master_api" {
+
+resource "aws_route53_record" "private_master_elb_api" {
   count   = var.route53_enabled ? 1 : 0
-  zone_id = var.dns_zone_id
+  zone_id = var.private_dns_zone_id
   name    = var.api_dns
   type    = "A"
 
   alias {
-    name                   = aws_elb.master_api.dns_name
-    zone_id                = aws_elb.master_api.zone_id
+    name                   = aws_elb.private_master_api.dns_name
+    zone_id                = aws_elb.private_master_api.zone_id
     evaluate_target_health = false
   }
 }

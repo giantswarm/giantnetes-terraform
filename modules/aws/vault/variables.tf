@@ -43,7 +43,7 @@ variable "volume_type" {
   default = "gp2"
 }
 
-variable "dns_zone_id" {
+variable "private_dns_zone_id" {
   type = string
 }
 

@@ -284,8 +284,8 @@ variable "pod_infra_image" {
 }
 
 ### External Kubernetes API Access
-variable "k8s_api_external_access_whitelist" {
-  description = "Comma separated list of networks for k8s API external access"
+variable "customer_subnets" {
+  description = "Comma separated list of customer networks for k8s API access"
   type        = string
   default     = ""
 }

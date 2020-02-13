@@ -23,7 +23,8 @@ resource "aws_cloudformation_stack" "master_asg" {
         "HealthCheckGracePeriod": 300,
         "LaunchConfigurationName": "${element(aws_launch_configuration.master.*.name, count.index)}",
         "LoadBalancerNames": [
-          "${var.cluster_name}-master-api"
+          "${var.cluster_name}-public-master-api",
+          "${var.cluster_name}-private-master-api"
         ],
         "MaxSize": "1",
         "DesiredCapacity": "1",
@@ -157,18 +158,18 @@ resource "aws_security_group" "master" {
   )
 }
 
-resource "aws_route53_record" "master" {
+resource "aws_route53_record" "private_master" {
   count   = var.route53_enabled ? var.master_count : 0
-  zone_id = var.dns_zone_id
+  zone_id = var.private_dns_zone_id
   name    = "master${count.index + 1}"
   type    = "A"
   records = ["${element(var.master_eni_ips, count.index)}"]
   ttl     = "30"
 }
 
-resource "aws_route53_record" "etcd" {
+resource "aws_route53_record" "private_etcd" {
   count   = var.route53_enabled ? var.master_count : 0
-  zone_id = var.dns_zone_id
+  zone_id = var.private_dns_zone_id
   name    = "etcd${count.index + 1}"
   type    = "A"
   records = ["${element(var.master_eni_ips, count.index)}"]
