@@ -592,7 +592,7 @@ systemd:
       Type=xfs
       [Install]
       WantedBy=local-fs.target
-{{if eq .Provider "azure" }}
+  {{if eq .Provider "azure" -}}
   - name: usr-share-oem.mount
     enabled: true
     contents: |
@@ -604,7 +604,7 @@ systemd:
       Type=ext4
       [Install]
       WantedBy=local-fs.target
-{{ end }}
+  {{ end -}}
   - name: wait-for-domains.service
     enabled: true
     contents: |
@@ -884,7 +884,7 @@ systemd:
           --advertise-client-urls=https://{{ .ETCDDomainName }}:2379 \
           --initial-advertise-peer-urls=https://{{ .ETCDDomainName }}:2380 \
           --listen-client-urls=https://0.0.0.0:2379 \
-          --listen-peer-urls=https://{{.MasterENIAddress}}:2380 \
+          --listen-peer-urls=https://{{if eq .Provider "aws"}}{{.MasterENIAddress}}{{else}}${DEFAULT_IPV4}{{end}}:2380 \
           --initial-cluster-token=k8s-etcd-cluster \
           {{ if eq .MasterCount "3" -}}
           --initial-cluster={{ .ETCDInitialClusterMulti }} \
@@ -1014,14 +1014,14 @@ systemd:
       --containerized \
       --enable-server \
       --logtostderr=true \
-      {{ if eq .Provider "aws" -}}
+      {{if eq .Provider "aws" -}}
       --cloud-provider=aws \
       --image-pull-progress-deadline={{ .ImagePullProgressDeadline }} \
       --pod-infra-container-image={{.DockerRegistry}}/{{ .PodInfraImage }} \
       {{ else -}}
       --cloud-provider=azure \
       --cloud-config=/etc/kubernetes/config/azure.yaml \
-      {{ end -}}
+      {{end -}}
       --network-plugin=cni \
       --register-node=true \
       --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
@@ -1115,7 +1115,7 @@ systemd:
       ExecStart=/opt/install-debug-tools
       [Install]
       WantedBy=multi-user.target
-{{ if .LogentriesEnabled -}}
+{{ if .LogentriesEnabled }}
   - name: logentries.service
     enabled: true
     contents: |
