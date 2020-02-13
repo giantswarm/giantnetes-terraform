@@ -3,11 +3,11 @@ provider "aws" {
 
   # Make sure to define profile in ~/.aws/config
   profile = var.cluster_name
-  region  = var.aws_region
+  region = var.aws_region
 }
 
 locals {
-  k8s_api_whitelist = "${var.external_ipsec_public_ip_0}/32,${var.external_ipsec_public_ip_1}/32${var.customer_subnets != "" ? ",${var.customer_subnets}" : ""}"
+  k8s_api_external_access_whitelist = "${var.external_ipsec_public_ip_0},${var.external_ipsec_public_ip_1}${var.k8s_api_external_access_whitelist != "" ? ",${var.k8s_api_external_access_whitelist}" : ""}"
 }
 
 module "container_linux" {
@@ -48,7 +48,6 @@ module "dns" {
   cluster_name     = "${var.cluster_name}"
   root_dns_zone_id = "${var.root_dns_zone_id}"
   route53_enabled  = "${var.route53_enabled}"
-  vpc_id           = "${module.vpc.vpc_id}"
   zone_name        = "${var.base_domain}"
 }
 
@@ -104,6 +103,7 @@ locals {
     "G8SVaultToken"                = "${var.nodes_vault_token}"
     "ImagePullProgressDeadline"    = "${var.image_pull_progress_deadline}"
     "K8SAPIIP"                     = "${var.k8s_api_ip}"
+    "K8SAPIExternalWhitelist"      = "${local.k8s_api_external_access_whitelist}"
     "K8SAuditWebhookPort"          = "${var.k8s_audit_webhook_port}"
     "K8SDNSIP"                     = "${var.k8s_dns_ip}"
     "K8SServiceCIDR"               = "${var.k8s_service_cidr}"
@@ -138,7 +138,7 @@ module "bastion" {
   bastion_subnet_ids     = "${module.vpc.bastion_subnet_ids}"
   cluster_name           = "${var.cluster_name}"
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
-  public_dns_zone_id     = "${module.dns.public_dns_zone_id}"
+  dns_zone_id            = "${module.dns.public_dns_zone_id}"
   forward_logs_enabled   = "${var.bastion_forward_logs_enabled}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
   iam_region             = "${var.iam_region}"
@@ -168,7 +168,7 @@ module "vpn_instance" {
   bastion_subnet_ids     = "${module.vpc.bastion_subnet_ids}"
   cluster_name           = "${var.cluster_name}"
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
-  public_dns_zone_id     = "${module.dns.public_dns_zone_id}"
+  dns_zone_id            = "${module.dns.public_dns_zone_id}"
   external_vpn_cidr_0    = "${var.external_ipsec_public_ip_0}/32"
   external_vpn_cidr_1    = "${var.external_ipsec_public_ip_1}/32"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
@@ -196,7 +196,7 @@ module "vault" {
   aws_region             = "${var.aws_region}"
   cluster_name           = "${var.cluster_name}"
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
-  private_dns_zone_id    = "${module.dns.private_dns_zone_id}"
+  dns_zone_id            = "${module.dns.public_dns_zone_id}"
   elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
   iam_region             = "${var.iam_region}"
@@ -232,12 +232,10 @@ module "master" {
   aws_account            = "${var.aws_account}"
   cluster_name           = "${var.cluster_name}"
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
-  private_dns_zone_id    = "${module.dns.private_dns_zone_id}"
-  public_dns_zone_id     = "${module.dns.public_dns_zone_id}"
+  dns_zone_id            = "${module.dns.public_dns_zone_id}"
   elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
   instance_type          = "${var.master_instance["type"]}"
-  k8s_api_whitelist      = "${local.k8s_api_whitelist}"
   route53_enabled        = "${var.route53_enabled}"
   user_data              = "${data.gotemplate.master.*.rendered}"
   master_subnet_ids      = "${module.vpc.worker_subnet_ids}"
@@ -264,8 +262,7 @@ module "worker" {
   aws_region             = "${var.aws_region}"
   cluster_name           = "${var.cluster_name}"
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
-  private_dns_zone_id    = "${module.dns.private_dns_zone_id}"
-  public_dns_zone_id     = "${module.dns.public_dns_zone_id}"
+  dns_zone_id            = "${module.dns.public_dns_zone_id}"
   elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
   ingress_dns            = "${var.ingress_dns}"
