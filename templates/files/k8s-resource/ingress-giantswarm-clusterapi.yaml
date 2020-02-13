@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/whitelist-source-range: {{ .K8SAPIExternalWhitelist }}
+  labels:
+    app: giantswarm-clusterapi
+  name: giantswarm-clusterapi
+  namespace: default
+spec:
+  rules:
+  - host: giantswarm-clusterapi.{{ .APIDomainName }}
+    http:
+      paths:
+      - backend:
+          serviceName: kubernetes
+          servicePort: 443
+        path: /
+  tls:
+  - hosts:
+    - giantswarm-clusterapi.{{ .APIDomainName }}
+    secretName: giantswarm-clusterapi-certs
