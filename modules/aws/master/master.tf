@@ -14,7 +14,7 @@ resource "aws_cloudformation_stack" "master_asg" {
 
   template_body = <<EOF
 {
-  "Resources": {master-id:
+  "Resources": {
     "AutoScalingGroup": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
