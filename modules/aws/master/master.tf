@@ -51,7 +51,7 @@ resource "aws_cloudformation_stack" "master_asg" {
         "AutoScalingRollingUpdate": {
           "MinInstancesInService": "0",
           "MaxBatchSize": "1",
-          "PauseTime": "PT5M"
+          "PauseTime": "PT2M"
         }
       }
     }
