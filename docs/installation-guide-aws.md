@@ -42,23 +42,59 @@ aws dynamodb create-table --region $AWS_DEFAULT_REGION \
 
 ### Vault auto-unseal
 
-Auto-unseal with [transit unseal](https://www.vaultproject.io/docs/configuration/seal/transit.html) is configured by default.  
+Auto-unseal with [transit unseal](https://www.vaultproject.io/docs/configuration/seal/transit.html) is configured by default.
 
 ### Prepare terraform
 
-```
+```bash
 cp -r examples/aws/* ./platforms/aws/giantnetes/
 cd ./platforms/aws/giantnetes/
 ```
 
-Edit `bootstrap.sh`.
+Now prepare `bootstrap.sh`.
 
+#### Custom subnet requirements
+
+If a customer has requested specific IP blocks for an installation then these can be overridden via `bootstrap.sh`. If not overridden, the defaults from `variables.tf` will be used.
+
+* Control Plane:
+
+Control planes should be given a `/24`:
+
+```bash
+export TF_VAR_vpc_cidr='172.30.33.0/24'
 ```
+
+And any subnets for control plane components should exist inside the `vpc_cidr` subnet:
+
+```bash
+export TF_VAR_subnets_bastion='["172.30.33.160/28", "172.30.33.176/28"]'
+export TF_VAR_subnets_vault='["172.30.33.48/28"]'
+export TF_VAR_subnets_elb='["172.30.33.64/28","172.30.33.80/28","172.30.33.96/28"]'
+export TF_VAR_subnets_worker='["172.30.33.112/28","172.30.33.128/28","172.30.33.144/28"]'
+```
+
+Note: the bastion subnets should form one contiguous `/28` (as this is the VPN encryption domain).
+
+Care should also be taken that the subnets chosen for the control plane do not overlap with any other default subnets (see `calico`, `docker` and `k8s service` CIDRs).
+
+* Tenant Clusters:
+
+IP blocks for each TC will be sliced from this CIDR:
+
+```bash
+export TF_VAR_ipam_network_cidr='172.16.0.0/16'
+```
+
+Once `bootstrap.sh` is complete, source it:
+
+```bash
 source bootstrap.sh
 ```
 
 Useful links to avoid possible network overlapping [VPN subnets](https://github.com/giantswarm/giantswarm/wiki/Giant-Swarm-VPN)
-NOTE: Reexecute `source bootstrap.sh` in every new console.
+
+NOTE: **Reexecute `source bootstrap.sh` in every new console.**
 
 ### Configure ssh users
 
