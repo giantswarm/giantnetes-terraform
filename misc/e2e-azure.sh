@@ -22,7 +22,7 @@ WORKDIR=$(pwd)
 TFDIR=${WORKDIR}/platforms/azure/giantnetes
 CLUSTER=e2eterraform$(echo ${CIRCLE_SHA1} | cut -c 1-5)${MASTER_COUNT}
 SSH_USER="e2e"
-KUBECTL_CMD="/opt/bin/hyperkube kubectl --kubeconfig=/etc/kubernetes/kubeconfig/addons.yaml"
+KUBECTL_CMD="sudo /opt/bin/hyperkube kubectl --kubeconfig=/etc/kubernetes/kubeconfig/addons.yaml"
 WORKER_COUNT=1
 
 export TF_VAR_master_count=${MASTER_COUNT}
