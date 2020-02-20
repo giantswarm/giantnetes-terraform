@@ -292,8 +292,13 @@ stage-wait-kubernetes-nodes(){
         msg "Waiting all nodes to be ready."
         sleep 30; let tries+=1;
         if [ ${tries} -gt 20 ]; then
+          msg "Timeout waiting all nodes to be ready."
           echo "# kubectl get node"
           exec_on master1 ${KUBECTL_CMD} get node
+	  exec_on master1 ${KUBECTL_CMD} -n kube-system get po
+	  exec_on master1 ${KUBECTL_CMD} -n kube-system logs -l k8s-app=kube-proxy
+	  exec_on master1 ${KUBECTL_CMD} -n kube-system logs -l k8s-app=calico-node
+	  stage-debug || true
           fail "Timeout waiting all nodes to be ready."
         fi
         local nodes_num_actual=$(exec_on master1 ${KUBECTL_CMD} get node | tail -n +2 | grep -v NotReady | wc -l)
