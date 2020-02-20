@@ -7,66 +7,105 @@ locals {
 
 data "aws_availability_zones" "available" {}
 
+resource "aws_autoscaling_group" "master_asg" {
+  count                = var.master_count
+  name                 = "${var.cluster_name}-master-${count.index}"
+  availability_zones   = ["us-east-1a"]
+  desired_capacity     = 1
+  max_size             = 1
+  min_size             = 1
+  health_check_type    = "EC2"
+  launch_configuration = "${element(aws_launch_configuration.master.*.name, count.index)}"
+  load_balancers       = ["${var.cluster_name}-master-api"]
+  vpc_zone_identifier  = "${var.master_subnet_ids[count.index]}"
 
-resource "aws_cloudformation_stack" "master_asg" {
-  count = var.master_count
-  name  = "${var.cluster_name}-master-${count.index}"
+  tags = [
+    {
+      "Key" : "Name",
+      "Value" : "${var.cluster_name}-master-${count.index}",
+      "PropagateAtLaunch" : true
+    },
+    {
+      "Key" : "giantswarm.io/installation",
+      "Value" : "${var.cluster_name}",
+      "PropagateAtLaunch" : true
+    },
+    {
+      "Key" : "kubernetes.io/cluster/${var.cluster_name}",
+      "Value" : "owned",
+      "PropagateAtLaunch" : true
+    }
+  ]
+}
 
-  template_body = <<EOF
-{
-  "Resources": {
-    "AutoScalingGroup": {
-      "Type": "AWS::AutoScaling::AutoScalingGroup",
-      "Properties": {
-        "DesiredCapacity": "1",
-        "HealthCheckType": "EC2",
-        "HealthCheckGracePeriod": 300,
-        "LaunchConfigurationName": "${element(aws_launch_configuration.master.*.name, count.index)}",
-        "LoadBalancerNames": [
-          "${var.cluster_name}-master-api"
-        ],
-        "MaxSize": "1",
-        "DesiredCapacity": "1",
-        "MinSize": "1",
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "${var.cluster_name}-master-${count.index}",
-            "PropagateAtLaunch": true
-          },
-          {
-            "Key": "giantswarm.io/installation",
-            "Value": "${var.cluster_name}",
-            "PropagateAtLaunch": true
-          },
-          {
-            "Key": "kubernetes.io/cluster/${var.cluster_name}",
-            "Value": "owned",
-            "PropagateAtLaunch": true
-          }
-        ],
-        "VPCZoneIdentifier": ["${var.master_subnet_ids[count.index]}"]
-      },
-      "UpdatePolicy": {
-        "AutoScalingRollingUpdate": {
-          "MinInstancesInService": "0",
-          "MaxBatchSize": "1",
-          "PauseTime": "PT2M"
-        }
-      }
-    }
-  },
-  "Outputs": {
-    "AsgName": {
-      "Description": "The name of the auto scaling group",
-      "Value": {
-        "Ref": "AutoScalingGroup"
-      }
-    }
-  }
+resource "aws_autoscaling_policy" "master" {
+  count                  = var.master_count
+  name                   = "${var.cluster_name}-master"
+  scaling_adjustment     = 0
+  adjustment_type        = "ExactCapacity"
+  cooldown               = 120
+  autoscaling_group_name = "${element(aws_autoscaling_group.master_asg.*.name, count.index)}"
 }
-EOF
-}
+
+#resource "aws_cloudformation_stack" "master_asg" {
+#  count = var.master_count
+#  name  = "${var.cluster_name}-master-${count.index}"
+#
+#  template_body = <<EOF
+#{
+#  "Resources": {
+#    "AutoScalingGroup": {
+#      "Type": "AWS::AutoScaling::AutoScalingGroup",
+#      "Properties": {
+#        "DesiredCapacity": "1",
+#        "HealthCheckType": "EC2",
+#        "HealthCheckGracePeriod": 300,
+#        "LaunchConfigurationName": "${element(aws_launch_configuration.master.*.name, count.index)}",
+#        "LoadBalancerNames": [
+#          "${var.cluster_name}-master-api"
+#        ],
+#        "MaxSize": "1",
+#        "DesiredCapacity": "1",
+#        "MinSize": "1",
+#        "Tags": [
+#          {
+#            "Key": "Name",
+#            "Value": "${var.cluster_name}-master-${count.index}",
+#            "PropagateAtLaunch": true
+#          },
+#          {
+#            "Key": "giantswarm.io/installation",
+#            "Value": "${var.cluster_name}",
+#            "PropagateAtLaunch": true
+#          },
+#          {
+#            "Key": "kubernetes.io/cluster/${var.cluster_name}",
+#            "Value": "owned",
+#            "PropagateAtLaunch": true
+#          }
+#        ],
+#        "VPCZoneIdentifier": ["${var.master_subnet_ids[count.index]}"]
+#      },
+#      "UpdatePolicy": {
+#        "AutoScalingRollingUpdate": {
+#          "MinInstancesInService": "0",
+#          "MaxBatchSize": "1",
+#          "PauseTime": "PT2M"
+#        }
+#      }
+#    }
+#  },
+#  "Outputs": {
+#    "AsgName": {
+#      "Description": "The name of the auto scaling group",
+#      "Value": {
+#        "Ref": "AutoScalingGroup"
+#      }
+#    }
+#  }
+#}
+#EOF
+#}
 
 resource "aws_launch_configuration" "master" {
   count                = var.master_count
@@ -176,9 +215,9 @@ resource "aws_route53_record" "etcd" {
 }
 
 resource "aws_network_interface" "master" {
-  count       = var.master_count
-  subnet_id   = element(var.master_subnet_ids, count.index)
-  private_ips = ["${element(var.master_eni_ips, count.index)}"]
+  count           = var.master_count
+  subnet_id       = element(var.master_subnet_ids, count.index)
+  private_ips     = ["${element(var.master_eni_ips, count.index)}"]
   security_groups = ["${aws_security_group.master.id}"]
 
   tags = merge(
