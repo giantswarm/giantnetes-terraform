@@ -80,7 +80,7 @@ export TF_VAR_subnets_elb='["172.30.33.64/28","172.30.33.80/28","172.30.33.96/28
 export TF_VAR_subnets_worker='["172.30.33.112/28","172.30.33.128/28","172.30.33.144/28"]'
 ```
 
-Note: the bastion subnets should form one contiguous `/28` (as this is the VPN encryption domain).
+Note: the bastion subnets should form one contiguous `/27` (as this is the VPN encryption domain).
 
 Care should also be taken that the subnets chosen for the control plane do not overlap with any other default subnets (see `calico`, `docker` and `k8s service` CIDRs).
 
