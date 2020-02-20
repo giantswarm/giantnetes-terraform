@@ -1,8 +1,13 @@
-apiVersion: extensions/v1beta1
+apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
   name: privileged
+  annotations:
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
 spec:
+  allowPrivilegeEscalation: true
+  allowedCapabilities:
+  - '*'
   fsGroup:
     rule: RunAsAny
   privileged: true
@@ -21,7 +26,7 @@ spec:
   - min: 1
     max: 65536
 ---
-apiVersion: extensions/v1beta1
+apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
   name: restricted

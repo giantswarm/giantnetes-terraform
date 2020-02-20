@@ -293,8 +293,11 @@ stage-wait-kubernetes-nodes(){
         msg "Waiting all nodes to be ready."
         sleep 30; let tries+=1;
         if [ ${tries} -gt 20 ]; then 
+	  msg "Timeout waiting all nodes to be ready."
           echo "# kubectl get node"
           exec_on master1 ${KUBECTL_CMD} get node
+	  exec_on master1 ${KUBECTL_CMD} -n kube-system get po
+	  exec_on master1 "sudo journalctl --no-pager -u k8s-addons | tail -50"
           fail "Timeout waiting all nodes to be ready."
         fi
 

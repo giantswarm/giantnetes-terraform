@@ -296,9 +296,7 @@ stage-wait-kubernetes-nodes(){
           echo "# kubectl get node"
           exec_on master1 ${KUBECTL_CMD} get node
 	  exec_on master1 ${KUBECTL_CMD} -n kube-system get po
-	  exec_on master1 ${KUBECTL_CMD} -n kube-system logs -l k8s-app=kube-proxy
-	  exec_on master1 ${KUBECTL_CMD} -n kube-system logs -l k8s-app=calico-node
-	  exec_on master1 "sudo journalctl --no-pager -u k8s-addons"
+	  exec_on master1 "sudo journalctl --no-pager -u k8s-addons | tail -50" 
           fail "Timeout waiting all nodes to be ready."
         fi
         local nodes_num_actual=$(exec_on master1 ${KUBECTL_CMD} get node | tail -n +2 | grep -v NotReady | wc -l)
