@@ -1,13 +1,6 @@
 #!/bin/bash
 set -eu
-# k8s 1.16.4
-# WHEN UPDATING TAG DONT FORGET TO UPDATE VERSION ABOVE AS WELL
-KUBECTL_IMAGE={{.DockerRegistry}}/giantswarm/docker-kubectl:c692d2d3904878d9bb99f42f12fc843ac434982e
-KUBECTL="/usr/bin/docker run --net=host --rm
--e KUBECONFIG=/etc/kubernetes/kubeconfig/addons.yaml
--v /etc/kubernetes:/etc/kubernetes
--v /srv:/srv $KUBECTL_IMAGE"
-/usr/bin/docker pull $KUBECTL_IMAGE
+KUBECTL="/opt/bin/hyperkube kubectl --kubeconfig=/etc/kubernetes/kubeconfig/addons.yaml"
 
 while ! curl --output /dev/null --silent --head --insecure "https://{{ .APIDomainName }}"; do sleep 1 && echo 'Waiting for master'; done
 

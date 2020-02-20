@@ -22,12 +22,8 @@ WORKDIR=$(pwd)
 TFDIR=${WORKDIR}/platforms/aws/giantnetes
 CLUSTER=e2e-terraform-$(echo ${CIRCLE_SHA1} | cut -c 1-4)-${MASTER_COUNT}
 SSH_USER="e2e"
-# kubectl 1.16.4
-KUBECTL_IMAGE="quay.io/giantswarm/docker-kubectl:c692d2d3904878d9bb99f42f12fc843ac434982e"
-KUBECTL_CMD="/usr/bin/docker run --net=host --rm
--e KUBECONFIG=/etc/kubernetes/kubeconfig/addons.yaml
--v /etc/kubernetes:/etc/kubernetes
--v /srv:/srv $KUBECTL_IMAGE"
+KUBECTL_CMD="/opt/bin/hyperkube kubectl --kubeconfig=/etc/kubernetes/kubeconfig/addons.yaml"
+
 WORKER_COUNT=1
 
 export TF_VAR_master_count=${MASTER_COUNT}
