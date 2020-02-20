@@ -53,6 +53,12 @@ cd ./platforms/aws/giantnetes/
 
 Now prepare `bootstrap.sh`.
 
+#### Pre-create customer gateways
+
+If the bastions need to be publicly routable then please skip this step.
+
+Otherwise, you will need to create a CGW for each VPN connection in the AWS console. They should be named after the VPN (Gridscale/Vultr) and the default settings should be used. The CGW IDs should be added to `bootstrap.sh`.
+
 #### Custom subnet requirements
 
 If a customer has requested specific IP blocks for an installation then these can be overridden via `bootstrap.sh`. If not overridden, the defaults from `variables.tf` will be used.
