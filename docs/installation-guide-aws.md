@@ -13,7 +13,7 @@ By default terraform will create multi-master cluster with 3 master nodes, singl
 
 ### Create S3 bucket and DynamoDB table for terraform state
 
-```
+```bash
 export CLUSTER="cluster1"
 export AWS_DEFAULT_REGION="eu-central-1"
 
@@ -23,7 +23,7 @@ export AWS_PROFILE=${CLUSTER}
 
 Let's create the bucket for terraform state.
 
-```
+```bash
 aws s3 mb s3://$CLUSTER-state --region $AWS_DEFAULT_REGION
 
 aws s3api put-bucket-versioning --bucket $CLUSTER-state \
@@ -123,11 +123,11 @@ Masters and workers will be created within the Vault stage and expectedly will f
 
 ### Stage: Vault
 
-```
+```bash
 source bootstrap.sh
 ```
 
-```
+```bash
 terraform plan ./
 terraform apply ./
 ```
@@ -146,23 +146,23 @@ How to do that see [here](https://github.com/giantswarm/hive/#install-insecure-v
 
 ### Stage: Kubernetes
 
-```
+```bash
 source bootstrap.sh
 ```
 
-```
+```bash
 terraform plan .
 terraform apply .
 ```
 
 ### Recreate the new masters to complete cluster bootstrapping
 
-```
+```bash
 source bootstrap.sh
 
 ```
 
-```
+```bash
 terraform taint "module.master.aws_instance.master[0]"
 terraform taint "module.master.aws_instance.master[1]"
 terraform taint "module.master.aws_instance.master[2]"
@@ -173,7 +173,7 @@ terraform apply ./
 
 Create `terraform` folder in [installations repository](https://github.com/giantswarm/installations) under particular installation folder. Copy variables and configuration.
 
-```
+```bash
 export CLUSTER=cluster1
 export INSTALLATIONS=<installations_repo_path>
 
@@ -190,23 +190,23 @@ Create PR with related changes.
 
 ## Deletion
 
-```
+```bash
 source bootstrap.sh
 ```
 
 Before delete all resources, you could want to keep access logs.
 
-```
+```bash
 aws s3 sync s3://$CLUSTER-access-logs .
 ```
 
-```
+```bash
 terraform destroy ./
 ```
 
 Then remove dynamodb lock table:
 
-```
+```bash
 aws dynamodb delete-table --table-name ${CLUSTER}-lock
 ```
 
@@ -217,7 +217,7 @@ And finally delete the bucket `${CLUSTER}-state` from the AWS console (versioned
 For enabling the access logs in the terraform state bucket, modify the placeholders in `examples/logging-policy.json`
 (For convention use `<cluster-name>-state-logs` as prefix).
 
-```
+```bash
 aws s3api put-bucket-logging --bucket $CLUSTER-state --bucket-logging-status file://examples/logging-policy.json
 ```
 
@@ -225,18 +225,18 @@ aws s3api put-bucket-logging --bucket $CLUSTER-state --bucket-logging-status fil
 
 ### Prepare variables and configuration.
 
-```
+```bash
 cd platforms/aws/giantnetes
 ```
 
-```
+```bash
 export NAME=cluster1
 export INSTALLATIONS=<installations_repo_path>
 
 cp ${INSTALLATIONS}/${CLUSTER}/terraform/* .
 ```
 
-```
+```bash
 source bootstrap.sh
 ```
 
@@ -244,11 +244,11 @@ source bootstrap.sh
 
 Check resources that has been changed.
 
-```
+```bash
 source bootstrap.sh
 ```
 
-```
+```bash
 terraform plan ./
 terraform apply ./
 ```
@@ -257,7 +257,7 @@ terraform apply ./
 
 As each master is single ec2 instance, normal `terraform apply` operation would cause all of 3 masters to go offline which is not desirable. In order to avoid that, master instance ignore changes by default. If you want to update them you need to taint each of them and then run `terraform apply` command:
 
-```
+```bash
 # update first master
 terraform taint module.master.aws_instance.master[0]
 terraform apply ./
@@ -269,7 +269,6 @@ terraform apply ./
 # update third master
 terraform taint module.master.aws_instance.master[2]
 terraform apply ./
-
 ```
 
 ### Vault update
