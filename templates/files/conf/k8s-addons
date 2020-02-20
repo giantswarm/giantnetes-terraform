@@ -66,13 +66,7 @@ done
 
 # create kube-proxy configmap
 while
-    # XXX: Why we do piping here?
-    $KUBECTL create configmap kube-proxy \
-        --from-file=kube-proxy.yaml=/srv/kube-proxy-config.yaml -o yaml --dry-run | \
-    /usr/bin/docker run -e KUBECONFIG=/etc/kubernetes/kubeconfig/addons.yaml \
-        -v /etc/kubernetes:/etc/kubernetes \
-        -i --log-driver=none -a stdin -a stdout -a stderr --net=host --rm \
-        $KUBECTL_IMAGE apply -n kube-system -f -
+    $KUBECTL create configmap kube-proxy --from-file=kube-proxy.yaml=/srv/kube-proxy-config.yaml -o yaml --dry-run | $KUBECTL apply -n kube-system -f -
     [ "$?" -ne "0" ]
 do
     echo "failed to configure kube-proxy from /srv/kube-proxy-confg.yaml, retrying in 5 sec"
