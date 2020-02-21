@@ -97,6 +97,7 @@ locals {
     "LogentriesPrefix"         = "${var.logentries_prefix}"
     "LogentriesToken"          = "${var.logentries_token}"
     "MasterCount"              = "${var.master_count}"
+    "OIDCEnabled"              = "${var.oidc_enabled}"
     "PodCIDR"                  = "${var.pod_cidr}"
     "Provider"                 = "azure"
     "Users"                    = "${file("${path.module}/../../../ignition/users.yaml")}"

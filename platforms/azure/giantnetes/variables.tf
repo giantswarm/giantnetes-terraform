@@ -212,6 +212,14 @@ variable "k8s_audit_webhook_port" {
   default     = "30771"
 }
 
+### OIDC ###
+
+variable "oidc_enabled" {
+  description = "Configure OIDC flags for Kubernetes API server"
+  default = false
+  type = bool
+}
+
 ### VPN ###
 
 # NOTE: VPN is disabled by default.
