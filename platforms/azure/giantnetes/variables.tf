@@ -123,7 +123,7 @@ variable "docker_registry" {
 }
 variable "hyperkube_version" {
   type    = string
-  default = "v1.16.7"
+  default = "v1.15.4"
 }
 
 ### DNS ###
