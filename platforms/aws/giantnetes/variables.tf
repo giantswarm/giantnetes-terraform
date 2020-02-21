@@ -71,7 +71,7 @@ variable "s3_bucket_tags" {
 
 variable "bastion_instance_type" {
   type    = string
-  default = "t2.micro"
+  default = "t3.small"
 }
 
 variable "vault_instance_type" {
@@ -116,7 +116,7 @@ variable "docker_registry" {
 
 variable "hyperkube_version" {
   type    = string
-  default = "v1.15.4"
+  default = "v1.16.7"
 }
 
 ### DNS ###
