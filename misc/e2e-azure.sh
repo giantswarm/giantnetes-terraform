@@ -22,12 +22,7 @@ WORKDIR=$(pwd)
 TFDIR=${WORKDIR}/platforms/azure/giantnetes
 CLUSTER=e2eterraform$(echo ${CIRCLE_SHA1} | cut -c 1-5)${MASTER_COUNT}
 SSH_USER="e2e"
-# kubectl 1.16.4
-KUBECTL_IMAGE="quay.io/giantswarm/docker-kubectl:c692d2d3904878d9bb99f42f12fc843ac434982e"
-KUBECTL_CMD="/usr/bin/docker run --net=host --rm
--e KUBECONFIG=/etc/kubernetes/kubeconfig/addons.yaml
--v /etc/kubernetes:/etc/kubernetes
--v /srv:/srv $KUBECTL_IMAGE"
+KUBECTL_CMD="sudo /opt/bin/hyperkube kubectl --kubeconfig=/etc/kubernetes/kubeconfig/addons.yaml"
 WORKER_COUNT=1
 
 export TF_VAR_master_count=${MASTER_COUNT}
@@ -298,8 +293,11 @@ stage-wait-kubernetes-nodes(){
         msg "Waiting all nodes to be ready."
         sleep 30; let tries+=1;
         if [ ${tries} -gt 20 ]; then 
+	  msg "Timeout waiting all nodes to be ready."
           echo "# kubectl get node"
           exec_on master1 ${KUBECTL_CMD} get node
+	  exec_on master1 ${KUBECTL_CMD} -n kube-system get po
+	  exec_on master1 "sudo journalctl --no-pager -u k8s-addons | tail -50"
           fail "Timeout waiting all nodes to be ready."
         fi
 

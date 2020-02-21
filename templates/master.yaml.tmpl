@@ -803,7 +803,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       LimitNOFILE=40000
-      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.4.1
+      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.4.2
       Environment=NAME=%p.service
       EnvironmentFile=/etc/network-environment
       ExecStartPre=-/usr/bin/docker stop  $NAME
@@ -908,14 +908,32 @@ systemd:
       [Install]
       WantedBy=multi-user.target
 {{end}}
+  - name: k8s-setup-download-hyperkube.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=Pulls hyperkube binary from image to local FS
+      After=docker.service
+      Requires=docker.service
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      TimeoutStartSec=0
+      Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:{{.K8sVersion}}"
+      Environment="NAME=%p.service"
+      ExecStartPre=/bin/bash -c "/usr/bin/docker create --name $NAME $IMAGE"
+      ExecStart=/bin/bash -c "/usr/bin/docker cp $NAME:/hyperkube /opt/bin/hyperkube"
+      ExecStartPost=/bin/bash -c "/usr/bin/docker rm $NAME"
+      [Install]
+      WantedBy=multi-user.target
   - name: k8s-kubelet.service
     enabled: true
     contents: |
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service k8s-setup-kubelet-config.service
-      Requires=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service k8s-setup-kubelet-config.service
+      After=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-setup-download-hyperkube.service
+      Requires=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-setup-download-hyperkube.service
 
       [Service]
       TimeoutStartSec=300
@@ -923,43 +941,14 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
-      Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:{{ .K8sVersion }}"
       Environment="NAME=%p.service"
-      Environment="NETWORK_CONFIG_CONTAINER="
-      ExecStartPre=/usr/bin/docker pull $IMAGE
-      ExecStartPre=-/usr/bin/docker stop -t 10 $NAME
-      ExecStartPre=-/usr/bin/docker rm -f $NAME
-      ExecStart=/bin/sh -c "/usr/bin/docker run --rm --pid=host --net=host --privileged=true \
-      -v /:/rootfs:ro,rshared \
-      -v /sys:/sys:ro \
-      -v /dev:/dev:rw \
-      -v /run/calico/:/run/calico/:rw \
-      -v /run/docker/:/run/docker/:rw \
-      -v /run/docker.sock:/run/docker.sock:rw \
-      -v /run/dockershim:/run/dockershim:rw \
-      -v /var/log:/var/log:rw \
-      -v /usr/lib/os-release:/etc/os-release \
-      -v /usr/share/ca-certificates/:/etc/ssl/certs \
-      -v /var/lib/calico/:/var/lib/calico/ \
-      -v /var/lib/docker/:/var/lib/docker:rw,rshared \
-      -v /var/lib/kubelet/:/var/lib/kubelet:rw,rshared \
-      -v /var/lib/kubelet/plugins/volume/exec:/usr/libexec/kubernetes/kubelet-plugins/volume/exec \
-      -v /etc/kubernetes/ssl/:/etc/kubernetes/ssl/ \
-      -v /etc/kubernetes/config/:/etc/kubernetes/config/ \
-      -v /etc/kubernetes/kubeconfig/:/etc/kubernetes/kubeconfig/ \
-      -v /etc/kubernetes/manifests/:/etc/kubernetes/manifests/ \
-      -v /etc/cni/net.d/:/etc/cni/net.d/ \
-      -v /opt/cni/bin/:/opt/cni/bin/ \
-      -e ETCD_CA_CERT_FILE=/etc/kubernetes/ssl/etcd/server-ca.pem \
-      -e ETCD_CERT_FILE=/etc/kubernetes/ssl/etcd/server-crt.pem \
-      -e ETCD_KEY_FILE=/etc/kubernetes/ssl/etcd/server-key.pem \
-      --name $NAME \
-      $IMAGE \
-      /hyperkube kubelet \
+      Environment="ETCD_CA_CERT_FILE=/etc/kubernetes/ssl/etcd/client-ca.pem"
+      Environment="ETCD_CERT_FILE=/etc/kubernetes/ssl/etcd/client-crt.pem"
+      Environment="ETCD_KEY_FILE=/etc/kubernetes/ssl/etcd/client-key.pem"
+      ExecStart=/opt/bin/hyperkube kubelet \
       --config=/etc/kubernetes/config/kubelet.yaml \
       --node-ip=${DEFAULT_IPV4} \
       --container-runtime-endpoint=/var/run/dockershim/dockershim.sock \
-      --containerized \
       --enable-server \
       --logtostderr=true \
       {{if eq .Provider "aws" -}}
@@ -969,18 +958,34 @@ systemd:
       {{ else -}}
       --cloud-provider=azure \
       --cloud-config=/etc/kubernetes/config/azure.yaml \
-      {{end -}}
+      {{ end -}}
       --network-plugin=cni \
       --register-node=true \
-      --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
       --kubeconfig=/etc/kubernetes/kubeconfig/kubelet.yaml \
-      --node-labels="node.kubernetes.io/master,node-role.kubernetes.io/master,kubernetes.io/role=master,role=master,ip=${DEFAULT_IPV4},master-id={{.MasterID}}" \
-      --v=2"
+      --node-labels="node.kubernetes.io/master,role=master,ip=${DEFAULT_IPV4}" \
+      --v=2
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
+
       [Install]
       WantedBy=multi-user.target
-
+  - name: k8s-label-node.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=Adds labels to the node after kubelet startup
+      After=k8s-kubelet.service
+      Wants=k8s-kubelet.service
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      Environment="KUBECTL=/opt/bin/hyperkube kubectl --kubeconfig /etc/kubernetes/kubeconfig/kubelet.yaml"
+      ExecStart=/bin/sh -c '\
+        while [ "$($KUBECTL get nodes $(hostname | tr '[:upper:]' '[:lower:]')| wc -l)" -lt "1" ]; do echo "Waiting for healthy k8s" && sleep 20s;done; \
+        $KUBECTL label nodes --overwrite $(hostname | tr '[:upper:]' '[:lower:]') node-role.kubernetes.io/master=""; \
+        $KUBECTL label nodes --overwrite $(hostname | tr '[:upper:]' '[:lower:]') kubernetes.io/role=master'
+      [Install]
+      WantedBy=multi-user.target
   - name: api-certs.service
     enabled: true
     contents: |
