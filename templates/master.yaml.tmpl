@@ -1004,7 +1004,7 @@ systemd:
       --network-plugin=cni \
       --register-node=true \
       --kubeconfig=/etc/kubernetes/kubeconfig/kubelet.yaml \
-      --node-labels="node.kubernetes.io/master,role=master,ip=${DEFAULT_IPV4}" \
+      --node-labels="node.kubernetes.io/master,role=master,ip=${DEFAULT_IPV4},master-id={{.MasterID}}" \
       --v=2
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
