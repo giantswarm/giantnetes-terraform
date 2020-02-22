@@ -169,9 +169,6 @@ source bootstrap.sh
 ```
 
 ```bash
-terraform taint "module.master.aws_instance.master[0]"
-terraform taint "module.master.aws_instance.master[1]"
-terraform taint "module.master.aws_instance.master[2]"
 terraform apply ./
 ```
 
@@ -261,19 +258,16 @@ terraform apply ./
 
 ### Update masters
 
-As each master is single ec2 instance, normal `terraform apply` operation would cause all of 3 masters to go offline which is not desirable. In order to avoid that, master instance ignore changes by default. If you want to update them you need to taint each of them and then run `terraform apply` command:
+If you want to update only single master run:
 
 ```bash
-# update first master
-terraform taint module.master.aws_instance.master[0]
-terraform apply ./
+id=MASTER_NUM
+terraform apply -auto-approve -target="module.master.aws_launch_configuration.master[${id}]" -target="module.master.aws_cloudformation_stack.master_asg[${id}]" -target="module.master.aws_s3_bucket_object.ignition_master_with_tags[${id}]" ./
+```
 
-# update second master
-terraform taint module.master.aws_instance.master[1]
-terraform apply ./
+Update all masters at once ( there will soem some k8s api donwtime)
 
-# update third master
-terraform taint module.master.aws_instance.master[2]
+```bash
 terraform apply ./
 ```
 
