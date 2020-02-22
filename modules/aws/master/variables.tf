@@ -39,6 +39,10 @@ variable "master_count" {
   default = 1
 }
 
+variable "master_eni_ips" {
+  type = list
+}
+
 variable "master_subnet_ids" {
   type = list
 }

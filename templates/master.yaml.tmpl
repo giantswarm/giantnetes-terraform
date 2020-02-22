@@ -92,7 +92,7 @@ storage:
         id: 0
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/network-policy.json" }}"
-    {{- end }}
+    {{ end }}
     - path: /srv/default-backend-dep.yaml
       filesystem: root
       mode: 420
@@ -546,7 +546,7 @@ systemd:
     enabled: false
     mask: true
   - name: var-lib-etcd.mount
-    enabled: true
+    enabled: {{if eq .Provider "aws" }}false{{else}}true{{end}}
     contents: |
       [Unit]
       Description=Mount disk to /var/lib/etcd
@@ -557,6 +557,19 @@ systemd:
       Type=ext4
       [Install]
       WantedBy=local-fs.target
+{{if eq .Provider "aws" }}
+  - name: var-lib-etcd.automount
+    enabled: true
+    contents: |
+      [Unit]
+      Description=Mount disk to /var/lib/etcd
+      Before=etcd3.service
+      After=etcd3-attach-dependencies.service
+      [Automount]
+      Where=/var/lib/etcd
+      [Install]
+      WantedBy=multi-user.target
+{{end}}
   - name: var-lib-docker.mount
     enabled: true
     contents: |
@@ -788,13 +801,42 @@ systemd:
       ExecStop=/usr/bin/rm -rf /etc/kubernetes/ssl/etcd/
       [Install]
       WantedBy=multi-user.target
+{{ if eq .Provider "aws" }}
+  - name: etcd3-attach-dependencies.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=Attach etcd dependencies
+      Requires=network.target
+      After=network.target
+
+      [Service]
+      Environment="IMAGE={{.DockerRegistry}}/giantswarm/aws-attach-etcd-dep:f6a1d8eb340032f9dc2519dd974797487125b1a7"
+      Environment="NAME=%p.service"
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStart=/bin/bash -c "docker run --rm -i \
+                        -v /dev:/dev \
+                        --privileged \
+                        --name ${NAME} \
+                        ${IMAGE} \
+                        --eni-device-index=1 \
+                        --eni-tag-key=Name \
+                        --eni-tag-value={{.ClusterName}}-master{{.MasterID}}-etcd \
+                        --volume-device-name=/dev/xvdh \
+                        --volume-device-filesystem-type=ext4 \
+                        --volume-tag-key=Name \
+                        --volume-tag-value={{.ClusterName}}-master{{.MasterID}}-etcd"
+      [Install]
+      WantedBy=multi-user.target
+{{ end }}
   - name: etcd3.service
     enabled: true
     contents: |
       [Unit]
       Description=etcd3
-      Requires=k8s-setup-network-env.service etcd3-certs.service calico-certs.service var-lib-etcd.mount
-      After=k8s-setup-network-env.service etcd3-certs.service calico-certs.service var-lib-etcd.mount
+      Requires=k8s-setup-network-env.service etcd3-certs.service calico-certs.service {{if eq .Provider "aws" }}etcd3-attach-dependencies.service{{else}}var-lib-etcd.mount{{end}}
+      After=k8s-setup-network-env.service etcd3-certs.service calico-certs.service {{if eq .Provider "aws" }}etcd3-attach-dependencies.service{{else}}var-lib-etcd.mount{{end}}
       Conflicts=etcd.service etcd2.service
       StartLimitIntervalSec=0
 
@@ -832,7 +874,7 @@ systemd:
           --advertise-client-urls=https://{{ .ETCDDomainName }}:2379 \
           --initial-advertise-peer-urls=https://{{ .ETCDDomainName }}:2380 \
           --listen-client-urls=https://0.0.0.0:2379 \
-          --listen-peer-urls=https://${DEFAULT_IPV4}:2380 \
+          --listen-peer-urls=https://{{if eq .Provider "aws"}}{{.MasterENIAddress}}{{else}}${DEFAULT_IPV4}{{end}}:2380 \
           --initial-cluster-token=k8s-etcd-cluster \
           {{- if eq .MasterCount "3" }}
           --initial-cluster={{ .ETCDInitialClusterMulti }} \
@@ -962,7 +1004,7 @@ systemd:
       --network-plugin=cni \
       --register-node=true \
       --kubeconfig=/etc/kubernetes/kubeconfig/kubelet.yaml \
-      --node-labels="node.kubernetes.io/master,role=master,ip=${DEFAULT_IPV4}" \
+      --node-labels="node.kubernetes.io/master,role=master,ip=${DEFAULT_IPV4},master-id={{.MasterID}}" \
       --v=2
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
@@ -1082,8 +1124,27 @@ systemd:
 
       [Install]
       WantedBy=multi-user.target
-{{ end }}
-
+{{ end -}}
+{{ if eq .Provider "aws" -}}
+networkd:
+  units:
+  - name: 10-eth1.network
+    contents: |
+      # ensure that traffic arriving on eth1 leaves again from eth1 to prevent asymetric routing
+      [Match]
+      Name=eth1
+      [Network]
+      Address={{.MasterENIAddress}}/{{.MasterENISubnetSize}}
+      
+      [RoutingPolicyRule]
+      Table=2
+      From={{.MasterENIAddress}}/32
+      
+      [Route]
+      Destination=0.0.0.0/0
+      Gateway={{.MasterENIGateway}}
+      Table=2
+{{ end -}}
 storage:
   filesystems:
     - name: docker
@@ -1092,11 +1153,12 @@ storage:
         format: xfs
         wipe_filesystem: false
         label: docker
+{{if eq .Provider "azure" }}
     - name: etcd
       mount:
-        device: {{if eq .Provider "azure" }}/dev/disk/azure/scsi1/lun1{{else}}{{ .MasterMountETCD }}{{end}}
+        device: /dev/disk/azure/scsi1/lun1
         format: ext4
         wipe_filesystem: false
         label: var-lib-etcd
-
+{{end}}
 {{ .Users }}

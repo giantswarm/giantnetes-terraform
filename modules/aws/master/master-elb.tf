@@ -55,12 +55,6 @@ resource "aws_security_group" "master_elb_api" {
   )
 }
 
-resource "aws_elb_attachment" "master_api" {
-  count    = var.master_count
-  elb      = aws_elb.master_api.id
-  instance = element(aws_instance.master.*.id, count.index)
-}
-
 resource "aws_route53_record" "master_api" {
   count   = var.route53_enabled ? 1 : 0
   zone_id = var.dns_zone_id

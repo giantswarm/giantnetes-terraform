@@ -7,62 +7,95 @@ locals {
 
 data "aws_availability_zones" "available" {}
 
-resource "aws_instance" "master" {
+
+resource "aws_cloudformation_stack" "master_asg" {
+  count = var.master_count
+  name  = "${var.cluster_name}-master-${count.index}"
+
+  template_body = <<EOF
+{
+  "Resources": {
+    "AutoScalingGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "DesiredCapacity": "1",
+        "HealthCheckType": "EC2",
+        "HealthCheckGracePeriod": 300,
+        "LaunchConfigurationName": "${element(aws_launch_configuration.master.*.name, count.index)}",
+        "LoadBalancerNames": [
+          "${var.cluster_name}-master-api"
+        ],
+        "MaxSize": "1",
+        "DesiredCapacity": "1",
+        "MinSize": "1",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "${var.cluster_name}-master-${count.index}",
+            "PropagateAtLaunch": true
+          },
+          {
+            "Key": "giantswarm.io/installation",
+            "Value": "${var.cluster_name}",
+            "PropagateAtLaunch": true
+          },
+          {
+            "Key": "kubernetes.io/cluster/${var.cluster_name}",
+            "Value": "owned",
+            "PropagateAtLaunch": true
+          }
+        ],
+        "VPCZoneIdentifier": ["${var.master_subnet_ids[count.index]}"]
+      },
+      "UpdatePolicy": {
+        "AutoScalingRollingUpdate": {
+          "MinInstancesInService": "0",
+          "MaxBatchSize": "1",
+          "PauseTime": "PT2M"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "AsgName": {
+      "Description": "The name of the auto scaling group",
+      "Value": {
+        "Ref": "AutoScalingGroup"
+      }
+    }
+  }
+}
+EOF
+}
+
+resource "aws_launch_configuration" "master" {
   count                = var.master_count
-  ami                  = var.container_linux_ami_id
+  name_prefix          = "${var.cluster_name}-master-"
+  iam_instance_profile = element(aws_iam_instance_profile.master.*.name, count.index)
+  image_id             = var.container_linux_ami_id
   instance_type        = var.instance_type
-  iam_instance_profile = aws_iam_instance_profile.master.name
+  security_groups      = ["${aws_security_group.master.id}"]
+
+  lifecycle {
+    create_before_destroy = true
+  }
 
   associate_public_ip_address = false
-  source_dest_check           = false
-
-  subnet_id              = var.master_subnet_ids[count.index]
-  vpc_security_group_ids = ["${aws_security_group.master.id}"]
 
   root_block_device {
     volume_type = var.volume_type
     volume_size = var.volume_size_root
   }
 
-  user_data = element(data.ignition_config.s3.*.rendered, count.index)
-
-  tags = merge(
-    local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-master${count.index}"
-    )
-  )
-
-  # we ignore changes, to avoid rolling all masters at once
-  # update is done via tainting masters
-  lifecycle {
-    ignore_changes = all
+  # Docker volume.
+  ebs_block_device {
+    device_name           = var.volume_docker
+    delete_on_termination = true
+    volume_type           = var.volume_type
+    volume_size           = var.volume_size_docker
   }
-}
 
-resource "aws_ebs_volume" "master_docker" {
-  count = var.master_count
-
-  availability_zone = element(data.aws_availability_zones.available.names, count.index)
-  size              = var.volume_size_docker
-  type              = var.volume_type
-
-  tags = merge(
-    local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-master${count.index+1}-docker"
-    )
-  )
-}
-
-resource "aws_volume_attachment" "master_docker" {
-  count       = var.master_count
-  device_name = var.volume_docker
-  volume_id   = element(aws_ebs_volume.master_docker.*.id, count.index)
-  instance_id = element(aws_instance.master.*.id, count.index)
-
-  # Allows reattaching volume.
-  skip_destroy = true
+  user_data = element(data.ignition_config.s3.*.rendered, count.index)
 }
 
 resource "aws_ebs_volume" "master_etcd" {
@@ -75,25 +108,9 @@ resource "aws_ebs_volume" "master_etcd" {
   tags = merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}-master${count.index+1}-etcd"
+      "Name", "${var.cluster_name}-master${count.index + 1}-etcd"
     )
   )
-}
-
-resource "aws_volume_attachment" "master_etcd" {
-  count = var.master_count
-
-  # NOTE: For m5 type we must use xvdh here to guarantee that
-  # that disk will be the second one.
-  device_name = var.volume_etcd
-
-  volume_id   = element(aws_ebs_volume.master_etcd.*.id, count.index)
-  instance_id = element(aws_instance.master.*.id, count.index)
-
-  # Allows reattaching volume.
-  skip_destroy = true
-
-  depends_on = [aws_volume_attachment.master_docker]
 }
 
 resource "aws_security_group" "master" {
@@ -143,19 +160,34 @@ resource "aws_security_group" "master" {
 resource "aws_route53_record" "master" {
   count   = var.route53_enabled ? var.master_count : 0
   zone_id = var.dns_zone_id
-  name    = "master${count.index+1}"
-  type    = "CNAME"
-  records = ["${element(aws_instance.master.*.private_dns, count.index)}"]
+  name    = "master${count.index + 1}"
+  type    = "A"
+  records = ["${element(var.master_eni_ips, count.index)}"]
   ttl     = "30"
 }
 
 resource "aws_route53_record" "etcd" {
   count   = var.route53_enabled ? var.master_count : 0
   zone_id = var.dns_zone_id
-  name    = "etcd${count.index+1}"
-  type    = "CNAME"
-  records = ["${element(aws_instance.master.*.private_dns, count.index)}"]
+  name    = "etcd${count.index + 1}"
+  type    = "A"
+  records = ["${element(var.master_eni_ips, count.index)}"]
   ttl     = "30"
+}
+
+resource "aws_network_interface" "master" {
+  count       = var.master_count
+  subnet_id   = element(var.master_subnet_ids, count.index)
+  private_ips = ["${element(var.master_eni_ips, count.index)}"]
+  security_groups = ["${aws_security_group.master.id}"]
+
+  tags = merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-master${count.index + 1}-etcd"
+    )
+  )
+
 }
 
 # To avoid 16kb user_data limit upload CoreOS ignition config to a s3 bucket.
@@ -163,7 +195,7 @@ resource "aws_route53_record" "etcd" {
 resource "aws_s3_bucket_object" "ignition_master_with_tags" {
   count   = var.s3_bucket_tags ? var.master_count : 0
   bucket  = var.ignition_bucket_id
-  key     = "${var.cluster_name}-ignition-master${count.index+1}.json"
+  key     = "${var.cluster_name}-ignition-master${count.index + 1}.json"
   content = var.user_data[count.index]
   acl     = "private"
 
@@ -182,7 +214,7 @@ resource "aws_s3_bucket_object" "ignition_master_with_tags" {
 resource "aws_s3_bucket_object" "ignition_master_without_tags" {
   count   = var.s3_bucket_tags ? 0 : var.master_count
   bucket  = var.ignition_bucket_id
-  key     = "${var.cluster_name}-ignition-master${count.index+1}.json"
+  key     = "${var.cluster_name}-ignition-master${count.index + 1}.json"
   content = var.user_data[count.index]
   acl     = "private"
 
