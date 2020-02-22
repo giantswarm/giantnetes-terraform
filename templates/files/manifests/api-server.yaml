@@ -54,6 +54,12 @@ spec:
       - --audit-log-maxbackup=30
       - --audit-log-maxsize=100
       - --audit-policy-file=/etc/kubernetes/config/audit-policy.yaml
+      {{ if .OIDCEnabled -}}
+      - --oidc-issuer-url=https://dex.{{ .APIDomainName }}
+      - --oidc-client-id=dex-k8s-authenticator
+      - --oidc-username-claim=email
+      - --oidc-groups-claim=groups
+      {{ end -}}
       - --requestheader-client-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
       - --requestheader-allowed-names=aggregator,api.{{ .APIDomainName }},worker.{{ .APIDomainName }}
       - --requestheader-extra-headers-prefix=X-Remote-Extra-

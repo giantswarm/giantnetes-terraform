@@ -225,6 +225,14 @@ variable "subnets_worker" {
   default     = ["10.0.5.0/26", "10.0.5.64/26", "10.0.5.128/26"]
 }
 
+### OIDC ###
+
+variable "oidc_enabled" {
+  description = "Configure OIDC flags for Kubernetes API server"
+  default = false
+  type = bool
+}
+
 ### VPN ###
 
 variable "aws_customer_gateway_id_0" {

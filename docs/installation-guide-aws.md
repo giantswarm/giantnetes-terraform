@@ -13,7 +13,7 @@ By default terraform will create multi-master cluster with 3 master nodes, singl
 
 ### Create S3 bucket and DynamoDB table for terraform state
 
-```
+```bash
 export CLUSTER="cluster1"
 export AWS_DEFAULT_REGION="eu-central-1"
 
@@ -23,7 +23,7 @@ export AWS_PROFILE=${CLUSTER}
 
 Let's create the bucket for terraform state.
 
-```
+```bash
 aws s3 mb s3://$CLUSTER-state --region $AWS_DEFAULT_REGION
 
 aws s3api put-bucket-versioning --bucket $CLUSTER-state \
@@ -42,23 +42,63 @@ aws dynamodb create-table --region $AWS_DEFAULT_REGION \
 
 ### Vault auto-unseal
 
-Auto-unseal with [transit unseal](https://www.vaultproject.io/docs/configuration/seal/transit.html) is configured by default.  
+Auto-unseal with [transit unseal](https://www.vaultproject.io/docs/configuration/seal/transit.html) is configured by default.
 
 ### Prepare terraform
 
-```
+```bash
 cp -r examples/aws/* ./platforms/aws/giantnetes/
 cd ./platforms/aws/giantnetes/
 ```
 
-Edit `bootstrap.sh`.
+Now prepare `bootstrap.sh`.
 
+#### Pre-create customer gateways
+
+If the bastions need to be publicly routable then please skip this step.
+
+Otherwise, you will need to create a CGW for each VPN connection in the AWS console. They should be named after the VPN (Gridscale/Vultr) and the default settings should be used. The CGW IDs should be added to `bootstrap.sh`.
+
+#### Custom subnet requirements
+
+If a customer has requested specific IP blocks for an installation then these can be overridden via `bootstrap.sh`. If not overridden, the defaults from `variables.tf` will be used.
+
+* Control Plane:
+
+Control planes should be given a `/24`:
+
+```bash
+export TF_VAR_vpc_cidr='172.30.33.0/24'
 ```
+
+And any subnets for control plane components should exist inside the `vpc_cidr` subnet:
+
+```bash
+export TF_VAR_subnets_bastion='["172.30.33.160/28", "172.30.33.176/28"]'
+export TF_VAR_subnets_vault='["172.30.33.48/28"]'
+export TF_VAR_subnets_elb='["172.30.33.64/28","172.30.33.80/28","172.30.33.96/28"]'
+export TF_VAR_subnets_worker='["172.30.33.112/28","172.30.33.128/28","172.30.33.144/28"]'
+```
+
+Note: the bastion subnets should form one contiguous `/27` (as this is the VPN encryption domain). This should not overlap with any other customer VPN CIDRs - see [VPN subnets](https://github.com/giantswarm/giantswarm/wiki/Giant-Swarm-VPN) for a list of ranges currently in use.
+
+Care should also be taken that the subnets chosen for the control plane do not overlap with any other default subnets (see `calico`, `docker` and `k8s service` CIDRs).
+
+* Tenant Clusters:
+
+IP blocks for each TC will be sliced from this CIDR:
+
+```bash
+export TF_VAR_ipam_network_cidr='172.16.0.0/16'
+```
+
+Once `bootstrap.sh` is complete, source it:
+
+```bash
 source bootstrap.sh
 ```
 
-Useful links to avoid possible network overlapping [VPN subnets](https://github.com/giantswarm/giantswarm/wiki/Giant-Swarm-VPN)
-NOTE: Reexecute `source bootstrap.sh` in every new console.
+NOTE: **Reexecute `source bootstrap.sh` in every new console.**
 
 ### Configure ssh users
 
@@ -87,11 +127,11 @@ Masters and workers will be created within the Vault stage and expectedly will f
 
 ### Stage: Vault
 
-```
+```bash
 source bootstrap.sh
 ```
 
-```
+```bash
 terraform plan ./
 terraform apply ./
 ```
@@ -110,23 +150,25 @@ How to do that see [here](https://github.com/giantswarm/hive/#install-insecure-v
 
 ### Stage: Kubernetes
 
-```
+Update `bootstrap.sh` with the Vault node token (provided when bootstrapping Vault with Ansible).
+
+```bash
 source bootstrap.sh
 ```
 
-```
+```bash
 terraform plan .
 terraform apply .
 ```
 
 ### Recreate the new masters to complete cluster bootstrapping
 
-```
+```bash
 source bootstrap.sh
 
 ```
 
-```
+```bash
 terraform taint "module.master.aws_instance.master[0]"
 terraform taint "module.master.aws_instance.master[1]"
 terraform taint "module.master.aws_instance.master[2]"
@@ -137,7 +179,7 @@ terraform apply ./
 
 Create `terraform` folder in [installations repository](https://github.com/giantswarm/installations) under particular installation folder. Copy variables and configuration.
 
-```
+```bash
 export CLUSTER=cluster1
 export INSTALLATIONS=<installations_repo_path>
 
@@ -154,23 +196,23 @@ Create PR with related changes.
 
 ## Deletion
 
-```
+```bash
 source bootstrap.sh
 ```
 
 Before delete all resources, you could want to keep access logs.
 
-```
+```bash
 aws s3 sync s3://$CLUSTER-access-logs .
 ```
 
-```
+```bash
 terraform destroy ./
 ```
 
 Then remove dynamodb lock table:
 
-```
+```bash
 aws dynamodb delete-table --table-name ${CLUSTER}-lock
 ```
 
@@ -181,7 +223,7 @@ And finally delete the bucket `${CLUSTER}-state` from the AWS console (versioned
 For enabling the access logs in the terraform state bucket, modify the placeholders in `examples/logging-policy.json`
 (For convention use `<cluster-name>-state-logs` as prefix).
 
-```
+```bash
 aws s3api put-bucket-logging --bucket $CLUSTER-state --bucket-logging-status file://examples/logging-policy.json
 ```
 
@@ -189,18 +231,18 @@ aws s3api put-bucket-logging --bucket $CLUSTER-state --bucket-logging-status fil
 
 ### Prepare variables and configuration.
 
-```
+```bash
 cd platforms/aws/giantnetes
 ```
 
-```
+```bash
 export NAME=cluster1
 export INSTALLATIONS=<installations_repo_path>
 
 cp ${INSTALLATIONS}/${CLUSTER}/terraform/* .
 ```
 
-```
+```bash
 source bootstrap.sh
 ```
 
@@ -208,11 +250,11 @@ source bootstrap.sh
 
 Check resources that has been changed.
 
-```
+```bash
 source bootstrap.sh
 ```
 
-```
+```bash
 terraform plan ./
 terraform apply ./
 ```
@@ -221,7 +263,7 @@ terraform apply ./
 
 As each master is single ec2 instance, normal `terraform apply` operation would cause all of 3 masters to go offline which is not desirable. In order to avoid that, master instance ignore changes by default. If you want to update them you need to taint each of them and then run `terraform apply` command:
 
-```
+```bash
 # update first master
 terraform taint module.master.aws_instance.master[0]
 terraform apply ./
@@ -233,7 +275,6 @@ terraform apply ./
 # update third master
 terraform taint module.master.aws_instance.master[2]
 terraform apply ./
-
 ```
 
 ### Vault update

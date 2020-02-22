@@ -122,6 +122,7 @@ locals {
     "MasterENISubnetSize"          = "${local.masters_eni_subnet_size}"
     "MasterMountDocker"            = "${var.master_instance["volume_docker"]}"
     "MasterMountETCD"              = "${var.master_instance["volume_etcd"]}"
+    "OIDCEnabled"                  = "${var.oidc_enabled}"
     "PodInfraImage"                = "${var.pod_infra_image}"
     "Provider"                     = "aws"
     "Users"                        = "${file("${path.module}/../../../ignition/users.yaml")}"
