@@ -13,6 +13,12 @@ variable "aws_region" {
   description = "An AWS region where the cluster will be built."
 }
 
+variable "gs_aws_account" {
+  type        = string
+  description = "Giant Swarm AWS account ID."
+  default     = "084190472784"
+}
+
 variable "aws_account" {
   type        = string
   description = "An AWS account ID."
