@@ -19,6 +19,12 @@ variable "gs_aws_account" {
   default     = "084190472784"
 }
 
+variable "sts_external_id" {
+  type        = string
+  description = "STS token for GiantSwarmCD user"
+  default     = "KXUoNDMK3kB8d4TtyPwC"
+}
+
 variable "aws_account" {
   type        = string
   description = "An AWS account ID."
