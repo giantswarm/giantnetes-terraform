@@ -9,6 +9,9 @@ metadata:
     prometheus.io/port: '10254'
     prometheus.io/scrape: 'true'
 spec:
+  selector:
+    matchLabels:
+      k8s-app: nginx-ingress-controller
   replicas: 3
   strategy:
     type: RollingUpdate

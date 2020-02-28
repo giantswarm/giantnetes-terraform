@@ -6,6 +6,9 @@ metadata:
   labels:
     k8s-app: default-http-backend
 spec:
+  selector:
+    matchLabels:
+      k8s-app: default-http-backend
   replicas: 2
   template:
     metadata:
