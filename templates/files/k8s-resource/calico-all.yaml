@@ -960,6 +960,8 @@ spec:
               value: "warn"
             - name: FELIX_HEALTHENABLED
               value: "true"
+            - name: IP_AUTODETECTION_METHOD
+              value: skip-interface=eth1
           securityContext:
             privileged: true
           resources:
