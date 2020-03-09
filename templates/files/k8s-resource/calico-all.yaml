@@ -1418,14 +1418,14 @@ kind: ClusterRole
 metadata:
   name: calico-kube-controllers-psp
 rules:
-  - apiGroups:
-      - extensions
-    resources:
-      - podsecuritypolicies
-    verbs:
-      - use
-    resourceNames:
-      - calico-kube-controllers-psp
+- apiGroups:
+    - extensions
+  resources:
+    - podsecuritypolicies
+  verbs:
+    - use
+  resourceNames:
+    - calico-kube-controllers-psp
 
 ---
 
