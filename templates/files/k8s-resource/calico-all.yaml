@@ -1175,9 +1175,9 @@ spec:
           readinessProbe:
             exec:
               command:
-                - /bin/calico-node
-                - -bird-ready
-                - -felix-ready
+              - /bin/calico-node
+              - -bird-ready
+              - -felix-ready
             periodSeconds: 10
           volumeMounts:
             - mountPath: /lib/modules
@@ -1196,7 +1196,7 @@ spec:
               name: etcd-certs
               readOnly: true
       initContainers:
-        # This container installs the CNI binaries
+        # This container installs the Calico CNI binaries
         # and CNI network config file on each node.
         - name: install-cni
           image: {{.DockerRegistry}}/giantswarm/cni:v3.10.1
@@ -1205,6 +1205,7 @@ spec:
             # Name of the CNI config file to create.
             - name: CNI_CONF_NAME
               value: "10-calico.conflist"
+            # The location of the Calico etcd cluster.
             - name: ETCD_ENDPOINTS
               valueFrom:
                 configMapKeyRef:
@@ -1216,7 +1217,6 @@ spec:
                 configMapKeyRef:
                   name: calico-config
                   key: cni_network_config
-            # The location of the Calico etcd cluster.
             # CNI MTU Config variable
             - name: CNI_MTU
               valueFrom:
@@ -1226,6 +1226,8 @@ spec:
             # Prevents the container from sleeping forever.
             - name: SLEEP
               value: "false"
+          # install-cni also monitors etcd connection,
+          # so use reasonable resource limits.
           resources:
             requests:
               cpu: 50m
@@ -1251,10 +1253,6 @@ spec:
         - name: var-lib-calico
           hostPath:
             path: /var/lib/calico
-        - name: xtables-lock
-          hostPath:
-            path: /run/xtables.lock
-            type: FileOrCreate
         # Used to install CNI.
         - name: cni-bin-dir
           hostPath:
@@ -1267,6 +1265,10 @@ spec:
         - name: etcd-certs
           hostPath:
             path: /etc/kubernetes/ssl/etcd
+        - name: xtables-lock
+          hostPath:
+            path: /run/xtables.lock
+            type: FileOrCreate
 ---
 
 apiVersion: v1
