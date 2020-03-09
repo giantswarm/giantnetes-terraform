@@ -763,7 +763,6 @@ subjects:
 #   calico/cni:v3.10.1
 #   calico/kube-controllers:v3.10.1
 
-fatto
 # This ConfigMap is used to configure a self-hosted Calico installation.
 kind: ConfigMap
 apiVersion: v1
