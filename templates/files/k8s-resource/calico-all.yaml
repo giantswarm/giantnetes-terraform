@@ -1176,8 +1176,8 @@ spec:
             exec:
               command:
                 - /bin/calico-node
-                - -felix-ready
                 - -bird-ready
+                - -felix-ready
             periodSeconds: 10
           volumeMounts:
             - mountPath: /lib/modules
@@ -1189,11 +1189,11 @@ spec:
             - mountPath: /var/run/calico
               name: var-run-calico
               readOnly: false
-            - name: var-lib-calico
-              mountPath: /var/lib/calico
+            - mountPath: /var/lib/calico
+              name: var-lib-calico
               readOnly: false
-            - name: etcd-certs
-              mountPath: /calico-secrets
+            - mountPath: /calico-secrets
+              name: etcd-certs
               readOnly: true
       initContainers:
         # This container installs the CNI binaries
