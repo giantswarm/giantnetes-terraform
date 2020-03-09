@@ -1279,66 +1279,6 @@ metadata:
 
 ---
 
-# this manifest applies a PodSecurityPolicy to Calico controllers.	# Include a clusterrole for the kube-controllers component,
-apiVersion: policy/v1beta1	# and bind it to the calico-kube-controllers serviceaccount.
-kind: PodSecurityPolicy
-metadata:
-  name: calico-kube-controllers-psp
-spec:
-  privileged: true
-  fsGroup:
-    rule: RunAsAny
-  runAsUser:
-    rule: RunAsAny
-  runAsGroup:
-    rule: RunAsAny
-  seLinux:
-    rule: RunAsAny
-  supplementalGroups:
-    rule: RunAsAny
-  volumes:
-    - 'secret'
-    - 'hostPath'
-  hostNetwork: true
-  hostIPC: false
-  hostPID: false
-
----
-
-# This manifest creates a clusterrole for the PSP
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: calico-kube-controllers-psp
-rules:
-  - apiGroups:
-      - extensions
-    resources:
-      - podsecuritypolicies
-    verbs:
-      - use
-    resourceNames:
-      - calico-kube-controllers-psp
-
----
-
-# This manifest binds the clusterrole to the SA to
-# enable the PSP.
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: calico-kube-controllers-psp
-subjects:
-  - kind: ServiceAccount
-    name: calico-kube-controllers
-    namespace: kube-system
-roleRef:
-  kind: ClusterRole
-  name: calico-kube-controllers-psp
-  apiGroup: rbac.authorization.k8s.io
-
----
-
 # This manifest deploys the Calico Kubernetes controllers.
 # See https://github.com/projectcalico/kube-controllers
 apiVersion: apps/v1
@@ -1510,6 +1450,67 @@ subjects:
   namespace: kube-system
 
 ---
+
+# this manifest applies a PodSecurityPolicy to Calico controllers.	# Include a clusterrole for the kube-controllers component,
+apiVersion: policy/v1beta1	# and bind it to the calico-kube-controllers serviceaccount.
+kind: PodSecurityPolicy
+metadata:
+  name: calico-kube-controllers-psp
+spec:
+  privileged: true
+  fsGroup:
+    rule: RunAsAny
+  runAsUser:
+    rule: RunAsAny
+  runAsGroup:
+    rule: RunAsAny
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  volumes:
+    - 'secret'
+    - 'hostPath'
+  hostNetwork: true
+  hostIPC: false
+  hostPID: false
+
+---
+
+# This manifest creates a clusterrole for the PSP
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: calico-kube-controllers-psp
+rules:
+  - apiGroups:
+      - extensions
+    resources:
+      - podsecuritypolicies
+    verbs:
+      - use
+    resourceNames:
+      - calico-kube-controllers-psp
+
+---
+
+# This manifest binds the clusterrole to the SA to
+# enable the PSP.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: calico-kube-controllers-psp
+subjects:
+  - kind: ServiceAccount
+    name: calico-kube-controllers
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: calico-kube-controllers-psp
+  apiGroup: rbac.authorization.k8s.io
+
+---
+
 # Include a clusterrole for the calico-node DaemonSet,
 # and bind it to the calico-node serviceaccount.
 kind: ClusterRole
