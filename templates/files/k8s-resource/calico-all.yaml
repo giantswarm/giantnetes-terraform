@@ -1589,7 +1589,7 @@ roleRef:
   kind: ClusterRole
   name: calico-node
 subjects:
-  - kind: ServiceAccount
-    name: calico-node
-    namespace: kube-system
+- kind: ServiceAccount
+  name: calico-node
+  namespace: kube-system
 {{- end }}
