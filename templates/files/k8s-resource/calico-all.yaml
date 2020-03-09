@@ -782,8 +782,7 @@ data:
   # Configure the Calico backend to use.
   calico_backend: "bird"
   # Configure the MTU to use
-  veth_mtu: "{{.Cluster.Calico.MTU}}"
-
+  veth_mtu: "{{.CalicoMTU}}"
   # The CNI network configuration to install on each node.  The special
   # values in this config will be automatically populated.
   cni_network_config: |-
