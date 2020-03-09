@@ -1392,10 +1392,11 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: calico-kube-controllers
 rules:
-  - apiGroups: [""]
+  - apiGroups:
+    - ""
     resources:
-      - nodes
       - pods
+      - nodes
       - namespaces
       - serviceaccounts
     verbs:
