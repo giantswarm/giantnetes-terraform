@@ -1403,7 +1403,8 @@ rules:
       - watch
       - list
       - get
-  - apiGroups: ["networking.k8s.io"]
+  - apiGroups:
+    - "networking.k8s.io"
     resources:
       - networkpolicies
     verbs:
@@ -1444,9 +1445,10 @@ roleRef:
   kind: ClusterRole
   name: calico-kube-controllers
 subjects:
-  - kind: ServiceAccount
-    name: calico-kube-controllers
-    namespace: kube-system
+- kind: ServiceAccount
+  name: calico-kube-controllers
+  namespace: kube-system
+
 ---
 # Include a clusterrole for the calico-node DaemonSet,
 # and bind it to the calico-node serviceaccount.
