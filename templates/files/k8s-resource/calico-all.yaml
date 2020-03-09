@@ -772,7 +772,6 @@ metadata:
 data:
   # Configure this with the location of your etcd cluster.
   etcd_endpoints: "{{.ETCDEndpoints}}"
-
   # If you're using TLS enabled etcd uncomment the following.
   # You must also populate the Secret below with these files.
   etcd_ca: "/calico-secrets/etcd-ca"
