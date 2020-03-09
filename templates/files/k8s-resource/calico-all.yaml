@@ -1385,7 +1385,8 @@ metadata:
 
 ---
 
-# this manifest applies a PodSecurityPolicy to Calico controllers.	# Include a clusterrole for the kube-controllers component,
+# this manifest applies a PodSecurityPolicy to Calico controllers.
+# Include a clusterrole for the kube-controllers component,
 apiVersion: policy/v1beta1	# and bind it to the calico-kube-controllers serviceaccount.
 kind: PodSecurityPolicy
 metadata:
