@@ -1083,76 +1083,78 @@ spec:
           image: {{.DockerRegistry}}/giantswarm/node:v3.10.1
           env:
             # The location of the Calico etcd cluster.
-              - name: ETCD_ENDPOINTS
-                valueFrom:
-                  configMapKeyRef:
-                    name: calico-config
-                    key: etcd_endpoints
-              # Location of the CA certificate for etcd.
-              - name: ETCD_CA_CERT_FILE
-                valueFrom:
-                  configMapKeyRef:
-                    name: calico-config
-                    key: etcd_ca
-              # Location of the client key for etcd.
-              - name: ETCD_KEY_FILE
-                valueFrom:
-                  configMapKeyRef:
-                    name: calico-config
-                    key: etcd_key
-              # Location of the client certificate for etcd.
-              - name: ETCD_CERT_FILE
-                valueFrom:
-                  configMapKeyRef:
-                    name: calico-config
-                    key: etcd_cert
-              # Set noderef for node controller.
-              - name: CALICO_K8S_NODE_REF
-                valueFrom:
-                  fieldRef:
-                    fieldPath: spec.nodeName
-              # Choose the backend to use.
-              - name: CALICO_NETWORKING_BACKEND
-                valueFrom:
-                  configMapKeyRef:
-                    name: calico-config
-                    key: calico_backend
-              # Cluster type to identify the deployment type
-              - name: CLUSTER_TYPE
-                value: "k8s,bgp"
-              # Auto-detect the BGP IP address.
-              - name: IP
-                value: "autodetect"
-              # Enable IPIP
-              - name: CALICO_IPV4POOL_IPIP
-                value: "Always"
-              # Set MTU for tunnel device used if ipip is enabled
-              - name: FELIX_IPINIPMTU
-                valueFrom:
-                  configMapKeyRef:
-                    name: calico-config
-                    key: veth_mtu
-              # The default IPv4 pool to create on startup if none exists. Pod IPs will be
-              # chosen from this range. Changing this value after installation will have
-              # no effect. This should fall within `--cluster-cidr`.
-              - name: CALICO_IPV4POOL_CIDR
-                value: "{{.Cluster.Calico.Subnet}}/{{.Cluster.Calico.CIDR}}"
-              # Disable file logging so `kubectl logs` works.
-              - name: CALICO_DISABLE_FILE_LOGGING
-                value: "true"
-              # Set Felix endpoint to host default action to ACCEPT.
-              - name: FELIX_DEFAULTENDPOINTTOHOSTACTION
-                value: "ACCEPT"
-              # Disable IPv6 on Kubernetes.
-              - name: FELIX_IPV6SUPPORT
-                value: "false"
-              # Set Felix logging to "info"
-              - name: FELIX_LOGSEVERITYSCREEN
-                value: "Warning"
-              - name: FELIX_HEALTHENABLED
-                value: "true"
-              - name: FELIX_PROMETHEUSMETRICSENABLED
-                value: "true"
+            - name: ETCD_ENDPOINTS
+              valueFrom:
+                configMapKeyRef:
+                  name: calico-config
+                  key: etcd_endpoints
+            # Location of the CA certificate for etcd.
+            - name: ETCD_CA_CERT_FILE
+              valueFrom:
+                configMapKeyRef:
+                  name: calico-config
+                  key: etcd_ca
+            # Location of the client key for etcd.
+            - name: ETCD_KEY_FILE
+              valueFrom:
+                configMapKeyRef:
+                  name: calico-config
+                  key: etcd_key
+            # Location of the client certificate for etcd.
+            - name: ETCD_CERT_FILE
+              valueFrom:
+                configMapKeyRef:
+                  name: calico-config
+                  key: etcd_cert
+            # Set noderef for node controller.
+            - name: CALICO_K8S_NODE_REF
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            # Choose the backend to use.
+            - name: CALICO_NETWORKING_BACKEND
+              valueFrom:
+                configMapKeyRef:
+                  name: calico-config
+                  key: calico_backend
+            # Cluster type to identify the deployment type
+            - name: CLUSTER_TYPE
+              value: "k8s,bgp"
+            # Auto-detect the BGP IP address.
+            - name: IP
+              value: "autodetect"
+            # Enable IPIP
+            - name: CALICO_IPV4POOL_IPIP
+              value: "Always"
+            # Set MTU for tunnel device used if ipip is enabled
+            - name: FELIX_IPINIPMTU
+              valueFrom:
+                configMapKeyRef:
+                  name: calico-config
+                  key: veth_mtu
+            # The default IPv4 pool to create on startup if none exists. Pod IPs will be
+            # chosen from this range. Changing this value after installation will have
+            # no effect. This should fall within `--cluster-cidr`.
+            - name: CALICO_IPV4POOL_CIDR
+              value: "{{ .CalicoCIDR }}"
+            # Disable file logging so `kubectl logs` works.
+            - name: CALICO_DISABLE_FILE_LOGGING
+              value: "true"
+            # Set Felix endpoint to host default action to ACCEPT.
+            - name: FELIX_DEFAULTENDPOINTTOHOSTACTION
+              value: "ACCEPT"
+            # Disable IPv6 on Kubernetes.
+            - name: FELIX_IPV6SUPPORT
+              value: "false"
+            # Set Felix logging to "info"
+            - name: FELIX_LOGSEVERITYSCREEN
+              value: "Warning"
+            - name: FELIX_HEALTHENABLED
+              value: "true"
+            - name: IP_AUTODETECTION_METHOD
+              value: skip-interface=eth1
+            - name: FELIX_PROMETHEUSMETRICSENABLED
+              value: "true"
           securityContext:
             privileged: true
           resources:
