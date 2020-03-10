@@ -1264,7 +1264,7 @@ spec:
         # See https://kubernetes.io/docs/concepts/configuration/secret/
         - name: etcd-certs
           hostPath:
-            path: /etc/kubernetes/ssl/etcd
+            path: /etc/kubernetes/ssl/calico
         - name: xtables-lock
           hostPath:
             path: /run/xtables.lock
@@ -1373,7 +1373,7 @@ spec:
         # See https://kubernetes.io/docs/concepts/configuration/secret/
         - name: etcd-certs
           hostPath:
-            path: /etc/kubernetes/ssl/etcd
+            path: /etc/kubernetes/ssl/calico
 
 ---
 
