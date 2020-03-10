@@ -25,7 +25,7 @@ SSH_USER="e2e"
 KUBECTL_CMD="sudo /opt/bin/hyperkube kubectl --kubeconfig=/etc/kubernetes/kubeconfig/addons.yaml"
 WORKER_COUNT=1
 ROOT_DNS_ZONE_RESOURCEGROUP_NAME="root_dns_zone_rg"
-ROOT_DNS_ZONE=azure.gigantic.io
+ROOT_DNS_ZONE="azure.gigantic.io"
 
 export TF_VAR_master_count=${MASTER_COUNT}
 
@@ -111,7 +111,7 @@ export TF_VAR_azure_sp_tenantid=${E2E_SP_TENANT_ID}
 export TF_VAR_azure_sp_subscriptionid=${E2E_SP_SUBSCRIPTION_ID}
 export TF_VAR_azure_sp_aadclientid=${E2E_SP_APP_ID}
 export TF_VAR_azure_sp_aadclientsecret=${E2E_SP_PASSWORD}
-export TF_VAR_base_domain=\${TF_VAR_cluster_name}.\${TF_VAR_azure_location}.\${ROOT_DNS_ZONE}
+export TF_VAR_base_domain=\${TF_VAR_cluster_name}.\${TF_VAR_azure_location}.${ROOT_DNS_ZONE}
 export TF_VAR_root_dns_zone_name="${ROOT_DNS_ZONE}"
 export TF_VAR_nodes_vault_token=
 export TF_VAR_worker_count=${WORKER_COUNT}
