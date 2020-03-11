@@ -24,6 +24,8 @@ CLUSTER=e2eterraform$(echo ${CIRCLE_SHA1} | cut -c 1-5)${MASTER_COUNT}
 SSH_USER="e2e"
 KUBECTL_CMD="sudo /opt/bin/hyperkube kubectl --kubeconfig=/etc/kubernetes/kubeconfig/addons.yaml"
 WORKER_COUNT=1
+ROOT_DNS_ZONE_RESOURCEGROUP_NAME="root_dns_zone_rg"
+ROOT_DNS_ZONE="azure.gigantic.io"
 
 export TF_VAR_master_count=${MASTER_COUNT}
 
@@ -54,7 +56,7 @@ determine-changes() {
 }
 
 exec_on(){
-    local base_domain=${CLUSTER}.${E2E_AZURE_LOCATION}.azure.gigantic.io
+    local base_domain=${CLUSTER}.${E2E_AZURE_LOCATION}.${ROOT_DNS_ZONE}
     local host=$1
     shift 1
 
@@ -109,8 +111,8 @@ export TF_VAR_azure_sp_tenantid=${E2E_SP_TENANT_ID}
 export TF_VAR_azure_sp_subscriptionid=${E2E_SP_SUBSCRIPTION_ID}
 export TF_VAR_azure_sp_aadclientid=${E2E_SP_APP_ID}
 export TF_VAR_azure_sp_aadclientsecret=${E2E_SP_PASSWORD}
-export TF_VAR_base_domain=\${TF_VAR_cluster_name}.\${TF_VAR_azure_location}.azure.gigantic.io
-export TF_VAR_root_dns_zone_name="azure.gigantic.io"
+export TF_VAR_base_domain=\${TF_VAR_cluster_name}.\${TF_VAR_azure_location}.${ROOT_DNS_ZONE}
+export TF_VAR_root_dns_zone_name="${ROOT_DNS_ZONE}"
 export TF_VAR_nodes_vault_token=
 export TF_VAR_worker_count=${WORKER_COUNT}
 export TF_VAR_delete_data_disks_on_termination="true"
@@ -214,7 +216,7 @@ stage-terraform() {
 
 # TODO: Get rid of external dependencies and setup Vault in development mode.
 stage-vault() {
-    local base_domain=${CLUSTER}.${E2E_AZURE_LOCATION}.azure.gigantic.io
+    local base_domain=${CLUSTER}.${E2E_AZURE_LOCATION}.${ROOT_DNS_ZONE}
 
     # Download Ansible playbooks for Vault bootstrap.
     local tmp=$(mktemp -d)
@@ -279,6 +281,9 @@ stage-destroy() {
 
   msg "Requesting asyncronous deletion of resource group \"$CLUSTER\""
   az group delete -n "$CLUSTER" -y --no-wait
+
+  msg "Deleting the NS DNS record ${CLUSTER}.${E2E_AZURE_LOCATION} from ${ROOT_DNS_ZONE} (RG ${ROOT_DNS_ZONE_RESOURCEGROUP_NAME})"
+  az network dns record-set ns delete -g ${ROOT_DNS_ZONE_RESOURCEGROUP_NAME} -z ${ROOT_DNS_ZONE} -n ${CLUSTER}.${E2E_AZURE_LOCATION} -y
   msg "Done"
 }
 
