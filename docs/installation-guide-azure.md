@@ -87,10 +87,17 @@ cd ./platforms/azure/giantnetes/
 
 Edit `bootstrap.sh`. DO NOT PUT passwords and keys into `bootstrap.sh` as it will be stored as plain text.
 
-Command below will ask for:
+Now update the `terraform-secrets.yaml` file with the azure credentials.
 
-- storage account access key
-- service principal secret key
+Set the storage account access key under the `Terraform.ArmAccessKey` key.
+```
+opsctl update secret --in=terraform-secrets.yaml -k Terraform.ArmAccessKey
+```
+
+Set the service principal password under the `Terraform.AzureSPAadClientSecret` key.
+```
+opsctl update secret --in=terraform-secrets.yaml -k Terraform.AzureSPAadClientSecret
+```
 
 If you need to setup a VPN (mandatory for production installations) you first need to get a /28 subnet unique for this installation.
 
@@ -128,13 +135,9 @@ Install consists two stages:
 - Vault (only needed because we bootstrapping Vault manually)
 - Kubernetes
 
-Master and workers will be created with in the Vault stage and expectedly will fail (and recreated later). This is done to keep single Terraform state and simplify cluster management after installation. Master and workers will be reprovisioned with right configuration in the second state called Kubernetes.
-
 ### Stage: Vault
 
 #### Create Vault virtual machine and all other necessary resources
-
-**Always** answer "No" for copying state, we are using different keys for the state!
 
 ```
 source bootstrap.sh
@@ -142,10 +145,8 @@ source bootstrap.sh
 
 ```
 terraform plan ./
-terraform apply ./
+terraform apply -target module.vault.azurerm_virtual_machine.vault -target module.bastion.azurerm_virtual_machine.bastion ./
 ```
-
-It should create all cluster resources. Please note master and worker vms are created, but will fail. This is expected behaviour.
 
 #### (Optional) Connect to VPN
 
