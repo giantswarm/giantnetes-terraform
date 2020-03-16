@@ -36,7 +36,8 @@ az storage account create \
   --kind BlobStorage \
   --location ${REGION} \
   --sku Standard_RAGRS \
-  --access-tier Cool
+  --access-tier Cool \
+  --https-only true
 
 az storage container create \
   -n ${NAME}-state \
@@ -119,10 +120,6 @@ source bootstrap.sh
 ```
 
 NOTE: Reexecute `source bootstrap.sh` everytime if opening new console.
-
-### Configure ssh users
-
-Add bastion users to `ignition/bastion-users.yaml`. All other vms take users configuration from `ignition/users.yaml`, so please modify it too.
 
 ## Install
 
