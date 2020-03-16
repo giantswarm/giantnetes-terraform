@@ -157,6 +157,12 @@ passwd:
       - "docker"
     sshAuthorizedKeys:
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9IyAZvlEL7lrxDghpqWjs/z/q4E0OtEbmKW9oD0zhYfyHIaX33YYoj3iC7oEd6OEvY4+L4awjRZ2FrXerN/tTg9t1zrW7f7Tah/SnS9XYY9zyo4uzuq1Pa6spOkjpcjtXbQwdQSATD0eeLraBWWVBDIg1COAMsAhveP04UaXAKGSQst6df007dIS5pmcATASNNBc9zzBmJgFwPDLwVviYqoqcYTASka4fSQhQ+fSj9zO1pgrCvvsmA/QeHz2Cn5uFzjh8ftqkM10sjiYibknsBuvVKZ2KpeTY6XoTOT0d9YWoJpfqAEE00+RmYLqDTQGWm5pRuZSc9vbnnH2MiEKf calvix@masteR
+  - name: whites
+    groups:
+      - "sudo"
+      - "docker"
+    sshAuthorizedKeys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC7tf8jCm827wKhbBUh0xT/2D954cO54sOJ5/vn5sZSDIkxErMUCKH5WZSEjh3iAaKeq8wAn6XpXYvCwRu62csO1vu5l3Wh/kLnYo+1ALLoL8jM4VdKUiv4jOaM2ZL/UR5j1rt5L0kK3//kjtCXMlwyjpBxH9crJPA1lnmUdADDN+XBZ1x4EmpWwR8eV2CiYLU7sylF9V0R1bObUptpvOeYb/B3T1H9GSFgpVSQzvtI/OEZmoSzBz7VdJiIfGTwUKEcEr+9WBpVD5quLmG0LdwQ68dBeTjIaj4A5PYfu9iiNTKNiqDEIWtIkoVLo7PxZJblrYPQPYFycnUJeLHngZYmX12TBPcl3xQPdxyPeTGz4KBa0jfeWdHi7JkaOHtrmQvF0wcj3REEZYMJKz/8tMA4tqP5AnvTudZgNGHXtO9kiGhG5rn3dWTr6R+crRuWszQVVasx4IEKMOwdxc8sgmx1W0mPetKDUh6siFF3TRu0KcJ9BDrHGciWMkfXQgP4txIRgvPHGJmoywRQ3zoN0hWzjI6bEaUvRVEyk0u0dreTmTiG6JFcSaSMJWZvuhvKCKTbp1ysITzH7EIJwQ2nfSz88j4tVRfXA/BSxOc4aR6l3j1zApSfV7mVag9TSPfMVdXWEoOlpdiQH/V0Mm5ummkQ1JloDGBRKR0AuKUrGtkKfw==
 EOF
     cat > ${WORKDIR}/ignition/users.yaml << EOF
 passwd:
@@ -179,6 +185,12 @@ passwd:
       - "docker"
     sshAuthorizedKeys:
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9IyAZvlEL7lrxDghpqWjs/z/q4E0OtEbmKW9oD0zhYfyHIaX33YYoj3iC7oEd6OEvY4+L4awjRZ2FrXerN/tTg9t1zrW7f7Tah/SnS9XYY9zyo4uzuq1Pa6spOkjpcjtXbQwdQSATD0eeLraBWWVBDIg1COAMsAhveP04UaXAKGSQst6df007dIS5pmcATASNNBc9zzBmJgFwPDLwVviYqoqcYTASka4fSQhQ+fSj9zO1pgrCvvsmA/QeHz2Cn5uFzjh8ftqkM10sjiYibknsBuvVKZ2KpeTY6XoTOT0d9YWoJpfqAEE00+RmYLqDTQGWm5pRuZSc9vbnnH2MiEKf calvix@masteR
+  - name: whites
+    groups:
+      - "sudo"
+      - "docker"
+    sshAuthorizedKeys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC7tf8jCm827wKhbBUh0xT/2D954cO54sOJ5/vn5sZSDIkxErMUCKH5WZSEjh3iAaKeq8wAn6XpXYvCwRu62csO1vu5l3Wh/kLnYo+1ALLoL8jM4VdKUiv4jOaM2ZL/UR5j1rt5L0kK3//kjtCXMlwyjpBxH9crJPA1lnmUdADDN+XBZ1x4EmpWwR8eV2CiYLU7sylF9V0R1bObUptpvOeYb/B3T1H9GSFgpVSQzvtI/OEZmoSzBz7VdJiIfGTwUKEcEr+9WBpVD5quLmG0LdwQ68dBeTjIaj4A5PYfu9iiNTKNiqDEIWtIkoVLo7PxZJblrYPQPYFycnUJeLHngZYmX12TBPcl3xQPdxyPeTGz4KBa0jfeWdHi7JkaOHtrmQvF0wcj3REEZYMJKz/8tMA4tqP5AnvTudZgNGHXtO9kiGhG5rn3dWTr6R+crRuWszQVVasx4IEKMOwdxc8sgmx1W0mPetKDUh6siFF3TRu0KcJ9BDrHGciWMkfXQgP4txIRgvPHGJmoywRQ3zoN0hWzjI6bEaUvRVEyk0u0dreTmTiG6JFcSaSMJWZvuhvKCKTbp1ysITzH7EIJwQ2nfSz88j4tVRfXA/BSxOc4aR6l3j1zApSfV7mVag9TSPfMVdXWEoOlpdiQH/V0Mm5ummkQ1JloDGBRKR0AuKUrGtkKfw==
 EOF
 
     eval "$(ssh-agent)"
