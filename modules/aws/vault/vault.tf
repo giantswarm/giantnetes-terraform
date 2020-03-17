@@ -108,7 +108,7 @@ resource "aws_security_group" "vault" {
     from_port   = 8200
     to_port     = 8200
     protocol    = "tcp"
-    cidr_blocks = ["${var.vpc_cidr}"]
+    cidr_blocks = ["${var.vpc_cidr}","${var.aws_cni_cidr_block}"]
   }
 
   # Allow Vault API from guest-vpc

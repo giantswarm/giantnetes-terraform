@@ -6,6 +6,10 @@ variable "aws_region" {
   type = string
 }
 
+variable "aws_cni_cidr_block" {
+  type = string
+}
+
 variable "ingress_dns" {
   type = string
 }

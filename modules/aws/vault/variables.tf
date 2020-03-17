@@ -14,6 +14,10 @@ variable "iam_region" {
   type = string
 }
 
+variable "aws_cni_cidr_block" {
+  type = string
+}
+
 variable "elb_subnet_ids" {
   type = list
 }

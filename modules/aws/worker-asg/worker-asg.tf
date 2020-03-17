@@ -113,7 +113,7 @@ resource "aws_security_group" "worker" {
     from_port   = 10
     to_port     = 65535
     protocol    = "tcp"
-    cidr_blocks = ["${var.vpc_cidr}"]
+    cidr_blocks = ["${var.vpc_cidr}", "${var.aws_cni_cidr_block}"]
   }
 
   # Allow access from vpc
@@ -121,7 +121,7 @@ resource "aws_security_group" "worker" {
     from_port   = 10
     to_port     = 65535
     protocol    = "udp"
-    cidr_blocks = ["${var.vpc_cidr}"]
+    cidr_blocks = ["${var.vpc_cidr}", "${var.aws_cni_cidr_block}"]
   }
 
   # Allow IPIP traffic from vpc
