@@ -188,6 +188,13 @@ resource "aws_network_interface" "master" {
     )
   )
 
+  lifecycle {
+    ignore_changes = [
+      # ignore changes on the private IP list
+      private_ips,
+    ]
+  }
+
 }
 
 # To avoid 16kb user_data limit upload CoreOS ignition config to a s3 bucket.
