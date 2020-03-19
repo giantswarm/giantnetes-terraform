@@ -82,9 +82,9 @@ export TF_VAR_subnets_worker='["172.30.33.192/28","172.30.33.208/28","172.30.33.
 
 Note: the bastion subnets should form one contiguous `/27` (as this is the VPN encryption domain). This should not overlap with any other customer VPN CIDRs - see [VPN subnets](https://github.com/giantswarm/giantswarm/wiki/Giant-Swarm-VPN) for a list of ranges currently in use.
 
-Care should also be taken that the subnets chosen for the control plane do not overlap with any other default subnets (see `calico`, `docker` and `k8s service` CIDRs).
+Care should also be taken that the subnets chosen for the control plane do not overlap with any other default subnets (see `aws cni`, `docker` and `k8s service` CIDRs).
 
-Pod CIDR needs to be from same private block and needs one subnet per AZ ( so 3 usually and 2 for china). The sizing fro subnet should be ideally atleast `24-25`. 
+Pod CIDR needs to be from same private block as VPC and needs one subnet per AZ (3 usually and 2 for China). The sizing for subnet should be ideally atleast `24-25`. 
 ```
 export TF_VAR_aws_cni_cidr_block=172.18.128.0/20
 export TF_VAR_aws_cni_pod_cidrs='["172.18.0.0/24","172.18.1.0/24","172.18.2.0/24"]'
