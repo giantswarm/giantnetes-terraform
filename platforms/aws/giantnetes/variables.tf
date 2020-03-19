@@ -162,12 +162,12 @@ variable "vpc_cidr" {
 
 variable "aws_cni_cidr_block" {
   description = "Whole CIDR block for AWS CNI."
-  default     = "10.2.0.0/16"
+  default     = "10.100.0.0/20"
 }
 
 variable "aws_cni_pod_cidrs" {
   description = "CIDR for AWS CNI networks used for pods."
-  default     = ["10.2.0.0/24","10.2.1.0/24","10.2.2.0/24"]
+  default     = ["10.100.0.0/24","10.100.1.0/24","10.100.2.0/24"]
 }
 
 variable "docker_cidr" {
