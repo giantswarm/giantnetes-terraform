@@ -84,6 +84,12 @@ Note: the bastion subnets should form one contiguous `/27` (as this is the VPN e
 
 Care should also be taken that the subnets chosen for the control plane do not overlap with any other default subnets (see `calico`, `docker` and `k8s service` CIDRs).
 
+Pod CIDR needs to be from same private block and needs one subnet per AZ ( so 3 usually and 2 for china). The sizing fro subnet should be ideally atleast `24-25`. 
+```
+export TF_VAR_aws_cni_cidr_block=172.18.128.0/20
+export TF_VAR_aws_cni_pod_cidrs='["172.18.0.0/24","172.18.1.0/24","172.18.2.0/24"]'
+```
+
 * Tenant Clusters:
 
 IP blocks for each TC will be sliced from this CIDR:
