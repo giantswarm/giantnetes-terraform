@@ -28,7 +28,7 @@ for namespace in ${NAMESPACES}
 do
     if ! $KUBECTL get namespaces -l name=${namespace} | grep ${namespace}; then
         while
-            $KUBECTL label namespace ${namespace} name=${namespace}
+            $KUBECTL label namespace ${namespace} name=${namespace} --overwrite=true
             [ "$?" -ne "0" ]
         do
             echo "failed to label namespace ${namespace}, retrying in 5 sec"
@@ -88,27 +88,34 @@ done
 
 # restart ds to apply config from configmap
 $KUBECTL delete pods -l k8s-app=kube-proxy -n kube-system
-# apply calico CNI
-CALICO_FILE="calico-all.yaml"
-while
-    $KUBECTL apply -f /srv/$CALICO_FILE
-    [ "$?" -ne "0" ]
+
+{{ if eq .Provider "aws" -}}
+## Apply AWS VPC CNI and Calico for ensuring network policies (only on AWS)
+CNI_FILE="aws-cni.yaml calico-policy-only.yaml"
+{{ else -}}
+## Apply Calico with all its components
+CNI_FILE="calico-all.yaml"
+{{ end -}}
+for manifest in ${CNI_FILE}
 do
-    echo "failed to apply /srv/$CALICO_FILE, retrying in 5 sec"
-    sleep 5s
+    while
+        $KUBECTL apply -f /srv/$manifest
+        [ "$?" -ne "0" ]
+    do
+        echo "failed to apply /srv/$manifest, retrying in 5 sec"
+        sleep 5s
+    done
 done
 
-# wait for healthy calico - we check for pods - desired vs ready
-while
-    $KUBECTL -n kube-system get ds calico-node &>/dev/null
-    RET_CODE_1=$?
-    eval $($KUBECTL -n kube-system get ds calico-node | tail -1 | awk '{print "[ \"" $2"\" -eq \""$4"\" ] "}')
-    RET_CODE_2=$?
-    [ "$RET_CODE_1" -ne "0" ] || [ "$RET_CODE_2" -ne "0" ]
-do
-    echo "Waiting for calico to be ready . . "
-    sleep 3s
-done
+{{ if eq .Provider "aws" -}}
+echo "Waiting for aws-node to be ready..."
+$KUBECTL -n kube-system -l k8s-app=aws-node wait --for=condition=Ready --timeout=10m pods
+{{ end -}}
+echo "Waiting for calico-node to be ready..."
+$KUBECTL -n kube-system -l k8s-app=calico-node wait --for=condition=Ready --timeout=10m pods
+
+# delete calico-kube-controllers
+$KUBECTL -n kube-system delete deploy calico-kube-controllers --ignore-not-found=true
 
 # apply k8s addons
 MANIFESTS="default-storage-class.yaml

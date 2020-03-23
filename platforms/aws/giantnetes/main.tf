@@ -24,6 +24,8 @@ module "container_linux" {
   coreos_version = "${var.container_linux_version}"
 }
 
+data "aws_availability_zones" "available" {}
+
 # Get ami ID for specific Container Linux version.
 data "aws_ami" "coreos_ami" {
   owners = ["${var.ami_owner}"]
@@ -63,6 +65,8 @@ module "vpc" {
 
   arn_region         = "${var.arn_region}"
   aws_account        = "${var.aws_account}"
+  aws_cni_cidr_block = "${var.aws_cni_cidr_block}"
+  aws_cni_pod_cidrs  = "${var.aws_cni_pod_cidrs}"
   cluster_name       = "${var.cluster_name}"
   subnets_bastion    = "${var.subnets_bastion}"
   subnets_elb        = "${var.subnets_elb}"
@@ -83,6 +87,7 @@ module "s3" {
 
 locals {
   ignition_data = {
+    "AvaiabilityZones"             = "${data.aws_availability_zones.available.names}"
     "APIDomainName"                = "${var.api_dns}.${var.base_domain}"
     "AWSRegion"                    = "${var.aws_region}"
     "BastionUsers"                 = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
@@ -90,8 +95,8 @@ locals {
     "BastionSubnet1"               = "${element(var.subnets_bastion, 1)}"
     "BastionLogPriority"           = "${var.bastion_log_priority}"
     "BaseDomain"                   = "${var.base_domain}"
-    "CalicoCIDR"                   = "${var.calico_cidr}"
-    "CalicoMTU"                    = "${var.calico_mtu}"
+    "CNISubnets"                   = "${module.vpc.aws_cni_subnet_ids}"
+    "CNISecurityGroupID"           = "${module.vpc.aws_cni_security_group_id}"
     "CloudwatchForwarderEnabled"   = "${var.bastion_log_priority != "none" ? "true" : "false"}"
     "ClusterName"                  = "${var.cluster_name}"
     "DockerCIDR"                   = "${var.docker_cidr}"
@@ -123,6 +128,7 @@ locals {
     "MasterMountDocker"            = "${var.master_instance["volume_docker"]}"
     "MasterMountETCD"              = "${var.master_instance["volume_etcd"]}"
     "OIDCEnabled"                  = "${var.oidc_enabled}"
+    "PodCIDR"                      = "${var.aws_cni_cidr_block}"
     "PodInfraImage"                = "${var.pod_infra_image}"
     "Provider"                     = "aws"
     "Users"                        = "${file("${path.module}/../../../ignition/users.yaml")}"
@@ -202,6 +208,7 @@ module "vault" {
 
   arn_region             = "${var.arn_region}"
   aws_account            = "${var.aws_account}"
+  aws_cni_cidr_block     = "${var.aws_cni_cidr_block}"
   aws_region             = "${var.aws_region}"
   cluster_name           = "${var.cluster_name}"
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
@@ -239,6 +246,7 @@ module "master" {
 
   api_dns                = "${var.api_dns}"
   aws_account            = "${var.aws_account}"
+  aws_cni_cidr_block     = "${var.aws_cni_cidr_block}"
   cluster_name           = "${var.cluster_name}"
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
@@ -270,6 +278,7 @@ module "worker" {
 
   aws_account            = "${var.aws_account}"
   aws_region             = "${var.aws_region}"
+  aws_cni_cidr_block     = "${var.aws_cni_cidr_block}"
   cluster_name           = "${var.cluster_name}"
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"

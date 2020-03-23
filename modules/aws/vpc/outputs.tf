@@ -1,3 +1,11 @@
+output "aws_cni_security_group_id" {
+  value = "${aws_security_group.cni.id}"
+}
+
+output "aws_cni_subnet_ids" {
+  value = "${aws_subnet.cni.*.id}"
+}
+
 output "bastion_subnet_ids" {
   value = "${aws_subnet.bastion.*.id}"
 }

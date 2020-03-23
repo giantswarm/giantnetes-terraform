@@ -160,14 +160,14 @@ variable "vpc_cidr" {
   default     = "10.0.0.0/16"
 }
 
-variable "calico_cidr" {
-  description = "CIDR for Calico."
-  default     = "192.168.0.0/16"
+variable "aws_cni_cidr_block" {
+  description = "Whole CIDR block for AWS CNI."
+  default     = "10.100.0.0/20"
 }
 
-variable "calico_mtu" {
-  description = "MTU used for Calico interfaces"
-  default     = "1440"
+variable "aws_cni_pod_cidrs" {
+  description = "CIDR for AWS CNI networks used for pods."
+  default     = ["10.100.0.0/24","10.100.1.0/24","10.100.2.0/24"]
 }
 
 variable "docker_cidr" {

@@ -2,6 +2,26 @@ ignition:
   version: "2.2.0"
 storage:
   files:
+{{ if eq .Provider "aws" }}
+    - path: /srv/aws-cni.yaml
+      filesystem: root
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/aws-cni.yaml" }}"
+    - path: /srv/calico-policy-only.yaml
+      filesystem: root
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/calico-policy-only.yaml" }}"
+{{ else }}
     - path: /srv/calico-all.yaml
       filesystem: root
       mode: 420
@@ -11,7 +31,7 @@ storage:
         id: 0
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/calico-all.yaml" }}"
-
+{{ end }}
     - path: /srv/priority_classes.yaml
       filesystem: root
       mode: 420
@@ -242,7 +262,15 @@ storage:
         id: 0
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/crictl.yaml" }}"
-
+    - path: /opt/bin/setup-kubelet-environment
+      filesystem: root
+      mode: 356
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/setup-kubelet-environment" }}"
     - path: /opt/k8s-addons
       filesystem: root
       mode: 356
@@ -643,16 +671,31 @@ systemd:
          [ $? -ne 0 ] && echo "Failed to fetch CA ssh public key" && exit 1 || echo "Successfully retrieved CA ssh public key";'
       [Install]
       WantedBy=multi-user.target
+  - name: k8s-setup-kubelet-environment.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=k8s-setup-kubelet-environment Service
+      After=k8s-setup-network-env.service docker.service
+      Requires=k8s-setup-network-env.service docker.service
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      TimeoutStartSec=0
+      ExecStart=/opt/bin/setup-kubelet-environment
+      [Install]
+      WantedBy=multi-user.target
   - name: k8s-setup-kubelet-config.service
     enabled: true
     contents: |
       [Unit]
       Description=k8s-setup-kubelet-config Service
-      After=k8s-setup-network-env.service docker.service
-      Requires=k8s-setup-network-env.service docker.service
+      After=k8s-setup-network-env.service docker.service k8s-setup-kubelet-environment.service
+      Requires=k8s-setup-network-env.service docker.service k8s-setup-kubelet-environment.service
 
       [Service]
       EnvironmentFile=/etc/network-environment
+      EnvironmentFile=/etc/kubelet-environment
       ExecStart=/bin/bash -c '/usr/bin/envsubst </etc/kubernetes/config/kubelet.yaml.tmpl >/etc/kubernetes/config/kubelet.yaml'
 
       [Install]

@@ -10,6 +10,10 @@ variable "aws_account" {
   type = string
 }
 
+variable "aws_cni_cidr_block" {
+  type = string
+}
+
 variable "elb_subnet_ids" {
   type = list
 }

@@ -11,6 +11,14 @@ variable "az_count" {
   default = "2"
 }
 
+variable "aws_cni_cidr_block" {
+  type = string
+}
+
+variable "aws_cni_pod_cidrs" {
+  type = list
+}
+
 variable "cluster_name" {
   type = string
 }
