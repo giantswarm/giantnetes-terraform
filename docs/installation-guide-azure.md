@@ -142,7 +142,8 @@ source bootstrap.sh
 
 ```
 terraform plan ./
-terraform apply -target module.vault.azurerm_virtual_machine.vault -target module.bastion.azurerm_virtual_machine.bastion ./
+terraform apply -target="module.dns" ./ 
+terraform apply -target="module.vnet" -target="module.bastion" -target="module.vault" -target="module.vpn" ./
 ```
 
 #### (Optional) Connect to VPN
@@ -182,52 +183,23 @@ How to do that see [here](https://github.com/giantswarm/hive/#install-insecure-v
 ### Stage: Kubernetes
 
 ```
-source bootstrap.sh
-```
-
-#### Install master and workers
-
-##### Taint machines so they are recreated
-
-```
-terraform taint "module.bastion.azurerm_virtual_machine.bastion[0]"
-terraform taint "module.bastion.azurerm_virtual_machine.bastion[1]"
-terraform taint "module.master.azurerm_virtual_machine.master[0]"
-terraform taint "module.master.azurerm_virtual_machine.master[1]"
-terraform taint "module.master.azurerm_virtual_machine.master[2]"
-terraform taint "module.worker.azurerm_virtual_machine.worker[0]"
-terraform taint "module.worker.azurerm_virtual_machine.worker[1]"
-terraform taint "module.worker.azurerm_virtual_machine.worker[2]"
-```
-
-##### Apply terraform
-
-**Always** answer "No" for copying state, we are using different keys for the state!
-
-```
-source bootstrap.sh
-```
-
-```
-terraform plan ./
 terraform apply ./
 ```
 
 ## Upload variables and configuration
 
-Create `terraform` folder in [installations repositry](https://github.com/giantswarm/installations) under particular installation folder. Copy variables and configuration.
+Create `terraform` folder in [installations repository](https://github.com/giantswarm/installations) under particular installation folder. Copy variables and configuration.
 
 ```
-export CLUSTER=cluster1
 export INSTALLATIONS=<installations_repo_path>
 
-mkdir ${INSTALLATIONS}/${CLUSTER}/terraform
-cp bootstrap.sh ${INSTALLATIONS}/${CLUSTER}/terraform/
+mkdir -p ${INSTALLATIONS}/${NAME}/terraform
+cp bootstrap.sh terraform-secrets.yaml ${INSTALLATIONS}/${NAME}/terraform/
 
 cd ${INSTALLATIONS}
-git checkout -b "${cluster}_terraform"
-git add ${INSTALLATIONS}/${CLUSTER}/terraform
-git commit -S -m "Add ${CLUSTER} terraform variables and configuration"
+git checkout -b "${NAME}_terraform"
+git add ${INSTALLATIONS}/${NAME}/terraform
+git commit -S -m "Add ${NAME} terraform variables and configuration"
 ```
 
 Create PR with related changes.
