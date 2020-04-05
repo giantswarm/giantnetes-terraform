@@ -125,7 +125,7 @@ MANIFESTS="default-storage-class.yaml
  default-backend-svc.yaml
  ingress-controller-cm.yaml
  ingress-controller-sa.yaml
- ingress-controller-dep.yaml
+ ingress-controller-daemonset.yaml
  ingress-controller-svc.yaml"
 for manifest in $MANIFESTS
 do
