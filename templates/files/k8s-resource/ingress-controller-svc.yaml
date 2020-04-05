@@ -9,7 +9,7 @@ metadata:
   labels:
     k8s-app: nginx-ingress-controller
 spec:
-  externalTrafficPolicy: Local
+  externalTrafficPolicy: Cluster
   type: NodePort
   ports:
   - name: http
