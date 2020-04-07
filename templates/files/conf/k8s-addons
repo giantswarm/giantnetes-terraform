@@ -5,7 +5,7 @@ KUBECTL="/opt/bin/hyperkube kubectl --kubeconfig=/etc/kubernetes/kubeconfig/addo
 while ! curl --output /dev/null --silent --head --insecure "https://{{ .APIDomainName }}"; do sleep 1 && echo 'Waiting for master'; done
 
 # Create giantswarm and giantswarm-clusterapi namespaces
-NAMESPACES="giantswarm"
+NAMESPACES="giantswarm global"
 for namespace in ${NAMESPACES}
 do
   while
