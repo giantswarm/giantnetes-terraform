@@ -36,7 +36,7 @@ resource "azurerm_network_security_rule" "master_ingress_api_internal" {
 resource "azurerm_network_security_rule" "master_ingress_api_external" {
   name                        = "${var.cluster_name}-master-in-api-ext"
   description                 = "${var.cluster_name} master - API external access for whitelisted subnets"
-  priority                    = 550
+  priority                    = 600
   direction                   = "Inbound"
   access                      = "Allow"
   protocol                    = "TCP"
@@ -54,7 +54,7 @@ resource "azurerm_network_security_rule" "master_ingress_api_external" {
 resource "azurerm_network_security_rule" "master_ingress_ingress" {
   name                        = "${var.cluster_name}-master-in-ingress"
   description                 = "${var.cluster_name} master - ingress allow for all"
-  priority                    = 600
+  priority                    = 700
   direction                   = "Inbound"
   access                      = "Allow"
   protocol                    = "TCP"
@@ -69,7 +69,7 @@ resource "azurerm_network_security_rule" "master_ingress_ingress" {
 resource "azurerm_network_security_rule" "worker_ingress_internal_any" {
   name                        = "${var.cluster_name}-worker-in-any"
   description                 = "${var.cluster_name} worker - Internal"
-  priority                    = 700
+  priority                    = 800
   direction                   = "Inbound"
   access                      = "Allow"
   protocol                    = "*"
