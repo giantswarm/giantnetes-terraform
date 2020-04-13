@@ -7,9 +7,6 @@ provider "aws" {
 }
 
 locals {
-  k8s_api_external_access_whitelist = "${var.external_ipsec_public_ip_0},${var.external_ipsec_public_ip_1}${var.k8s_api_external_access_whitelist != "" ? ",${var.k8s_api_external_access_whitelist}" : ""}"
-
-
   # VPC subnet has reserved first 4 IPs so we need to use the fifth one (counting from zero it is index 4)
   # https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html
   masters_eni_ips = ["${cidrhost(var.subnets_worker[0], 4)}", "${cidrhost(var.subnets_worker[1], 4)}", "${cidrhost(var.subnets_worker[2], 4)}"]
@@ -115,7 +112,6 @@ locals {
     "G8SVaultToken"                = "${var.nodes_vault_token}"
     "ImagePullProgressDeadline"    = "${var.image_pull_progress_deadline}"
     "K8SAPIIP"                     = "${var.k8s_api_ip}"
-    "K8SAPIExternalWhitelist"      = "${local.k8s_api_external_access_whitelist}"
     "K8SAuditWebhookPort"          = "${var.k8s_audit_webhook_port}"
     "K8SDNSIP"                     = "${var.k8s_dns_ip}"
     "K8SServiceCIDR"               = "${var.k8s_service_cidr}"
@@ -249,8 +245,11 @@ module "master" {
   aws_cni_cidr_block     = "${var.aws_cni_cidr_block}"
   cluster_name           = "${var.cluster_name}"
   container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
+  customer_vpn_subnets   = "${var.customer_vpn_subnets}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
+  external_ipsec_public_ip_0 = "${var.external_ipsec_public_ip_0}"
+  external_ipsec_public_ip_1 = "${var.external_ipsec_public_ip_1}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
   instance_type          = "${var.master_instance["type"]}"
   route53_enabled        = "${var.route53_enabled}"

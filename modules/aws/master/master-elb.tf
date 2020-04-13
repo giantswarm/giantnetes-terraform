@@ -44,8 +44,8 @@ resource "aws_security_group" "master_elb_api" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # temporary opened, but needs to be implemented with proper subnets
-  }
+    cidr_blocks = concat(["${var.aws_cni_cidr_block}","${var.vpc_cidr}"], local.k8s_api_external_access_whitelist)
+}
 
   tags = merge(
     local.common_tags,
