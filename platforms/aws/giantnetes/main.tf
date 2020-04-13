@@ -256,6 +256,7 @@ module "master" {
   user_data              = "${data.gotemplate.master.*.rendered}"
   master_subnet_ids      = "${module.vpc.worker_subnet_ids}"
   master_eni_ips         = local.masters_eni_ips
+  nat_gateway_public_ips = "${module.vpc.aws_eip_public_ips}"
   volume_docker          = "${var.master_instance["volume_docker"]}"
   volume_etcd            = "${var.master_instance["volume_etcd"]}"
   vpc_cidr               = "${var.vpc_cidr}"

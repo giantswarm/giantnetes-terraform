@@ -63,6 +63,10 @@ variable "master_subnet_ids" {
   type = list
 }
 
+variable "nat_gateway_public_ips" {
+  type = list
+}
+
 variable "user_data" {
   type = list(string)
 }
