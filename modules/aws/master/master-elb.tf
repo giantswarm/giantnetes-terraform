@@ -40,12 +40,25 @@ resource "aws_security_group" "master_elb_api" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # internal access
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = concat(["${var.aws_cni_cidr_block}","${var.vpc_cidr}"], local.k8s_api_external_access_whitelist)
-}
+    cidr_blocks = ["${var.aws_cni_cidr_block}","${var.vpc_cidr}"]
+  }
+
+  # extrenal access
+  # if list containst single IP - add /32
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [
+      for ip in local.k8s_api_external_access_whitelist:
+      length(regexall(".*\\/.*", ip)) == 1 ? ip : format("%s/32", ip)
+    ]
+  }
 
   tags = merge(
     local.common_tags,
