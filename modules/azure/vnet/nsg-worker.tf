@@ -36,7 +36,7 @@ resource "azurerm_network_security_rule" "master_ingress_api_internal" {
 resource "azurerm_network_security_rule" "master_ingress_api_external" {
   name                        = "${var.cluster_name}-master-in-api-ext"
   description                 = "${var.cluster_name} master - API external access for whitelisted subnets"
-  priority                    = 500
+  priority                    = 550
   direction                   = "Inbound"
   access                      = "Allow"
   protocol                    = "TCP"
