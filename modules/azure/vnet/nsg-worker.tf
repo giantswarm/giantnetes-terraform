@@ -18,6 +18,24 @@ resource "azurerm_subnet_network_security_group_association" "worker" {
   network_security_group_id = azurerm_network_security_group.worker.id
 }
 
+resource "azurerm_network_security_rule" "master_ingress_api_external" {
+  name                        = "${var.cluster_name}-master-in-api-ext"
+  description                 = "${var.cluster_name} master - API external access for whitelisted subnets"
+  priority                    = 400
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "TCP"
+  source_port_range           = "*"
+  destination_port_range      = "443"
+  source_address_prefixes     = [
+      for ip in local.k8s_api_external_access_whitelist:
+      length(regexall(".*\\/.*", ip)) == 1 ? ip : format("%s/32", ip)
+    ]
+  destination_address_prefix  = "*"
+  resource_group_name         = var.resource_group_name
+  network_security_group_name = azurerm_network_security_group.worker.name
+}
+
 resource "azurerm_network_security_rule" "master_ingress_api_internal" {
   name                        = "${var.cluster_name}-master-in-api-int"
   description                 = "${var.cluster_name} master - API internal access for whitelisted subnets"
@@ -28,24 +46,6 @@ resource "azurerm_network_security_rule" "master_ingress_api_internal" {
   source_port_range           = "*"
   destination_port_range      = "443"
   source_address_prefix       = "VirtualNetwork"
-  destination_address_prefix  = "*"
-  resource_group_name         = var.resource_group_name
-  network_security_group_name = azurerm_network_security_group.worker.name
-}
-
-resource "azurerm_network_security_rule" "master_ingress_api_external" {
-  name                        = "${var.cluster_name}-master-in-api-ext"
-  description                 = "${var.cluster_name} master - API external access for whitelisted subnets"
-  priority                    = 600
-  direction                   = "Inbound"
-  access                      = "Allow"
-  protocol                    = "TCP"
-  source_port_range           = "*"
-  destination_port_range      = "443"
-  source_address_prefixes     = [
-      for ip in local.k8s_api_external_access_whitelist:
-      length(regexall(".*\\/.*", ip)) == 1 ? ip : format("%s/32", ip)
-    ]
   destination_address_prefix  = "*"
   resource_group_name         = var.resource_group_name
   network_security_group_name = azurerm_network_security_group.worker.name
