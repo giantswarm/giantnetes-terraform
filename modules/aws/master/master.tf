@@ -3,6 +3,9 @@ locals {
     "giantswarm.io/installation", "${var.cluster_name}",
     "kubernetes.io/cluster/${var.cluster_name}", "owned"
   )}"
+  customer_vpn_subnets = var.customer_vpn_subnets != "" ? split(",", var.customer_vpn_subnets) : []
+  k8s_api_internal_access_whitelist = concat(["${var.aws_cni_cidr_block}","${var.vpc_cidr}"], "${var.nat_gateway_public_ips}")
+  k8s_api_external_access_whitelist = concat(["${var.external_ipsec_public_ip_0}/32", "${var.external_ipsec_public_ip_1}/32"], local.customer_vpn_subnets)
 }
 
 data "aws_availability_zones" "available" {}

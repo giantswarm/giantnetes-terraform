@@ -19,6 +19,18 @@ variable "cluster_name" {
   type = string
 }
 
+variable "customer_vpn_subnets" {
+    type = string
+}
+
+variable "external_ipsec_public_ip_0" {
+    type = string
+}
+
+variable "external_ipsec_public_ip_1" {
+    type = string
+}
+
 variable "ingress_dns" {
   type    = string
   default = "ingress.g8s"

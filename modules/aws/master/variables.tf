@@ -26,6 +26,18 @@ variable "cluster_name" {
   type = string
 }
 
+variable "customer_vpn_subnets" {
+    type = string
+}
+
+variable "external_ipsec_public_ip_0" {
+    type = string
+}
+
+variable "external_ipsec_public_ip_1" {
+    type = string
+}
+
 variable "ignition_bucket_id" {
   type = string
 }
@@ -48,6 +60,10 @@ variable "master_eni_ips" {
 }
 
 variable "master_subnet_ids" {
+  type = list
+}
+
+variable "nat_gateway_public_ips" {
   type = list
 }
 

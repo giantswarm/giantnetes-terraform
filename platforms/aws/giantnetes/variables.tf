@@ -166,8 +166,9 @@ variable "aws_cni_cidr_block" {
 }
 
 variable "aws_cni_pod_cidrs" {
+  type        = list
   description = "CIDR for AWS CNI networks used for pods."
-  default     = ["10.100.0.0/24","10.100.1.0/24","10.100.2.0/24"]
+  default     = ["10.100.0.0/24", "10.100.1.0/24", "10.100.2.0/24"]
 }
 
 variable "docker_cidr" {
@@ -229,8 +230,8 @@ variable "subnets_worker" {
 
 variable "oidc_enabled" {
   description = "Configure OIDC flags for Kubernetes API server"
-  default = false
-  type = bool
+  default     = false
+  type        = bool
 }
 
 ### VPN ###
@@ -292,8 +293,8 @@ variable "pod_infra_image" {
 }
 
 ### External Kubernetes API Access
-variable "k8s_api_external_access_whitelist" {
-  description = "Comma separated list of networks for k8s API external access"
+variable "customer_vpn_subnets" {
+  description = "Comma separated list of customer networks for k8s API external access"
   type        = string
   default     = ""
 }
