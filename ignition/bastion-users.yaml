@@ -239,9 +239,3 @@ passwd:
       - "docker"
     sshAuthorizedKeys:
       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAy033pMG12meBiHCwtoETEdUkUdYaklB6sYI0/mWXdB
-  - name: lachlan
-    groups:
-      - "sudo"
-      - "docker"
-    sshAuthorizedKeys:
-      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDnEthcwpfg/SbahW9MaX1Dj2PNNXGVOSPzULQ6Rg2EvuqYqHCMxmvCet+Hq3ZQDqfh5JCg/dbZrLpikw0z9ZsfuJgpxroKssltNxZKpxM9Tp8L6XL2fR6MhhPF7PXqD0+ympj61zDv6A7LBFvkkiS+KX+u7KkD8ylUAyXlU+dIW5o0tAq/uF2wTXXsaDcLka+2zm/rhWxVzbEdLyFBTGnfFU7DXWTl6pPhvNTy2MZwbGt1wQbLP3b2heaL4aD8eipZQGBBXaH3UcYVcQN5hx1iu5rIuvuaQb3KYSV+iOjWoBRMp5uz7+EOlEMTuX+nxzYI0ICUWvK/ZFsAzsfZM9MUML1I1rQMSNgi5yTgH1fC5t/hC1tc6Xn5gRuUZ75bV/cqz6lug5GtzdIsW75cZAuttAutHzQE8afIrdycqcMu69lo5aSYTK6X0tijPlG9t2dna+NycZxbmE4GtF/u+0zXJPUWv9+GMF5clYCn7qfxYsSfEZdaycRKPkZa46nCzJMkDsrxP04vet8mHennMTxl+EBwp+ctvN+AQrtvazMeUO6me5y8iNIT9mdWnqflo2Did1ygfwwvcxkRJOAeLUcaYHLFRLWktJThrR0+f5DxipXrIe/LqANTEuyM1iO7g81VnLLISnwtHNk0q+k0fJX77XX8TGyQ9AyjZc30t1Korw== lachlan@giantswarm.io
