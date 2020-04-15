@@ -220,12 +220,6 @@ passwd:
       - "docker"
     sshAuthorizedKeys:
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDQqCyzjD6b+ilJZDd0E2L48HZ4GSmDCs+oGU4nom+6Lgb2DPvtWPNYV2dEavO9KOSHB8fs7PbJaAsQvREpICxbFCSq8Rp6XlnxjVeKQ75jewM/Z1OHh5m0MxSwzjLqOre32J2S04+vkrJMZwcQCvP87N533rc39GZp1yq4/DqrX6qukOzUGigPscGWp0I/uZuxtsGoFwxEuUqEIiegHl9MqLgpID3Daa8+3/yW/gN8SHcUtdja1UwWKRBXh/lNiGeWE6UXAScvAB7qBQ9W8MxEHQj7y0rsEnDzUIAvjKrgFGOPrh3oMzHsq+d6fLAcOCzryVvHNaZLBBUpOhGzBmVDpcsiNmW9iXzXPlHC4oLdd0DfZjYQsMMBkKHa+Lw5G+9Yk1YzFuq2gg4y/ZAFWBAE4XAy4JZnbxZOMSMeAio/G017W6rKrskR90jMpgFGCUSjxiOhageRxHm0n/KK51magYBRd9qgOGfr63eMCnSUyle1P6mRdE8F46Bff3zEYFu43eBlSz2+lF76WVKi5Nq8KgZN2W7vCEzmodiD9pk/IbO/1RIO8pioSgh+qZCrLuMfzsruCZSb7TgK+Vo3OPF5Q9u2drenqRn5vrXZ9IaYnWswl9BOePK1VTFvJACWOYqocGcLOirO2pB0offDvhpGMpKTEUVn9ZTl2fmbfaO2EQ== quentin@giantswarm.io
-  - name: oriolgrau
-    groups:
-      - "sudo"
-      - "docker"
-    sshAuthorizedKeys:
-      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC+K80uKLwzcFH7sxQKv1CnTI67XP0rHIhmft5OBc++rgJbTB6+cicTCyc7hA4mlhrmmdlT5+aNgbVM+z6dRAxKeqKrNoAVlmPRkdF4STup9MyuYfhNqBK0jB2qAujVr2MZFR/0oHQc6ZFzpHG89NXU69zp/a5Mhus1Jhq40qWcSV5zrmqMVV1TWgXJ5pWSLvWn93kE9QJqmIA2/GlALVKUPy2OBgN/gLmRE2NhblPWimqA1W6S+/iK2CAheOEcO0cuvvhruOGTdHv3WilJmg38YeGjwLM9YV0jXz0zuvBczHN114xQFYC0XfYXgBZhSOc7vQEDfpaOSlU0wh4e/6uYsNWBmvlUsKeJdzDWrPf5bSn2nZKh4AWLuxQmmecRuYcXVTgPCXPaBK3dDsRTvmZoJxveAHilrdWNhLGYBJSt5oVGWnGwOafs2PkyjH83TPYMXvbfe5v+A27e5fC8/D/lhrIRxQ1CZVOBw6hq4+0+F2I8mR2xV20St0jDLugBmIvKQC9dcEjWwgf6ZxJSVsg8s4th1Wuemel4VoCZTrrqWEkWucUwT8Jr/RKk8WMwPVaMPyDUDPGx4an1S4jZi18tZ1KA9vEZGLp/iqGoXM9Pdw1w7VofZ0xlTu3NtOeyWox6+gO/JGNjE1/LOCocVDK9kdIxPSJm4qfVzC56+Vt07Q== ograup@gmail.com
   - name: axbarsan
     groups:
       - "sudo"
@@ -245,9 +239,3 @@ passwd:
       - "docker"
     sshAuthorizedKeys:
       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAy033pMG12meBiHCwtoETEdUkUdYaklB6sYI0/mWXdB
-  - name: lachlan
-    groups:
-      - "sudo"
-      - "docker"
-    sshAuthorizedKeys:
-      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDnEthcwpfg/SbahW9MaX1Dj2PNNXGVOSPzULQ6Rg2EvuqYqHCMxmvCet+Hq3ZQDqfh5JCg/dbZrLpikw0z9ZsfuJgpxroKssltNxZKpxM9Tp8L6XL2fR6MhhPF7PXqD0+ympj61zDv6A7LBFvkkiS+KX+u7KkD8ylUAyXlU+dIW5o0tAq/uF2wTXXsaDcLka+2zm/rhWxVzbEdLyFBTGnfFU7DXWTl6pPhvNTy2MZwbGt1wQbLP3b2heaL4aD8eipZQGBBXaH3UcYVcQN5hx1iu5rIuvuaQb3KYSV+iOjWoBRMp5uz7+EOlEMTuX+nxzYI0ICUWvK/ZFsAzsfZM9MUML1I1rQMSNgi5yTgH1fC5t/hC1tc6Xn5gRuUZ75bV/cqz6lug5GtzdIsW75cZAuttAutHzQE8afIrdycqcMu69lo5aSYTK6X0tijPlG9t2dna+NycZxbmE4GtF/u+0zXJPUWv9+GMF5clYCn7qfxYsSfEZdaycRKPkZa46nCzJMkDsrxP04vet8mHennMTxl+EBwp+ctvN+AQrtvazMeUO6me5y8iNIT9mdWnqflo2Did1ygfwwvcxkRJOAeLUcaYHLFRLWktJThrR0+f5DxipXrIe/LqANTEuyM1iO7g81VnLLISnwtHNk0q+k0fJX77XX8TGyQ9AyjZc30t1Korw== lachlan@giantswarm.io
