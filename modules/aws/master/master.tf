@@ -3,8 +3,8 @@ locals {
     "giantswarm.io/installation", "${var.cluster_name}",
     "kubernetes.io/cluster/${var.cluster_name}", "owned"
   )}"
-  customer_vpn_subnets = var.customer_vpn_subnets != "" ? split(",", var.customer_vpn_subnets) : []
-  k8s_api_internal_access_whitelist = concat(["${var.aws_cni_cidr_block}","${var.vpc_cidr}"], "${var.nat_gateway_public_ips}")
+  customer_vpn_subnets              = var.customer_vpn_subnets != "" ? split(",", var.customer_vpn_subnets) : []
+  k8s_api_internal_access_whitelist = concat(["${var.aws_cni_cidr_block}", "${var.vpc_cidr}"], "${var.nat_gateway_public_ips}")
   k8s_api_external_access_whitelist = concat(["${var.external_ipsec_public_ip_0}/32", "${var.external_ipsec_public_ip_1}/32"], local.customer_vpn_subnets)
 }
 
@@ -179,15 +179,16 @@ resource "aws_route53_record" "etcd" {
 }
 
 resource "aws_network_interface" "master" {
-  count       = var.master_count
-  subnet_id   = element(var.master_subnet_ids, count.index)
-  private_ips = ["${element(var.master_eni_ips, count.index)}"]
+  count           = var.master_count
+  subnet_id       = element(var.master_subnet_ids, count.index)
+  private_ips     = ["${element(var.master_eni_ips, count.index)}"]
   security_groups = ["${aws_security_group.master.id}"]
 
   tags = merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}-master${count.index + 1}-etcd"
+      "Name", "${var.cluster_name}-master${count.index + 1}-etcd",
+      "node.k8s.amazonaws.com/no_manage", ""
     )
   )
 
