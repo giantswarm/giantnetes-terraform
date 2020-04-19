@@ -188,8 +188,7 @@ resource "aws_network_interface" "master" {
     local.common_tags,
     map(
       "Name", "${var.cluster_name}-master${count.index + 1}-etcd",
-      "node.k8s.amazonaws.com/no_manage", "",
-      "node.k8s.amazonaws.com", "no_manage",
+      "node.k8s.amazonaws.com/no_manage", "true",
     )
   )
 
