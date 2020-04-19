@@ -107,10 +107,6 @@ do
     done
 done
 
-{{ if eq .Provider "aws" -}}
-echo "Waiting for aws-node to be ready..."
-$KUBECTL -n kube-system -l k8s-app=aws-node wait --for=condition=Ready --timeout=10m pods
-{{ end -}}
 echo "Waiting for calico-node to be ready..."
 $KUBECTL -n kube-system -l k8s-app=calico-node wait --for=condition=Ready --timeout=10m pods
 
