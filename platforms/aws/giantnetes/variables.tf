@@ -123,7 +123,7 @@ variable "flatcar_linux_channel" {
 ## If explicity set it up, Flatcar will be used installed instead of CoreOS
 variable "flatcar_linux_version" {
   description = "Flatcar linux version."
-  type        = "string"
+  type        = string
   default     = null
 }
 
