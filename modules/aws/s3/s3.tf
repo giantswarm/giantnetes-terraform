@@ -6,7 +6,7 @@ locals {
 }
 
 resource "aws_s3_bucket" "logging" {
-  bucket        = "${var.cluster_name}-access-logs"
+  bucket        = "${var.aws_account}-${var.cluster_name}-access-logs"
   acl           = "log-delivery-write"
   force_destroy = true
 
@@ -35,7 +35,7 @@ resource "aws_s3_bucket" "logging" {
   tags = merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}-access-logs"
+      "Name", "${var.aws_account}-${var.cluster_name}-access-logs"
     )
   )
 }
