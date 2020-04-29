@@ -21,6 +21,13 @@ module "container_linux" {
   coreos_version = "${var.container_linux_version}"
 }
 
+module "flatcar_linux" {
+  source = "../../../modules/flatcar-linux"
+
+  flatcar_channel = "${var.flatcar_linux_channel}"
+  flatcar_version = "${var.flatcar_linux_version}"
+}
+
 data "aws_availability_zones" "available" {}
 
 # Get ami ID for specific Container Linux version.
@@ -45,6 +52,33 @@ data "aws_ami" "coreos_ami" {
   filter {
     name   = "owner-id"
     values = ["${var.ami_owner}"]
+  }
+}
+
+# Get ami ID for specific Flatcar Linux version.
+data "aws_ami" "flatcar_ami" {
+  count = "${var.flatcar_linux_version != null ? 1 : 0}"
+
+  owners = ["${var.flatcar_ami_owner}"]
+
+  filter {
+    name   = "name"
+    values = ["Flatcar-${var.flatcar_linux_channel}-${module.flatcar_linux.flatcar_version}-*"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  filter {
+    name   = "owner-id"
+    values = ["${var.flatcar_ami_owner}"]
   }
 }
 
@@ -150,7 +184,7 @@ module "bastion" {
   bastion_count          = "2"
   bastion_subnet_ids     = "${module.vpc.bastion_subnet_ids}"
   cluster_name           = "${var.cluster_name}"
-  container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
+  container_linux_ami_id = "${var.flatcar_linux_version != null ? data.aws_ami.flatcar_ami[0].image_id : data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   forward_logs_enabled   = "${var.bastion_forward_logs_enabled}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
@@ -180,7 +214,7 @@ module "vpn_instance" {
   aws_account            = "${var.aws_account}"
   bastion_subnet_ids     = "${module.vpc.bastion_subnet_ids}"
   cluster_name           = "${var.cluster_name}"
-  container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
+  container_linux_ami_id = "${var.flatcar_linux_version != null ? data.aws_ami.flatcar_ami[0].image_id : data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   external_vpn_cidr_0    = "${var.external_ipsec_public_ip_0}/32"
   external_vpn_cidr_1    = "${var.external_ipsec_public_ip_1}/32"
@@ -209,7 +243,7 @@ module "vault" {
   aws_cni_cidr_block     = "${var.aws_cni_cidr_block}"
   aws_region             = "${var.aws_region}"
   cluster_name           = "${var.cluster_name}"
-  container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
+  container_linux_ami_id = "${var.flatcar_linux_version != null ? data.aws_ami.flatcar_ami[0].image_id : data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
@@ -247,7 +281,7 @@ module "master" {
   aws_account                  = "${var.aws_account}"
   aws_cni_cidr_block           = "${var.aws_cni_cidr_block}"
   cluster_name                 = "${var.cluster_name}"
-  container_linux_ami_id       = "${data.aws_ami.coreos_ami.image_id}"
+  container_linux_ami_id       = "${var.flatcar_linux_version != null ? data.aws_ami.flatcar_ami[0].image_id : data.aws_ami.coreos_ami.image_id}"
   customer_vpn_public_subnets  = "${var.customer_vpn_public_subnets}"
   customer_vpn_private_subnets = "${var.customer_vpn_private_subnets}"
   dns_zone_id                  = "${module.dns.public_dns_zone_id}"
@@ -284,7 +318,7 @@ module "worker" {
   aws_region             = "${var.aws_region}"
   aws_cni_cidr_block     = "${var.aws_cni_cidr_block}"
   cluster_name           = "${var.cluster_name}"
-  container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
+  container_linux_ami_id = "${var.flatcar_linux_version != null ? data.aws_ami.flatcar_ami[0].image_id : data.aws_ami.coreos_ami.image_id}"
   dns_zone_id            = "${module.dns.public_dns_zone_id}"
   elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
