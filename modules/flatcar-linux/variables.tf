@@ -1,3 +1,9 @@
+variable "aws_region" {
+  type        = string
+  description = "AWS Region used to differentiate with AWS China where image version is pulled from a different location."
+}
+
+
 variable "flatcar_channel" {
   type = string
 

@@ -1,3 +1,10 @@
 data "external" "flatcar_version" {
-  program = ["sh", "-c", "curl https://${var.flatcar_channel}.release.flatcar-linux.net/amd64-usr/current/version.txt | sed -n 's/FLATCAR_VERSION=\\(.*\\)$/{\"flatcar_version\": \"\\1\"}/p'"]
+  program = ["sh", "-c", "${path.module}/data/version.sh"]
+
+  query = {
+    aws_region = "${var.aws_region}"
+
+    flatcar_channel = "${var.flatcar_channel}"
+    flatcar_version = "${var.flatcar_version}"
+  }
 }

@@ -24,6 +24,8 @@ module "container_linux" {
 module "flatcar_linux" {
   source = "../../../modules/flatcar-linux"
 
+  aws_region = "${var.aws_region}"
+
   flatcar_channel = "${var.flatcar_linux_channel}"
   flatcar_version = "${var.flatcar_linux_version}"
 }
