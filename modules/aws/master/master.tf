@@ -31,7 +31,8 @@ resource "aws_cloudformation_stack" "master_asg" {
         "HealthCheckGracePeriod": 300,
         "LaunchConfigurationName": "${element(aws_launch_configuration.master.*.name, count.index)}",
         "LoadBalancerNames": [
-          "${var.cluster_name}-master-api"
+          "${var.cluster_name}-master-api",
+          "${var.cluster_name}-master-api-internal"
         ],
         "MaxSize": "1",
         "DesiredCapacity": "1",
