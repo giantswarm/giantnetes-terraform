@@ -1121,7 +1121,7 @@ systemd:
       --crt-file=/etc/kubernetes/ssl/apiserver-crt.pem \
       --ip-sans=127.0.0.1,${DEFAULT_IPV4},{{ .K8SAPIIP }} \
       --alt-names=localhost,kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.local \
-      --allowed-domains={{.BaseDomain}},localhost,kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.local \
+      --allowed-domains={{ .APIInternalDomainName }},{{.BaseDomain}},localhost,kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.local \
       --allow-bare-domains=true \
       --organizations=system:masters \
       --key-file=/etc/kubernetes/ssl/apiserver-key.pem \

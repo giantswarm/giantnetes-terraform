@@ -86,6 +86,7 @@ locals {
   ignition_data = {
     "AvaiabilityZones"             = "${data.aws_availability_zones.available.names}"
     "APIDomainName"                = "${var.api_dns}.${var.base_domain}"
+    "APIInternalDomainName"        = "${var.api_internal_dns}.${var.base_domain}"
     "AWSRegion"                    = "${var.aws_region}"
     "BastionUsers"                 = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
     "BastionSubnet0"               = "${element(var.subnets_bastion, 0)}"
