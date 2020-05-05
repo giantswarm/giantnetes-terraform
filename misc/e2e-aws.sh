@@ -303,7 +303,7 @@ stage-wait-kubernetes-nodes(){
     until [ ${nodes_num_expected} -eq ${nodes_num_actual} ]; do
         msg "Waiting all nodes to be ready."
         sleep 30; let tries+=1;
-        if [ ${tries} -gt 20 ]; then
+        if [ ${tries} -gt 25 ]; then
           msg "Timeout waiting all nodes to be ready."
           echo "# kubectl get node"
           exec_on master1 ${KUBECTL_CMD} get node
