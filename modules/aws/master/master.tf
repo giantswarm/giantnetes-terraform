@@ -75,6 +75,11 @@ resource "aws_cloudformation_stack" "master_asg" {
   }
 }
 EOF
+
+  depends_on = [
+    aws_elb.master_api,
+    aws_elb.master_api_internal,
+  ]
 }
 
 resource "aws_launch_configuration" "master" {
