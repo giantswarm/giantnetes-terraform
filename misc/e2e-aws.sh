@@ -20,7 +20,7 @@ set -o pipefail
 
 WORKDIR=$(pwd)
 TFDIR=${WORKDIR}/platforms/aws/giantnetes
-CLUSTER=e2e-tf-$(echo ${CIRCLE_SHA1} | cut -c 1-4)-${MASTER_COUNT}
+CLUSTER=e2etf-$(echo ${CIRCLE_SHA1} | cut -c 1-4)
 SSH_USER="e2e"
 KUBECTL_CMD="sudo /opt/bin/hyperkube kubectl --kubeconfig=/etc/kubernetes/kubeconfig/addons.yaml"
 
