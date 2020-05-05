@@ -3,15 +3,15 @@ provider "aws" {
 
   # Make sure to define profile in ~/.aws/config
   profile = var.cluster_name
-  region = var.aws_region
+  region  = var.aws_region
 }
 
 locals {
   # VPC subnet has reserved first 4 IPs so we need to use the fifth one (counting from zero it is index 4)
   # https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html
-  masters_eni_ips = ["${cidrhost(var.subnets_worker[0], 4)}", "${cidrhost(var.subnets_worker[1], 4)}", "${cidrhost(var.subnets_worker[2], 4)}"]
-  masters_eni_gateways = ["${cidrhost(var.subnets_worker[0], 1)}", "${cidrhost(var.subnets_worker[1], 1)}", "${cidrhost(var.subnets_worker[2], 1)}"]
-  masters_eni_subnet_size = "${split("/",var.subnets_worker[0])[1]}"
+  masters_eni_ips         = ["${cidrhost(var.subnets_worker[0], 4)}", "${cidrhost(var.subnets_worker[1], 4)}", "${cidrhost(var.subnets_worker[2], 4)}"]
+  masters_eni_gateways    = ["${cidrhost(var.subnets_worker[0], 1)}", "${cidrhost(var.subnets_worker[1], 1)}", "${cidrhost(var.subnets_worker[2], 1)}"]
+  masters_eni_subnet_size = "${split("/", var.subnets_worker[0])[1]}"
 }
 
 module "container_linux" {
@@ -86,6 +86,7 @@ locals {
   ignition_data = {
     "AvaiabilityZones"             = "${data.aws_availability_zones.available.names}"
     "APIDomainName"                = "${var.api_dns}.${var.base_domain}"
+    "APIInternalDomainName"        = "${var.api_internal_dns}.${var.base_domain}"
     "AWSRegion"                    = "${var.aws_region}"
     "BastionUsers"                 = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
     "BastionSubnet0"               = "${element(var.subnets_bastion, 0)}"
@@ -231,7 +232,7 @@ data "gotemplate" "master" {
   count = "${var.master_count}"
 
   template    = "${path.module}/../../../templates/master.yaml.tmpl"
-  data        = "${jsonencode(merge(local.ignition_data, { "NodeType" = "master", "MasterID" = "${count.index+1}", "ETCDDomainName" = "etcd${count.index + 1}.${var.base_domain}","MasterENIAddress" = "${local.masters_eni_ips[count.index]}", "MasterENIGateway" = "${local.masters_eni_gateways[count.index]}" }))}"
+  data        = "${jsonencode(merge(local.ignition_data, { "NodeType" = "master", "MasterID" = "${count.index + 1}", "ETCDDomainName" = "etcd${count.index + 1}.${var.base_domain}", "MasterENIAddress" = "${local.masters_eni_ips[count.index]}", "MasterENIGateway" = "${local.masters_eni_gateways[count.index]}" }))}"
   is_ignition = true
 }
 
@@ -240,30 +241,32 @@ module "master" {
 
   master_count = "${var.master_count}"
 
-  api_dns                = "${var.api_dns}"
-  aws_account            = "${var.aws_account}"
-  aws_cni_cidr_block     = "${var.aws_cni_cidr_block}"
-  cluster_name           = "${var.cluster_name}"
-  container_linux_ami_id = "${data.aws_ami.coreos_ami.image_id}"
-  customer_vpn_subnets   = "${var.customer_vpn_subnets}"
-  dns_zone_id            = "${module.dns.public_dns_zone_id}"
-  elb_subnet_ids         = "${module.vpc.elb_subnet_ids}"
-  external_ipsec_public_ip_0 = "${var.external_ipsec_public_ip_0}"
-  external_ipsec_public_ip_1 = "${var.external_ipsec_public_ip_1}"
-  ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
-  instance_type          = "${var.master_instance["type"]}"
-  route53_enabled        = "${var.route53_enabled}"
-  user_data              = "${data.gotemplate.master.*.rendered}"
-  master_subnet_ids      = "${module.vpc.worker_subnet_ids}"
-  master_eni_ips         = local.masters_eni_ips
-  nat_gateway_public_ips = "${module.vpc.aws_eip_public_ips}"
-  volume_docker          = "${var.master_instance["volume_docker"]}"
-  volume_etcd            = "${var.master_instance["volume_etcd"]}"
-  vpc_cidr               = "${var.vpc_cidr}"
-  vpc_id                 = "${module.vpc.vpc_id}"
-  iam_region             = "${var.iam_region}"
-  s3_bucket_tags         = "${var.s3_bucket_tags}"
-  arn_region             = "${var.arn_region}"
+  api_dns                      = "${var.api_dns}"
+  api_internal_dns             = "${var.api_internal_dns}"
+  aws_account                  = "${var.aws_account}"
+  aws_cni_cidr_block           = "${var.aws_cni_cidr_block}"
+  cluster_name                 = "${var.cluster_name}"
+  container_linux_ami_id       = "${data.aws_ami.coreos_ami.image_id}"
+  customer_vpn_public_subnets  = "${var.customer_vpn_public_subnets}"
+  customer_vpn_private_subnets = "${var.customer_vpn_private_subnets}"
+  dns_zone_id                  = "${module.dns.public_dns_zone_id}"
+  elb_subnet_ids               = "${module.vpc.elb_subnet_ids}"
+  external_ipsec_public_ip_0   = "${var.external_ipsec_public_ip_0}"
+  external_ipsec_public_ip_1   = "${var.external_ipsec_public_ip_1}"
+  ignition_bucket_id           = "${module.s3.ignition_bucket_id}"
+  instance_type                = "${var.master_instance["type"]}"
+  route53_enabled              = "${var.route53_enabled}"
+  user_data                    = "${data.gotemplate.master.*.rendered}"
+  master_subnet_ids            = "${module.vpc.worker_subnet_ids}"
+  master_eni_ips               = local.masters_eni_ips
+  nat_gateway_public_ips       = "${module.vpc.aws_eip_public_ips}"
+  volume_docker                = "${var.master_instance["volume_docker"]}"
+  volume_etcd                  = "${var.master_instance["volume_etcd"]}"
+  vpc_cidr                     = "${var.vpc_cidr}"
+  vpc_id                       = "${module.vpc.vpc_id}"
+  iam_region                   = "${var.iam_region}"
+  s3_bucket_tags               = "${var.s3_bucket_tags}"
+  arn_region                   = "${var.arn_region}"
 }
 
 # Generate ignition config.
