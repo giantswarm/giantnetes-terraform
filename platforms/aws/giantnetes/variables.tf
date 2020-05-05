@@ -134,14 +134,8 @@ variable "vault_dns" {
 
 variable "api_dns" {
   type        = string
-  description = "fqdn for api (i.e. g8s)."
+  description = "FQDN for api (i.e. g8s)."
   default     = "g8s"
-}
-
-variable "api_internal_dns" {
-  type        = string
-  description = "fqdn for internal api (i.e. internal-g8s)."
-  default     = "internal-g8s"
 }
 
 variable "ingress_dns" {
@@ -299,18 +293,11 @@ variable "pod_infra_image" {
 }
 
 ### External Kubernetes API Access
-variable "customer_vpn_public_subnets" {
-  description = "Comma separated list of customer networks for k8s public API external access"
+variable "customer_vpn_subnets" {
+  description = "Comma separated list of customer networks for k8s API external access"
   type        = string
   default     = ""
 }
-
-variable "customer_vpn_private_subnets" {
-  description = "Comma separated list of customer networks for k8s private API external access"
-  type        = string
-  default     = ""
-}
-
 
 ### CI
 variable "logentries_enabled" {
