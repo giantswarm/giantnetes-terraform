@@ -2,6 +2,10 @@ variable "api_dns" {
   type = string
 }
 
+variable "api_internal_dns" {
+  type = string
+}
+
 variable "arn_region" {
   type = string
 }
@@ -26,7 +30,11 @@ variable "cluster_name" {
   type = string
 }
 
-variable "customer_vpn_subnets" {
+variable "customer_vpn_public_subnets" {
+    type = string
+}
+
+variable "customer_vpn_private_subnets" {
     type = string
 }
 
