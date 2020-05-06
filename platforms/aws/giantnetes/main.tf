@@ -80,6 +80,7 @@ module "s3" {
   aws_account          = "${var.aws_account}"
   cluster_name         = "${var.cluster_name}"
   logs_expiration_days = "${var.logs_expiration_days}"
+  s3_bucket_prefix     = "${var.s3_bucket_prefix}"
 }
 
 locals {

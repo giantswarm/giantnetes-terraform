@@ -63,6 +63,10 @@ variable "logs_expiration_days" {
   default     = "365"
 }
 
+variable "s3_bucket_prefix" {
+  default = ""
+}
+
 variable "s3_bucket_tags" {
   default = true
 }
