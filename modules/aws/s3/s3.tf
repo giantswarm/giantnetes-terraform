@@ -6,12 +6,12 @@ locals {
 }
 
 resource "aws_s3_bucket" "logging" {
-  bucket        = "${var.cluster_name}-access-logs"
+  bucket        = "${var.s3_bucket_prefix}${var.cluster_name}-access-logs"
   acl           = "log-delivery-write"
   force_destroy = true
 
   logging {
-    target_bucket = "${var.cluster_name}-access-logs"
+    target_bucket = "${var.s3_bucket_prefix}${var.cluster_name}-access-logs"
     target_prefix = "self-logs/"
   }
 
@@ -35,7 +35,7 @@ resource "aws_s3_bucket" "logging" {
   tags = merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}-access-logs"
+      "Name", "${var.s3_bucket_prefix}${var.cluster_name}-access-logs"
     )
   )
 }
@@ -47,7 +47,7 @@ resource "aws_s3_bucket" "ignition" {
 
   logging {
     target_bucket = aws_s3_bucket.logging.id
-    target_prefix = "${var.cluster_name}-ignition-logs/"
+    target_prefix = "${var.s3_bucket_prefix}${var.cluster_name}-ignition-logs/"
   }
 
   server_side_encryption_configuration {
