@@ -113,6 +113,25 @@ variable "container_linux_version" {
   default     = "latest"
 }
 
+### Flatcar Linux ###
+variable "flatcar_linux_channel" {
+  description = "Flatcar linux channel (e.g. stable, beta, alpha)."
+  default     = "stable"
+}
+
+
+## If explicity set it up, Flatcar will be used installed instead of CoreOS
+variable "flatcar_linux_version" {
+  description = "Flatcar linux version."
+  type        = string
+  default     = null
+}
+
+variable "flatcar_ami_owner" {
+  description = "Flatcar linux AWS ID account."
+  default     = "075585003325"
+}
+
 variable "docker_registry" {
   type    = string
   default = "quay.io"
