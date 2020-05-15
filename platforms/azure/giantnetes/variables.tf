@@ -265,8 +265,8 @@ variable "external_ipsec_public_ip_1" {
 }
 
 ### External Kubernetes API Access
-variable "customer_vpn_subnets" {
-  description = "Comma separated list of customer networks for k8s API external access"
+variable "customer_vpn_public_subnets" {
+  description = "Comma separated list of customer networks for k8s public API external access"
   type        = string
   default     = ""
 }

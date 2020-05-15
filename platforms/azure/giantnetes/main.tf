@@ -41,7 +41,7 @@ module "vnet" {
   bastion_count       = "2"
   bastion_cidr        = var.bastion_cidr
   cluster_name        = var.cluster_name
-  customer_vpn_subnets = var.customer_vpn_subnets
+  customer_vpn_public_subnets = var.customer_vpn_public_subnets
   external_ipsec_public_ip_0 = var.external_ipsec_public_ip_0
   external_ipsec_public_ip_1 = var.external_ipsec_public_ip_1
   ingress_dns         = var.ingress_dns
