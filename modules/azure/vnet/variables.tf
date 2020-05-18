@@ -19,7 +19,7 @@ variable "cluster_name" {
   type = string
 }
 
-variable "customer_vpn_subnets" {
+variable "customer_vpn_public_subnets" {
     type = string
 }
 
