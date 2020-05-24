@@ -82,6 +82,17 @@ resource "aws_security_group" "bastion" {
   }
 }
 
+resource "aws_security_group_rule" "transit_vpc_access" {
+  count = var.transit_vpc_cidr != "" ? 1 : 0
+
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = var.transit_vpc_cidr
+  security_group_id = aws_security_group.bastion.id
+}
+
 resource "aws_route53_record" "bastion" {
   count   = var.route53_enabled ? var.bastion_count : 0
   zone_id = var.dns_zone_id
