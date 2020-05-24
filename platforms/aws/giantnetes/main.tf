@@ -106,6 +106,7 @@ module "vpc" {
   subnets_worker     = "${var.subnets_worker}"
   subnets_vault      = "${var.subnets_vault}"
   vpc_cidr           = "${var.vpc_cidr}"
+  vpc_vgw_id = "${var.vpc_vgw_id}"
   with_public_access = "${var.aws_customer_gateway_id_0 == "" ? true : false}"
 }
 
