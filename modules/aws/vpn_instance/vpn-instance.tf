@@ -1,6 +1,7 @@
 locals {
   # In China there is no tags for s3 buckets
-  s3_ignition_vpn_instance_key = "${element(concat(aws_s3_bucket_object.ignition_vpn_instance_with_tags.*.key, aws_s3_bucket_object.ignition_vpn_instance_without_tags.*.key), 0)}"
+  vpn_instance_enabled = "${concat(aws_s3_bucket_object.ignition_vpn_instance_with_tags.*.key, aws_s3_bucket_object.ignition_vpn_instance_without_tags.*.key)}"
+  s3_ignition_vpn_instance_key = length(local.vpn_instance_enabled) > 0 ? element(local.vpn_instance_enabled, 0) : ""
 
   common_tags = "${map(
     "giantswarm.io/installation", "${var.cluster_name}",

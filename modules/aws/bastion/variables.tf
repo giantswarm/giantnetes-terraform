@@ -79,3 +79,10 @@ variable "forward_logs_enabled" {
 }
 
 variable "s3_bucket_tags" {}
+
+### Access via transit VPC ###
+variable "transit_vpc_cidr" {
+  description = "CIDR of the transit VPC, used to access installation bastions"
+  type        = string
+}
+

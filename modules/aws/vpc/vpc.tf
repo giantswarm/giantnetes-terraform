@@ -139,12 +139,30 @@ resource "aws_route" "vpc_local_route" {
   depends_on             = [aws_route_table.cluster_vpc_public]
 }
 
+resource "aws_route" "vpc_transit_route" {
+  count = var.transit_vpc_cidr != "" ? length(var.subnets_elb) : 0
+
+  route_table_id         = element(aws_route_table.cluster_vpc_public.*.id, count.index)
+  destination_cidr_block = var.transit_vpc_cidr
+  gateway_id             = var.vpc_vgw_id
+  depends_on             = [aws_route_table.cluster_vpc_public]
+}
+
 resource "aws_route" "private_nat_gateway" {
   count = length(var.subnets_worker)
 
   route_table_id         = element(aws_route_table.cluster_vpc_private.*.id, count.index)
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = element(aws_nat_gateway.private_nat_gateway.*.id, count.index)
+}
+
+resource "aws_route" "private_transit_route" {
+  count = var.transit_vpc_cidr != "" ? length(var.subnets_elb) : 0
+
+  route_table_id         = element(aws_route_table.cluster_vpc_private.*.id, count.index)
+  destination_cidr_block = var.transit_vpc_cidr
+  gateway_id             = var.vpc_vgw_id
+  depends_on             = [aws_route_table.cluster_vpc_private]
 }
 
 resource "aws_vpc_endpoint" "s3" {
