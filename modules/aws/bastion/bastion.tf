@@ -1,8 +1,8 @@
 locals {
   default_ssh_access_subnet = "0.0.0.0/0"
-
+  external_vpn_subnet = "${var.transit_vpc_cidr != "" ? var.transit_vpc_cidr : var.external_ipsec_subnet }"
   # If behind VPN allow SSH access only from VPN subnet.
-  ssh_access_subnet = "${var.with_public_access ? local.default_ssh_access_subnet : var.external_ipsec_subnet}"
+  ssh_access_subnet = "${var.with_public_access ? local.default_ssh_access_subnet : local.external_vpn_subnet}"
 
   # In China there is no tags for s3 buckets
   s3_ignition_bastion_key = "${element(concat(aws_s3_bucket_object.ignition_bastion_with_tags.*.key, aws_s3_bucket_object.ignition_bastion_without_tags.*.key), 0)}"

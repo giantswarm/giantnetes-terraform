@@ -63,6 +63,10 @@ variable "logs_expiration_days" {
   default     = "365"
 }
 
+variable "s3_bucket_prefix" {
+  default = ""
+}
+
 variable "s3_bucket_tags" {
   default = true
 }
@@ -109,6 +113,25 @@ variable "container_linux_version" {
   default     = "latest"
 }
 
+### Flatcar Linux ###
+variable "flatcar_linux_channel" {
+  description = "Flatcar linux channel (e.g. stable, beta, alpha)."
+  default     = "stable"
+}
+
+
+## If explicity set it up, Flatcar will be used installed instead of CoreOS
+variable "flatcar_linux_version" {
+  description = "Flatcar linux version."
+  type        = string
+  default     = "2345.3.1"
+}
+
+variable "flatcar_ami_owner" {
+  description = "Flatcar linux AWS ID account."
+  default     = "075585003325"
+}
+
 variable "docker_registry" {
   type    = string
   default = "quay.io"
@@ -134,8 +157,14 @@ variable "vault_dns" {
 
 variable "api_dns" {
   type        = string
-  description = "FQDN for api (i.e. g8s)."
+  description = "fqdn for api (i.e. g8s)."
   default     = "g8s"
+}
+
+variable "api_internal_dns" {
+  type        = string
+  description = "fqdn for internal api (i.e. internal-g8s)."
+  default     = "internal-g8s"
 }
 
 variable "ingress_dns" {
@@ -160,14 +189,15 @@ variable "vpc_cidr" {
   default     = "10.0.0.0/16"
 }
 
-variable "calico_cidr" {
-  description = "CIDR for Calico."
-  default     = "192.168.0.0/16"
+variable "aws_cni_cidr_block" {
+  description = "Whole CIDR block for AWS CNI."
+  default     = "10.100.0.0/20"
 }
 
-variable "calico_mtu" {
-  description = "MTU used for Calico interfaces"
-  default     = "1440"
+variable "aws_cni_pod_cidrs" {
+  type        = list
+  description = "CIDR for AWS CNI networks used for pods."
+  default     = ["10.100.0.0/24", "10.100.1.0/24", "10.100.2.0/24"]
 }
 
 variable "docker_cidr" {
@@ -225,12 +255,25 @@ variable "subnets_worker" {
   default     = ["10.0.5.0/26", "10.0.5.64/26", "10.0.5.128/26"]
 }
 
+### Access via transit VPC ###
+variable "vpc_vgw_id" {
+  description = "ID of the virtual private gateway, attached to VPC."
+  default     = ""
+  type = string
+}
+
+variable "transit_vpc_cidr" {
+  description = "CIDR of the transit VPC, used to access installation bastions"
+  default = ""
+  type = string
+}
+
 ### OIDC ###
 
 variable "oidc_enabled" {
   description = "Configure OIDC flags for Kubernetes API server"
-  default = false
-  type = bool
+  default     = false
+  type        = bool
 }
 
 ### VPN ###
@@ -292,11 +335,18 @@ variable "pod_infra_image" {
 }
 
 ### External Kubernetes API Access
-variable "k8s_api_external_access_whitelist" {
-  description = "Comma separated list of networks for k8s API external access"
+variable "customer_vpn_public_subnets" {
+  description = "Comma separated list of customer networks for k8s public API external access"
   type        = string
   default     = ""
 }
+
+variable "customer_vpn_private_subnets" {
+  description = "Comma separated list of customer networks for k8s private API external access"
+  type        = string
+  default     = ""
+}
+
 
 ### CI
 variable "logentries_enabled" {

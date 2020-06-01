@@ -4,4 +4,4 @@ clientConnection:
 kind: KubeProxyConfiguration
 mode: iptables
 resourceContainer: /kube-proxy
-clusterCIDR: {{ if eq .Provider "aws"}}{{ .CalicoCIDR }}{{ else }}{{ .PodCIDR }}{{ end }}
+clusterCIDR: {{ .PodCIDR }}

@@ -16,6 +16,7 @@ evictionHard:
 evictionSoftGracePeriod:
   memory.available:  "5s"
 evictionMaxPodGracePeriod: 60
+maxPods: ${MAX_PODS}
 authentication:
   anonymous:
     enabled: true # Defaults to false as of 1.10
@@ -23,3 +24,7 @@ authentication:
     enabled: false # Defaults to true as of 1.10
 authorization:
   mode: AlwaysAllow # Defaults to webhook as of 1.10
+# improve image pulls in china
+serializeImagePulls: false
+registryPullQPS: 2
+registryBurst: 3

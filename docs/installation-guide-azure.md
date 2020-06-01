@@ -36,7 +36,8 @@ az storage account create \
   --kind BlobStorage \
   --location ${REGION} \
   --sku Standard_RAGRS \
-  --access-tier Cool
+  --access-tier Cool \
+  --https-only true
 
 az storage container create \
   -n ${NAME}-state \
@@ -87,10 +88,17 @@ cd ./platforms/azure/giantnetes/
 
 Edit `bootstrap.sh`. DO NOT PUT passwords and keys into `bootstrap.sh` as it will be stored as plain text.
 
-Command below will ask for:
+Now update the `terraform-secrets.yaml` file with the azure credentials.
 
-- storage account access key
-- service principal secret key
+Set the storage account access key under the `Terraform.ArmAccessKey` key.
+```
+opsctl update secret --in=terraform-secrets.yaml -k Terraform.ArmAccessKey
+```
+
+Set the service principal password under the `Terraform.AzureSPAadClientSecret` key.
+```
+opsctl update secret --in=terraform-secrets.yaml -k Terraform.AzureSPAadClientSecret
+```
 
 If you need to setup a VPN (mandatory for production installations) you first need to get a /28 subnet unique for this installation.
 
@@ -113,10 +121,6 @@ source bootstrap.sh
 
 NOTE: Reexecute `source bootstrap.sh` everytime if opening new console.
 
-### Configure ssh users
-
-Add bastion users to `ignition/bastion-users.yaml`. All other vms take users configuration from `ignition/users.yaml`, so please modify it too.
-
 ## Install
 
 Terraform has one manifest:
@@ -128,13 +132,9 @@ Install consists two stages:
 - Vault (only needed because we bootstrapping Vault manually)
 - Kubernetes
 
-Master and workers will be created with in the Vault stage and expectedly will fail (and recreated later). This is done to keep single Terraform state and simplify cluster management after installation. Master and workers will be reprovisioned with right configuration in the second state called Kubernetes.
-
 ### Stage: Vault
 
 #### Create Vault virtual machine and all other necessary resources
-
-**Always** answer "No" for copying state, we are using different keys for the state!
 
 ```
 source bootstrap.sh
@@ -142,10 +142,9 @@ source bootstrap.sh
 
 ```
 terraform plan ./
-terraform apply ./
+terraform apply -target="module.dns" ./ 
+terraform apply -target="module.vnet" -target="module.bastion" -target="module.vault" -target="module.vpn" ./
 ```
-
-It should create all cluster resources. Please note master and worker vms are created, but will fail. This is expected behaviour.
 
 #### (Optional) Connect to VPN
 
@@ -181,55 +180,34 @@ Temporarily save the password generated somewhere, then follow the instructions 
 
 How to do that see [here](https://github.com/giantswarm/hive/#install-insecure-vault)
 
+After you successfully installed Vault in the new installations, set the `g8s host cluster` vault unseal token (you got it in the Ansible output) in the secrets file:
+
+```
+opsctl update secret --in=terraform-secrets.yaml -k Terraform.VaultToken
+```
+
 ### Stage: Kubernetes
 
 ```
+# Need to source the bootstrap.sh file again to read the new secret defined above.
 source bootstrap.sh
-```
-
-#### Install master and workers
-
-##### Taint machines so they are recreated
-
-```
-terraform taint "module.bastion.azurerm_virtual_machine.bastion[0]"
-terraform taint "module.bastion.azurerm_virtual_machine.bastion[1]"
-terraform taint "module.master.azurerm_virtual_machine.master[0]"
-terraform taint "module.master.azurerm_virtual_machine.master[1]"
-terraform taint "module.master.azurerm_virtual_machine.master[2]"
-terraform taint "module.worker.azurerm_virtual_machine.worker[0]"
-terraform taint "module.worker.azurerm_virtual_machine.worker[1]"
-terraform taint "module.worker.azurerm_virtual_machine.worker[2]"
-```
-
-##### Apply terraform
-
-**Always** answer "No" for copying state, we are using different keys for the state!
-
-```
-source bootstrap.sh
-```
-
-```
-terraform plan ./
 terraform apply ./
 ```
 
 ## Upload variables and configuration
 
-Create `terraform` folder in [installations repositry](https://github.com/giantswarm/installations) under particular installation folder. Copy variables and configuration.
+Create `terraform` folder in [installations repository](https://github.com/giantswarm/installations) under particular installation folder. Copy variables and configuration.
 
 ```
-export CLUSTER=cluster1
 export INSTALLATIONS=<installations_repo_path>
 
-mkdir ${INSTALLATIONS}/${CLUSTER}/terraform
-cp bootstrap.sh ${INSTALLATIONS}/${CLUSTER}/terraform/
+mkdir -p ${INSTALLATIONS}/${NAME}/terraform
+cp bootstrap.sh terraform-secrets.yaml ${INSTALLATIONS}/${NAME}/terraform/
 
 cd ${INSTALLATIONS}
-git checkout -b "${cluster}_terraform"
-git add ${INSTALLATIONS}/${CLUSTER}/terraform
-git commit -S -m "Add ${CLUSTER} terraform variables and configuration"
+git checkout -b "${NAME}_terraform"
+git add ${INSTALLATIONS}/${NAME}/terraform
+git commit -S -m "Add ${NAME} terraform variables and configuration"
 ```
 
 Create PR with related changes.

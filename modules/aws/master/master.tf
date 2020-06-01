@@ -3,6 +3,14 @@ locals {
     "giantswarm.io/installation", "${var.cluster_name}",
     "kubernetes.io/cluster/${var.cluster_name}", "owned"
   )}"
+  customer_vpn_public_subnets = var.customer_vpn_public_subnets != "" ? split(",", var.customer_vpn_public_subnets) : []
+  customer_vpn_private_subnets = var.customer_vpn_private_subnets != "" ? split(",", var.customer_vpn_private_subnets) : []
+  # k8s_api prefixed values represent access to public loadbalancer
+  k8s_api_internal_access_whitelist = concat(["${var.aws_cni_cidr_block}","${var.vpc_cidr}"], "${var.nat_gateway_public_ips}")
+  k8s_api_external_access_whitelist = concat(["${var.external_ipsec_public_ip_0}/32", "${var.external_ipsec_public_ip_1}/32"], local.customer_vpn_public_subnets)
+  # k8s_api_internal prefixed values represent access to private loadbalancer
+  k8s_api_internal_internal_access_whitelist = concat(["${var.aws_cni_cidr_block}","${var.vpc_cidr}"], "${var.nat_gateway_public_ips}")
+  k8s_api_internal_external_access_whitelist = concat(["${var.external_ipsec_public_ip_0}/32", "${var.external_ipsec_public_ip_1}/32"], local.customer_vpn_private_subnets)
 }
 
 data "aws_availability_zones" "available" {}
@@ -23,7 +31,8 @@ resource "aws_cloudformation_stack" "master_asg" {
         "HealthCheckGracePeriod": 300,
         "LaunchConfigurationName": "${element(aws_launch_configuration.master.*.name, count.index)}",
         "LoadBalancerNames": [
-          "${var.cluster_name}-master-api"
+          "${var.cluster_name}-master-api",
+          "${var.cluster_name}-master-api-internal"
         ],
         "MaxSize": "1",
         "DesiredCapacity": "1",
@@ -66,6 +75,11 @@ resource "aws_cloudformation_stack" "master_asg" {
   }
 }
 EOF
+
+  depends_on = [
+    aws_elb.master_api,
+    aws_elb.master_api_internal,
+  ]
 }
 
 resource "aws_launch_configuration" "master" {
@@ -130,7 +144,7 @@ resource "aws_security_group" "master" {
     from_port   = 10
     to_port     = 65535
     protocol    = "tcp"
-    cidr_blocks = ["${var.vpc_cidr}"]
+    cidr_blocks = ["${var.vpc_cidr}", "${var.aws_cni_cidr_block}"]
   }
 
   # Allow access from vpc
@@ -138,7 +152,7 @@ resource "aws_security_group" "master" {
     from_port   = 10
     to_port     = 65535
     protocol    = "udp"
-    cidr_blocks = ["${var.vpc_cidr}"]
+    cidr_blocks = ["${var.vpc_cidr}", "${var.aws_cni_cidr_block}"]
   }
 
   # Allow IPIP traffic from vpc
@@ -176,17 +190,25 @@ resource "aws_route53_record" "etcd" {
 }
 
 resource "aws_network_interface" "master" {
-  count       = var.master_count
-  subnet_id   = element(var.master_subnet_ids, count.index)
-  private_ips = ["${element(var.master_eni_ips, count.index)}"]
+  count           = var.master_count
+  subnet_id       = element(var.master_subnet_ids, count.index)
+  private_ips     = ["${element(var.master_eni_ips, count.index)}"]
   security_groups = ["${aws_security_group.master.id}"]
 
   tags = merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}-master${count.index + 1}-etcd"
+      "Name", "${var.cluster_name}-master${count.index + 1}-etcd",
+      "node.k8s.amazonaws.com/no_manage", "true",
     )
   )
+
+  lifecycle {
+    ignore_changes = [
+      # ignore changes on the private IP list
+      private_ips,
+    ]
+  }
 
 }
 

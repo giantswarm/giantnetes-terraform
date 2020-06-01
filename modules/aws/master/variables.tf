@@ -2,11 +2,19 @@ variable "api_dns" {
   type = string
 }
 
+variable "api_internal_dns" {
+  type = string
+}
+
 variable "arn_region" {
   type = string
 }
 
 variable "aws_account" {
+  type = string
+}
+
+variable "aws_cni_cidr_block" {
   type = string
 }
 
@@ -20,6 +28,22 @@ variable "container_linux_ami_id" {
 
 variable "cluster_name" {
   type = string
+}
+
+variable "customer_vpn_public_subnets" {
+    type = string
+}
+
+variable "customer_vpn_private_subnets" {
+    type = string
+}
+
+variable "external_ipsec_public_ip_0" {
+    type = string
+}
+
+variable "external_ipsec_public_ip_1" {
+    type = string
 }
 
 variable "ignition_bucket_id" {
@@ -44,6 +68,10 @@ variable "master_eni_ips" {
 }
 
 variable "master_subnet_ids" {
+  type = list
+}
+
+variable "nat_gateway_public_ips" {
   type = list
 }
 
