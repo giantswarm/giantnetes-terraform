@@ -100,12 +100,6 @@ passwd:
       - "docker"
     sshAuthorizedKeys:
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDo5PU8w8RDWYDd8SSIKOiYJCeN398PAEJApFGpPWprewBmiDGGMHHDIDV//QR+o5MhR2hBmJ+Pw1K/Edr4u0cfGlIIb6lSVdha+jDEp0l1PtqyQzubzTH3y/RDzxCakAa419N1G3DwzJHkWBxbpyqx7i/DOYcxgQP4vCGvYgkvuOkQYCNk2hfuXAl/Aucv3JXlsuNktyXQ6XKf+Twa2Bg8jIAaYUNGqgKgzMcsCElE55bxVuYeXl441CzD2fdHmXyGwo6nefN7PZ790SxQzkGM8wBpESgc7U4IPUY/dnsn4yQBYw2meontHWGLmZjrvEYxoS7Uv4o8BX8cScgVZUhRojHvNWBBcwOx+hhuPbqoqdc8IFXQLHTTa/szvY9gwlipBejj6nJrRpl3Kxw+EX4QP/loDxkykWQUoByU479Z6/gOtgAkPOe8xZblny6r3uCZyUlaYR9ht2aOEbH8bLuYBaDTPvunMIH/RSgbNxys/Dss3ZC7MJgXtoaSpb/AGdqv1Uj4AdNJJm8544AFhmR/Tky0rms3NpaSEiwO+E5ZIJiBevqPbGWkodbfKM6uydS+wrqHOR+zTNLuwhTHVnNRZ//ePBMptnzR1qbuMmaEgmqMM1HjFflUUVdDLFK6TxcdU3YPJnnWlwGk2bCjlamGjHx0hvoJVSY+Oap6o23cJQ== theo@giantswarm.io
-  - name: tobi
-    groups:
-      - "sudo"
-      - "docker"
-    sshAuthorizedKeys:
-      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCzkt5Tls3jGFzHW/cj6kz3OPAYR+fINFlDFk7qEY98sjkAbKqTwntVLY7ghOdynmt+0qoQRHklLoxDTUsFoYUu2vOpdtKKCdzHR08uYS2RlvOdA+Ex0d0qEHyxX4H3b+ym+8BqCn9Bh5X4/thGWt3cqVtroqYeUAES5SneQ1rX420hN9MoZ+83vC5gwTr90GqZbsqweNTHPkhuYLylvphzxbXOitzLr61VRxjGb4gZiRD6kCXuW/uP0nrtYXkHjROXMvdj1ZZA+VLR4TAbIukApYa3JpRAApanNScgmZTsa/HhEfDVQtGesG+C6fsZVcStxuWMcpx1vZFZ6gkeIDw+R47250E3BzaDYhjGo6URuijcmepllHsU+KgpvawmgjN8hlLdbBfCDLNML23mPDIwZmUznVwL1qH0Vf744ioExKKLHx1RpiohQMCnE6K+x85tf/5NAy/VlNPxD4qeS62Bcr4DPNnn3My1h+1U1hDyclw/4SynAZXNlBh7q6ksjzaRZ68LsZhWsyOZMKuz+igkV509SYhjqZfCT34zRlxEmRaI05fVAst/mZOfsfWb1AhADNVNF172jfat0qeot/Hs/Fs4D6bpl0mwW2jQD3dB3OkytroM4TBSvG7weJwJWoDgLvy1gx6Nd4rIsUlnQKivzwmEgCaV448Y6sVpEWpCAw== tobiasrichter@giantswarm.io
   - name: conveyor
     groups:
       - "sudo"
@@ -118,12 +112,6 @@ passwd:
       - "docker"
     sshAuthorizedKeys:
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDYU8ed6vgjDfRbWaLWIjVf9JisLmPTV6zBTmcToGu+MM3Ry3VkfnbbBbYhWjBm+Mp5VQEPfWZnQ712I/OdU7xiG1acRYI8ZuYfFc2Ie8AtSE767e4KK5EnkQqOjqJtsHscosIsOcnl2d2M6+jERmGr7q4ld6YgzQPltBfYjgxAmca2jR1tY1XoZ4BuJdwt9/GMkAruPnBFiQdLn422uAUSiQ/PKr6df7+r4OHOREWjDgWneWDhNaNvhfszVIUsxd3TRpvngHf0XaccK+rura4RgrIzHnn+5NBfDuV319D1It/wqqQZ83b2BNzSaaEWFCDh1zxVtZJ8nnTKn4tap8roM4IN/MKLHWjyRKB2Oyh7fhL3svErvgHxkCr8Dr1ov0GB+MVce+fmgWIG6P7rRR2z5R6aa4vRKMp6bqaOaTPrqest/BoGJYhlJcstx1Ni2oGFMLddO/NfBX6c95G8KMefwwZHd0iNkESWehW6WVNvsvLVi4H6AM4oCSMAaFakaIyLCYb1mRBNbbCachLwORxoVVYuJw7aidsDvCw6etDDB06uzahgg+OBAEXwaMAtxbgm6ij4xf71XJq+mkWci9mQLGZgkb5zTgsmiemxPM452CTY+gc7OGUI1+CPv26W7W/J8BuhB7l7ZOskElff0FfH5OM0QBR2fs1iowVHGDpj/Q== tomahawk28@gmail.com
-  - name: ferran
-    groups:
-      - "sudo"
-      - "docker"
-    sshAuthorizedKeys:
-      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQClSTv/MNyATqUGDzmimPo2Ri5FnDLqcdv3m7Zi0S3wSZRsFV1/2dA89akJGei+Q9VLUyZedzvcgZngTMxHGquor7q49MCQmzMuAT0eIl+1l68kJD71hf9gkZiZMJnToCk9g9Qd559QWQC3qfsHdxR3MsfIcwu/Bl14j6M4Bw1C0bPTr6XTUToiukvHkS8tbbIgnUnHg/Zdp4eCxX5lRP3FXeKv7U/aAmnh1cAT008IL+wBkxvVClPOWlwx54aTdfu+HPpPVsmBm6AZhLdeb7Yrpcd5ZE53SAJuznUJ5NfO+gFj3lma+T4g0lc6L1imzXXMCKjXyo03+9Px8R8nBvxN
   - name: salvo
     groups:
       - "sudo"
@@ -190,12 +178,12 @@ passwd:
       - "docker"
     sshAuthorizedKeys:
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDBSSJCLkZWhOvs6blotU+fWbrTmC7fOwOm0+w01Ww/YN3j3j1vCrvji1A4Yonr89ePQEQKfZsYcYFodQI/D3Uzu9rOFy0dCMQfvL/J6N8LkNtmooh3J2p061829MurAdD+TVsNGrD2FZGm5Ab4NiyDXIGAYCaHL6BHP16ipBglYjLQt6jVyzdTbYspkRi1QrsNFN3gIv9V47qQSvoNEsC97gvumKzCSQ/EwJzFoIlqVkZZHZTXvGwnZrAVXB69t9Y8OJ5zA6cYFAKR0O7lEiMpebdLNGkZgMA6t2PADxfT78PHkYXLR/4tchVuOSopssJqgSs7JgIktEE14xKyNyoLKIyBBo3xwywnDySsL8R2zG4Ytw1luo79pnSpIzTvfwrNhd7Cg//OYzyDCty+XUEUQx2JfOBx5Qb1OFw71WA+zYqjbworOsy2ZZ9UAy8ryjiaeT8L2ZRGuhdicD6kkL3Lxg5UeNIxS2FLNwgepZ4D8Vo6Yxe+VOZl524ffoOJSHQ0Gz8uE76hXMNEcn4t8HVkbR4sCMgLn2YbwJ2dJcROj4w80O4qgtN1vsL16r4gt9o6euml8LbmnJz6MtGdMczSO7kHRxirtEHMTtYbT1wNgUAzimbScRggBpUz5gbz+NRE1Xgnf4A5yNMRy+JOWtLVUozJlcGSiQkVcexzdb27yQ==
-  - name: lukasz
+  - name: piontec
     groups:
       - "sudo"
       - "docker"
     sshAuthorizedKeys:
-      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDA/Db/nuMw271az/5MQlsaRxaCkQSyKHQHmhCRN4lR4l0quv/aY/G0LgryBPONWM+OflpX4rzlcLRTEm7/PE863FwPaZEavKIUrKwL1iWohMEjFvWxZYHN6p5yh0BppXcfG5GolX4MXGB2OMUwzD/0/51iXXNkUu6FjMxnTcol5cdGm8jeGxXDXx23OO2N50egQf8V4UTT4Ws+cYtyBI8MKcHTXlSWr+qpgw0bVOYLNOXoKK+4VY9KlREDUwZJw/VahNkrIs5Vx0AaI2IRSmK3FQqzcSq8hNHKh9XvREtbQPq7lkbeM2wyPiPEkknTxEBlEipOpOiSmRnM9Iigf177 piontec@w530
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCqKUhdcgOUQmBDbd0lkD+JPtFb/rgUZlW8aeJ7DQemfrXYM7HpxpcMv5ZPOTMiU6uLuUboF5GAvGRC9AXfhw54tthSPBhEPgBMYyIcbXOcGZZUaSjI0dajckFL7ei18f3AOH5KBT66d4FuBGECes1BiusprgCmSk5BZgfOqqSjS9mrK8bBD6AgLpLuuxfjxReN20HkUTcWotxKhxJjJoZQUKhB19LS0KSeh6pPTjfqVwjUg574IayDDbdvNO7xV1SPZZ5KbcWXUNapPPNaCXNOwlRPQOaGQHWkVMK+V91c7N+rUdALZsiFOI6RbU98OMWU66gCv004Dgi/0lg+Cx3XFyuinBp3xqVvmoP5j+UGDFZzZqmiDhOzPl0RvOmQrqSFxGIohV0nEtnviFPO85YH1OGqfjBkLn67ENqN5CXLNhCSTWzAGxienH91J5h2e8ayZv3gmERaD6OHkr1iXcCWXdwR0gOp6TZYsRq0ohFFfZLE5bxHwt9A2tztlYTjvgLOu9NU0lpVqnJbq2igwHsRH97BUswJbzdfTNzP6loMaNH3rIuRbx89BHvko55pI48SLn2sQXXbpHLEC8X1dr3XGioNz7c2J4M7cfHFx+SPSWuqXPUoYon77r9Tz3cdknjJYd5TiNlrgbOp6xlZpTo50kmqrI5njbADITodQ0AkBw== piontec@T495
   - name: snizhanadynnyk
     groups:
       - "sudo"
@@ -239,3 +227,27 @@ passwd:
       - "docker"
     sshAuthorizedKeys:
       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAy033pMG12meBiHCwtoETEdUkUdYaklB6sYI0/mWXdB
+  - name: jakub
+    groups:
+      - "sudo"
+      - "docker"
+    sshAuthorizedKeys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDOxQcAshziCtSQ1ZMazzQ9Y1KbArmHuyEM8S+nk0dx2imM7yd42eL7iFp4YlgDdRTD9IWhBcGc5nj+mv810luDQjucdq4D2qU3gI0XbYPuc5WGgQsO/28sk6IW6OpzNQW/eowKhSxa32q6QWY91Gh3QkR6L+D1Y5mUt/R55EdLx+T6BRMIbql46r8f5IvxV0a9S8ZpTneq/7rAuZzzkOu/xb4Go/OyBWHrYh8ge2wfm7Yg7SFpRmBa67KY6ZeZYX3QoF9eqFczIBsTL5MG9ffc35L4wEL6JVggOM9NTFulB9hk3HtyFFG7PHSoiznCDvK8CY/9Ee+Cn6nWrt4nMNacaCSKdE/5IJ3V6w8a3mysIcMkoeWzT9ThC0swdOl7kPhm9EdprUdE6LQAg9MINVirG6d8NlavfH3fHAQJczo21GrOEuVLP/7fB8SluXOk7MHF3GaYC9RP//xkOWmKwHZ+vTs3yhBlQcw5baRSAVH72HLoUQggIMZKuEFRyqTZW9nPgojM416br5OE1VmfhQl3g0d7xGzXstmordlZwaeyIM7o1b4BOYQ3g8zCg62gsV8BMrIeVt5aZOKMc99Fxy2PdBhkRig+hQn8NxfkpwZElQ4XKULChKFgDstfkdO6uXFcAoLPNqOL6wXvWacRffoO3P7X5FWer51l++L01fo1Uw== jakub@giantswarm.io
+  - name: cka
+    groups:
+      - "sudo"
+      - "docker"
+    sshAuthorizedKeys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC1HP03HfpKepzR7ghvwFXKY0yQBIFaaSycuqZyS0Dq+h/w5RvJbz/TgVeuFTf8nWnWl6ulA8kP3QQmSFMsKHr/EtTcqiDGE8bm1dYsTuuHDhtPz7U/OlE30Zb4Mp0jsb3zswv2XvCZ7/z1Y7osRHwh9Crgxi1bBok8hOmFjUveZJklYQQLEgkESvNkUKlbchU6kNhA8C/m4Dgyn/Zchv2ZPjKwd5k1l2eKDtRIOkYX+BHHeRvm2F7MDPICUaPJDupfiZr5+So+yR13dxaQK7c9Go+g2aLLdv87kB6O1mb19kvmH7cNr9kbqVMIcldrGnkLjWTAF0vveMAtgWLTm0FzIS+iIr4OqaAlDZ4aH6lwA8SaXDNU8gu0IpQOi4Y6kf83a608h+cQsOL4JGxvrN6QIhRF40xZgFYUQ5GvoJArL38GMELHrn31q2HB54t5iV1MUMsyK+5iMCddK7ZNwvezFurrtEbk+nE2eghUduPlu3fKcLGTh+TuGs9ATrOlrjs72sxHvWpGwcrBuLICJfjj/mW7EIjGMSlXbmL2WnfNGUuv3LEIq25XGrpldrAnPhbrc2JiSqHZj6/GVtBMALF847Ywn2JTouEMRQcBgadMoiNtOiU79mqcvDWTKKIo8eSGOk/YjtElayMZoRMXrgaheLtKBQT15aaBTPLG7Mx8MQ== cedric@giantswarm.io
+  - name: ben
+    groups:
+      - "sudo"
+      - "docker"
+    sshAuthorizedKeys:
+      - ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAHV3Q9lpjt+F/8c0NYkk1vfmVg9ONCGKJ+jhFeoA15+S/c03rQQumhPxzQXqF6bl/1Z/kjV23ZXmNiwGXUCwtq3MAHQ+DNTdYaujMtmdFzBvqYwBscqZelkCib21HKncZ5Ts6yk09R801DpkfhR/NSAvX/AWvwyGzKqIW7iA28UO9Y8xA==
+  - name: njuettner
+    groups:
+      - "sudo"
+      - "docker"
+    sshAuthorizedKeys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID5MCYK/Hdt4yJHEsC+iSeWSSNLbfP/sRBmKjdoIqgPT

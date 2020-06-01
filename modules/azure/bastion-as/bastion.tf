@@ -22,10 +22,16 @@ resource "azurerm_virtual_machine" "bastion" {
   delete_os_disk_on_termination = true
 
   storage_image_reference {
-    publisher = "CoreOS"
-    offer     = "CoreOS"
-    sku       = var.container_linux_channel
-    version   = var.container_linux_version
+    publisher = "kinvolk"
+    offer     = "flatcar-container-linux-free"
+    sku       = var.flatcar_linux_channel
+    version   = var.flatcar_linux_version
+  }
+
+  plan {
+    name = var.flatcar_linux_channel
+    publisher = "kinvolk"
+    product = "flatcar-container-linux-free"
   }
 
   storage_os_disk {

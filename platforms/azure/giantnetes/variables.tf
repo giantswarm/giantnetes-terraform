@@ -100,16 +100,17 @@ variable "worker_storage_type" {
   default = "Standard_LRS"
 }
 
-### Container Linux ###
+### Flatcar Linux ###
 
-variable "container_linux_channel" {
-  description = "Cotainer linux channel (e.g. stable, beta, alpha)."
+variable "flatcar_linux_channel" {
+  description = "Flatcar linux channel (e.g. stable, beta, alpha)."
   default     = "stable"
 }
 
-variable "container_linux_version" {
-  description = "Container linux version."
-  default     = "latest"
+variable "flatcar_linux_version" {
+  description = "Flatcar linux version."
+  type = string
+  default     = "2345.3.1"
 }
 
 variable "core_ssh_key" {
