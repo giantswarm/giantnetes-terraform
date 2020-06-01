@@ -7,11 +7,11 @@ provider "azurerm" {
 
 data "azurerm_client_config" "current" {}
 
-module "container_linux" {
-  source = "../../../modules/container-linux"
+module "flatcar_linux" {
+  source = "../../../modules/flatcar-linux"
 
-  coreos_channel = var.container_linux_channel
-  coreos_version = var.container_linux_version
+  flatcar_channel = var.flatcar_linux_channel
+  flatcar_version = var.flatcar_linux_version
 }
 
 module "resource_group" {
@@ -115,8 +115,8 @@ module "bastion" {
   bastion_count               = "2"
   cluster_name                = "${var.cluster_name}"
   core_ssh_key                = "${var.core_ssh_key}"
-  container_linux_channel     = "${var.container_linux_channel}"
-  container_linux_version     = "${module.container_linux.coreos_version}"
+  flatcar_linux_channel     = "${var.flatcar_linux_channel}"
+  flatcar_linux_version     = "${module.flatcar_linux.flatcar_version}"
   location                    = "${var.azure_location}"
   network_interface_ids       = "${module.vnet.bastion_network_interface_ids}"
   platform_fault_domain_count = "${var.platform_fault_domain_count}"
@@ -137,8 +137,8 @@ module "vault" {
   source = "../../../modules/azure/vault"
 
   cluster_name            = "${var.cluster_name}"
-  container_linux_channel = "${var.container_linux_channel}"
-  container_linux_version = "${module.container_linux.coreos_version}"
+  flatcar_linux_channel = "${var.flatcar_linux_channel}"
+  flatcar_linux_version = "${module.flatcar_linux.flatcar_version}"
   core_ssh_key            = "${var.core_ssh_key}"
   location                = "${var.azure_location}"
   network_interface_ids   = "${module.vnet.vault_network_interface_ids}"
@@ -165,8 +165,8 @@ module "master" {
   api_backend_address_pool_id = "${module.vnet.api_backend_address_pool_id}"
   user_data                   = "${data.gotemplate.master.*.rendered}"
   cluster_name                = "${var.cluster_name}"
-  container_linux_channel     = "${var.container_linux_channel}"
-  container_linux_version     = "${module.container_linux.coreos_version}"
+  flatcar_linux_channel     = "${var.flatcar_linux_channel}"
+  flatcar_linux_version     = "${module.flatcar_linux.flatcar_version}"
   core_ssh_key                = "${var.core_ssh_key}"
   docker_disk_size            = "100"
   etcd_disk_size              = "10"
@@ -199,8 +199,8 @@ module "worker" {
   ingress_backend_address_pool_id = "${module.vnet.ingress_backend_address_pool_id}"
   user_data                       = "${data.gotemplate.worker.rendered}"
   cluster_name                    = "${var.cluster_name}"
-  container_linux_channel         = "${var.container_linux_channel}"
-  container_linux_version         = "${module.container_linux.coreos_version}"
+  flatcar_linux_channel         = "${var.flatcar_linux_channel}"
+  flatcar_linux_version         = "${module.flatcar_linux.flatcar_version}"
   core_ssh_key                    = "${var.core_ssh_key}"
   docker_disk_size                = "100"
   location                        = "${var.azure_location}"
