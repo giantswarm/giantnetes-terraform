@@ -1,6 +1,6 @@
 #!/bin/bash
 set -eu
-KUBECTL="/opt/bin/hyperkube kubectl --kubeconfig=/etc/kubernetes/kubeconfig/addons.yaml"
+KUBECTL="/opt/bin/kubectl --kubeconfig=/etc/kubernetes/kubeconfig/addons.yaml"
 
 while ! curl --output /dev/null --silent --head --insecure "https://{{ .APIDomainName }}"; do sleep 1 && echo 'Waiting for master'; done
 
