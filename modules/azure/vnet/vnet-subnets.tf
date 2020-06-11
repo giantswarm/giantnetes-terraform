@@ -62,6 +62,9 @@ resource "azurerm_subnet" "worker_subnet" {
   # Same for rt association 
   # https://www.terraform.io/docs/providers/azurerm/r/subnet_route_table_association.html
   route_table_id = azurerm_route_table.worker_rt.id
+
+  # We need the storage service endpoint to grant the control plane VNET access to the TC's storage accounts
+  service_endpoints = ["Microsoft.Storage"]
 }
 
 resource "azurerm_subnet_route_table_association" "worker" {
