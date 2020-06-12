@@ -694,6 +694,8 @@ systemd:
       Requires=k8s-setup-network-env.service docker.service k8s-setup-kubelet-environment.service
 
       [Service]
+      Type=oneshot
+      RemainAfterExit=yes
       EnvironmentFile=/etc/network-environment
       EnvironmentFile=/etc/kubelet-environment
       ExecStart=/bin/bash -c '/usr/bin/envsubst </etc/kubernetes/config/kubelet.yaml.tmpl >/etc/kubernetes/config/kubelet.yaml'
@@ -888,7 +890,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       LimitNOFILE=40000
-      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.4.2
+      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.4.9
       Environment=NAME=%p.service
       EnvironmentFile=/etc/network-environment
       ExecStartPre=-/usr/bin/docker stop  $NAME
@@ -941,7 +943,7 @@ systemd:
       [Service]
       Type=oneshot
       EnvironmentFile=/etc/environment
-      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.3.10
+      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.4.9
       Environment=NAME=%p.service
       ExecStartPre=-/usr/bin/docker stop  $NAME
       ExecStartPre=-/usr/bin/docker rm  $NAME
@@ -993,11 +995,11 @@ systemd:
       [Install]
       WantedBy=multi-user.target
 {{end}}
-  - name: k8s-setup-download-hyperkube.service
+  - name: k8s-setup-download-hyperkube-binaries.service
     enabled: true
     contents: |
       [Unit]
-      Description=Pulls hyperkube binary from image to local FS
+      Description=Pulls hyperkube binaries from image to local FS
       After=docker.service
       Requires=docker.service
       [Service]
@@ -1007,7 +1009,8 @@ systemd:
       Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:{{.K8sVersion}}"
       Environment="NAME=%p.service"
       ExecStartPre=/bin/bash -c "/usr/bin/docker create --name $NAME $IMAGE"
-      ExecStart=/bin/bash -c "/usr/bin/docker cp $NAME:/hyperkube /opt/bin/hyperkube"
+      ExecStart=/bin/bash -c "/usr/bin/docker cp $NAME:/usr/local/bin/kubelet /opt/bin/kubelet"
+      ExecStart=/bin/bash -c "/usr/bin/docker cp $NAME:/usr/local/bin/kubectl /opt/bin/kubectl"
       ExecStartPost=/bin/bash -c "/usr/bin/docker rm $NAME"
       [Install]
       WantedBy=multi-user.target
@@ -1017,8 +1020,8 @@ systemd:
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-setup-download-hyperkube.service
-      Requires=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-setup-download-hyperkube.service
+      After=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-setup-download-hyperkube-binaries.service
+      Requires=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-setup-download-hyperkube-binaries.service
 
       [Service]
       TimeoutStartSec=300
@@ -1030,7 +1033,7 @@ systemd:
       Environment="ETCD_CA_CERT_FILE=/etc/kubernetes/ssl/etcd/client-ca.pem"
       Environment="ETCD_CERT_FILE=/etc/kubernetes/ssl/etcd/client-crt.pem"
       Environment="ETCD_KEY_FILE=/etc/kubernetes/ssl/etcd/client-key.pem"
-      ExecStart=/opt/bin/hyperkube kubelet \
+      ExecStart=/opt/bin/kubelet \
       --config=/etc/kubernetes/config/kubelet.yaml \
       --node-ip=${DEFAULT_IPV4} \
       --container-runtime-endpoint=/var/run/dockershim/dockershim.sock \
@@ -1064,7 +1067,7 @@ systemd:
       [Service]
       Type=oneshot
       RemainAfterExit=yes
-      Environment="KUBECTL=/opt/bin/hyperkube kubectl --kubeconfig /etc/kubernetes/kubeconfig/kubelet.yaml"
+      Environment="KUBECTL=/opt/bin/kubectl --kubeconfig /etc/kubernetes/kubeconfig/kubelet.yaml"
       ExecStart=/bin/sh -c '\
         while [ "$($KUBECTL get nodes $(hostname | tr '[:upper:]' '[:lower:]')| wc -l)" -lt "1" ]; do echo "Waiting for healthy k8s" && sleep 20s;done; \
         $KUBECTL label nodes --overwrite $(hostname | tr '[:upper:]' '[:lower:]') node-role.kubernetes.io/master=""; \

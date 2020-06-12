@@ -1,6 +1,6 @@
 #!/bin/bash
 set -eu
-KUBECTL="/opt/bin/hyperkube kubectl --kubeconfig=/etc/kubernetes/kubeconfig/addons.yaml"
+KUBECTL="/opt/bin/kubectl --kubeconfig=/etc/kubernetes/kubeconfig/addons.yaml"
 
 while ! curl --output /dev/null --silent --head --insecure "https://{{ .APIDomainName }}"; do sleep 1 && echo 'Waiting for master'; done
 
@@ -108,7 +108,7 @@ do
 done
 
 echo "Waiting for calico-node to be ready..."
-$KUBECTL -n kube-system -l k8s-app=calico-node wait --for=condition=Ready --timeout=10m pods
+$KUBECTL -n kube-system -l k8s-app=calico-node wait --for=condition=Ready --timeout=15m pods
 
 # delete calico-kube-controllers
 $KUBECTL -n kube-system delete deploy calico-kube-controllers --ignore-not-found=true

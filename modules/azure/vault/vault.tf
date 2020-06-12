@@ -40,6 +40,12 @@ resource "azurerm_virtual_machine" "vault" {
     version   = var.flatcar_linux_version
   }
 
+  plan {
+    name = var.flatcar_linux_channel
+    publisher = "kinvolk"
+    product = "flatcar-container-linux-free"
+  }
+
   storage_os_disk {
     name              = "vault-os"
     managed_disk_type = var.os_disk_storage_type

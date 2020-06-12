@@ -128,7 +128,7 @@ spec:
             ## Deviation from original manifest - 3
             ## setting custom ENI config annotation
             - name: ENI_CONFIG_LABEL_DEF
-              value: "failure-domain.beta.kubernetes.io/zone"
+              value: "topology.kubernetes.io/zone"
             - name: MY_NODE_NAME
               valueFrom:
                 fieldRef:
