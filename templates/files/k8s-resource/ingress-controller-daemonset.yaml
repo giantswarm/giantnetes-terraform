@@ -42,6 +42,16 @@ spec:
             topologyKey: kubernetes.io/hostname
             namespaces:
             - monitoring
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 50
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: k8s-app
+                  operator: In
+                  values:
+                  - nginx-ingress-controller
+              topologyKey: kubernetes.io/hostname
       serviceAccountName: nginx-ingress-controller
       priorityClassName: system-cluster-critical
       containers:
