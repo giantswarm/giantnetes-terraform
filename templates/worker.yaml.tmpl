@@ -486,9 +486,9 @@ systemd:
       TimeoutStartSec=0
       Environment="KUBECTL=/opt/bin/kubectl --kubeconfig /etc/kubernetes/kubeconfig/kubelet.yaml"
       # Make sure kubectl works and can get nodes because exit code is ignored in ExecStart.
-      ExecStartPre=-/bin/sh -c "$KUBECTL get node"
+      ExecStartPre=/bin/sh -c '$$KUBECTL get node'
       # "-" at the front of the command makes unit ignore non-zero exit code.
-      ExecStart=-/bin/sh -c "$KUBECTL delete node $(hostname | tr '[:upper:]' '[:lower:]')"
+      ExecStart=-/bin/sh -c '$$KUBECTL delete node $(hostname | tr "[:upper:]" "[:lower:]")'
       [Install]
       WantedBy=multi-user.target
   - name: k8s-kubelet.service
