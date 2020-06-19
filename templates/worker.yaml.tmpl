@@ -477,8 +477,8 @@ systemd:
     contents: |
       [Unit]
       Description=Deletes old kubernetes node which this instance is going to replace
-      After=k8s-setup-download-hyperkube-binaries.service{{ if eq .Provider "aws" }} set-hostname.service{{ end }}
-      Requires=k8s-setup-download-hyperkube-binaries.service{{ if eq .Provider "aws" }} set-hostname.service{{ end }}
+      After=k8s-setup-download-hyperkube-binaries.service kubelet-certs.service{{ if eq .Provider "aws" }} set-hostname.service{{ end }}
+      Requires=k8s-setup-download-hyperkube-binaries.service kubelet-certs.service{{ if eq .Provider "aws" }} set-hostname.service{{ end }}
       ConditionFirstBoot=yes
       [Service]
       Type=oneshot
