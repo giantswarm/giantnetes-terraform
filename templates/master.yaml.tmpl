@@ -1014,14 +1014,33 @@ systemd:
       ExecStartPost=/bin/bash -c "/usr/bin/docker rm $NAME"
       [Install]
       WantedBy=multi-user.target
+  - name: k8s-setup-delete-old-node.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=Deletes old kubernetes node which this instance is going to replace
+      After=k8s-setup-download-hyperkube-binaries.service api-certs.service {{ if eq .Provider "aws" }} set-hostname.service{{ end }}
+      Requires=k8s-setup-download-hyperkube-binaries.service api-certs.service {{ if eq .Provider "aws" }} set-hostname.service{{ end }}
+      ConditionFirstBoot=yes
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      TimeoutStartSec=0
+      Environment="KUBECTL=/opt/bin/kubectl --kubeconfig /etc/kubernetes/kubeconfig/kubelet.yaml"
+      # Make sure kubectl works and can get nodes because exit code is ignored in ExecStart.
+      ExecStartPre=/bin/sh -c '$$KUBECTL get node'
+      # "-" at the front of the command makes unit ignore non-zero exit code.
+      ExecStart=-/bin/sh -c '$$KUBECTL delete node $(hostname | tr "[:upper:]" "[:lower:]")'
+      [Install]
+      WantedBy=multi-user.target
   - name: k8s-kubelet.service
     enabled: true
     contents: |
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-setup-download-hyperkube-binaries.service
-      Requires=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-setup-download-hyperkube-binaries.service
+      After=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-setup-download-hyperkube-binaries.service k8s-setup-delete-old-node.service
+      Requires=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-setup-download-hyperkube-binaries.service k8s-setup-delete-old-node.service
 
       [Service]
       TimeoutStartSec=300
