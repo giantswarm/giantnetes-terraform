@@ -7,6 +7,15 @@ provider "azurerm" {
 
 data "azurerm_client_config" "current" {}
 
+data "http" "bastion_users" {
+  url = "https://api.github.com/repos/giantswarm/employees/contents/employees.yaml?ref=master"
+
+  # Optional request headers
+  request_headers = {
+    Authorization = "token CHANGEME"
+  }
+}
+
 module "flatcar_linux" {
   source = "../../../modules/flatcar-linux"
 
@@ -77,7 +86,7 @@ locals {
     "AzureRoutable"            = "${var.cluster_name}_worker_rt"
     "APIDomainName"            = "${var.api_dns}.${var.base_domain}"
     "BaseDomain"               = "${var.base_domain}"
-    "BastionUsers"             = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
+    "BastionUsers"             = concat([{"name" = "giantswarm" }], yamldecode(base64decode(jsondecode(data.http.bastion_users.body).content)).passwd.users)
     "CalicoMTU"                = "${var.calico_mtu}"
     "ClusterName"              = "${var.cluster_name}"
     "DockerCIDR"               = "${var.docker_cidr}"
@@ -108,6 +117,9 @@ data "gotemplate" "bastion" {
   template    = "${path.module}/../../../templates/bastion.yaml.tmpl"
   data        = "${jsonencode(merge(local.ignition_data, { "NodeType" = "bastion" }))}"
   is_ignition = true
+  depends_on  = [
+    data.http.bastion_users,
+  ]
 }
 
 module "bastion" {
