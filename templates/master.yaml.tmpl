@@ -726,7 +726,7 @@ systemd:
       [Service]
       Type=oneshot
       RemainAfterExit=yes
-      Environment="IMAGE={{.DockerRegistry}}/giantswarm/k8s-setup-network-environment:0.1.0-a71a2349501386a8902c6fb2effb5048c29899a3"
+      Environment="IMAGE={{.DockerRegistry}}/giantswarm/k8s-setup-network-environment:0.2.0"
       Environment="NAME=%p.service"
       Environment="NETWORK_CONFIG_CONTAINER="
       ExecStartPre=/usr/bin/mkdir -p /opt/bin/
