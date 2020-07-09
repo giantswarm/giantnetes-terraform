@@ -109,5 +109,15 @@ storage:
         id: 0
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/hardening.conf" }}"
-
-{{ .BastionUsers }}
+passwd:
+  users:
+{{ range .BastionUsers }}
+  - name: "{{ .name }}"
+    groups:
+      - "sudo"
+      - "docker"
+    sshAuthorizedKeys:
+      {{- range .sshAuthorizedKeys }}
+      - {{ . }}
+      {{- end }}
+{{- end }}
