@@ -12,7 +12,7 @@ data "http" "bastion_users" {
 
   # Optional request headers
   request_headers = {
-    Authorization = "token CHANGEME"
+    Authorization = "token ${var.github_token}"
   }
 }
 
