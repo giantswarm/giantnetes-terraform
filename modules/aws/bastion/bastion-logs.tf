@@ -4,6 +4,7 @@ resource "aws_cloudwatch_log_group" "bastion_log_group" {
 
   tags = {
     "giantswarm.io/installation" = "${var.cluster_name}"
+    "giantswarm.io/cluster" = "${var.cluster_name}"
   }
 }
 

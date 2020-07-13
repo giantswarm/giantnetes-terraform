@@ -1,6 +1,7 @@
 locals {
   common_tags = "${map(
     "giantswarm.io/installation", "${var.cluster_name}",
+    "giantswarm.io/cluster", "${var.cluster_name}",
     "kubernetes.io/cluster/${var.cluster_name}", "owned"
   )}"
   customer_vpn_public_subnets = var.customer_vpn_public_subnets != "" ? split(",", var.customer_vpn_public_subnets) : []
@@ -45,6 +46,11 @@ resource "aws_cloudformation_stack" "master_asg" {
           },
           {
             "Key": "giantswarm.io/installation",
+            "Value": "${var.cluster_name}",
+            "PropagateAtLaunch": true
+          },
+          {
+            "Key": "giantswarm.io/cluster",
             "Value": "${var.cluster_name}",
             "PropagateAtLaunch": true
           },

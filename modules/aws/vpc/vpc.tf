@@ -10,7 +10,8 @@ locals {
   common_tags = "${map(
     "giantswarm.io/installation", "${var.cluster_name}",
     "giantswarm.io/cluster-type", "control-plane",
-    "kubernetes.io/cluster/${var.cluster_name}", "owned"
+    "kubernetes.io/cluster/${var.cluster_name}", "owned",
+    "giantswarm.io/cluster", "${var.cluster_name}"
   )}"
 
   policy_allow = <<EOF
