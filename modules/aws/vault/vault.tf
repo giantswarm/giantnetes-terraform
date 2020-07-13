@@ -3,9 +3,9 @@ locals {
   s3_ignition_vault_key = "${element(concat(aws_s3_bucket_object.ignition_vault_with_tags.*.key, aws_s3_bucket_object.ignition_vault_without_tags.*.key), 0)}"
 
   common_tags = "${map(
+    "giantswarm.io/cluster", "${var.cluster_name}",
     "giantswarm.io/installation", "${var.cluster_name}",
-    "kubernetes.io/cluster/${var.cluster_name}", "owned",
-    "giantswarm.io/cluster", "${var.cluster_name}"
+    "kubernetes.io/cluster/${var.cluster_name}", "owned"
   )}"
 }
 
@@ -45,8 +45,8 @@ resource "aws_instance" "vault" {
 
   tags = {
     Name                         = "${var.cluster_name}-vault${count.index}"
-    "giantswarm.io/installation" = "${var.cluster_name}"
     "giantswarm.io/cluster"      = "${var.cluster_name}"
+    "giantswarm.io/installation" = "${var.cluster_name}"
   }
 }
 
@@ -57,8 +57,8 @@ resource "aws_ebs_volume" "vault_etcd" {
 
   tags = {
     Name                         = "${var.cluster_name}-vault"
-    "giantswarm.io/installation" = "${var.cluster_name}"
     "giantswarm.io/cluster"      = "${var.cluster_name}"
+    "giantswarm.io/installation" = "${var.cluster_name}"
   }
 }
 
@@ -79,8 +79,8 @@ resource "aws_ebs_volume" "vault_logs" {
 
   tags = {
     Name                         = "${var.cluster_name}-vault"
-    "giantswarm.io/installation" = "${var.cluster_name}"
     "giantswarm.io/cluster"      = "${var.cluster_name}"
+    "giantswarm.io/installation" = "${var.cluster_name}"
   }
 }
 
@@ -150,8 +150,8 @@ resource "aws_security_group" "vault" {
 
   tags = {
     Name                         = "${var.cluster_name}-vault"
-    "giantswarm.io/installation" = "${var.cluster_name}"
     "giantswarm.io/cluster"      = "${var.cluster_name}"
+    "giantswarm.io/installation" = "${var.cluster_name}"
   }
 }
 

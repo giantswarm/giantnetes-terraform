@@ -4,9 +4,9 @@ locals {
   s3_ignition_vpn_instance_key = length(local.vpn_instance_enabled) > 0 ? element(local.vpn_instance_enabled, 0) : ""
 
   common_tags = "${map(
+    "giantswarm.io/cluster", "${var.cluster_name}",
     "giantswarm.io/installation", "${var.cluster_name}",
-    "kubernetes.io/cluster/${var.cluster_name}", "owned",
-    "giantswarm.io/cluster", "${var.cluster_name}"
+    "kubernetes.io/cluster/${var.cluster_name}", "owned"
   )}"
 }
 
@@ -32,8 +32,8 @@ resource "aws_instance" "vpn_instance" {
 
   tags = {
     Name                         = "${var.cluster_name}-vpn-instance${count.index}"
-    "giantswarm.io/installation" = "${var.cluster_name}"
     "giantswarm.io/cluster"      = "${var.cluster_name}"
+    "giantswarm.io/installation" = "${var.cluster_name}"
   }
 }
 
@@ -97,8 +97,8 @@ resource "aws_security_group" "vpn_instance" {
 
   tags = {
     Name                         = "${var.cluster_name}-vpn-instance"
-    "giantswarm.io/installation" = "${var.cluster_name}"
     "giantswarm.io/cluster"      = "${var.cluster_name}"
+    "giantswarm.io/installation" = "${var.cluster_name}"
   }
 }
 

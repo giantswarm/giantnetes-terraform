@@ -8,8 +8,8 @@ locals {
   s3_ignition_bastion_key = "${element(concat(aws_s3_bucket_object.ignition_bastion_with_tags.*.key, aws_s3_bucket_object.ignition_bastion_without_tags.*.key), 0)}"
 
   common_tags = "${map(
-    "giantswarm.io/installation", "${var.cluster_name}",
     "giantswarm.io/cluster", "${var.cluster_name}",
+    "giantswarm.io/installation", "${var.cluster_name}",
     "kubernetes.io/cluster/${var.cluster_name}", "owned"
   )}"
 }
@@ -36,8 +36,8 @@ resource "aws_instance" "bastion" {
 
   tags = {
     Name                         = "${var.cluster_name}-bastion${count.index}"
-    "giantswarm.io/installation" = "${var.cluster_name}"
     "giantswarm.io/cluster"      = "${var.cluster_name}"
+    "giantswarm.io/installation" = "${var.cluster_name}"
   }
 }
 
@@ -80,8 +80,8 @@ resource "aws_security_group" "bastion" {
 
   tags = {
     Name                         = "${var.cluster_name}-bastion"
-    "giantswarm.io/installation" = "${var.cluster_name}"
     "giantswarm.io/cluster"      = "${var.cluster_name}"
+    "giantswarm.io/installation" = "${var.cluster_name}"
   }
 }
 
