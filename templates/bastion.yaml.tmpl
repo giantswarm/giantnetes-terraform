@@ -163,7 +163,11 @@ storage:
     {{ end }}
 passwd:
   users:
-{{ range .BastionUsers }}
+  - name: giantswarm
+    groups:
+    - "sudo"
+    - "docker"
+{{ range .Users }}
   - name: "{{ .name }}"
     groups:
       - "sudo"

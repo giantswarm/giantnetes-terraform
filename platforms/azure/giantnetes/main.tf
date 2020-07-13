@@ -8,7 +8,7 @@ provider "azurerm" {
 data "azurerm_client_config" "current" {}
 
 data "http" "bastion_users" {
-  url = "https://api.github.com/repos/giantswarm/employees/contents/employees.yaml?ref=master"
+  url = "https://api.github.com/repos/giantswarm/employees/contents/employees.yaml?ref=${var.employees_branch}"
 
   # Optional request headers
   request_headers = {
@@ -86,7 +86,6 @@ locals {
     "AzureRoutable"            = "${var.cluster_name}_worker_rt"
     "APIDomainName"            = "${var.api_dns}.${var.base_domain}"
     "BaseDomain"               = "${var.base_domain}"
-    "BastionUsers"             = concat([{"name" = "giantswarm" }], yamldecode(base64decode(jsondecode(data.http.bastion_users.body).content)).passwd.users)
     "CalicoMTU"                = "${var.calico_mtu}"
     "ClusterName"              = "${var.cluster_name}"
     "DockerCIDR"               = "${var.docker_cidr}"
@@ -107,7 +106,7 @@ locals {
     "OIDCEnabled"              = "${var.oidc_enabled}"
     "PodCIDR"                  = "${var.pod_cidr}"
     "Provider"                 = "azure"
-    "Users"                    = "${file("${path.module}/../../../ignition/users.yaml")}"
+    "Users"                    = yamldecode(base64decode(jsondecode(data.http.bastion_users.body).content))
     "VaultDomainName"          = "${var.vault_dns}.${var.base_domain}"
   }
 }
@@ -117,9 +116,6 @@ data "gotemplate" "bastion" {
   template    = "${path.module}/../../../templates/bastion.yaml.tmpl"
   data        = "${jsonencode(merge(local.ignition_data, { "NodeType" = "bastion" }))}"
   is_ignition = true
-  depends_on  = [
-    data.http.bastion_users,
-  ]
 }
 
 module "bastion" {
