@@ -111,7 +111,12 @@ storage:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/hardening.conf" }}"
 passwd:
   users:
-{{ range .BastionUsers }}
+  - name: giantswarm
+    groups:
+    - "sudo"
+    - "docker"
+{{ range .Users }}
+{{- if eq .role "SRE" }}
   - name: "{{ .name }}"
     groups:
       - "sudo"
@@ -120,4 +125,5 @@ passwd:
       {{- range .sshAuthorizedKeys }}
       - {{ . }}
       {{- end }}
+{{- end }}
 {{- end }}
