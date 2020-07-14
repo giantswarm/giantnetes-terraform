@@ -21,6 +21,7 @@ resource "aws_elb" "vault" {
 
   tags = {
     Name                         = "${var.cluster_name}-vault"
+    "giantswarm.io/cluster"      = "${var.cluster_name}"
     "giantswarm.io/installation" = "${var.cluster_name}"
   }
 }
@@ -58,6 +59,7 @@ resource "aws_security_group" "vault_elb" {
 
   tags = {
     Name                         = "${var.cluster_name}-vault-elb"
+    "giantswarm.io/cluster"      = "${var.cluster_name}"
     "giantswarm.io/installation" = "${var.cluster_name}"
   }
 }

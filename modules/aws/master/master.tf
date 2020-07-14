@@ -1,5 +1,6 @@
 locals {
   common_tags = "${map(
+    "giantswarm.io/cluster", "${var.cluster_name}",
     "giantswarm.io/installation", "${var.cluster_name}",
     "kubernetes.io/cluster/${var.cluster_name}", "owned"
   )}"
@@ -41,6 +42,11 @@ resource "aws_cloudformation_stack" "master_asg" {
           {
             "Key": "Name",
             "Value": "${var.cluster_name}-master-${count.index}",
+            "PropagateAtLaunch": true
+          },
+          {
+            "Key": "giantswarm.io/cluster",
+            "Value": "${var.cluster_name}",
             "PropagateAtLaunch": true
           },
           {
