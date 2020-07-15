@@ -87,7 +87,7 @@ variable "master_instance" {
   type = map
 
   default = {
-    type          = "m5.large"
+    type          = "m5x.large"
     volume_docker = "/dev/xvdc"
     volume_etcd   = "/dev/xvdh"
   }
