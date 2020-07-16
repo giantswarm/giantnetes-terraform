@@ -3,6 +3,7 @@ locals {
   s3_ignition_worker_key = "${element(concat(aws_s3_bucket_object.ignition_worker_with_tags.*.key, aws_s3_bucket_object.ignition_worker_without_tags.*.key), 0)}"
 
   common_tags = map(
+    "giantswarm.io/cluster", "${var.cluster_name}",
     "giantswarm.io/installation", "${var.cluster_name}",
     "kubernetes.io/cluster/${var.cluster_name}", "owned"
   )
@@ -31,6 +32,11 @@ resource "aws_cloudformation_stack" "worker_asg" {
           {
             "Key": "Name",
             "Value": "${var.cluster_name}-worker",
+            "PropagateAtLaunch": true
+          },
+          {
+            "Key": "giantswarm.io/cluster",
+            "Value": "${var.cluster_name}",
             "PropagateAtLaunch": true
           },
           {

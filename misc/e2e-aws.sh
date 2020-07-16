@@ -22,7 +22,7 @@ WORKDIR=$(pwd)
 TFDIR=${WORKDIR}/platforms/aws/giantnetes
 CLUSTER=e2etf-$(echo ${CIRCLE_SHA1} | cut -c 1-4)
 SSH_USER="e2e"
-KUBECTL_CMD="sudo /opt/bin/hyperkube kubectl --kubeconfig=/etc/kubernetes/kubeconfig/addons.yaml"
+KUBECTL_CMD="sudo /opt/bin/kubectl --kubeconfig=/etc/kubernetes/kubeconfig/addons.yaml"
 
 WORKER_COUNT=1
 
