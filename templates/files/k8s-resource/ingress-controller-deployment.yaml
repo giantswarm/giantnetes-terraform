@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment
 metadata:
   name: nginx-ingress-controller
   namespace: kube-system
@@ -9,6 +9,7 @@ metadata:
     prometheus.io/port: '10254'
     prometheus.io/scrape: 'true'
 spec:
+  replicas: 3
   selector:
     matchLabels:
       k8s-app: nginx-ingress-controller
@@ -20,19 +21,37 @@ spec:
         scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:
       affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/role
+                operator: In
+                values:
+                - worker
+        # We have observed connections issues when allocating nginx replicas
+        # together with Prometheus #11520
         podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - prometheus
+            topologyKey: kubernetes.io/hostname
+            namespaces:
+            - monitoring
           preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
+          - weight: 50
             podAffinityTerm:
               labelSelector:
                 matchExpressions:
-                  - key: k8s-app
-                    operator: In
-                    values:
-                    - nginx-ingress-controller
+                - key: k8s-app
+                  operator: In
+                  values:
+                  - nginx-ingress-controller
               topologyKey: kubernetes.io/hostname
-      nodeSelector:
-        kubernetes.io/role: worker
       serviceAccountName: nginx-ingress-controller
       priorityClassName: system-cluster-critical
       containers:

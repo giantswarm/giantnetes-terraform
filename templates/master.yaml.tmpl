@@ -153,7 +153,7 @@ storage:
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/ingress-controller-sa.yaml" }}"
 
-    - path: /srv/ingress-controller-daemonset.yaml
+    - path: /srv/ingress-controller-deployment.yaml
       filesystem: root
       mode: 420
       user:
