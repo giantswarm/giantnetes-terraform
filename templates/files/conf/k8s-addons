@@ -109,9 +109,9 @@ done
 
 echo "Waiting for calico-node to be ready..."
 n=0
-until [ "$n" -ge 10 ] || [ ! "$exitcode" -eq 0 ]
+until [ "$n" -ge 10 ] || [ "$exitcode" -eq 0 ]
 do
-   $KUBECTL -n kube-system -l k8s-app=calico-node wait --for=condition=Ready --timeout=30s pods
+   kubectl -n kube-system -l k8s-app=calico-node wait --for=condition=Ready --timeout=30s pods
    exitcode=$?
    n=$((n+1)) 
    sleep 10
