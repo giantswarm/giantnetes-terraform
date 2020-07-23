@@ -259,13 +259,13 @@ variable "subnets_worker" {
 variable "vpc_vgw_id" {
   description = "ID of the virtual private gateway, attached to VPC."
   default     = ""
-  type = string
+  type        = string
 }
 
 variable "transit_vpc_cidr" {
   description = "CIDR of the transit VPC, used to access installation bastions"
-  default = ""
-  type = string
+  default     = ""
+  type        = string
 }
 
 ### OIDC ###
@@ -368,7 +368,7 @@ variable "logentries_token" {
 
 ### Release information
 variable "release_version" {
-    description = "Giantnetes terraform release version"
-    type = string
-    default = ""
+  description = "Giantnetes terraform release version"
+  type        = string
+  default     = ""
 }

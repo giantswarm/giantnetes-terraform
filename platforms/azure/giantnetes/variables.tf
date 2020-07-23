@@ -109,7 +109,7 @@ variable "flatcar_linux_channel" {
 
 variable "flatcar_linux_version" {
   description = "Flatcar linux version."
-  type = string
+  type        = string
   default     = "2345.3.1"
 }
 
@@ -217,8 +217,8 @@ variable "k8s_audit_webhook_port" {
 
 variable "oidc_enabled" {
   description = "Configure OIDC flags for Kubernetes API server"
-  default = false
-  type = bool
+  default     = false
+  type        = bool
 }
 
 ### VPN ###
@@ -288,4 +288,11 @@ variable "logentries_token" {
   description = "Token, used to authorize in logging service"
   type        = string
   default     = "none"
+}
+
+### Release information
+variable "release_version" {
+  description = "Giantnetes terraform release version"
+  type        = string
+  default     = ""
 }
