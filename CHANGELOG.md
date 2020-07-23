@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Export `giantnetes-terraform` release version into `/etc/gs-release-version.txt` file on master/worker filesystem.
+
 ### Fixed
 
 - Fix ingress controller resource rename from daemonset to deployment. 
