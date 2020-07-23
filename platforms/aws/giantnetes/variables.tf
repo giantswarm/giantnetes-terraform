@@ -365,3 +365,10 @@ variable "logentries_token" {
   type        = string
   default     = "none"
 }
+
+### Release information
+variable "release_version" {
+    description = "Giantnetes terraform release version"
+    type = string
+    default = ""
+}

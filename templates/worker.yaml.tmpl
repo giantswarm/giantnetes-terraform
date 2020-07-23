@@ -2,6 +2,15 @@ ignition:
   version: "2.2.0"
 storage:
   files:
+    - path: /etc/gs-release-version.txt
+      filesystem: root
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8,{{ .GSReleaseVersion }}"
     {{if eq .Provider "azure" -}}
     - path: /etc/kubernetes/config/azure.yaml
       filesystem: root
