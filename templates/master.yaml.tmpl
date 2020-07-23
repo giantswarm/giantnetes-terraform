@@ -2,6 +2,16 @@ ignition:
   version: "2.2.0"
 storage:
   files:
+    - path: /etc/gs-release-version
+      filesystem: root
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:,{{ .GSReleaseVersion }}"
+
 {{ if eq .Provider "aws" }}
     - path: /srv/aws-cni.yaml
       filesystem: root

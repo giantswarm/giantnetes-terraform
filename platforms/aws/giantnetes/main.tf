@@ -117,6 +117,7 @@ locals {
     "ExternalVpnVultrPassword"     = "${var.external_ipsec_password}"
     "ExternalVpnVultrSubnet"       = "${var.external_ipsec_subnet_1}"
     "ExternalVpnVultrSourceIp"     = "${cidrhost("${var.external_ipsec_subnet_1}", 1)}"
+    "GSReleaseVersion"             = "${var.release_version}"
     "G8SVaultToken"                = "${var.nodes_vault_token}"
     "ImagePullProgressDeadline"    = "${var.image_pull_progress_deadline}"
     "K8SAPIIP"                     = "${var.k8s_api_ip}"

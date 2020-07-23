@@ -36,22 +36,22 @@ module "dns" {
 module "vnet" {
   source = "../../../modules/azure/vnet"
 
-  api_dns             = var.api_dns
-  base_domain         = var.base_domain
-  bastion_count       = "2"
-  bastion_cidr        = var.bastion_cidr
-  cluster_name        = var.cluster_name
+  api_dns                     = var.api_dns
+  base_domain                 = var.base_domain
+  bastion_count               = "2"
+  bastion_cidr                = var.bastion_cidr
+  cluster_name                = var.cluster_name
   customer_vpn_public_subnets = var.customer_vpn_public_subnets
-  external_ipsec_public_ip_0 = var.external_ipsec_public_ip_0
-  external_ipsec_public_ip_1 = var.external_ipsec_public_ip_1
-  ingress_dns         = var.ingress_dns
-  location            = var.azure_location
-  master_count        = var.master_count
-  worker_count        = var.worker_count
-  resource_group_name = module.resource_group.name
-  vault_dns           = var.vault_dns
-  vnet_cidr           = var.vnet_cidr
-  vpn_enabled         = var.vpn_enabled
+  external_ipsec_public_ip_0  = var.external_ipsec_public_ip_0
+  external_ipsec_public_ip_1  = var.external_ipsec_public_ip_1
+  ingress_dns                 = var.ingress_dns
+  location                    = var.azure_location
+  master_count                = var.master_count
+  worker_count                = var.worker_count
+  resource_group_name         = module.resource_group.name
+  vault_dns                   = var.vault_dns
+  vnet_cidr                   = var.vnet_cidr
+  vpn_enabled                 = var.vpn_enabled
 }
 
 module "blob" {
@@ -84,6 +84,7 @@ locals {
     "DockerRegistry"           = "${var.docker_registry}"
     "ETCDInitialClusterMulti"  = "etcd1=https://etcd1.${var.base_domain}:2380,etcd2=https://etcd2.${var.base_domain}:2380,etcd3=https://etcd3.${var.base_domain}:2380"
     "ETCDInitialClusterSingle" = "etcd1=https://etcd1.${var.base_domain}:2380"
+    "GSReleaseVersion"         = "${var.release_version}"
     "G8SVaultToken"            = "${var.nodes_vault_token}"
     "K8SAPIIP"                 = "${var.k8s_api_ip}"
     "K8SAuditWebhookPort"      = "${var.k8s_audit_webhook_port}"
@@ -115,8 +116,8 @@ module "bastion" {
   bastion_count               = "2"
   cluster_name                = "${var.cluster_name}"
   core_ssh_key                = "${var.core_ssh_key}"
-  flatcar_linux_channel     = "${var.flatcar_linux_channel}"
-  flatcar_linux_version     = "${module.flatcar_linux.flatcar_version}"
+  flatcar_linux_channel       = "${var.flatcar_linux_channel}"
+  flatcar_linux_version       = "${module.flatcar_linux.flatcar_version}"
   location                    = "${var.azure_location}"
   network_interface_ids       = "${module.vnet.bastion_network_interface_ids}"
   platform_fault_domain_count = "${var.platform_fault_domain_count}"
@@ -136,17 +137,17 @@ data "gotemplate" "vault" {
 module "vault" {
   source = "../../../modules/azure/vault"
 
-  cluster_name            = "${var.cluster_name}"
+  cluster_name          = "${var.cluster_name}"
   flatcar_linux_channel = "${var.flatcar_linux_channel}"
   flatcar_linux_version = "${module.flatcar_linux.flatcar_version}"
-  core_ssh_key            = "${var.core_ssh_key}"
-  location                = "${var.azure_location}"
-  network_interface_ids   = "${module.vnet.vault_network_interface_ids}"
-  os_disk_storage_type    = "${var.os_disk_storage_type}"
-  resource_group_name     = "${module.resource_group.name}"
-  storage_type            = "${var.vault_storage_type}"
-  user_data               = "${data.gotemplate.vault.rendered}"
-  vm_size                 = "${var.vault_vm_size}"
+  core_ssh_key          = "${var.core_ssh_key}"
+  location              = "${var.azure_location}"
+  network_interface_ids = "${module.vnet.vault_network_interface_ids}"
+  os_disk_storage_type  = "${var.os_disk_storage_type}"
+  resource_group_name   = "${module.resource_group.name}"
+  storage_type          = "${var.vault_storage_type}"
+  user_data             = "${data.gotemplate.vault.rendered}"
+  vm_size               = "${var.vault_vm_size}"
 }
 
 # Generate ignition config.
@@ -165,8 +166,8 @@ module "master" {
   api_backend_address_pool_id = "${module.vnet.api_backend_address_pool_id}"
   user_data                   = "${data.gotemplate.master.*.rendered}"
   cluster_name                = "${var.cluster_name}"
-  flatcar_linux_channel     = "${var.flatcar_linux_channel}"
-  flatcar_linux_version     = "${module.flatcar_linux.flatcar_version}"
+  flatcar_linux_channel       = "${var.flatcar_linux_channel}"
+  flatcar_linux_version       = "${module.flatcar_linux.flatcar_version}"
   core_ssh_key                = "${var.core_ssh_key}"
   docker_disk_size            = "100"
   etcd_disk_size              = "10"
@@ -199,8 +200,8 @@ module "worker" {
   ingress_backend_address_pool_id = "${module.vnet.ingress_backend_address_pool_id}"
   user_data                       = "${data.gotemplate.worker.rendered}"
   cluster_name                    = "${var.cluster_name}"
-  flatcar_linux_channel         = "${var.flatcar_linux_channel}"
-  flatcar_linux_version         = "${module.flatcar_linux.flatcar_version}"
+  flatcar_linux_channel           = "${var.flatcar_linux_channel}"
+  flatcar_linux_version           = "${module.flatcar_linux.flatcar_version}"
   core_ssh_key                    = "${var.core_ssh_key}"
   docker_disk_size                = "100"
   location                        = "${var.azure_location}"
