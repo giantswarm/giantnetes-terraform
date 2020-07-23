@@ -141,7 +141,7 @@ locals {
     "WorkerMountDocker"            = "${var.worker_instance["volume_docker"]}"
   }
 }
-# commend
+
 # Generate ignition config.
 data "gotemplate" "bastion" {
   template    = "${path.module}/../../../templates/bastion.yaml.tmpl"

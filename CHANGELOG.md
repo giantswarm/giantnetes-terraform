@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Export `giantnetes-terraform` release version into `/etc/gs-release-version.txt` file on master/worker filesystem.
+- Export `giantnetes-terraform` release version into `/etc/gs-release-version` file on master/worker filesystem.
 
 ### Fixed
 
