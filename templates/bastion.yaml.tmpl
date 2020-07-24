@@ -30,6 +30,84 @@ systemd:
         ExecStart=/usr/sbin/sysctl -p /etc/sysctl.d/hardening.conf
         [Install]
         WantedBy=multi-user.target
+    - name: docker.service
+      command: start
+      dropins:
+      - name: 10-giantswarm-extra-args.conf
+        contents: |
+          [Service]
+          Environment=DOCKER_OPTS="--log-opt max-size=50m --log-opt max-file=2"
+          Environment=DOCKER_OPT_BIP=--bip={{ .DockerCIDR }}
+      - name: 60-docker-restart-always.conf
+        contents: |
+          [Service]
+          Restart=always
+          RestartSec=5
+    - name: node-exporter.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=node-exporter
+        Requires=docker.service
+        After=docker.service
+        [Service]
+        Restart=on-failure
+        RestartSec=1
+        StartLimitInterval=300s
+        StartLimitBurst=3
+        TimeoutStartSec=0
+        Environment="IMAGE=quay.io/giantswarm/node-exporter:v0.18.0"
+        Environment="NAME=node-exporter"
+        ExecStartPre=/usr/bin/docker pull $IMAGE
+        ExecStartPre=-/usr/bin/docker stop -t 10 $NAME
+        ExecStartPre=-/usr/bin/docker rm -f $NAME
+        # /run/systemd is mounted because go-systemd hardcodes the systemd socket path,
+        # so --path.rootfs is not respected. We mount the socket in to the correct path
+        # to get around this.
+        ExecStart=/usr/bin/docker run --rm  \
+            --net=host \
+            --pid=host \
+            --cap-add SYS_TIME \
+            --name $NAME \
+            -u=0 \
+            -v /:/rootfs:ro,rslave \
+            -v /run/systemd:/run/systemd:ro \
+            $IMAGE \
+                --log.level=debug \
+                --path.rootfs=/rootfs \
+                --web.listen-address=:10300 \
+                --collector.arp \
+                --collector.bcache \
+                --collector.cpu \
+                --collector.entropy \
+                --collector.filefd \
+                --collector.filesystem \
+                --collector.hwmon \
+                --collector.loadavg \
+                --collector.meminfo \
+                --collector.netdev \
+                --collector.netstat \
+                --collector.sockstat \
+                --collector.stat \
+                --collector.systemd \
+                --collector.time \
+                --collector.timex \
+                --collector.uname \
+                --collector.vmstat \
+                --collector.xfs \
+                --no-collector.conntrack \
+                --no-collector.diskstats \
+                --no-collector.edac \
+                --no-collector.infiniband \
+                --no-collector.ipvs \
+                --no-collector.mdadm
+                --no-collector.textfile \
+                --no-collector.wifi \
+                --no-collector.zfs
+        ExecStop=-/usr/bin/docker stop -t 10 $NAME
+        ExecStopPost=-/usr/bin/docker rm -f $NAME
+        [Install]
+        WantedBy=multi-user.target
     {{ if eq .Provider "aws" -}}
     - name: journald-cloudwatch-logs.service
       enabled: {{ .CloudwatchForwarderEnabled }}
