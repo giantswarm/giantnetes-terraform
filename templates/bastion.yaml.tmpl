@@ -31,7 +31,7 @@ systemd:
         [Install]
         WantedBy=multi-user.target
     - name: docker.service
-      command: start
+      enabled: true
       dropins:
       - name: 10-giantswarm-extra-args.conf
         contents: |
