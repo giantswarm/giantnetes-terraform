@@ -51,7 +51,7 @@ systemd:
         StartLimitInterval=300s
         StartLimitBurst=3
         TimeoutStartSec=0
-        Environment="IMAGE=quay.io/giantswarm/node-exporter:v0.18.0"
+        Environment="IMAGE=quay.io/giantswarm/node-exporter:v1.0.1"
         Environment="NAME=node-exporter"
         ExecStartPre=/usr/bin/docker pull $IMAGE
         ExecStartPre=-/usr/bin/docker stop -t 10 $NAME
