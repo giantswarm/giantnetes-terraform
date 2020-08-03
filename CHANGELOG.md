@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `vault-token-reviewer` service account and cluster-role binding.
+
 ## [1.0.4] - 2020-08-03
 
 ### Fixed
