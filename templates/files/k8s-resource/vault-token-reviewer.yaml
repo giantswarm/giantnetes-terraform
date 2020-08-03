@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: giantswarm
+  name: vault-token-reviewer
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: vault-token-reviewer
+  namespace: giantswarm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+  - kind: ServiceAccount
+    name: vault-token-reviewer
+    namespace: giantswarm

@@ -133,7 +133,8 @@ MANIFESTS="default-storage-class.yaml
  ingress-controller-cm.yaml
  ingress-controller-sa.yaml
  ingress-controller-deployment.yaml
- ingress-controller-svc.yaml"
+ ingress-controller-svc.yaml
+ vault-token-reviewer.yaml"
 for manifest in $MANIFESTS
 do
     while
