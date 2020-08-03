@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Wait longer for `calico-node` pods being ready.
+
 ## [1.0.3] - 2020-08-03
 
 - Improve max-pod-limit for kubelet on AWS platform to work with AWS CNI limitations.
