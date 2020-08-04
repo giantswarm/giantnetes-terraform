@@ -140,6 +140,8 @@ module "vault" {
   cluster_name          = "${var.cluster_name}"
   flatcar_linux_channel = "${var.flatcar_linux_channel}"
   flatcar_linux_version = "${module.flatcar_linux.flatcar_version}"
+  image_publisher       = "${var.vault_image_publisher}"
+  image_offer           = "${var.vault_image_offer}"
   core_ssh_key          = "${var.core_ssh_key}"
   location              = "${var.azure_location}"
   network_interface_ids = "${module.vnet.vault_network_interface_ids}"
