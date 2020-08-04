@@ -6,6 +6,16 @@ variable "flatcar_linux_version" {
   type = string
 }
 
+variable "image_publisher" {
+  type = string
+  default = "kinvolk"
+}
+
+variable "image_offer" {
+  type = string
+  default = "flatcar-container-linux-free"
+}
+
 variable "core_ssh_key" {
   description = "ssh key for user core"
   type        = string

@@ -113,6 +113,16 @@ variable "flatcar_linux_version" {
   default     = "2345.3.1"
 }
 
+variable "vault_image_publisher" {
+  type = string
+  default = "kinvolk"
+}
+
+variable "vault_image_offer" {
+  type = string
+  default = "flatcar-container-linux-free"
+}
+
 variable "core_ssh_key" {
   description = "ssh key for user core"
   default     = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDIvW4h8X48R38jYIkod5whXMhIL/9Zfgp+EwgkRZi4mn+OAbCprHwc4V3RUGW0ysEdEqI/4FI1ho57X8CbbLa03MazNCKHCd8CNGdGorKai0g4uRaJI4wp+J6wniqERdJjuRKvRVYEZt8Ptv7YS0i3uW2HUDPVipkEqmSUtF7t4lAD1FDtAGQN23bdDhWHfTUAfg5yooiHtm9JfKiEV7MwncMd1nlZIklJWMQf9W5dvJBPmhVU0XmaCsmOH2rvaCi+cZQiMCqJOBKzDnEupanGcaf76iCQ3dn1ToCxXLlnRvhgSL6thR9HC3vA/ivDReKO7BXB8FVuZnr7NT0oxGaz fake"

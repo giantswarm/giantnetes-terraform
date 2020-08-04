@@ -34,16 +34,20 @@ resource "azurerm_virtual_machine" "vault" {
   delete_data_disks_on_termination = false
 
   storage_image_reference {
-    publisher = "kinvolk"
-    offer     = "flatcar-container-linux-free"
+    publisher = var.image_publisher
+    offer     = var.image_offer
     sku       = var.flatcar_linux_channel
     version   = var.flatcar_linux_version
   }
 
-  plan {
-    name = var.flatcar_linux_channel
-    publisher = "kinvolk"
-    product = "flatcar-container-linux-free"
+  # The plan needs to be added only if we use Flatcar.
+  dynamic "plan" {
+    for_each = var.image_publisher == "kinvolk" ? [1] : []
+    content {
+      name = var.flatcar_linux_channel
+      publisher = var.image_publisher
+      product = "flatcar-container-linux-free"
+    }
   }
 
   storage_os_disk {
