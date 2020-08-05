@@ -117,6 +117,7 @@ export TF_VAR_worker_count=${WORKER_COUNT}
 export TF_VAR_logentries_enabled=${LOGENTRIES_ENABLED}
 export TF_VAR_logentries_prefix="aws-${CLUSTER}"
 export TF_VAR_logentries_token=${LOGENTRIES_TOKEN}
+export TF_VAR_github_token="${E2E_GITHUB_TOKEN}"
 
 terraform init ./
 EOF

@@ -120,6 +120,7 @@ export TF_VAR_delete_data_disks_on_termination="true"
 export TF_VAR_logentries_enabled=${LOGENTRIES_ENABLED}
 export TF_VAR_logentries_prefix="azure-${CLUSTER}"
 export TF_VAR_logentries_token=${LOGENTRIES_TOKEN}
+export TF_VAR_github_token="${E2E_GITHUB_TOKEN}"
 
 terraform init ./
 EOF
