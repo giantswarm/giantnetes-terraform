@@ -14,6 +14,15 @@ locals {
   masters_eni_subnet_size = "${split("/", var.subnets_worker[0])[1]}"
 }
 
+data "http" "bastion_users" {
+  url = "https://api.github.com/repos/giantswarm/employees/contents/employees.yaml?ref=${var.employees_branch}"
+
+  # Optional request headers
+  request_headers = {
+    Authorization = "token ${var.github_token}"
+  }
+}
+
 module "flatcar_linux" {
   source = "../../../modules/flatcar-linux"
 
@@ -95,7 +104,6 @@ locals {
     "APIDomainName"                = "${var.api_dns}.${var.base_domain}"
     "APIInternalDomainName"        = "${var.api_internal_dns}.${var.base_domain}"
     "AWSRegion"                    = "${var.aws_region}"
-    "BastionUsers"                 = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
     "BastionSubnet0"               = "${element(var.subnets_bastion, 0)}"
     "BastionSubnet1"               = "${element(var.subnets_bastion, 1)}"
     "BastionLogPriority"           = "${var.bastion_log_priority}"
@@ -136,7 +144,7 @@ locals {
     "PodCIDR"                      = "${var.aws_cni_cidr_block}"
     "PodInfraImage"                = "${var.pod_infra_image}"
     "Provider"                     = "aws"
-    "Users"                        = "${file("${path.module}/../../../ignition/users.yaml")}"
+    "Users"                        = yamldecode(base64decode(jsondecode(data.http.bastion_users.body).content))
     "VaultDomainName"              = "${var.vault_dns}.${var.base_domain}"
     "WorkerMountDocker"            = "${var.worker_instance["volume_docker"]}"
   }

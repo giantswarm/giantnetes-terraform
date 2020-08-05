@@ -1,3 +1,14 @@
+variable "github_token" {
+  type        = string
+  description = "Your personal GITHUB token, used to get access to the private repository 'employees' to get the list of users."
+}
+
+variable "employees_branch" {
+  type        = string
+  description = "The branch in the 'employees' repo to use for getting a list of users"
+  default     = "master"
+}
+
 variable "cluster_name" {
   type        = string
   description = "Need to be unique within the account"

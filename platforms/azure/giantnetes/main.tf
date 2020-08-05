@@ -7,6 +7,15 @@ provider "azurerm" {
 
 data "azurerm_client_config" "current" {}
 
+data "http" "bastion_users" {
+  url = "https://api.github.com/repos/giantswarm/employees/contents/employees.yaml?ref=${var.employees_branch}"
+
+  # Optional request headers
+  request_headers = {
+    Authorization = "token ${var.github_token}"
+  }
+}
+
 module "flatcar_linux" {
   source = "../../../modules/flatcar-linux"
 
@@ -77,7 +86,6 @@ locals {
     "AzureRoutable"            = "${var.cluster_name}_worker_rt"
     "APIDomainName"            = "${var.api_dns}.${var.base_domain}"
     "BaseDomain"               = "${var.base_domain}"
-    "BastionUsers"             = "${file("${path.module}/../../../ignition/bastion-users.yaml")}"
     "CalicoMTU"                = "${var.calico_mtu}"
     "ClusterName"              = "${var.cluster_name}"
     "DockerCIDR"               = "${var.docker_cidr}"
@@ -98,7 +106,7 @@ locals {
     "OIDCEnabled"              = "${var.oidc_enabled}"
     "PodCIDR"                  = "${var.pod_cidr}"
     "Provider"                 = "azure"
-    "Users"                    = "${file("${path.module}/../../../ignition/users.yaml")}"
+    "Users"                    = yamldecode(base64decode(jsondecode(data.http.bastion_users.body).content))
     "VaultDomainName"          = "${var.vault_dns}.${var.base_domain}"
   }
 }

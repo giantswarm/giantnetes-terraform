@@ -1244,4 +1244,21 @@ storage:
         wipe_filesystem: false
         label: var-lib-etcd
 {{end}}
-{{ .Users }}
+passwd:
+  users:
+  - name: giantswarm
+    groups:
+    - "sudo"
+    - "docker"
+{{ range .Users }}
+{{- if eq .role "SRE" }}
+  - name: "{{ .name }}"
+    groups:
+      - "sudo"
+      - "docker"
+    sshAuthorizedKeys:
+      {{- range .sshAuthorizedKeys }}
+      - {{ . }}
+      {{- end }}
+{{- end }}
+{{- end }}

@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update Flatcar Linux version to `2512.2.1`.
 - Set default worker count to *4*.
+- Use `employees` repo to get a list of users for VMs provisioning.
 
 ## [1.0.5] - 2020-08-04
 

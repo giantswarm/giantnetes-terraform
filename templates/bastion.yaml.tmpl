@@ -161,4 +161,19 @@ storage:
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/journald-cloudwatch.conf" }}"
     {{ end }}
-{{ .BastionUsers }}
+passwd:
+  users:
+  - name: giantswarm
+    groups:
+    - "sudo"
+    - "docker"
+{{ range .Users }}
+  - name: "{{ .name }}"
+    groups:
+      - "sudo"
+      - "docker"
+    sshAuthorizedKeys:
+      {{- range .sshAuthorizedKeys }}
+      - {{ . }}
+      {{- end }}
+{{- end }}
