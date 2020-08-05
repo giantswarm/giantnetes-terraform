@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Update Flatcar Linux version to `2512.2.1`.
+
 ## [1.0.5] - 2020-08-04
 
 ### Added
