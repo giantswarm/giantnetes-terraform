@@ -230,8 +230,10 @@ stage-vault() {
     git clone --depth 1 --quiet https://taylorbot:${E2E_GITHUB_TOKEN}@github.com/giantswarm/hive.git
     cd hive
 
+    mkdir -p ./env
+
     # Prepare configuration for Ansible.
-    cat <<EOF > ./hosts_inventory/${CLUSTER}
+    cat <<EOF > ./env/host_inventory
 [bootstrap_node]
 vault1.${base_domain}
 
@@ -241,7 +243,7 @@ ansible_ssh_user=${SSH_USER}
 ansible_ssh_common_args='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ProxyCommand="ssh -W %h:%p -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${SSH_USER}@bastion1.${base_domain}"'
 EOF
 
-    cat <<EOF > ./envs/${CLUSTER}.yml
+    cat <<EOF > ./env/environment.yml
 ---
 main_domain: "${base_domain}"
 allowed_domains: "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.local"
@@ -261,7 +263,7 @@ EOF
     sed -i '/^seal/,$ d' config/vault/vault_unsecure.hcl
     sed -i '/^seal/,$ d' config/vault/vault.hcl
 
-    ansible-playbook -i hosts_inventory/${CLUSTER} -e dc=${CLUSTER} bootstrap.yml
+    ansible-playbook -i env/host_inventory -e dc=${CLUSTER} bootstrap.yml
 
     scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ProxyCommand="ssh -W %h:%p -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${SSH_USER}@bastion1.${base_domain}" ${SSH_USER}@vault1.${base_domain}:/tmp/vault/vault_initialized.json .
     VAULT_TOKEN=$(cat vault_initialized.json | jq .root_token )
