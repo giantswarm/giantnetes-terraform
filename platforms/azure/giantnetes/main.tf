@@ -46,6 +46,7 @@ module "vnet" {
   source = "../../../modules/azure/vnet"
 
   api_dns                     = var.api_dns
+  api_dns_internal            = var.api_dns_internal
   base_domain                 = var.base_domain
   bastion_count               = "2"
   bastion_cidr                = var.bastion_cidr
