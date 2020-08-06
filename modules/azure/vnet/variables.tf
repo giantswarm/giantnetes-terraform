@@ -3,6 +3,11 @@ variable "api_dns" {
   default = "api"
 }
 
+variable "api_dns_internal" {
+  type    = string
+  default = "internal-api"
+}
+
 variable "bastion_count" {
   type = string
 }

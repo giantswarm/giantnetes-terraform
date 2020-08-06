@@ -19,7 +19,7 @@ resource "azurerm_dns_a_record" "api_dns_internal" {
   zone_name           = var.base_domain
   resource_group_name = var.resource_group_name
   ttl                 = 300
-  records             = ["${azurerm_lb.api_ip_internal.private_ip_address}"]
+  records             = ["${azurerm_lb.api_lb_internal.private_ip_address}"]
 }
 
 resource "azurerm_lb_backend_address_pool" "api-lb-internal" {
@@ -28,21 +28,8 @@ resource "azurerm_lb_backend_address_pool" "api-lb-internal" {
   loadbalancer_id     = azurerm_lb.api_lb_internal.id
 }
 
-resource "azurerm_lb_rule" "api_lb" {
-  name                    = "api-lb-rule-443-443"
-  resource_group_name     = var.resource_group_name
-  loadbalancer_id         = azurerm_lb.api_lb_internal.id
-  backend_address_pool_id = azurerm_lb_backend_address_pool.api-lb-internal.id
-  probe_id                = azurerm_lb_probe.api_lb.id
-
-  protocol                       = "tcp"
-  frontend_port                  = 443
-  backend_port                   = 443
-  frontend_ip_configuration_name = "api-internal"
-}
-
 resource "azurerm_lb_probe" "api_lb_internal" {
-  name                = "api-lb-probe-443-up"
+  name                = "api-lb-internal-probe-443-up"
   loadbalancer_id     = azurerm_lb.api_lb_internal.id
   resource_group_name = var.resource_group_name
   protocol            = "Http"
@@ -51,3 +38,17 @@ resource "azurerm_lb_probe" "api_lb_internal" {
   interval_in_seconds = 5
   number_of_probes    = 2
 }
+
+resource "azurerm_lb_rule" "api_lb_internal" {
+  name                    = "api-lb-internal-rule-443-443"
+  resource_group_name     = var.resource_group_name
+  loadbalancer_id         = azurerm_lb.api_lb_internal.id
+  backend_address_pool_id = azurerm_lb_backend_address_pool.api-lb-internal.id
+  probe_id                = azurerm_lb_probe.api_lb_internal.id
+
+  protocol                       = "tcp"
+  frontend_port                  = 443
+  backend_port                   = 443
+  frontend_ip_configuration_name = "api-internal"
+}
+
