@@ -86,6 +86,7 @@ locals {
     "AzureVnetName"            = "${var.cluster_name}"
     "AzureRoutable"            = "${var.cluster_name}_worker_rt"
     "APIDomainName"            = "${var.api_dns}.${var.base_domain}"
+    "APIInternalDomainName"    = "${var.api_dns_internal}.${var.base_domain}"
     "BaseDomain"               = "${var.base_domain}"
     "CalicoMTU"                = "${var.calico_mtu}"
     "ClusterName"              = "${var.cluster_name}"
