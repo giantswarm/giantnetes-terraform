@@ -20,6 +20,13 @@ resource "azurerm_network_interface_backend_address_pool_association" "master" {
   backend_address_pool_id = azurerm_lb_backend_address_pool.api-lb.id
 }
 
+resource "azurerm_network_interface_backend_address_pool_association" "master_internal" {
+  count                   = var.master_count
+  network_interface_id    = element(azurerm_network_interface.master.*.id,count.index)
+  ip_configuration_name   = "${var.cluster_name}-masterIPConfiguration"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.api-lb-internal.id
+}
+
 resource "azurerm_dns_a_record" "master_dns" {
   count               = var.master_count
   name                = "master${count.index + 1}"

@@ -46,6 +46,7 @@ module "vnet" {
   source = "../../../modules/azure/vnet"
 
   api_dns                     = var.api_dns
+  api_dns_internal            = var.api_dns_internal
   base_domain                 = var.base_domain
   bastion_count               = "2"
   bastion_cidr                = var.bastion_cidr
@@ -85,6 +86,7 @@ locals {
     "AzureVnetName"            = "${var.cluster_name}"
     "AzureRoutable"            = "${var.cluster_name}_worker_rt"
     "APIDomainName"            = "${var.api_dns}.${var.base_domain}"
+    "APIInternalDomainName"    = "${var.api_dns_internal}.${var.base_domain}"
     "BaseDomain"               = "${var.base_domain}"
     "CalicoMTU"                = "${var.calico_mtu}"
     "ClusterName"              = "${var.cluster_name}"

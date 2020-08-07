@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add internal load balancer for Kubernetes API in Azure.
+
 ## [1.1.0] - 2020-08-05
 
 ### Changed

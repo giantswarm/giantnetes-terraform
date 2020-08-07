@@ -167,6 +167,12 @@ variable "api_dns" {
   default     = "g8s"
 }
 
+variable "api_dns_internal" {
+  type        = string
+  description = "FQDN for internal api (i.e. internal-g8s)."
+  default     = "internal-g8s"
+}
+
 variable "ingress_dns" {
   type        = string
   description = "FQDN for ingress (i.e. ingress)."
