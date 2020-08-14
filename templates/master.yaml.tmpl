@@ -1176,7 +1176,9 @@ systemd:
       Wants=k8s-kubelet.service
       After=k8s-kubelet.service
       [Service]
-      Type=oneshot
+      Type=simple
+      Restart=on-failure
+      RestartSec=3
       EnvironmentFile=/etc/network-environment
       ExecStart=/opt/k8s-addons
       [Install]
