@@ -10,7 +10,6 @@ resource "azurerm_storage_account" "storage_acc" {
 
 resource "azurerm_storage_container" "ignition" {
   name                  = "ignition"
-  resource_group_name   = var.resource_group_name
   storage_account_name  = azurerm_storage_account.storage_acc.name
   container_access_type = "private"
 }
