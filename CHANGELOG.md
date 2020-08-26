@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Change Kubernetes version to 1.18.10.
 - Change etcd version to 3.4.13.
+- Update `azure-rm` provider to version `2.20.0`.
 
 ## Removed
 
