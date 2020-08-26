@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Expose docker metrics.
 - Expose kube-proxy metrics.
+- Expose calico metrics.
 
 ## [1.3.0] - 2020-08-18
 
