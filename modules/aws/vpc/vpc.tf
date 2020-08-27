@@ -114,7 +114,8 @@ resource "aws_route_table" "cluster_vpc_private" {
   tags = merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}_private_${count.index}"
+      "Name", "${var.cluster_name}_private_${count.index}",
+      "giantswarm.io/route-table-type", "private"
     )
   )
 }
@@ -126,7 +127,8 @@ resource "aws_route_table" "cluster_vpc_public" {
   tags = merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}-public${count.index}"
+      "Name", "${var.cluster_name}-public${count.index}",
+      "giantswarm.io/route-table-type", "public"
     )
   )
 }
