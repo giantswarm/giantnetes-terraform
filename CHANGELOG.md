@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `giantswarm.io/route-table-type` tag to AWS RouteTables.
+
 ## [1.3.1] - 2020-08-27
 
 ### Changed
@@ -73,7 +77,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fix ingress controller resource rename from daemonset to deployment. 
+- Fix ingress controller resource rename from daemonset to deployment.
 
 ## [1.0.0] - 2020-07-20
 
