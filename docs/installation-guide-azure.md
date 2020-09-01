@@ -56,6 +56,9 @@ Get access key it will be needed in the next step.
 az storage account keys list -g ${NAME}-terraform  --account-name ${NAME}terraform
 ```
 
+Enable versioning: go to the azure portal, navigate to the resource group `${NAME}-terraform`, then to the storage account `${NAME}terraform`.
+In the left menu, click on `Data protection`, select the `Turn on versioning` checkbox and click `Save`.
+
 ### Create service principal
 
 Create resource group for cluster. We need one to assign permissions.
