@@ -106,7 +106,7 @@ locals {
     "LogentriesToken"          = "${var.logentries_token}"
     "MasterCount"              = "${var.master_count}"
     "OIDCEnabled"              = "${var.oidc_enabled}"
-    "OIDCIssuerURL"            = "${var.oidc_issuer_dns}.${var.base_domain}"
+    "OIDCIssuerURL"            = "https://${var.oidc_issuer_dns}.${var.base_domain}"
     "PodCIDR"                  = "${var.pod_cidr}"
     "Provider"                 = "azure"
     "Users"                    = yamldecode(base64decode(jsondecode(data.http.bastion_users.body).content))

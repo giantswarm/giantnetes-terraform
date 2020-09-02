@@ -141,7 +141,7 @@ locals {
     "MasterMountDocker"            = "${var.master_instance["volume_docker"]}"
     "MasterMountETCD"              = "${var.master_instance["volume_etcd"]}"
     "OIDCEnabled"                  = "${var.oidc_enabled}"
-    "OIDCIssuerURL"                = "${var.oidc_issuer_dns}.${var.base_domain}"
+    "OIDCIssuerURL"                = "https://${var.oidc_issuer_dns}.${var.base_domain}"
     "PodCIDR"                      = "${var.aws_cni_cidr_block}"
     "PodInfraImage"                = "${var.pod_infra_image}"
     "Provider"                     = "aws"
