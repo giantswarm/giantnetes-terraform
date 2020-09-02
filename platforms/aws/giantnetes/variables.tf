@@ -287,6 +287,13 @@ variable "oidc_enabled" {
   type        = bool
 }
 
+variable "oidc_issuer_dns" {
+  type        = string
+  description = "subdomain for oidc issuer (i.e. dex.g8s)."
+  default     = "dex.g8s"
+}
+
+
 ### VPN ###
 
 variable "aws_customer_gateway_id_0" {
