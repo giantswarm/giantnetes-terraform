@@ -136,9 +136,9 @@ spec:
             ## Deviation from original manifest - 4
             ## prewarm IP to limit AWS api calls
             - name: WARM_IP_TARGET
-              value: "5"
+              value: "10"
             - name: MINIMUM_IP_TARGET
-              value: "2"
+              value: "8"
             ## Deviation from original manifest - 5
             ## Explicit interface naming
             - name: AWS_VPC_K8S_CNI_VETHPREFIX
