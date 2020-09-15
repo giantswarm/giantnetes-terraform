@@ -3,7 +3,7 @@ output "aws_cni_security_group_id" {
 }
 
 output "aws_cni_subnet_ids" {
-  value = "${aws_subnet.cni.*.id}"
+  value = "${aws_subnet.cni_v2.*.id}"
 }
 
 output "aws_eip_public_ips" {
