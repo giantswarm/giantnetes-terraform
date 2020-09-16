@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Update AWS CNI version to 1.7.2 and align manifests with upstream.
+- Migrate AWS CNi subnets to bigger CGNAT ranges.
+
 ## [1.3.2] - 2020-09-10
 
 ### Added
