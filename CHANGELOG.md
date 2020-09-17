@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Use `PartOf` to etcd unit.
+
 ## [1.4.0] - 2020-09-16
 
 ### Changed
