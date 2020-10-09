@@ -5,6 +5,7 @@ resource "azurerm_network_interface" "master" {
   resource_group_name = var.resource_group_name
 
   enable_ip_forwarding = true
+  enable_accelerated_networking = var.master_enable_accelerated_networking
 
   ip_configuration {
     private_ip_address_allocation = "dynamic"

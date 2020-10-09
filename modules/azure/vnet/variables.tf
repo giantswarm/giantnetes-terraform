@@ -53,8 +53,18 @@ variable "master_count" {
   type = string
 }
 
+variable "master_enable_accelerated_networking" {
+  type = bool
+  default = false
+}
+
 variable "worker_count" {
   type = string
+}
+
+variable "worker_enable_accelerated_networking" {
+  type = bool
+  default = false
 }
 
 variable "vault_dns" {
