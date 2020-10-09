@@ -42,26 +42,66 @@ module "dns" {
   zone_name           = var.base_domain
 }
 
+locals {
+  vm_types_supporting_accelerated_networking = [
+    "Standard_B12ms", "Standard_B16ms", "Standard_B20ms",
+    "Standard_D2_v2", "Standard_D3_v2", "Standard_D4_v2", "Standard_D5_v2", "Standard_D11_v2", "Standard_D12_v2", "Standard_D13_v2", "Standard_D14_v2",
+    "Standard_D2_v2_Promo", "Standard_D3_v2_Promo", "Standard_D4_v2_Promo", "Standard_D5_v2_Promo", "Standard_D11_v2_Promo", "Standard_D12_v2_Promo", "Standard_D13_v2_Promo", "Standard_D14_v2_Promo",
+    "Standard_F2", "Standard_F4", "Standard_F8", "Standard_F16",
+    "Standard_DS2_v2", "Standard_DS3_v2", "Standard_DS4_v2", "Standard_DS5_v2", "Standard_DS11-1_v2", "Standard_DS11_v2", "Standard_DS12-1_v2", "Standard_DS12-2_v2", "Standard_DS12_v2", "Standard_DS13-2_v2", "Standard_DS13-4_v2", "Standard_DS13_v2", "Standard_DS14-4_v2", "Standard_DS14-8_v2", "Standard_DS14_v2",
+    "Standard_DS2_v2_Promo", "Standard_DS3_v2_Promo", "Standard_DS4_v2_Promo", "Standard_DS5_v2_Promo", "Standard_DS11_v2_Promo", "Standard_DS12_v2_Promo", "Standard_DS13_v2_Promo", "Standard_DS14_v2_Promo",
+    "Standard_F2s", "Standard_F4s", "Standard_F8s", "Standard_F16s",
+    "Standard_D4_v3", "Standard_D8_v3", "Standard_D16_v3", "Standard_D32_v3", "Standard_D48_v3", "Standard_D64_v3",
+    "Standard_D4s_v3", "Standard_D8s_v3", "Standard_D16s_v3", "Standard_D32s_v3", "Standard_D48s_v3", "Standard_D64s_v3",
+    "Standard_E4_v3", "Standard_E8_v3", "Standard_E16_v3", "Standard_E20_v3", "Standard_E32_v3",
+    "Standard_E4-2s_v3", "Standard_E4s_v3", "Standard_E8-2s_v3", "Standard_E8-4s_v3", "Standard_E8s_v3", "Standard_E16-4s_v3", "Standard_E16-8s_v3",
+    "Standard_E16s_v3", "Standard_E20s_v3", "Standard_E32-8s_v3", "Standard_E32-16s_v3", "Standard_E32s_v3",
+    "Standard_M8-2ms", "Standard_M8-4ms", "Standard_M8ms", "Standard_M16-4ms", "Standard_M16-8ms", "Standard_M16ms", "Standard_M32-8ms", "Standard_M32-16ms", "Standard_M32ls", "Standard_M32ms", "Standard_M32ts", "Standard_M64-16ms", "Standard_M64-32ms", "Standard_M64ls", "Standard_M64ms", "Standard_M64s", "Standard_M128-32ms", "Standard_M128-64ms", "Standard_M128ms", "Standard_M128s",
+    "Standard_M64", "Standard_M64m", "Standard_M128", "Standard_M128m",
+    "Standard_PB6s",
+    "Standard_D15_v2", "Standard_DS15_v2",
+    "Standard_E48_v3", "Standard_E64i_v3", "Standard_E64_v3", "Standard_E48s_v3", "Standard_E64-16s_v3", "Standard_E64-32s_v3", "Standard_E64is_v3", "Standard_E64s_v3", "Standard_E4_v4", "Standard_E8_v4", "Standard_E16_v4", "Standard_E20_v4", "Standard_E32_v4", "Standard_E48_v4", "Standard_E64_v4", "Standard_E4d_v4",
+    "Standard_E8d_v4", "Standard_E16d_v4", "Standard_E20d_v4", "Standard_E32d_v4", "Standard_E48d_v4", "Standard_E64d_v4",
+    "Standard_E4-2s_v4", "Standard_E4s_v4", "Standard_E8-2s_v4", "Standard_E8-4s_v4", "Standard_E8s_v4", "Standard_E16-4s_v4", "Standard_E16-8s_v4", "Standard_E16s_v4", "Standard_E20s_v4", "Standard_E32-8s_v4", "Standard_E32-16s_v4", "Standard_E32s_v4", "Standard_E48s_v4", "Standard_E64-16s_v4", "Standard_E64-32s_v4", "Standard_E64s_v4",
+    "Standard_E4-2ds_v4", "Standard_E4ds_v4", "Standard_E8-2ds_v4", "Standard_E8-4ds_v4", "Standard_E8ds_v4", "Standard_E16-4ds_v4", "Standard_E16-8ds_v4", "Standard_E16ds_v4", "Standard_E20ds_v4", "Standard_E32-8ds_v4", "Standard_E32-16ds_v4", "Standard_E32ds_v4", "Standard_E48ds_v4", "Standard_E64-16ds_v4", "Standard_E64-32ds_v4", "Standard_E64ds_v4",
+    "Standard_D4d_v4", "Standard_D8d_v4", "Standard_D16d_v4", "Standard_D32d_v4", "Standard_D48d_v4", "Standard_D64d_v4", "Standard_D4_v4", "Standard_D8_v4", "Standard_D16_v4", "Standard_D32_v4", "Standard_D48_v4", "Standard_D64_v4",
+    "Standard_D4ds_v4", "Standard_D8ds_v4", "Standard_D16ds_v4", "Standard_D32ds_v4", "Standard_D48ds_v4", "Standard_D64ds_v4",
+    "Standard_D4s_v4", "Standard_D8s_v4", "Standard_D16s_v4", "Standard_D32s_v4", "Standard_D48s_v4", "Standard_D64s_v4",
+    "Standard_F4s_v2", "Standard_F8s_v2", "Standard_F16s_v2", "Standard_F32s_v2", "Standard_F48s_v2", "Standard_F64s_v2", "Standard_F72s_v2",
+    "Standard_NV12s_v3", "Standard_NV24s_v3", "Standard_NV48s_v3",
+    "Standard_L8s_v2", "Standard_L16s_v2", "Standard_L32s_v2", "Standard_L48s_v2", "Standard_L64s_v2", "Standard_L80s_v2",
+    "Standard_DC8_v2", "Standard_DC2s_v2", "Standard_DC4s_v2", "Standard_M208ms_v2",
+    "Standard_M208s_v2", "Standard_M416-208s_v2", "Standard_M416s_v2", "Standard_M416-208ms_v2", "Standard_M416ms_v2",
+    "Standard_NV4as_v4", "Standard_NV8as_v4", "Standard_NV16as_v4", "Standard_NV32as_v4",
+    "Standard_D4a_v4", "Standard_D8a_v4", "Standard_D16a_v4", "Standard_D32a_v4", "Standard_D48a_v4", "Standard_D64a_v4", "Standard_D96a_v4",
+    "Standard_D4as_v4", "Standard_D8as_v4", "Standard_D16as_v4", "Standard_D32as_v4", "Standard_D48as_v4", "Standard_D64as_v4", "Standard_D96as_v4",
+    "Standard_E4a_v4", "Standard_E8a_v4", "Standard_E16a_v4", "Standard_E20a_v4", "Standard_E32a_v4", "Standard_E48a_v4", "Standard_E64a_v4", "Standard_E96a_v4",
+    "Standard_E4as_v4", "Standard_E8as_v4", "Standard_E16as_v4", "Standard_E20as_v4", "Standard_E32as_v4", "Standard_E48as_v4", "Standard_E64as_v4", "Standard_E96as_v4"
+  ]
+}
+
 module "vnet" {
   source = "../../../modules/azure/vnet"
 
-  api_dns                     = var.api_dns
-  api_dns_internal            = var.api_dns_internal
-  base_domain                 = var.base_domain
-  bastion_count               = "2"
-  bastion_cidr                = var.bastion_cidr
-  cluster_name                = var.cluster_name
-  customer_vpn_public_subnets = var.customer_vpn_public_subnets
-  external_ipsec_public_ip_0  = var.external_ipsec_public_ip_0
-  external_ipsec_public_ip_1  = var.external_ipsec_public_ip_1
-  ingress_dns                 = var.ingress_dns
-  location                    = var.azure_location
-  master_count                = var.master_count
-  worker_count                = var.worker_count
-  resource_group_name         = module.resource_group.name
-  vault_dns                   = var.vault_dns
-  vnet_cidr                   = var.vnet_cidr
-  vpn_enabled                 = var.vpn_enabled
+  api_dns                              = var.api_dns
+  api_dns_internal                     = var.api_dns_internal
+  base_domain                          = var.base_domain
+  bastion_count                        = "2"
+  bastion_cidr                         = var.bastion_cidr
+  cluster_name                         = var.cluster_name
+  customer_vpn_public_subnets          = var.customer_vpn_public_subnets
+  external_ipsec_public_ip_0           = var.external_ipsec_public_ip_0
+  external_ipsec_public_ip_1           = var.external_ipsec_public_ip_1
+  ingress_dns                          = var.ingress_dns
+  location                             = var.azure_location
+  master_count                         = var.master_count
+  master_enable_accelerated_networking = contains(local.vm_types_supporting_accelerated_networking, var.master_vm_size) ? true : false
+  worker_count                         = var.worker_count
+  worker_enable_accelerated_networking = contains(local.vm_types_supporting_accelerated_networking, var.worker_vm_size) ? true : false
+  resource_group_name                  = module.resource_group.name
+  vault_dns                            = var.vault_dns
+  vnet_cidr                            = var.vnet_cidr
+  vpn_enabled                          = var.vpn_enabled
 }
 
 module "blob" {
