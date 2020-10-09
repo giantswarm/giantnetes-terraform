@@ -70,7 +70,7 @@ variable "docker_disk_size" {
 variable "etcd_disk_size" {
   type        = string
   description = "Size of data disk in GB."
-  default     = "10"
+  default     = "64"
 }
 
 variable "api_backend_address_pool_id" {
