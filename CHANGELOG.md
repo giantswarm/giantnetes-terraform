@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support for accelerated networking on azure.
+
+### Changed
+
+- Bumped kubernetes to 1.17.12 on azure.
+
 ### Fixed
 
 - Do not fail k8s-setup-network-env if docker pull fails.
