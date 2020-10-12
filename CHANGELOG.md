@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## Removed
+
+- Remove kube-proxy resourceContainer deprecated config.
+
 ## [1.5.1] - 2020-10-09
 
 ## Changed
