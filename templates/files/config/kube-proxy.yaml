@@ -3,6 +3,5 @@ clientConnection:
   kubeconfig: /etc/kubernetes/kubeconfig/kube-proxy.yaml
 kind: KubeProxyConfiguration
 mode: iptables
-resourceContainer: /kube-proxy
 clusterCIDR: {{ .PodCIDR }}
 metricsBindAddress: 0.0.0.0:10249
