@@ -3,5 +3,4 @@ clientConnection:
   kubeconfig: /etc/kubernetes/kubeconfig/kube-proxy.yaml
 kind: KubeProxyConfiguration
 mode: iptables
-resourceContainer: /kube-proxy
 clusterCIDR: {{ .CalicoCIDR }}
