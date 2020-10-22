@@ -223,7 +223,7 @@ module "master" {
   flatcar_linux_version       = "${module.flatcar_linux.flatcar_version}"
   core_ssh_key                = "${var.core_ssh_key}"
   docker_disk_size            = "100"
-  etcd_disk_size              = "10"
+  etcd_disk_size              = "64"
   location                    = "${var.azure_location}"
 
   master_count                = "${var.master_count}"

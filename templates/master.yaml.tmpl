@@ -910,7 +910,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       LimitNOFILE=40000
-      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.4.9
+      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.4.13
       Environment=NAME=%p.service
       EnvironmentFile=/etc/network-environment
       ExecStartPre=-/usr/bin/docker stop  $NAME
@@ -963,7 +963,7 @@ systemd:
       [Service]
       Type=oneshot
       EnvironmentFile=/etc/environment
-      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.4.9
+      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.4.13
       Environment=NAME=%p.service
       ExecStartPre=-/usr/bin/docker stop  $NAME
       ExecStartPre=-/usr/bin/docker rm  $NAME
