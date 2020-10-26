@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2020-10-26
+
 ### Changed
 
 - Change Kubernetes version to 1.18.10.
@@ -124,7 +126,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v1.5.1...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v1.5.1...v2.0.0
 [1.5.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v1.3.2...v1.4.0
