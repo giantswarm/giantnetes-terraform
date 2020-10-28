@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Update calico-policy-only deployment version to apps/v1
+
 ## [2.0.0] - 2020-10-26
 
 ### Changed
