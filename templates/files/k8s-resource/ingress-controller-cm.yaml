@@ -13,4 +13,5 @@ data:
   variables-hash-bucket-size: "128"
   server-name-hash-bucket-size: "1024"
   server-name-hash-max-size: "1024"
+  server-tokens: "false"
   worker-processes: "4"

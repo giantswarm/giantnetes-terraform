@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `server-tokens: "false"` to Nginx Ingress Controller to remove the server tokens from the default backend response body and answer.
+
 ### Deleted
 
 - Delete Kubernetes API readonly role/binding.
