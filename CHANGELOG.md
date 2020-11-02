@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add `server-tokens: "false"` to Nginx Ingress Controller to remove the server tokens from the default backend response body and answer.
 
+### Changed
+
+- Changed default VM size for azure master nodes to Standard_D4s_v3.
+
 ### Deleted
 
 - Delete Kubernetes API readonly role/binding.
