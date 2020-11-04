@@ -70,35 +70,34 @@ systemd:
             $IMAGE \
                 --log.level=debug \
                 --path.rootfs=/rootfs \
-                --web.listen-address=:10300 \
-                --collector.arp \
-                --collector.bcache \
                 --collector.cpu \
-                --collector.entropy \
-                --collector.filefd \
-                --collector.filesystem \
-                --collector.hwmon \
                 --collector.loadavg \
                 --collector.meminfo \
-                --collector.netdev \
-                --collector.netstat \
-                --collector.sockstat \
-                --collector.stat \
                 --collector.systemd \
-                --collector.time \
-                --collector.timex \
-                --collector.uname \
                 --collector.vmstat \
-                --collector.xfs \
+                --no-collector.arp \
+                --no-collector.bcache \
                 --no-collector.conntrack \
                 --no-collector.diskstats \
                 --no-collector.edac \
+                --no-collector.entropy \
+                --no-collector.filefd \
+                --no-collector.filesystem \
+                --no-collector.hwmon \
                 --no-collector.infiniband \
                 --no-collector.ipvs \
                 --no-collector.mdadm \
+                --no-collector.netdev \
+                --no-collector.netstat \
+                --no-collector.sockstat \
+                --no-collector.stat \
                 --no-collector.textfile \
+                --no-collector.time \
+                --no-collector.timex \
+                --no-collector.uname \
                 --no-collector.wifi \
-                --no-collector.zfs
+                --no-collector.zfs \
+                --no-collector.xfs
         ExecStop=-/usr/bin/docker stop -t 10 $NAME
         ExecStopPost=-/usr/bin/docker rm -f $NAME
         [Install]

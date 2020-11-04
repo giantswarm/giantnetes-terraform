@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Reduce number of collectors used in `node-exporter` on bastion node.
+
 ## [2.1.0] - 2020-11-02
 
 ### Added
