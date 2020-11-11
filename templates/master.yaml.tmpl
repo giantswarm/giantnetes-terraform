@@ -876,7 +876,7 @@ systemd:
       After=network-online.target
 
       [Service]
-      Environment="IMAGE={{.DockerRegistry}}/giantswarm/aws-attach-etcd-dep:f6a1d8eb340032f9dc2519dd974797487125b1a7"
+      Environment="IMAGE={{.DockerRegistry}}/giantswarm/aws-attach-etcd-dep:0.1.0"
       Environment="NAME=%p.service"
       Type=oneshot
       RemainAfterExit=yes
