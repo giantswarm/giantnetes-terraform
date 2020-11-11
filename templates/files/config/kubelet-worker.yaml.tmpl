@@ -4,6 +4,7 @@ address: ${DEFAULT_IPV4}
 port: 10250
 healthzBindAddress: ${DEFAULT_IPV4}
 healthzPort: 10248
+cgroupDriver: systemd
 clusterDNS:
   - {{ .K8SDNSIP }}
 clusterDomain: cluster.local
