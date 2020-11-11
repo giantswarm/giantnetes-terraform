@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Reduce number of collectors used in `node-exporter` on bastion node.
 - Update Flatcar Linux version to `2605.7.0`.
+- Use `zap` logger in etcd.
 
 ## [2.1.0] - 2020-11-02
 

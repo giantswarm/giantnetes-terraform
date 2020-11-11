@@ -948,6 +948,7 @@ systemd:
           {{- end }}
           --initial-cluster-state new \
           --data-dir=/var/lib/etcd \
+          --logger=zap \
           --enable-v2
 
       [Install]
