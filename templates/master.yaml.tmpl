@@ -872,8 +872,8 @@ systemd:
     contents: |
       [Unit]
       Description=Attach etcd dependencies
-      Requires=network.target
-      After=network.target
+      Requires=network-online.target
+      After=network-online.target
 
       [Service]
       Environment="IMAGE={{.DockerRegistry}}/giantswarm/aws-attach-etcd-dep:f6a1d8eb340032f9dc2519dd974797487125b1a7"
@@ -900,8 +900,8 @@ systemd:
     contents: |
       [Unit]
       Description=etcd3
-      Requires=k8s-setup-network-env.service etcd3-certs.service calico-certs.service {{if eq .Provider "aws" }}etcd3-attach-dependencies.service{{else}}var-lib-etcd.mount{{end}}
-      After=k8s-setup-network-env.service etcd3-certs.service calico-certs.service {{if eq .Provider "aws" }}etcd3-attach-dependencies.service{{else}}var-lib-etcd.mount{{end}}
+      Requires=k8s-setup-network-env.service etcd3-certs.service calico-certs.service {{if eq .Provider "aws" }}var-lib-etcd.automount{{else}}var-lib-etcd.mount{{end}}
+      After=k8s-setup-network-env.service etcd3-certs.service calico-certs.service {{if eq .Provider "aws" }}var-lib-etcd.automount{{else}}var-lib-etcd.mount{{end}}
       Conflicts=etcd.service etcd2.service
       StartLimitIntervalSec=0
 
