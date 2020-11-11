@@ -598,6 +598,8 @@ systemd:
     contents: |
       [Unit]
       Description=Mount disk to /var/lib/etcd
+      After=etcd3-attach-dependencies.service
+      Requires=etcd3-attach-dependencies.service
       Before=etcd3.service
       [Mount]
       What=/dev/disk/by-label/var-lib-etcd
@@ -900,8 +902,8 @@ systemd:
     contents: |
       [Unit]
       Description=etcd3
-      Requires=k8s-setup-network-env.service etcd3-certs.service calico-certs.service {{if eq .Provider "aws" }}etcd3-attach-dependencies.service{{else}}var-lib-etcd.mount{{end}}
-      After=k8s-setup-network-env.service etcd3-certs.service calico-certs.service {{if eq .Provider "aws" }}etcd3-attach-dependencies.service{{else}}var-lib-etcd.mount{{end}}
+      Requires=k8s-setup-network-env.service etcd3-certs.service calico-certs.service {{if eq .Provider "aws" }}var-lib-etcd.automount{{else}}var-lib-etcd.mount{{end}}
+      After=k8s-setup-network-env.service etcd3-certs.service calico-certs.service {{if eq .Provider "aws" }}var-lib-etcd.automount{{else}}var-lib-etcd.mount{{end}}
       Conflicts=etcd.service etcd2.service
       StartLimitIntervalSec=0
 
