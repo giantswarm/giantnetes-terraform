@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Reduce number of collectors used in `node-exporter` on bastion node.
+- Update Flatcar Linux version to `2605.7.0`.
 
 ## [2.1.0] - 2020-11-02
 
