@@ -68,6 +68,7 @@ systemd:
             -v /:/rootfs:ro,rslave \
             -v /run/systemd:/run/systemd:ro \
             $IMAGE \
+                --web.listen-address=:10300 \
                 --log.level=debug \
                 --path.rootfs=/rootfs \
                 --collector.cpu \
