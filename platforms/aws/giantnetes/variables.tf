@@ -189,10 +189,6 @@ variable "root_dns_zone_id" {
   default     = ""
 }
 
-variable "route53_enabled" {
-  default = true
-}
-
 ### Network ###
 
 variable "vpc_cidr" {

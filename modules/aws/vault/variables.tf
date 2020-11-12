@@ -105,8 +105,4 @@ variable "worker_subnet_count" {
   default = 3
 }
 
-variable "route53_enabled" {
-  default = false
-}
-
 variable "s3_bucket_tags" {}

@@ -156,7 +156,7 @@ resource "aws_security_group" "vault" {
 }
 
 resource "aws_route53_record" "vault" {
-  count   = var.route53_enabled ? var.vault_count : 0
+  count   = var.vault_count
   zone_id = var.dns_zone_id
   name    = "vault${count.index + 1}"
   type    = "A"

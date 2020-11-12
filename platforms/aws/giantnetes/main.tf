@@ -66,7 +66,6 @@ module "dns" {
 
   cluster_name     = "${var.cluster_name}"
   root_dns_zone_id = "${var.root_dns_zone_id}"
-  route53_enabled  = "${var.route53_enabled}"
   zone_name        = "${var.base_domain}"
 }
 
@@ -174,7 +173,6 @@ module "bastion" {
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
   iam_region             = "${var.iam_region}"
   instance_type          = "${var.bastion_instance_type}"
-  route53_enabled        = "${var.route53_enabled}"
   s3_bucket_tags         = "${var.s3_bucket_tags}"
   transit_vpc_cidr       = "${var.transit_vpc_cidr}"
   user_data              = "${data.gotemplate.bastion.rendered}"
@@ -206,7 +204,6 @@ module "vpn_instance" {
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
   iam_region             = "${var.iam_region}"
   instance_type          = "${var.bastion_instance_type}"
-  route53_enabled        = "${var.route53_enabled}"
   s3_bucket_tags         = "${var.s3_bucket_tags}"
   user_data              = "${data.gotemplate.vpn_instance.rendered}"
   vpc_cidr               = "${var.vpc_cidr}"
@@ -235,7 +232,6 @@ module "vault" {
   iam_region             = "${var.iam_region}"
   instance_type          = "${var.vault_instance_type}"
   user_data              = "${data.gotemplate.vault.rendered}"
-  route53_enabled        = "${var.route53_enabled}"
   s3_bucket_tags         = "${var.s3_bucket_tags}"
   vault_count            = "1"
   vault_dns              = "${var.vault_dns}"
@@ -275,7 +271,6 @@ module "master" {
   external_ipsec_public_ip_1   = "${var.external_ipsec_public_ip_1}"
   ignition_bucket_id           = "${module.s3.ignition_bucket_id}"
   instance_type                = "${var.master_instance["type"]}"
-  route53_enabled              = "${var.route53_enabled}"
   user_data                    = "${data.gotemplate.master.*.rendered}"
   master_subnet_ids            = "${module.vpc.worker_subnet_ids}"
   master_eni_ips               = local.masters_eni_ips
@@ -309,7 +304,6 @@ module "worker" {
   ignition_bucket_id     = "${module.s3.ignition_bucket_id}"
   ingress_dns            = "${var.ingress_dns}"
   instance_type          = "${var.worker_instance["type"]}"
-  route53_enabled        = "${var.route53_enabled}"
   user_data              = "${data.gotemplate.worker.rendered}"
   worker_count           = "${var.worker_count}"
   worker_subnet_ids      = "${module.vpc.worker_subnet_ids}"
