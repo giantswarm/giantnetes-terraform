@@ -75,8 +75,4 @@ variable "vpc_id" {
   type = string
 }
 
-variable "route53_enabled" {
-  default = true
-}
-
 variable "s3_bucket_tags" {}

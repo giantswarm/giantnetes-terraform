@@ -178,7 +178,7 @@ resource "aws_security_group" "master" {
 }
 
 resource "aws_route53_record" "master" {
-  count   = var.route53_enabled ? var.master_count : 0
+  count   = var.master_count
   zone_id = var.dns_zone_id
   name    = "master${count.index + 1}"
   type    = "A"
@@ -187,7 +187,7 @@ resource "aws_route53_record" "master" {
 }
 
 resource "aws_route53_record" "etcd" {
-  count   = var.route53_enabled ? var.master_count : 0
+  count   = var.master_count
   zone_id = var.dns_zone_id
   name    = "etcd${count.index + 1}"
   type    = "A"

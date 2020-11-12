@@ -86,7 +86,7 @@ resource "aws_security_group" "bastion" {
 }
 
 resource "aws_route53_record" "bastion" {
-  count   = var.route53_enabled ? var.bastion_count : 0
+  count   = var.bastion_count
   zone_id = var.dns_zone_id
   name    = "bastion${count.index + 1}"
   type    = "A"

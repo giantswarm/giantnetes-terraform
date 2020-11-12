@@ -147,7 +147,6 @@ resource "aws_security_group" "master_elb_api_internal" {
 }
 
 resource "aws_route53_record" "master_api" {
-  count   = var.route53_enabled ? 1 : 0
   zone_id = var.dns_zone_id
   name    = var.api_dns
   type    = "A"
@@ -160,7 +159,6 @@ resource "aws_route53_record" "master_api" {
 }
 
 resource "aws_route53_record" "master_api_internal" {
-  count   = var.route53_enabled ? 1 : 0
   zone_id = var.dns_zone_id
   name    = var.api_internal_dns
   type    = "A"

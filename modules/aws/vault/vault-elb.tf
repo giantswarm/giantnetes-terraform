@@ -65,7 +65,6 @@ resource "aws_security_group" "vault_elb" {
 }
 
 resource "aws_route53_record" "vault-elb" {
-  count   = var.route53_enabled ? 1 : 0
   zone_id = var.dns_zone_id
   name    = var.vault_dns
   type    = "A"
