@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Deleted
+
+- Delete `route53_enabled` parameter as route53 now available in China.
+
 ## [2.1.1] - 2020-11-11
 
 ### Changed
