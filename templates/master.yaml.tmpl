@@ -872,8 +872,8 @@ systemd:
     contents: |
       [Unit]
       Description=Attach etcd dependencies
-      Requires=network-online.target
-      After=network-online.target
+      Requires=network-online.target local-fs.target
+      After=network-online.target local-fs.target
 
       [Service]
       Environment="IMAGE={{.DockerRegistry}}/giantswarm/aws-attach-etcd-dep:0.1.0"
