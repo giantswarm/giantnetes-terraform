@@ -1058,8 +1058,8 @@ systemd:
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-setup-download-hyperkube-binaries.service k8s-setup-delete-old-node.service
-      Requires=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-setup-download-hyperkube-binaries.service k8s-setup-delete-old-node.service
+      After=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-setup-download-hyperkube-binaries.service k8s-setup-delete-old-node.service etcd3.service
+      Requires=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-setup-download-hyperkube-binaries.service k8s-setup-delete-old-node.service etcd3.service
 
       [Service]
       TimeoutStartSec=300
