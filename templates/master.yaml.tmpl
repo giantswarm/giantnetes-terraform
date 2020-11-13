@@ -567,6 +567,17 @@ storage:
         id: 0
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/ipvs.conf" }}"
+{{ if eq .Provider "aws" }}
+    - path: /etc/systemd/system/etcd3.d/10-require-attach-dep.conf
+      filesystem: root
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/10-require-attach-dep.conf" }}"
+{{ end }}
 
 systemd:
   units:
@@ -611,8 +622,6 @@ systemd:
     contents: |
       [Unit]
       Description=Mount disk to /var/lib/etcd
-      Before=etcd3.service
-      After=etcd3-attach-dependencies.service
       [Automount]
       Where=/var/lib/etcd
       [Install]
@@ -872,8 +881,9 @@ systemd:
     contents: |
       [Unit]
       Description=Attach etcd dependencies
-      Requires=network-online.target
-      After=network-online.target
+      Requires=network.target
+      After=network.target
+      Before=k8s-kubelet.service
 
       [Service]
       Environment="IMAGE={{.DockerRegistry}}/giantswarm/aws-attach-etcd-dep:0.1.0"
@@ -901,8 +911,8 @@ systemd:
     contents: |
       [Unit]
       Description=etcd3
-      Requires=k8s-setup-network-env.service etcd3-certs.service calico-certs.service {{if eq .Provider "aws" }}var-lib-etcd.automount{{else}}var-lib-etcd.mount{{end}}
-      After=k8s-setup-network-env.service etcd3-certs.service calico-certs.service {{if eq .Provider "aws" }}var-lib-etcd.automount{{else}}var-lib-etcd.mount{{end}}
+      Requires=k8s-setup-network-env.service etcd3-certs.service calico-certs.service var-lib-etcd.mount
+      After=k8s-setup-network-env.service etcd3-certs.service calico-certs.service var-lib-etcd.mount
       Conflicts=etcd.service etcd2.service
       StartLimitIntervalSec=0
 
@@ -1058,8 +1068,8 @@ systemd:
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-setup-download-hyperkube-binaries.service k8s-setup-delete-old-node.service
-      Requires=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-setup-download-hyperkube-binaries.service k8s-setup-delete-old-node.service
+      After=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-setup-download-hyperkube-binaries.service k8s-setup-delete-old-node.service etcd3.service
+      Requires=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-setup-download-hyperkube-binaries.service k8s-setup-delete-old-node.service etcd3.service
 
       [Service]
       TimeoutStartSec=300
