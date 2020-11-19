@@ -291,12 +291,6 @@ variable "transit_vpc_cidr" {
 
 ### OIDC ###
 
-variable "oidc_enabled" {
-  description = "Configure OIDC flags for Kubernetes API server"
-  default     = false
-  type        = bool
-}
-
 variable "oidc_issuer_dns" {
   type        = string
   description = "subdomain for oidc issuer (i.e. dex.g8s)."

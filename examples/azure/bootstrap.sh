@@ -60,7 +60,6 @@ export TF_VAR_root_dns_zone_name=""
 # export TF_VAR_worker_vm_size="Standard_D8s_v3"
 # OIDC setup
 #export TF_VAR_customer_vpn_public_subnets="0.0.0.0/0"
-#export TF_VAR_oidc_enabled=true
 
 terraform init -backend=true \
 -backend-config="storage_account_name=${TF_VAR_cluster_name}terraform" \
