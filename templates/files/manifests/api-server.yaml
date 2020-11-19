@@ -5,6 +5,11 @@ metadata:
   namespace: kube-system
   annotations:
     scheduler.alpha.kubernetes.io/critical-pod: ''
+  labels:
+    app.kubernetes.io/name: api-server
+    giantswarm.io/service-type: system
+    k8s-app: api-server
+    tier: control-plane
 spec:
   hostNetwork: true
   priorityClassName: system-node-critical
