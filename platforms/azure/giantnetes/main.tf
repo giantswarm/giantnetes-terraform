@@ -145,7 +145,6 @@ locals {
     "LogentriesPrefix"         = "${var.logentries_prefix}"
     "LogentriesToken"          = "${var.logentries_token}"
     "MasterCount"              = "${var.master_count}"
-    "OIDCEnabled"              = "${var.oidc_enabled}"
     "OIDCIssuerURL"            = "https://${var.oidc_issuer_dns}.${var.base_domain}"
     "PodCIDR"                  = "${var.pod_cidr}"
     "Provider"                 = "azure"

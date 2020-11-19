@@ -141,7 +141,6 @@ locals {
     "MasterENISubnetSize"          = "${local.masters_eni_subnet_size}"
     "MasterMountDocker"            = "${var.master_instance["volume_docker"]}"
     "MasterMountETCD"              = "${var.master_instance["volume_etcd"]}"
-    "OIDCEnabled"                  = "${var.oidc_enabled}"
     "OIDCIssuerURL"                = "https://${var.oidc_issuer_dns}.${var.base_domain}"
     "PodCIDR"                      = "${var.aws_cni_cidr_v2}"
     "PodInfraImage"                = "${var.pod_infra_image}"
