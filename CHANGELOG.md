@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Always configure Kubernetes API OIDC with dex issuer.
+
 ### Deleted
 
 - Delete `route53_enabled` parameter as route53 now available in China.
