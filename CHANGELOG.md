@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2020-11-23
+
 ### Added
 
 - Add labels for Kubernetes api-server pod.
@@ -160,7 +162,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v2.1.1...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v2.1.1...v2.2.0
 [2.1.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v1.5.1...v2.0.0
