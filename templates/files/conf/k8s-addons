@@ -127,7 +127,6 @@ $KUBECTL -n kube-system delete daemonset nginx-ingress-controller --ignore-not-f
 # apply k8s addons
 MANIFESTS="default-storage-class.yaml
  coredns-all.yaml
- metrics-server-all.yaml
  default-backend-dep.yaml
  default-backend-svc.yaml
  ingress-controller-cm.yaml
