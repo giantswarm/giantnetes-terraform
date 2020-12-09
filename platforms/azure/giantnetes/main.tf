@@ -2,8 +2,9 @@ provider "azurerm" {
   version = "~> 2.39.0"
 
   features {}
-  metadata_host = var.metadata_host
-  environment   = var.environment
+  metadata_host              = var.metadata_host
+  environment                = var.environment
+  skip_provider_registration = true
 }
 
 data "azurerm_client_config" "current" {}
