@@ -3,7 +3,7 @@ provider "azurerm" {
 
   features {}
   metadata_host = var.metadata_host
-  environment   = var.azure_cloud
+  environment   = var.environment
 }
 
 data "azurerm_client_config" "current" {}
