@@ -21,7 +21,7 @@ variable "azure_location" {
 
 variable "azure_cloud" {
   description = "Azure cloud to use. Possible values can be found here: https://github.com/Azure/go-autorest/blob/ec5f4903f77ed9927ac95b19ab8e44ada64c1356/autorest/azure/environments.go#L13"
-  default     = "AzureCloud"
+  default     = "public"
 }
 
 variable "metadata_host" {
