@@ -1,8 +1,9 @@
 provider "azurerm" {
-  # versions 1.34.0 and 1.35.0 break e2e tests, please don't use them.
-  version = "~> 1.33.0"
+  version = "~> 2.39.0"
 
-  environment = var.azure_cloud
+  features {}
+  metadata_host = var.metadata_host
+  environment   = var.azure_cloud
 }
 
 data "azurerm_client_config" "current" {}

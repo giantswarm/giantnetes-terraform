@@ -15,11 +15,10 @@ resource "azurerm_storage_blob" "ignition_blob" {
 
   name = "master-ignition${count.index}-${md5(var.user_data[count.index])}.yaml"
 
-  resource_group_name    = var.resource_group_name
   storage_account_name   = var.storage_acc
   storage_container_name = var.storage_container
 
-  type   = "block"
+  type   = "Block"
   source = "${path.cwd}/generated/master-ignition${count.index}.yaml"
 }
 
