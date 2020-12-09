@@ -1,7 +1,7 @@
 provider "azurerm" {
-  # versions 1.34.0 and 1.35.0 break e2e tests, please don't use them.
-  version = "~> 1.33.0"
+  version = "~> 2.39.0"
 
+  features {}
   environment = var.azure_cloud
 }
 

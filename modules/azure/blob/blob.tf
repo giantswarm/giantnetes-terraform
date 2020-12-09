@@ -1,16 +1,15 @@
 resource "azurerm_storage_account" "storage_acc" {
   name                      = "${var.cluster_name}config"
-  resource_group_name       = var.resource_group_name
   location                  = var.azure_location
   account_kind              = "BlobStorage"
   account_tier              = "Standard"
   account_replication_type  = "LRS"
   enable_https_traffic_only = true
+  resource_group_name   = var.resource_group_name
 }
 
 resource "azurerm_storage_container" "ignition" {
   name                  = "ignition"
-  resource_group_name   = var.resource_group_name
   storage_account_name  = azurerm_storage_account.storage_acc.name
   container_access_type = "private"
 }
