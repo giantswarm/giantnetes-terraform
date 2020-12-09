@@ -48,6 +48,16 @@ resource "aws_cloudformation_stack" "worker_asg" {
             "Key": "kubernetes.io/cluster/${var.cluster_name}",
             "Value": "owned",
             "PropagateAtLaunch": true
+          },
+          {
+            "Key": "k8s.io/cluster-autoscaler/enabled",
+            "Value": "true",
+            "PropagateAtLaunch": false
+          },
+          {
+            "Key": "k8s.io/cluster-autoscaler/${var.cluster_name}",
+            "Value": "true",
+            "PropagateAtLaunch": false
           }
         ],
         "VPCZoneIdentifier": ${jsonencode(var.worker_subnet_ids)}
