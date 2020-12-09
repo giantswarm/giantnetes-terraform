@@ -2,7 +2,8 @@ provider "azurerm" {
   version = "~> 2.39.0"
 
   features {}
-  environment = var.azure_cloud
+  metadata_host = var.metadata_host
+  environment   = var.azure_cloud
 }
 
 data "azurerm_client_config" "current" {}

@@ -24,6 +24,11 @@ variable "azure_cloud" {
   default     = "AZUREPUBLICCLOUD"
 }
 
+variable "metadata_host" {
+  description = "The Hostname of the Azure Metadata Service, used to obtain the Cloud Environment when using a Custom Azure Environment."
+  default     = "https://management.azure.com"
+}
+
 # Azure has different number of failure domains depending on location.
 # For example, German cloud central location has 2 failure domains.
 variable "platform_fault_domain_count" {
@@ -125,12 +130,12 @@ variable "flatcar_linux_version" {
 }
 
 variable "vault_image_publisher" {
-  type = string
+  type    = string
   default = "kinvolk"
 }
 
 variable "vault_image_offer" {
-  type = string
+  type    = string
   default = "flatcar-container-linux-free"
 }
 
