@@ -26,7 +26,7 @@ variable "azure_cloud" {
 
 variable "metadata_host" {
   description = "The Hostname of the Azure Metadata Service, used to obtain the Cloud Environment when using a Custom Azure Environment."
-  default     = "https://management.azure.com"
+  default     = "management.azure.com"
 }
 
 # Azure has different number of failure domains depending on location.
