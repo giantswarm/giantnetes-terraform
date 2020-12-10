@@ -30,19 +30,6 @@ resource "azurerm_managed_disk" "master_etcd" {
   disk_size_gb         = var.etcd_disk_size
 }
 
-//plan {
-//  name = var.flatcar_linux_channel
-//  publisher = "kinvolk"
-//  product = "flatcar-container-linux-free"
-//}
-//
-//storage_image_reference {
-//  publisher = "kinvolk"
-//  offer     = "flatcar-container-linux-free"
-//  sku       = var.flatcar_linux_channel
-//  version   = var.flatcar_linux_version
-//}
-
 data "azurerm_platform_image" "containerlinux" {
   location  = var.location
   publisher = "kinvolk"
