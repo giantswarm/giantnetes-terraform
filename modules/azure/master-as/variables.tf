@@ -73,6 +73,12 @@ variable "etcd_disk_size" {
   default     = "64"
 }
 
+variable "root_disk_size" {
+  type        = string
+  description = "Size of data disk in GB."
+  default     = "30"
+}
+
 variable "api_backend_address_pool_id" {
   type        = string
   description = "API load balances address pool id."

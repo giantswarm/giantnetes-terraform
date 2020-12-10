@@ -30,6 +30,37 @@ resource "azurerm_managed_disk" "master_etcd" {
   disk_size_gb         = var.etcd_disk_size
 }
 
+//plan {
+//  name = var.flatcar_linux_channel
+//  publisher = "kinvolk"
+//  product = "flatcar-container-linux-free"
+//}
+//
+//storage_image_reference {
+//  publisher = "kinvolk"
+//  offer     = "flatcar-container-linux-free"
+//  sku       = var.flatcar_linux_channel
+//  version   = var.flatcar_linux_version
+//}
+
+data "azurerm_platform_image" "containerlinux" {
+  location  = var.location
+  publisher = "kinvolk"
+  offer     = var.flatcar_linux_channel
+  sku       = var.flatcar_linux_version
+}
+
+resource "azurerm_managed_disk" "source" {
+  count = var.master_count
+  name = "master${count.index}"
+  location             = var.location
+  resource_group_name  = var.resource_group_name
+  storage_account_type = "Standard_LRS"
+  create_option        = "FromImage"
+  image_reference_id   = data.azurerm_platform_image.containerlinux.id
+  disk_size_gb         = var.root_disk_size
+}
+
 resource "azurerm_virtual_machine" "master" {
   count = var.master_count
 
@@ -43,27 +74,12 @@ resource "azurerm_virtual_machine" "master" {
   availability_set_id   = azurerm_availability_set.masters.id
   vm_size               = var.vm_size
 
-  delete_os_disk_on_termination = true
-
   delete_data_disks_on_termination = false
-
-  storage_image_reference {
-    publisher = "kinvolk"
-    offer     = "flatcar-container-linux-free"
-    sku       = var.flatcar_linux_channel
-    version   = var.flatcar_linux_version
-  }
-
-  plan {
-    name = var.flatcar_linux_channel
-    publisher = "kinvolk"
-    product = "flatcar-container-linux-free"
-  }
 
   storage_os_disk {
     name              = "master-${count.index}-os"
-    managed_disk_type = var.os_disk_storage_type
-    create_option     = "FromImage"
+    managed_disk_id   = var.os_disk_storage_type
+    create_option     = "Attach"
     caching           = "ReadWrite"
     os_type           = "linux"
   }
