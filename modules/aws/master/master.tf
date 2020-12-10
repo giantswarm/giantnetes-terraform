@@ -46,12 +46,12 @@ resource "aws_cloudformation_stack" "master_asg" {
           },
           {
             "Key": "giantswarm.io/cluster",
-            "Value": var.cluster_name,
+            "Value": "${var.cluster_name}",
             "PropagateAtLaunch": true
           },
           {
             "Key": "giantswarm.io/installation",
-            "Value": var.cluster_name,
+            "Value": "${var.cluster_name}",
             "PropagateAtLaunch": true
           },
           {
