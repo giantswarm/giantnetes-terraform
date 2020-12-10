@@ -47,7 +47,7 @@ resource "azurerm_virtual_machine" "master" {
   availability_set_id   = azurerm_availability_set.masters.id
   vm_size               = var.vm_size
 
-  delete_os_disk_on_termination = true
+  delete_os_disk_on_termination = false
 
   delete_data_disks_on_termination = false
 
