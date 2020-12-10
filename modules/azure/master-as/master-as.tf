@@ -33,8 +33,9 @@ resource "azurerm_managed_disk" "master_etcd" {
 data "azurerm_platform_image" "containerlinux" {
   location  = var.location
   publisher = "kinvolk"
-  offer     = var.flatcar_linux_channel
-  sku       = var.flatcar_linux_version
+  offer     = "flatcar-container-linux-free"
+  sku       = var.flatcar_linux_channel
+  version   = var.flatcar_linux_version
 }
 
 resource "azurerm_managed_disk" "source" {
