@@ -15,9 +15,9 @@ resource "aws_route53_zone" "public" {
   name    = var.zone_name
 
   tags = {
-    Name                         = "${var.zone_name}"
-    "giantswarm.io/cluster"      = "${var.cluster_name}"
-    "giantswarm.io/installation" = "${var.cluster_name}"
+    Name                         = var.zone_name
+    "giantswarm.io/cluster"      = var.cluster_name
+    "giantswarm.io/installation" = var.cluster_name
   }
 
   lifecycle {

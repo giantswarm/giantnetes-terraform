@@ -1,10 +1,10 @@
 locals {
   # In China there is no tags for s3 buckets
-  s3_ignition_worker_key = "${element(concat(aws_s3_bucket_object.ignition_worker_with_tags.*.key, aws_s3_bucket_object.ignition_worker_without_tags.*.key), 0)}"
+  s3_ignition_worker_key = element(concat(aws_s3_bucket_object.ignition_worker_with_tags.*.key, aws_s3_bucket_object.ignition_worker_without_tags.*.key), 0)
 
   common_tags = map(
-    "giantswarm.io/cluster", "${var.cluster_name}",
-    "giantswarm.io/installation", "${var.cluster_name}",
+    "giantswarm.io/cluster", var.cluster_name,
+    "giantswarm.io/installation", var.cluster_name,
     "kubernetes.io/cluster/${var.cluster_name}", "owned"
   )
 }
@@ -36,12 +36,12 @@ resource "aws_cloudformation_stack" "worker_asg" {
           },
           {
             "Key": "giantswarm.io/cluster",
-            "Value": "${var.cluster_name}",
+            "Value": var.cluster_name,
             "PropagateAtLaunch": true
           },
           {
             "Key": "giantswarm.io/installation",
-            "Value": "${var.cluster_name}",
+            "Value": var.cluster_name,
             "PropagateAtLaunch": true
           },
           {
@@ -88,7 +88,7 @@ resource "aws_launch_configuration" "worker" {
   iam_instance_profile = aws_iam_instance_profile.worker.name
   image_id             = var.container_linux_ami_id
   instance_type        = var.instance_type
-  security_groups      = ["${aws_security_group.worker.id}"]
+  security_groups      = [aws_security_group.worker.id]
 
   lifecycle {
     create_before_destroy = true
@@ -129,7 +129,7 @@ resource "aws_security_group" "worker" {
     from_port   = 10
     to_port     = 65535
     protocol    = "tcp"
-    cidr_blocks = ["${var.vpc_cidr}", "${var.aws_cni_cidr_block}"]
+    cidr_blocks = [var.vpc_cidr, var.aws_cni_cidr_block]
   }
 
   # Allow access from vpc
@@ -137,7 +137,7 @@ resource "aws_security_group" "worker" {
     from_port   = 10
     to_port     = 65535
     protocol    = "udp"
-    cidr_blocks = ["${var.vpc_cidr}", "${var.aws_cni_cidr_block}"]
+    cidr_blocks = [var.vpc_cidr, var.aws_cni_cidr_block]
   }
 
   # Allow IPIP traffic from vpc
@@ -145,7 +145,7 @@ resource "aws_security_group" "worker" {
     from_port   = 0
     to_port     = 0
     protocol    = 4
-    cidr_blocks = ["${var.vpc_cidr}"]
+    cidr_blocks = [var.vpc_cidr]
   }
 
   tags = merge(

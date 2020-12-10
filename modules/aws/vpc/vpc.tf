@@ -7,12 +7,12 @@
 #   * the private nat gateway is in the elb subnet as well (needs to be in a public subnet)
 
 locals {
-  common_tags = "${map(
-    "giantswarm.io/cluster", "${var.cluster_name}",
-    "giantswarm.io/installation", "${var.cluster_name}",
+  common_tags = map(
+    "giantswarm.io/cluster", var.cluster_name,
+    "giantswarm.io/installation", var.cluster_name,
     "giantswarm.io/cluster-type", "control-plane",
     "kubernetes.io/cluster/${var.cluster_name}", "owned"
-  )}"
+  )
 
   policy_allow = <<EOF
 {
@@ -72,7 +72,7 @@ resource "aws_vpc" "cluster_vpc" {
   tags = merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}"
+      "Name", var.cluster_name
     )
   )
 }
@@ -83,7 +83,7 @@ resource "aws_internet_gateway" "cluster_vpc" {
   tags = merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}"
+      "Name", var.cluster_name
     )
   )
 }

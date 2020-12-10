@@ -1,12 +1,12 @@
 locals {
   # In China there is no tags for s3 buckets
-  s3_ignition_vault_key = "${element(concat(aws_s3_bucket_object.ignition_vault_with_tags.*.key, aws_s3_bucket_object.ignition_vault_without_tags.*.key), 0)}"
+  s3_ignition_vault_key = element(concat(aws_s3_bucket_object.ignition_vault_with_tags.*.key, aws_s3_bucket_object.ignition_vault_without_tags.*.key), 0)
 
-  common_tags = "${map(
-    "giantswarm.io/cluster", "${var.cluster_name}",
-    "giantswarm.io/installation", "${var.cluster_name}",
+  common_tags = map(
+    "giantswarm.io/cluster", var.cluster_name,
+    "giantswarm.io/installation", var.cluster_name,
     "kubernetes.io/cluster/${var.cluster_name}", "owned"
-  )}"
+  )
 }
 
 data "aws_availability_zones" "available" {}
@@ -14,13 +14,13 @@ data "aws_availability_zones" "available" {}
 # "Recreate" worker subnets in order to lookup CIDR blocks for security group
 # node-exporter ruler.
 data "aws_subnet" "worker_subnets" {
-  count = "${var.worker_subnet_count}"
+  count = var.worker_subnet_count
 
-  id = "${var.worker_subnet_ids[count.index]}"
+  id = var.worker_subnet_ids[count.index]
 }
 
 resource "aws_instance" "vault" {
-  count         = length("${aws_security_group.vault}")
+  count         = length(aws_security_group.vault)
   ami           = var.container_linux_ami_id
   instance_type = var.instance_type
 
@@ -28,7 +28,7 @@ resource "aws_instance" "vault" {
   iam_instance_profile        = aws_iam_instance_profile.vault.id
   source_dest_check           = false
   subnet_id                   = var.vault_subnet_ids[count.index]
-  vpc_security_group_ids      = ["${aws_security_group.vault[count.index].id}"]
+  vpc_security_group_ids      = [aws_security_group.vault[count.index].id]
 
   lifecycle {
     # Vault provisioned also by Ansible,
@@ -45,8 +45,8 @@ resource "aws_instance" "vault" {
 
   tags = {
     Name                         = "${var.cluster_name}-vault${count.index}"
-    "giantswarm.io/cluster"      = "${var.cluster_name}"
-    "giantswarm.io/installation" = "${var.cluster_name}"
+    "giantswarm.io/cluster"      = var.cluster_name
+    "giantswarm.io/installation" = var.cluster_name
   }
 }
 
@@ -57,8 +57,8 @@ resource "aws_ebs_volume" "vault_etcd" {
 
   tags = {
     Name                         = "${var.cluster_name}-vault"
-    "giantswarm.io/cluster"      = "${var.cluster_name}"
-    "giantswarm.io/installation" = "${var.cluster_name}"
+    "giantswarm.io/cluster"      = var.cluster_name
+    "giantswarm.io/installation" = var.cluster_name
   }
 }
 
@@ -79,8 +79,8 @@ resource "aws_ebs_volume" "vault_logs" {
 
   tags = {
     Name                         = "${var.cluster_name}-vault"
-    "giantswarm.io/cluster"      = "${var.cluster_name}"
-    "giantswarm.io/installation" = "${var.cluster_name}"
+    "giantswarm.io/cluster"      = var.cluster_name
+    "giantswarm.io/installation" = var.cluster_name
   }
 }
 
@@ -112,7 +112,7 @@ resource "aws_security_group" "vault" {
     from_port   = 8200
     to_port     = 8200
     protocol    = "tcp"
-    cidr_blocks = ["${var.vpc_cidr}","${var.aws_cni_cidr_block}"]
+    cidr_blocks = [var.vpc_cidr,var.aws_cni_cidr_block]
   }
 
   # Allow Vault API from guest-vpc
@@ -121,7 +121,7 @@ resource "aws_security_group" "vault" {
     from_port   = 8200
     to_port     = 8200
     protocol    = "tcp"
-    cidr_blocks = ["${var.ipam_network_cidr}"]
+    cidr_blocks = [var.ipam_network_cidr]
   }
 
   # Allow SSH from vpc
@@ -129,7 +129,7 @@ resource "aws_security_group" "vault" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["${var.vpc_cidr}"]
+    cidr_blocks = [var.vpc_cidr]
   }
 
   # Allow node-exporter from worker nodes.
@@ -137,7 +137,7 @@ resource "aws_security_group" "vault" {
     from_port   = 10300
     to_port     = 10300
     protocol    = "tcp"
-    cidr_blocks = concat(data.aws_subnet.worker_subnets.*.cidr_block,["${var.aws_cni_cidr_block}"])
+    cidr_blocks = concat(data.aws_subnet.worker_subnets.*.cidr_block,[var.aws_cni_cidr_block])
   }
 
   # Allow cert-exporter from worker nodes.
@@ -145,13 +145,13 @@ resource "aws_security_group" "vault" {
     from_port   = 9005
     to_port     = 9005
     protocol    = "tcp"
-    cidr_blocks = concat(data.aws_subnet.worker_subnets.*.cidr_block,["${var.aws_cni_cidr_block}"])
+    cidr_blocks = concat(data.aws_subnet.worker_subnets.*.cidr_block,[var.aws_cni_cidr_block])
   }
 
   tags = {
     Name                         = "${var.cluster_name}-vault"
-    "giantswarm.io/cluster"      = "${var.cluster_name}"
-    "giantswarm.io/installation" = "${var.cluster_name}"
+    "giantswarm.io/cluster"      = var.cluster_name
+    "giantswarm.io/installation" = var.cluster_name
   }
 }
 
@@ -161,7 +161,7 @@ resource "aws_route53_record" "vault" {
   name    = "vault${count.index + 1}"
   type    = "A"
 
-  records = ["${element(aws_instance.vault.*.private_ip, count.index)}"]
+  records = [element(aws_instance.vault.*.private_ip, count.index)]
   ttl     = "300"
 }
 
@@ -198,7 +198,7 @@ resource "aws_s3_bucket_object" "ignition_vault_without_tags" {
 
 data "ignition_config" "s3" {
   replace {
-    source       = "${format("s3://%s/%s", var.ignition_bucket_id, local.s3_ignition_vault_key)}"
+    source       = format("s3://%s/%s", var.ignition_bucket_id, local.s3_ignition_vault_key)
     verification = "sha512-${sha512(var.user_data)}"
   }
 }

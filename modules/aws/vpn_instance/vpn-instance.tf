@@ -1,13 +1,13 @@
 locals {
   # In China there is no tags for s3 buckets
-  vpn_instance_enabled = "${concat(aws_s3_bucket_object.ignition_vpn_instance_with_tags.*.key, aws_s3_bucket_object.ignition_vpn_instance_without_tags.*.key)}"
+  vpn_instance_enabled = concat(aws_s3_bucket_object.ignition_vpn_instance_with_tags.*.key, aws_s3_bucket_object.ignition_vpn_instance_without_tags.*.key)
   s3_ignition_vpn_instance_key = length(local.vpn_instance_enabled) > 0 ? element(local.vpn_instance_enabled, 0) : ""
 
-  common_tags = "${map(
-    "giantswarm.io/cluster", "${var.cluster_name}",
-    "giantswarm.io/installation", "${var.cluster_name}",
+  common_tags = map(
+    "giantswarm.io/cluster", var.cluster_name,
+    "giantswarm.io/installation", var.cluster_name,
     "kubernetes.io/cluster/${var.cluster_name}", "owned"
-  )}"
+  )
 }
 
 data "aws_region" "current" {}
@@ -21,7 +21,7 @@ resource "aws_instance" "vpn_instance" {
   associate_public_ip_address = true
   source_dest_check           = false
   subnet_id                   = var.bastion_subnet_ids[count.index]
-  vpc_security_group_ids      = ["${aws_security_group.vpn_instance[count.index].id}"]
+  vpc_security_group_ids      = [aws_security_group.vpn_instance[count.index].id]
 
   root_block_device {
     volume_type = var.volume_type
@@ -32,8 +32,8 @@ resource "aws_instance" "vpn_instance" {
 
   tags = {
     Name                         = "${var.cluster_name}-vpn-instance${count.index}"
-    "giantswarm.io/cluster"      = "${var.cluster_name}"
-    "giantswarm.io/installation" = "${var.cluster_name}"
+    "giantswarm.io/cluster"      = var.cluster_name
+    "giantswarm.io/installation" = var.cluster_name
   }
 }
 
@@ -66,7 +66,7 @@ resource "aws_security_group" "vpn_instance" {
     from_port   = 10
     to_port     = 65535
     protocol    = "tcp"
-    cidr_blocks = ["${var.vpc_cidr}"]
+    cidr_blocks = [var.vpc_cidr]
   }
 
   # Allow access from vpc
@@ -74,7 +74,7 @@ resource "aws_security_group" "vpn_instance" {
     from_port   = 10
     to_port     = 65535
     protocol    = "udp"
-    cidr_blocks = ["${var.vpc_cidr}"]
+    cidr_blocks = [var.vpc_cidr]
   }
 
   # Allow any traffic from VPN servers
@@ -82,7 +82,7 @@ resource "aws_security_group" "vpn_instance" {
     from_port   = 10
     to_port     = 65535
     protocol    = "tcp"
-    cidr_blocks = ["${var.external_vpn_cidr_0}", "${var.external_vpn_cidr_1}"]
+    cidr_blocks = [var.external_vpn_cidr_0, var.external_vpn_cidr_1]
     self        = true
   }
 
@@ -91,14 +91,14 @@ resource "aws_security_group" "vpn_instance" {
     from_port   = 10
     to_port     = 65535
     protocol    = "udp"
-    cidr_blocks = ["${var.external_vpn_cidr_0}", "${var.external_vpn_cidr_1}"]
+    cidr_blocks = [var.external_vpn_cidr_0, var.external_vpn_cidr_1]
     self        = true
   }
 
   tags = {
     Name                         = "${var.cluster_name}-vpn-instance"
-    "giantswarm.io/cluster"      = "${var.cluster_name}"
-    "giantswarm.io/installation" = "${var.cluster_name}"
+    "giantswarm.io/cluster"      = var.cluster_name
+    "giantswarm.io/installation" = var.cluster_name
   }
 }
 
@@ -143,10 +143,10 @@ resource "aws_s3_bucket_object" "ignition_vpn_instance_without_tags" {
 }
 
 data "ignition_config" "s3" {
-  count = "${var.vpn_instance_enabled ? 1 : 0}"
+  count = var.vpn_instance_enabled ? 1 : 0
 
   replace {
-    source       = "${format("s3://%s/%s", var.ignition_bucket_id, local.s3_ignition_vpn_instance_key)}"
+    source       = format("s3://%s/%s", var.ignition_bucket_id, local.s3_ignition_vpn_instance_key)
     verification = "sha512-${sha512(var.user_data)}"
   }
 }
