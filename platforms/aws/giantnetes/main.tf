@@ -1,6 +1,4 @@
 provider "aws" {
-  version = "~> 2.32.0"
-
   # Make sure to define profile in ~/.aws/config
   profile = var.cluster_name
   region  = var.aws_region

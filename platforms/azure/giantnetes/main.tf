@@ -1,6 +1,4 @@
 provider "azurerm" {
-  version = "~> 2.39.0"
-
   features {}
   metadata_host              = var.metadata_host
   environment                = var.environment
