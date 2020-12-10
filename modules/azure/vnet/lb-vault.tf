@@ -9,7 +9,7 @@ resource "azurerm_lb" "vault_lb" {
   }
 
   tags = {
-    GiantSwarmInstallation = "${var.cluster_name}"
+    GiantSwarmInstallation = var.cluster_name
   }
 }
 
@@ -18,7 +18,7 @@ resource "azurerm_dns_a_record" "vault_dns" {
   zone_name           = var.base_domain
   resource_group_name = var.resource_group_name
   ttl                 = 300
-  records             = ["${azurerm_lb.vault_lb.private_ip_address}"]
+  records             = [azurerm_lb.vault_lb.private_ip_address]
 }
 
 resource "azurerm_lb_backend_address_pool" "vault-lb" {

@@ -1,5 +1,5 @@
 locals {
-  timenow = "${timestamp()}"
+  timenow = timestamp()
 }
 
 # Only necessary, because azurerm_storage_blob requires file as a source.

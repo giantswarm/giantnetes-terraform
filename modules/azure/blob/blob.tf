@@ -15,13 +15,13 @@ resource "azurerm_storage_container" "ignition" {
 }
 
 output "storage_acc" {
-  value = "${azurerm_storage_account.storage_acc.name}"
+  value = azurerm_storage_account.storage_acc.name
 }
 
 output "storage_acc_url" {
-  value = "${azurerm_storage_account.storage_acc.primary_connection_string}"
+  value = azurerm_storage_account.storage_acc.primary_connection_string
 }
 
 output "storage_container" {
-  value = "${azurerm_storage_container.ignition.name}"
+  value = azurerm_storage_container.ignition.name
 }

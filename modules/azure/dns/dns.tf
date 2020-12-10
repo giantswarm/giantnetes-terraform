@@ -43,6 +43,6 @@ resource "azurerm_dns_ns_record" "dns_zone_propagation" {
   records = azurerm_dns_zone.dns_zone[count.index].name_servers
 
   tags = {
-    GiantSwarmInstallation = "${var.cluster_name}"
+    GiantSwarmInstallation = var.cluster_name
   }
 }

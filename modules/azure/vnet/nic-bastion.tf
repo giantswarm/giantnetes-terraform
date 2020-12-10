@@ -28,5 +28,5 @@ resource "azurerm_dns_a_record" "bastion_dns" {
   zone_name           = var.base_domain
   resource_group_name = var.resource_group_name
   ttl                 = 300
-  records             = ["${var.vpn_enabled ? element(azurerm_network_interface.bastion.*.private_ip_address, count.index) : element(concat(azurerm_public_ip.bastion_public_ip.*.ip_address, list("")), count.index)}"]
+  records             = [var.vpn_enabled ? element(azurerm_network_interface.bastion.*.private_ip_address, count.index) : element(concat(azurerm_public_ip.bastion_public_ip.*.ip_address, list("")), count.index)]
 }

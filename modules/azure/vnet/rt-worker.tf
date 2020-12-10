@@ -5,6 +5,6 @@ resource "azurerm_route_table" "worker_rt" {
   resource_group_name = var.resource_group_name
 
   tags = {
-    GiantSwarmInstallation = "${var.cluster_name}"
+    GiantSwarmInstallation = var.cluster_name
   }
 }

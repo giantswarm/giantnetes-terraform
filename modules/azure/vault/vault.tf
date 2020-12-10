@@ -20,7 +20,7 @@ resource "azurerm_virtual_machine" "vault" {
   name                  = "vault"
   location              = var.location
   resource_group_name   = var.resource_group_name
-  network_interface_ids = ["${var.network_interface_ids[0]}"]
+  network_interface_ids = [var.network_interface_ids[0]]
   vm_size               = var.vm_size
 
   lifecycle {
@@ -91,6 +91,6 @@ resource "azurerm_virtual_machine" "vault" {
   }
 
   tags = {
-    GiantSwarmInstallation = "${var.cluster_name}"
+    GiantSwarmInstallation = var.cluster_name
   }
 }

@@ -10,7 +10,7 @@ resource "azurerm_lb" "api_lb_internal" {
   }
 
   tags = {
-    GiantSwarmInstallation = "${var.cluster_name}"
+    GiantSwarmInstallation = var.cluster_name
   }
 }
 
@@ -19,7 +19,7 @@ resource "azurerm_dns_a_record" "api_dns_internal" {
   zone_name           = var.base_domain
   resource_group_name = var.resource_group_name
   ttl                 = 300
-  records             = ["${azurerm_lb.api_lb_internal.private_ip_address}"]
+  records             = [azurerm_lb.api_lb_internal.private_ip_address]
 }
 
 resource "azurerm_lb_backend_address_pool" "api-lb-internal" {

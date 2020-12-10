@@ -15,7 +15,7 @@ resource "azurerm_virtual_machine" "bastion" {
   name                  = "bastion${count.index}"
   location              = var.location
   resource_group_name   = var.resource_group_name
-  network_interface_ids = ["${var.network_interface_ids[count.index]}"]
+  network_interface_ids = [var.network_interface_ids[count.index]]
   vm_size               = var.vm_size
   availability_set_id   = azurerm_availability_set.bastions.id
 
@@ -59,6 +59,6 @@ resource "azurerm_virtual_machine" "bastion" {
   }
 
   tags = {
-    GiantSwarmInstallation = "${var.cluster_name}"
+    GiantSwarmInstallation = var.cluster_name
   }
 }
