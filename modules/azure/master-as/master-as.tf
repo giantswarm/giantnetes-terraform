@@ -38,7 +38,7 @@ data "azurerm_platform_image" "containerlinux" {
   version   = var.flatcar_linux_version
 }
 
-resource "azurerm_managed_disk" "source" {
+resource "azurerm_managed_disk" "master_root" {
   count = var.master_count
   name = "master${count.index}"
   location             = var.location
@@ -65,11 +65,11 @@ resource "azurerm_virtual_machine" "master" {
   delete_data_disks_on_termination = false
 
   storage_os_disk {
-    name              = "master-${count.index}-os"
-    managed_disk_id   = var.os_disk_storage_type
-    create_option     = "Attach"
-    caching           = "ReadWrite"
-    os_type           = "linux"
+    name            = "master-${count.index}-os"
+    managed_disk_id = element(azurerm_managed_disk.master_root.*.id, count.index)
+    create_option   = "Attach"
+    caching         = "ReadWrite"
+    os_type         = "linux"
   }
 
   storage_data_disk {
