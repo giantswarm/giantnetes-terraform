@@ -30,6 +30,10 @@ resource "azurerm_managed_disk" "master_etcd" {
   disk_size_gb         = var.etcd_disk_size
 }
 
+resource "time_sleep" "wait_30_seconds" {
+  create_duration = "30s"
+}
+
 resource "azurerm_virtual_machine" "master" {
   count = var.master_count
 
@@ -110,4 +114,5 @@ resource "azurerm_virtual_machine" "master" {
     ignore_changes = all
   }
 
+  depends_on = [time_sleep.wait_30_seconds]
 }
