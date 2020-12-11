@@ -89,3 +89,7 @@ output "ingress_backend_address_pool_id" {
 output "vault_backend_address_pool_id" {
   value = azurerm_lb_backend_address_pool.vault-lb.id
 }
+
+output "node_health_probe_id" {
+  value = azurerm_lb_probe.ssh.id
+}

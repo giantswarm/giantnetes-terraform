@@ -2,6 +2,7 @@ resource "azurerm_lb" "ingress_lb" {
   name                = "${var.cluster_name}-ingress-lb"
   location            = var.location
   resource_group_name = var.resource_group_name
+  sku                 = "Standard"
 
   frontend_ip_configuration {
     name                          = "ingress"
@@ -19,6 +20,7 @@ resource "azurerm_public_ip" "ingress_ip" {
   location            = var.location
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
+  sku                 = "Standard"
 
   tags = {
     GiantSwarmInstallation = var.cluster_name
@@ -90,6 +92,29 @@ resource "azurerm_lb_probe" "ingress_30011_lb" {
   resource_group_name = var.resource_group_name
   protocol            = "tcp"
   port                = 30011
+  interval_in_seconds = 5
+  number_of_probes    = 2
+}
+
+resource "azurerm_lb_rule" "ingress_ssh_lb" {
+  name                    = "ingress-lb-fake-rule-for-node-health"
+  resource_group_name     = var.resource_group_name
+  loadbalancer_id         = azurerm_lb.ingress_lb.id
+  backend_address_pool_id = azurerm_lb_backend_address_pool.ingress-lb.id
+  probe_id                = azurerm_lb_probe.ssh.id
+
+  protocol                       = "tcp"
+  frontend_port                  = 65000
+  backend_port                   = 65000
+  frontend_ip_configuration_name = "ingress"
+}
+
+resource "azurerm_lb_probe" "ssh" {
+  name                = "ssh-probe"
+  loadbalancer_id     = azurerm_lb.ingress_lb.id
+  resource_group_name = var.resource_group_name
+  protocol            = "tcp"
+  port                = 22
   interval_in_seconds = 5
   number_of_probes    = 2
 }

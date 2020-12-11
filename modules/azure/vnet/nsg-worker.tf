@@ -3,8 +3,9 @@ locals {
   customer_vpn_public_subnets = var.customer_vpn_public_subnets != "" ? split(",", var.customer_vpn_public_subnets) : []
   giantswarm_vpn_subnets = ["${var.external_ipsec_public_ip_0}/32", "${var.external_ipsec_public_ip_1}/32"]
   ingress_lb_subnets = ["${azurerm_public_ip.api_ip.ip_address}/32", "${azurerm_public_ip.ingress_ip.ip_address}/32"]
+  worker_nat_gw_cidr = ["${azurerm_public_ip.workers_egress_ip.ip_address}/32"]
 
-  k8s_api_external_access_whitelist = var.customer_vpn_public_subnets != "0.0.0.0/0" ? concat(local.customer_vpn_public_subnets, local.giantswarm_vpn_subnets, local.ingress_lb_subnets) : ["0.0.0.0/0"]
+  k8s_api_external_access_whitelist = var.customer_vpn_public_subnets != "0.0.0.0/0" ? concat(local.customer_vpn_public_subnets, local.giantswarm_vpn_subnets, local.ingress_lb_subnets, local.worker_nat_gw_cidr) : ["0.0.0.0/0"]
 }
 
 resource "azurerm_network_security_group" "worker" {
