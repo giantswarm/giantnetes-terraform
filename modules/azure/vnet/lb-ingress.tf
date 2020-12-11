@@ -2,7 +2,6 @@ resource "azurerm_lb" "ingress_lb" {
   name                = "${var.cluster_name}-ingress-lb"
   location            = var.location
   resource_group_name = var.resource_group_name
-  sku                 = "Standard"
 
   frontend_ip_configuration {
     name                          = "ingress"
@@ -20,7 +19,6 @@ resource "azurerm_public_ip" "ingress_ip" {
   location            = var.location
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
-  sku                 = "Standard"
 
   tags = {
     GiantSwarmInstallation = var.cluster_name

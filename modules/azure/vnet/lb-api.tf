@@ -2,7 +2,6 @@ resource "azurerm_lb" "api_lb" {
   name                = "${var.cluster_name}-cluster-lb"
   location            = var.location
   resource_group_name = var.resource_group_name
-  sku                 = "Standard"
 
   frontend_ip_configuration {
     name                          = "api"
@@ -20,7 +19,6 @@ resource "azurerm_public_ip" "api_ip" {
   location            = var.location
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
-  sku                 = "Standard"
 
   tags = {
     GiantSwarmInstallation = var.cluster_name
