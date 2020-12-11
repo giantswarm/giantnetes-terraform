@@ -2,7 +2,7 @@ resource "aws_elb" "vault" {
   name            = "${var.cluster_name}-vault"
   internal        = true
   subnets         = var.elb_subnet_ids
-  security_groups = ["${aws_security_group.vault_elb.id}"]
+  security_groups = [aws_security_group.vault_elb.id]
 
   listener {
     instance_port     = var.vault_port
@@ -21,8 +21,8 @@ resource "aws_elb" "vault" {
 
   tags = {
     Name                         = "${var.cluster_name}-vault"
-    "giantswarm.io/cluster"      = "${var.cluster_name}"
-    "giantswarm.io/installation" = "${var.cluster_name}"
+    "giantswarm.io/cluster"      = var.cluster_name
+    "giantswarm.io/installation" = var.cluster_name
   }
 }
 
@@ -47,20 +47,20 @@ resource "aws_security_group" "vault_elb" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["${var.vpc_cidr}", "${var.aws_cni_cidr_block}"]
+    cidr_blocks = [var.vpc_cidr, var.aws_cni_cidr_block]
   }
 
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["${var.ipam_network_cidr}"]
+    cidr_blocks = [var.ipam_network_cidr]
   }
 
   tags = {
     Name                         = "${var.cluster_name}-vault-elb"
-    "giantswarm.io/cluster"      = "${var.cluster_name}"
-    "giantswarm.io/installation" = "${var.cluster_name}"
+    "giantswarm.io/cluster"      = var.cluster_name
+    "giantswarm.io/installation" = var.cluster_name
   }
 }
 

@@ -3,7 +3,7 @@ resource "aws_elb" "worker" {
   cross_zone_load_balancing = true
   internal                  = false
   subnets                   = var.elb_subnet_ids
-  security_groups           = ["${aws_security_group.worker_elb.id}"]
+  security_groups           = [aws_security_group.worker_elb.id]
 
   listener {
     instance_port     = 30010

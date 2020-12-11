@@ -6,7 +6,7 @@ resource "azurerm_availability_set" "workers" {
   platform_fault_domain_count = var.platform_fault_domain_count
 
   tags = {
-    GiantSwarmInstallation = "${var.cluster_name}"
+    GiantSwarmInstallation = var.cluster_name
   }
 }
 
@@ -29,7 +29,7 @@ resource "azurerm_virtual_machine" "worker" {
 
   location              = var.location
   resource_group_name   = var.resource_group_name
-  network_interface_ids = ["${var.network_interface_ids[count.index]}"]
+  network_interface_ids = [var.network_interface_ids[count.index]]
   availability_set_id   = azurerm_availability_set.workers.id
   vm_size               = var.vm_size
 
@@ -88,6 +88,6 @@ resource "azurerm_virtual_machine" "worker" {
   }
 
   tags = {
-    GiantSwarmInstallation = "${var.cluster_name}"
+    GiantSwarmInstallation = var.cluster_name
   }
 }

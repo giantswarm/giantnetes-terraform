@@ -57,7 +57,7 @@ resource "aws_security_group" "cni" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["${var.vpc_cidr}", "${var.aws_cni_cidr_v2}"]
+    cidr_blocks = [var.vpc_cidr, var.aws_cni_cidr_v2]
   }
 
   egress {

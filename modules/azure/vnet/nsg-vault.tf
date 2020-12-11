@@ -4,7 +4,7 @@ resource "azurerm_network_security_group" "vault" {
   resource_group_name = var.resource_group_name
 
   tags = {
-    GiantSwarmInstallation = "${var.cluster_name}"
+    GiantSwarmInstallation = var.cluster_name
   }
 }
 

@@ -1,9 +1,9 @@
 locals {
-  common_tags = "${map(
-    "giantswarm.io/cluster", "${var.cluster_name}",
-    "giantswarm.io/installation", "${var.cluster_name}",
+  common_tags = map(
+    "giantswarm.io/cluster", var.cluster_name,
+    "giantswarm.io/installation", var.cluster_name,
     "kubernetes.io/cluster/${var.cluster_name}", "owned"
-  )}"
+  )
 }
 
 resource "aws_s3_bucket" "logging" {
@@ -68,11 +68,11 @@ resource "aws_s3_bucket" "ignition" {
 }
 
 output "ignition_bucket_id" {
-  value = "${aws_s3_bucket.ignition.id}"
+  value = aws_s3_bucket.ignition.id
 }
 
 output "logging_bucket_id" {
-  value = "${aws_s3_bucket.logging.id}"
+  value = aws_s3_bucket.logging.id
 }
 
 resource "aws_cloudwatch_log_group" "control-plane" {

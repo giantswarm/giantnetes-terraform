@@ -1,5 +1,5 @@
 locals {
-  
+
   customer_vpn_public_subnets = var.customer_vpn_public_subnets != "" ? split(",", var.customer_vpn_public_subnets) : []
   giantswarm_vpn_subnets = ["${var.external_ipsec_public_ip_0}/32", "${var.external_ipsec_public_ip_1}/32"]
   ingress_lb_subnets = ["${azurerm_public_ip.api_ip.ip_address}/32", "${azurerm_public_ip.ingress_ip.ip_address}/32"]
@@ -13,7 +13,7 @@ resource "azurerm_network_security_group" "worker" {
   resource_group_name = var.resource_group_name
 
   tags = {
-    GiantSwarmInstallation = "${var.cluster_name}"
+    GiantSwarmInstallation = var.cluster_name
   }
 }
 

@@ -21,5 +21,5 @@ resource "azurerm_dns_a_record" "vault_private_dns" {
   zone_name           = var.base_domain
   resource_group_name = var.resource_group_name
   ttl                 = 300
-  records             = ["${azurerm_network_interface.vault.private_ip_address}"]
+  records             = [azurerm_network_interface.vault.private_ip_address]
 }

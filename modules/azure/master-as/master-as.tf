@@ -6,7 +6,7 @@ resource "azurerm_availability_set" "masters" {
   platform_fault_domain_count = var.platform_fault_domain_count
 
   tags = {
-    GiantSwarmInstallation = "${var.cluster_name}"
+    GiantSwarmInstallation = var.cluster_name
   }
 }
 
@@ -39,7 +39,7 @@ resource "azurerm_virtual_machine" "master" {
 
   location              = var.location
   resource_group_name   = var.resource_group_name
-  network_interface_ids = ["${var.network_interface_ids[count.index]}"]
+  network_interface_ids = [var.network_interface_ids[count.index]]
   availability_set_id   = azurerm_availability_set.masters.id
   vm_size               = var.vm_size
 
@@ -101,7 +101,7 @@ resource "azurerm_virtual_machine" "master" {
   }
 
   tags = {
-    GiantSwarmInstallation = "${var.cluster_name}"
+    GiantSwarmInstallation = var.cluster_name
   }
 
   # we ignore changes, to avoid rolling all masters at once
@@ -109,4 +109,5 @@ resource "azurerm_virtual_machine" "master" {
   lifecycle {
     ignore_changes = all
   }
+
 }

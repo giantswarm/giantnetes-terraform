@@ -4,7 +4,7 @@ resource "aws_elb" "master_api" {
   idle_timeout              = 3600
   internal                  = false
   subnets                   = var.elb_subnet_ids
-  security_groups           = ["${aws_security_group.master_elb_api.id}"]
+  security_groups           = [aws_security_group.master_elb_api.id]
 
   listener {
     instance_port     = 443
@@ -35,7 +35,7 @@ resource "aws_elb" "master_api_internal" {
   idle_timeout              = 3600
   internal                  = true
   subnets                   = var.elb_subnet_ids
-  security_groups           = ["${aws_security_group.master_elb_api_internal.id}"]
+  security_groups           = [aws_security_group.master_elb_api_internal.id]
 
   listener {
     instance_port     = 443

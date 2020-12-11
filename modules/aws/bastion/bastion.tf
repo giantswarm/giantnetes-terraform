@@ -1,17 +1,17 @@
 locals {
   default_ssh_access_subnet = "0.0.0.0/0"
-  external_vpn_subnet = "${var.transit_vpc_cidr != "" ? var.transit_vpc_cidr : var.external_ipsec_subnet }"
+  external_vpn_subnet = var.transit_vpc_cidr != "" ? var.transit_vpc_cidr : var.external_ipsec_subnet
   # If behind VPN allow SSH access only from VPN subnet.
-  ssh_access_subnet = "${var.with_public_access ? local.default_ssh_access_subnet : local.external_vpn_subnet}"
+  ssh_access_subnet = var.with_public_access ? local.default_ssh_access_subnet : local.external_vpn_subnet
 
   # In China there is no tags for s3 buckets
-  s3_ignition_bastion_key = "${element(concat(aws_s3_bucket_object.ignition_bastion_with_tags.*.key, aws_s3_bucket_object.ignition_bastion_without_tags.*.key), 0)}"
+  s3_ignition_bastion_key = element(concat(aws_s3_bucket_object.ignition_bastion_with_tags.*.key, aws_s3_bucket_object.ignition_bastion_without_tags.*.key), 0)
 
-  common_tags = "${map(
-    "giantswarm.io/cluster", "${var.cluster_name}",
-    "giantswarm.io/installation", "${var.cluster_name}",
+  common_tags = map(
+    "giantswarm.io/cluster", var.cluster_name,
+    "giantswarm.io/installation", var.cluster_name,
     "kubernetes.io/cluster/${var.cluster_name}", "owned"
-  )}"
+  )
 }
 
 data "aws_region" "current" {}
@@ -25,7 +25,7 @@ resource "aws_instance" "bastion" {
   associate_public_ip_address = var.with_public_access
   source_dest_check           = false
   subnet_id                   = var.bastion_subnet_ids[count.index]
-  vpc_security_group_ids      = ["${aws_security_group.bastion.id}"]
+  vpc_security_group_ids      = [aws_security_group.bastion.id]
 
   root_block_device {
     volume_type = var.volume_type
@@ -36,8 +36,8 @@ resource "aws_instance" "bastion" {
 
   tags = {
     Name                         = "${var.cluster_name}-bastion${count.index}"
-    "giantswarm.io/cluster"      = "${var.cluster_name}"
-    "giantswarm.io/installation" = "${var.cluster_name}"
+    "giantswarm.io/cluster"      = var.cluster_name
+    "giantswarm.io/installation" = var.cluster_name
   }
 }
 
@@ -58,7 +58,7 @@ resource "aws_security_group" "bastion" {
     from_port   = 10
     to_port     = 65535
     protocol    = "tcp"
-    cidr_blocks = ["${var.vpc_cidr}"]
+    cidr_blocks = [var.vpc_cidr]
   }
 
   # Allow access from vpc
@@ -66,7 +66,7 @@ resource "aws_security_group" "bastion" {
     from_port   = 10
     to_port     = 65535
     protocol    = "udp"
-    cidr_blocks = ["${var.vpc_cidr}"]
+    cidr_blocks = [var.vpc_cidr]
   }
 
   # Allow SSH from everywhere
@@ -74,14 +74,14 @@ resource "aws_security_group" "bastion" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["${local.ssh_access_subnet}"]
+    cidr_blocks = [local.ssh_access_subnet]
     self        = true
   }
 
   tags = {
     Name                         = "${var.cluster_name}-bastion"
-    "giantswarm.io/cluster"      = "${var.cluster_name}"
-    "giantswarm.io/installation" = "${var.cluster_name}"
+    "giantswarm.io/cluster"      = var.cluster_name
+    "giantswarm.io/installation" = var.cluster_name
   }
 }
 
@@ -92,7 +92,7 @@ resource "aws_route53_record" "bastion" {
   type    = "A"
 
   # Add "public_ip" or "private_ip" depending on "with_public_access" parameter.
-  records = ["${var.with_public_access ? element(aws_instance.bastion.*.public_ip, count.index) : element(aws_instance.bastion.*.private_ip, count.index)}"]
+  records = [var.with_public_access ? element(aws_instance.bastion.*.public_ip, count.index) : element(aws_instance.bastion.*.private_ip, count.index)]
   ttl     = "300"
 }
 
@@ -127,7 +127,7 @@ resource "aws_s3_bucket_object" "ignition_bastion_without_tags" {
 
 data "ignition_config" "s3" {
   replace {
-    source       = "${format("s3://%s/%s", var.ignition_bucket_id, local.s3_ignition_bastion_key)}"
+    source       = format("s3://%s/%s", var.ignition_bucket_id, local.s3_ignition_bastion_key)
     verification = "sha512-${sha512(var.user_data)}"
   }
 }
@@ -137,6 +137,6 @@ resource "aws_vpc_endpoint" "cloudwatch" {
   vpc_id             = var.vpc_id
   service_name       = "com.amazonaws.${data.aws_region.current.name}.logs"
   vpc_endpoint_type  = "Interface"
-  security_group_ids = ["${aws_security_group.bastion.id}"]
-  subnet_ids         = ["${var.bastion_subnet_ids[0]}", "${var.bastion_subnet_ids[1]}"]
+  security_group_ids = [aws_security_group.bastion.id]
+  subnet_ids         = [var.bastion_subnet_ids[0], var.bastion_subnet_ids[1]]
 }

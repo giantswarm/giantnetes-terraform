@@ -1,16 +1,16 @@
 locals {
-  common_tags = "${map(
-    "giantswarm.io/cluster", "${var.cluster_name}",
-    "giantswarm.io/installation", "${var.cluster_name}",
+  common_tags = map(
+    "giantswarm.io/cluster", var.cluster_name,
+    "giantswarm.io/installation", var.cluster_name,
     "kubernetes.io/cluster/${var.cluster_name}", "owned"
-  )}"
+  )
   customer_vpn_public_subnets = var.customer_vpn_public_subnets != "" ? split(",", var.customer_vpn_public_subnets) : []
   customer_vpn_private_subnets = var.customer_vpn_private_subnets != "" ? split(",", var.customer_vpn_private_subnets) : []
   # k8s_api prefixed values represent access to public loadbalancer
-  k8s_api_internal_access_whitelist = concat(["${var.aws_cni_cidr_block}","${var.vpc_cidr}"], "${var.nat_gateway_public_ips}")
+  k8s_api_internal_access_whitelist = concat([var.aws_cni_cidr_block,var.vpc_cidr], var.nat_gateway_public_ips)
   k8s_api_external_access_whitelist = concat(["${var.external_ipsec_public_ip_0}/32", "${var.external_ipsec_public_ip_1}/32"], local.customer_vpn_public_subnets)
   # k8s_api_internal prefixed values represent access to private loadbalancer
-  k8s_api_internal_internal_access_whitelist = concat(["${var.aws_cni_cidr_block}","${var.vpc_cidr}"], "${var.nat_gateway_public_ips}")
+  k8s_api_internal_internal_access_whitelist = concat([var.aws_cni_cidr_block,var.vpc_cidr], var.nat_gateway_public_ips)
   k8s_api_internal_external_access_whitelist = concat(["${var.external_ipsec_public_ip_0}/32", "${var.external_ipsec_public_ip_1}/32"], local.customer_vpn_private_subnets)
 }
 
@@ -94,7 +94,7 @@ resource "aws_launch_configuration" "master" {
   iam_instance_profile = element(aws_iam_instance_profile.master.*.name, count.index)
   image_id             = var.container_linux_ami_id
   instance_type        = var.instance_type
-  security_groups      = ["${aws_security_group.master.id}"]
+  security_groups      = [aws_security_group.master.id]
 
   lifecycle {
     create_before_destroy = true
@@ -150,7 +150,7 @@ resource "aws_security_group" "master" {
     from_port   = 10
     to_port     = 65535
     protocol    = "tcp"
-    cidr_blocks = ["${var.vpc_cidr}", "${var.aws_cni_cidr_block}"]
+    cidr_blocks = [var.vpc_cidr, var.aws_cni_cidr_block]
   }
 
   # Allow access from vpc
@@ -158,7 +158,7 @@ resource "aws_security_group" "master" {
     from_port   = 10
     to_port     = 65535
     protocol    = "udp"
-    cidr_blocks = ["${var.vpc_cidr}", "${var.aws_cni_cidr_block}"]
+    cidr_blocks = [var.vpc_cidr, var.aws_cni_cidr_block]
   }
 
   # Allow IPIP traffic from vpc
@@ -166,7 +166,7 @@ resource "aws_security_group" "master" {
     from_port   = 0
     to_port     = 0
     protocol    = 4
-    cidr_blocks = ["${var.vpc_cidr}"]
+    cidr_blocks = [var.vpc_cidr]
   }
 
   tags = merge(
@@ -182,7 +182,7 @@ resource "aws_route53_record" "master" {
   zone_id = var.dns_zone_id
   name    = "master${count.index + 1}"
   type    = "A"
-  records = ["${element(var.master_eni_ips, count.index)}"]
+  records = [element(var.master_eni_ips, count.index)]
   ttl     = "30"
 }
 
@@ -191,15 +191,15 @@ resource "aws_route53_record" "etcd" {
   zone_id = var.dns_zone_id
   name    = "etcd${count.index + 1}"
   type    = "A"
-  records = ["${element(var.master_eni_ips, count.index)}"]
+  records = [element(var.master_eni_ips, count.index)]
   ttl     = "30"
 }
 
 resource "aws_network_interface" "master" {
   count           = var.master_count
   subnet_id       = element(var.master_subnet_ids, count.index)
-  private_ips     = ["${element(var.master_eni_ips, count.index)}"]
-  security_groups = ["${aws_security_group.master.id}"]
+  private_ips     = [element(var.master_eni_ips, count.index)]
+  security_groups = [aws_security_group.master.id]
 
   tags = merge(
     local.common_tags,
@@ -251,14 +251,14 @@ resource "aws_s3_bucket_object" "ignition_master_without_tags" {
 
 locals {
   # In China there is no tags for s3 buckets
-  s3_ignition_master_keys = "${concat(aws_s3_bucket_object.ignition_master_with_tags.*.key, aws_s3_bucket_object.ignition_master_without_tags.*.key)}"
+  s3_ignition_master_keys = concat(aws_s3_bucket_object.ignition_master_with_tags.*.key, aws_s3_bucket_object.ignition_master_without_tags.*.key)
 }
 
 data "ignition_config" "s3" {
   count = var.master_count
 
   replace {
-    source       = "${format("s3://%s/%s", var.ignition_bucket_id, element(local.s3_ignition_master_keys, count.index))}"
+    source       = format("s3://%s/%s", var.ignition_bucket_id, element(local.s3_ignition_master_keys, count.index))
     verification = "sha512-${sha512(var.user_data[count.index])}"
   }
 }

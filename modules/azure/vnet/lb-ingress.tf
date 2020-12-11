@@ -10,7 +10,7 @@ resource "azurerm_lb" "ingress_lb" {
   }
 
   tags = {
-    GiantSwarmInstallation = "${var.cluster_name}"
+    GiantSwarmInstallation = var.cluster_name
   }
 }
 
@@ -21,7 +21,7 @@ resource "azurerm_public_ip" "ingress_ip" {
   allocation_method   = "Static"
 
   tags = {
-    GiantSwarmInstallation = "${var.cluster_name}"
+    GiantSwarmInstallation = var.cluster_name
   }
 }
 
@@ -33,7 +33,7 @@ resource "azurerm_dns_a_record" "g8s_wildcard_dns" {
   zone_name           = var.base_domain
   resource_group_name = var.resource_group_name
   ttl                 = 300
-  records             = ["${azurerm_public_ip.ingress_ip.ip_address}"]
+  records             = [azurerm_public_ip.ingress_ip.ip_address]
 }
 
 resource "azurerm_dns_a_record" "ingress_wildcard_dns" {
@@ -41,7 +41,7 @@ resource "azurerm_dns_a_record" "ingress_wildcard_dns" {
   zone_name           = var.base_domain
   resource_group_name = var.resource_group_name
   ttl                 = 300
-  records             = ["${azurerm_public_ip.ingress_ip.ip_address}"]
+  records             = [azurerm_public_ip.ingress_ip.ip_address]
 }
 
 resource "azurerm_lb_backend_address_pool" "ingress-lb" {
