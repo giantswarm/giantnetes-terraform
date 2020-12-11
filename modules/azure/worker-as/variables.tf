@@ -52,11 +52,6 @@ variable "resource_group_name" {
   type = string
 }
 
-variable "network_interface_ids" {
-  type        = list
-  description = "List of NICs to use for Worker VMs"
-}
-
 variable "enable_accelerated_networking" {
   type    = bool
   default = false

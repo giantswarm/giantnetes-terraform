@@ -268,7 +268,6 @@ module "worker" {
   platform_fault_domain_count = var.platform_fault_domain_count
   storage_type                = var.worker_storage_type
 
-  network_interface_ids = module.vnet.worker_network_interface_ids
   vm_size               = var.worker_vm_size
 }
 
