@@ -110,4 +110,8 @@ resource "azurerm_virtual_machine" "master" {
     ignore_changes = all
   }
 
+  timeouts {
+    create = "60m"
+    delete = "2h"
+  }
 }

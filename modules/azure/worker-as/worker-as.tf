@@ -90,4 +90,9 @@ resource "azurerm_virtual_machine" "worker" {
   tags = {
     GiantSwarmInstallation = var.cluster_name
   }
+
+  timeouts {
+    create = "60m"
+    delete = "2h"
+  }
 }

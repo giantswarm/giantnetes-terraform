@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Change default timeouts for `create`/`delete` VM operations.
 - Update terraform resources with `0.13.5` version requirements.
 - Update `aws-cni` version from `1.7.2` to `1.7.5`.
 
