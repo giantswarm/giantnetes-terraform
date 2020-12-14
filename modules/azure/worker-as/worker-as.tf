@@ -73,4 +73,9 @@ resource "azurerm_virtual_machine_scale_set" "workers" {
     min                          = var.min_worker_count
     max                          = var.max_worker_count
   }
+
+  timeouts {
+    create = "60m"
+    delete = "2h"
+  }
 }
