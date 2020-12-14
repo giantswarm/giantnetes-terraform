@@ -93,3 +93,33 @@ resource "azurerm_lb_probe" "ingress_30011_lb" {
   interval_in_seconds = 5
   number_of_probes    = 2
 }
+
+# Azure requires the probe to be associated with a load balancer the VMSS belongs to.
+# This probe has to be referenced by an active forwarding rule.
+# Since we don't want to expose SSH through the load balancer, we use random port 65000.
+resource "azurerm_lb_rule" "ingress_ssh_lb" {
+  name                    = "ingress-lb-fake-rule-for-node-health"
+  resource_group_name     = var.resource_group_name
+  loadbalancer_id         = azurerm_lb.ingress_lb.id
+  backend_address_pool_id = azurerm_lb_backend_address_pool.ingress-lb.id
+  probe_id                = azurerm_lb_probe.ssh.id
+
+  protocol                       = "tcp"
+  frontend_port                  = 65000
+  backend_port                   = 65000
+  frontend_ip_configuration_name = "ingress"
+}
+
+# Workers in VMSS are rolled with Rolling upgrade feature.
+# That feature automatically reimages one node at a time and waits for it to come back healthy before it goes on with other nodes.
+# To understand when a node is healthy, a load balancer probe has to be set. 
+# We use port 22 for this probe (not ideal, but does the job for now).
+resource "azurerm_lb_probe" "ssh" {
+  name                = "ssh-probe"
+  loadbalancer_id     = azurerm_lb.ingress_lb.id
+  resource_group_name = var.resource_group_name
+  protocol            = "tcp"
+  port                = 22
+  interval_in_seconds = 5
+  number_of_probes    = 2
+}

@@ -7,11 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [3.0.0] - 2020-12-14
-
 ### Added
 
-- Add `cluster-autoscaler` tags for AWS ASG. 
+- Add `cluster-autoscaler` tags for AWS ASG.
+- Add `cluster-autoscaler` tags for Azure VMSS.  
+
+### Changed
+
+- Switched to VMSS for Azure worker nodes.
+
+
+## [3.0.0] - 2020-12-14
 
 ### Changed
 

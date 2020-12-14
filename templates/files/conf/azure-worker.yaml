@@ -9,3 +9,4 @@ subnetName: {{ .AzureSubnetName }}
 securityGroupName: {{ .AzureSecGroupName }}
 vnetName: {{ .AzureVnetName }}
 routeTableName: {{ .AzureRoutable }}
+vmType: vmss

@@ -30,9 +30,16 @@ variable "location" {
   description = "Location is the Azure Location (East US, West US, etc)"
 }
 
-variable "worker_count" {
+variable "min_worker_count" {
   type        = string
-  description = "Number of worker nodes to be created."
+  description = "Min number of worker nodes."
+  default     = 3
+}
+
+variable "max_worker_count" {
+  type        = string
+  description = "Max number of worker nodes."
+  default     = 6
 }
 
 variable "platform_fault_domain_count" {
@@ -45,9 +52,9 @@ variable "resource_group_name" {
   type = string
 }
 
-variable "network_interface_ids" {
-  type        = list
-  description = "List of NICs to use for Worker VMs"
+variable "enable_accelerated_networking" {
+  type    = bool
+  default = false
 }
 
 variable "os_disk_storage_type" {
@@ -74,4 +81,14 @@ variable "docker_disk_size" {
 variable "ingress_backend_address_pool_id" {
   type        = string
   description = "Ingress load balances address pool id."
+}
+
+variable "subnet_id" {
+  type        = string
+  description = "ID of the subnet to connect the workers to"
+}
+
+variable "node_health_probe_id" {
+  type        = string
+  description = "ID of the probe used to check nodes health"
 }

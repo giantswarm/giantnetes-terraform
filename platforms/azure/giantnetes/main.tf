@@ -257,14 +257,17 @@ module "worker" {
   core_ssh_key                    = var.core_ssh_key
   docker_disk_size                = "100"
   location                        = var.azure_location
+  enable_accelerated_networking   = contains(local.vm_types_supporting_accelerated_networking, var.worker_vm_size) ? true : false
+  subnet_id                       = module.vnet.worker_subnet
+  node_health_probe_id            = module.vnet.node_health_probe_id
 
-  worker_count                = var.worker_count
+  min_worker_count            = var.worker_count
+  max_worker_count            = var.worker_count * 2
   resource_group_name         = module.resource_group.name
   os_disk_storage_type        = var.os_disk_storage_type
   platform_fault_domain_count = var.platform_fault_domain_count
   storage_type                = var.worker_storage_type
 
-  network_interface_ids = module.vnet.worker_network_interface_ids
   vm_size               = var.worker_vm_size
 }
 
