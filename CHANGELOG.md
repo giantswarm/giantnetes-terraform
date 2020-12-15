@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Increase maximum number of workers in AWS auto-scaling group.
 - Extend master/worker IAM roles with cluster-autoscaler required access.
 
 ## [3.1.0] - 2020-12-14

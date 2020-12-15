@@ -25,7 +25,7 @@ resource "aws_cloudformation_stack" "worker_asg" {
         "LoadBalancerNames": [
           "${var.cluster_name}-worker"
         ],
-        "MaxSize": "${var.worker_count + 1}",
+        "MaxSize": "${var.worker_count * 2}",
         "DesiredCapacity": "${var.worker_count}",
         "MinSize": "${var.worker_count}",
         "Tags": [
