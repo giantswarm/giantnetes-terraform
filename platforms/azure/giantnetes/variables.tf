@@ -76,7 +76,7 @@ variable "master_count" {
 variable "worker_count" {
   type        = string
   description = "Number of worker nodes to be created."
-  default     = "3"
+  default     = "4"
 }
 
 ### Compute and Storage ###

@@ -85,6 +85,19 @@ resource "aws_iam_role_policy" "master" {
             "ec2:CreateTags"
           ],
           "Resource": ["arn:${var.arn_region}:ec2:*:*:network-interface/*"]
+      },
+      {
+        "Action": [
+           "autoscaling:DescribeAutoScalingGroups",
+           "autoscaling:DescribeAutoScalingInstances",
+           "autoscaling:DescribeLaunchConfigurations",
+           "autoscaling:DescribeTags",
+           "autoscaling:SetDesiredCapacity",
+           "autoscaling:TerminateInstanceInAutoScalingGroup",
+           "ec2:DescribeLaunchTemplateVersions"
+        ],
+        "Resource": "*",
+        "Effect": "Allow"
       }
   ]
 }

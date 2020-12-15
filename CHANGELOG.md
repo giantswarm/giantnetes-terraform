@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Extend master/worker IAM roles with cluster-autoscaler required access.
+
 ## [3.1.0] - 2020-12-14
 
 ### Added
