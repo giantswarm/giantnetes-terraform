@@ -26,7 +26,6 @@ resource "aws_cloudformation_stack" "worker_asg" {
           "${var.cluster_name}-worker"
         ],
         "MaxSize": "${var.worker_count * 2}",
-        "DesiredCapacity": "${var.worker_count}",
         "MinSize": "${var.worker_count}",
         "Tags": [
           {
