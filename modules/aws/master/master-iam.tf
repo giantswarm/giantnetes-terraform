@@ -100,7 +100,7 @@ resource "aws_iam_role_policy" "master" {
       {
         "Action": [
            "autoscaling:SetDesiredCapacity",
-           "autoscaling:TerminateInstanceInAutoScalingGroup",
+           "autoscaling:TerminateInstanceInAutoScalingGroup"
         ],
         "Resource": "arn:${var.arn_region}:autoscaling:${var.iam_region}:${var.aws_account}:autoScalingGroup:*:autoScalingGroupName/${var.cluster_name}-worker-*",
         "Effect": "Allow"
