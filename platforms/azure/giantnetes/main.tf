@@ -226,6 +226,7 @@ module "master" {
   location                    = var.azure_location
 
   master_count                = var.master_count
+  resource_group_id           = module.resource_group.id
   resource_group_name         = module.resource_group.name
   os_disk_storage_type        = var.os_disk_storage_type
   platform_fault_domain_count = var.platform_fault_domain_count
@@ -265,6 +266,7 @@ module "worker" {
 
   min_worker_count            = var.worker_count
   max_worker_count            = var.worker_count * 2
+  resource_group_id           = module.resource_group.id
   resource_group_name         = module.resource_group.name
   os_disk_storage_type        = var.os_disk_storage_type
   platform_fault_domain_count = var.platform_fault_domain_count
