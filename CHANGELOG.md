@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Increase maximum number of workers in AWS auto-scaling group.
 - Extend master/worker IAM roles with cluster-autoscaler required access.
+- Enable MSI on azure masters/workers instances.
+- Add `Contributor` role assignement for masters/workers identities.
 
 ## [3.1.0] - 2020-12-14
 

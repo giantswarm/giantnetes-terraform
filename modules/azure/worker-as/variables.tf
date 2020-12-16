@@ -48,6 +48,11 @@ variable "platform_fault_domain_count" {
   default     = 3
 }
 
+
+variable "resource_group_id" {
+  type = string
+}
+
 variable "resource_group_name" {
   type = string
 }
@@ -91,4 +96,9 @@ variable "subnet_id" {
 variable "node_health_probe_id" {
   type        = string
   description = "ID of the probe used to check nodes health"
+}
+
+variable "subscription_id" {
+  type        = string
+  description = "Subscription ID"
 }

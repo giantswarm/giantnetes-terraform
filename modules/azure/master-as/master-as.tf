@@ -55,9 +55,9 @@ resource "azurerm_virtual_machine" "master" {
   }
 
   plan {
-    name = var.flatcar_linux_channel
+    name      = var.flatcar_linux_channel
     publisher = "kinvolk"
-    product = "flatcar-container-linux-free"
+    product   = "flatcar-container-linux-free"
   }
 
   storage_os_disk {
@@ -77,11 +77,11 @@ resource "azurerm_virtual_machine" "master" {
   }
 
   storage_data_disk {
-    name            = element(azurerm_managed_disk.master_etcd.*.name,count.index)
-    managed_disk_id = element(azurerm_managed_disk.master_etcd.*.id,count.index)
+    name            = element(azurerm_managed_disk.master_etcd.*.name, count.index)
+    managed_disk_id = element(azurerm_managed_disk.master_etcd.*.id, count.index)
     create_option   = "Attach"
     lun             = 1
-    disk_size_gb    = element(azurerm_managed_disk.master_etcd.*.disk_size_gb,count.index)
+    disk_size_gb    = element(azurerm_managed_disk.master_etcd.*.disk_size_gb, count.index)
   }
 
   os_profile {
@@ -100,6 +100,10 @@ resource "azurerm_virtual_machine" "master" {
     }
   }
 
+  identity {
+    type = "SystemAssigned"
+  }
+
   tags = {
     GiantSwarmInstallation = var.cluster_name
   }
@@ -114,4 +118,13 @@ resource "azurerm_virtual_machine" "master" {
     create = "60m"
     delete = "2h"
   }
+}
+
+# can be added only when vm is created with identity
+# https://github.com/hashicorp/terraform/issues/25578
+resource "azurerm_role_assignment" "master_contributor" {
+  count                = var.master_count
+  scope                = var.resource_group_id
+  role_definition_name = "Contributor"
+  principal_id         = azurerm_virtual_machine.master[count.index].identity.0.principal_id
 }

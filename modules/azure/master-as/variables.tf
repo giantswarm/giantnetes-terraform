@@ -32,7 +32,7 @@ variable "master_count" {
 }
 
 variable "network_interface_ids" {
-  type        = list
+  type        = list(any)
   description = "List of NICs to use for Master VMs"
 }
 
@@ -40,6 +40,10 @@ variable "platform_fault_domain_count" {
   type        = string
   description = "Number of failure domains to use for availability set."
   default     = 3
+}
+
+variable "resource_group_id" {
+type = string
 }
 
 variable "resource_group_name" {
@@ -91,4 +95,9 @@ variable "storage_acc_url" {
 variable "storage_container" {
   type        = string
   description = "Blob storage container name."
+}
+
+variable "subscription_id" {
+  type        = string
+  description = "Subscription ID"
 }
