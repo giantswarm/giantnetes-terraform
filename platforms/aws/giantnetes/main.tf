@@ -161,6 +161,7 @@ module "bastion" {
 
   arn_region             = var.arn_region
   aws_account            = var.aws_account
+  aws_region             = var.aws_region
   bastion_count          = "2"
   bastion_subnet_ids     = module.vpc.bastion_subnet_ids
   cluster_name           = var.cluster_name
