@@ -102,7 +102,7 @@ resource "aws_iam_role_policy" "master" {
            "autoscaling:SetDesiredCapacity",
            "autoscaling:TerminateInstanceInAutoScalingGroup"
         ],
-        "Resource": "arn:${var.arn_region}:autoscaling:${var.iam_region}:${var.aws_account}:autoScalingGroup:*:autoScalingGroupName/${var.cluster_name}-worker-*",
+        "Resource": "arn:${var.arn_region}:autoscaling:${var.aws_region}:${var.aws_account}:autoScalingGroup:*:autoScalingGroupName/${var.cluster_name}-worker-*",
         "Effect": "Allow"
       }
   ]
