@@ -92,3 +92,8 @@ variable "node_health_probe_id" {
   type        = string
   description = "ID of the probe used to check nodes health"
 }
+
+variable "subscription_id" {
+  type        = string
+  description = "Subscription ID"
+}

@@ -237,6 +237,8 @@ module "master" {
   storage_acc       = module.blob.storage_acc
   storage_acc_url   = module.blob.storage_acc_url
   storage_container = module.blob.storage_container
+
+  subscription_id = var.azure_sp_subscriptionid
 }
 
 # Generate ignition config.
@@ -268,7 +270,9 @@ module "worker" {
   platform_fault_domain_count = var.platform_fault_domain_count
   storage_type                = var.worker_storage_type
 
-  vm_size               = var.worker_vm_size
+  vm_size = var.worker_vm_size
+
+  subscription_id = var.azure_sp_subscriptionid
 }
 
 module "vpn" {

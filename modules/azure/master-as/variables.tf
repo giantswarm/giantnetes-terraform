@@ -32,7 +32,7 @@ variable "master_count" {
 }
 
 variable "network_interface_ids" {
-  type        = list
+  type        = list(any)
   description = "List of NICs to use for Master VMs"
 }
 
@@ -91,4 +91,9 @@ variable "storage_acc_url" {
 variable "storage_container" {
   type        = string
   description = "Blob storage container name."
+}
+
+variable "subscription_id" {
+  type        = string
+  description = "Subscription ID"
 }

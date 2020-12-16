@@ -1,23 +1,23 @@
 resource "azurerm_virtual_machine_scale_set" "workers" {
-  location = var.location
-  name = "${var.cluster_name}-workers"
+  location            = var.location
+  name                = "${var.cluster_name}-workers"
   resource_group_name = var.resource_group_name
   upgrade_policy_mode = "Rolling"
-  health_probe_id = var.node_health_probe_id
+  health_probe_id     = var.node_health_probe_id
   rolling_upgrade_policy {
-    max_batch_instance_percent = 40
-    max_unhealthy_instance_percent = 40
+    max_batch_instance_percent              = 40
+    max_unhealthy_instance_percent          = 40
     max_unhealthy_upgraded_instance_percent = 40
-    pause_time_between_batches = "PT30S"
+    pause_time_between_batches              = "PT30S"
   }
   network_profile {
-    name = "worker-nic-0"
-    primary = true
+    name                   = "worker-nic-0"
+    primary                = true
     accelerated_networking = var.enable_accelerated_networking
-    ip_forwarding = true
+    ip_forwarding          = true
     ip_configuration {
-      name = "worker-ipconfig-0"
-      primary = true
+      name      = "worker-ipconfig-0"
+      primary   = true
       subnet_id = var.subnet_id
       load_balancer_backend_address_pool_ids = [
         var.ingress_backend_address_pool_id
@@ -26,14 +26,14 @@ resource "azurerm_virtual_machine_scale_set" "workers" {
   }
   overprovision = false
   plan {
-    name = var.flatcar_linux_channel
+    name      = var.flatcar_linux_channel
     publisher = "kinvolk"
-    product = "flatcar-container-linux-free"
+    product   = "flatcar-container-linux-free"
   }
   os_profile {
-    admin_username = "core"
+    admin_username       = "core"
     computer_name_prefix = "worker-"
-    custom_data = base64encode(var.user_data)
+    custom_data          = base64encode(var.user_data)
   }
   os_profile_linux_config {
     disable_password_authentication = true
@@ -43,9 +43,9 @@ resource "azurerm_virtual_machine_scale_set" "workers" {
     }
   }
   sku {
-    name = var.vm_size
+    name     = var.vm_size
     capacity = var.min_worker_count
-    tier = "standard"
+    tier     = "standard"
   }
   storage_profile_image_reference {
     publisher = "kinvolk"
@@ -60,10 +60,13 @@ resource "azurerm_virtual_machine_scale_set" "workers" {
     os_type           = "linux"
   }
   storage_profile_data_disk {
-    create_option   = "Empty"
-    lun             = 0
-    disk_size_gb    = var.docker_disk_size
+    create_option     = "Empty"
+    lun               = 0
+    disk_size_gb      = var.docker_disk_size
     managed_disk_type = var.storage_type
+  }
+  identity {
+    type = "SystemAssigned"
   }
 
   tags = {
@@ -78,4 +81,11 @@ resource "azurerm_virtual_machine_scale_set" "workers" {
     create = "60m"
     delete = "2h"
   }
+}
+
+resource "azurerm_role_assignment" "vmss_contributor" {
+  name                 = "${var.cluster_name}-worker"
+  scope                = "/subscriptions/${var.subscription_id}/resourceGroups/${var.cluster_name}"
+  role_definition_name = "Contributor"
+  principal_id         = azurerm_virtual_machine_scale_set.workers.identity[0]["principal_id"]
 }
