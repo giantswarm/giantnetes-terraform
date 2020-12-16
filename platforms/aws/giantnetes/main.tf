@@ -161,7 +161,6 @@ module "bastion" {
 
   arn_region             = var.arn_region
   aws_account            = var.aws_account
-  aws_region             = var.aws_region
   bastion_count          = "2"
   bastion_subnet_ids     = module.vpc.bastion_subnet_ids
   cluster_name           = var.cluster_name
@@ -258,6 +257,7 @@ module "master" {
   api_dns                      = var.api_dns
   api_internal_dns             = var.api_internal_dns
   aws_account                  = var.aws_account
+  aws_region                   = var.aws_region
   aws_cni_cidr_block           = var.aws_cni_cidr_v2
   cluster_name                 = var.cluster_name
   container_linux_ami_id       = data.aws_ami.flatcar_ami[0].image_id
