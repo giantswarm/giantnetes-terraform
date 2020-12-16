@@ -84,8 +84,7 @@ resource "azurerm_virtual_machine_scale_set" "workers" {
 }
 
 resource "azurerm_role_assignment" "vmss_contributor" {
-  name                 = "${var.cluster_name}-worker"
   scope                = "/subscriptions/${var.subscription_id}/resourceGroups/${var.cluster_name}"
   role_definition_name = "Contributor"
-  principal_id         = azurerm_virtual_machine_scale_set.workers.identity[0]["principal_id"]
+  principal_id         = azurerm_virtual_machine_scale_set.workers.identity[0].principal_id
 }

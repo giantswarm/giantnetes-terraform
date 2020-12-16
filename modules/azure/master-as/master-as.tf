@@ -120,10 +120,11 @@ resource "azurerm_virtual_machine" "master" {
   }
 }
 
-resource "azurerm_role_assignment" "master_contributor" {
-  count                = var.master_count
-  name                 = "${var.cluster_name}-worker"
-  scope                = "/subscriptions/${var.subscription_id}/resourceGroups/${var.cluster_name}"
-  role_definition_name = "Contributor"
-  principal_id         = azurerm_availability_set.masters.*.identity[0]["principal_id"]
-}
+# can't be rolled without identity enabled :/
+# https://github.com/hashicorp/terraform/issues/25578
+#resource "azurerm_role_assignment" "master_contributor" {
+#  count                = var.master_count
+#  scope                = "/subscriptions/${var.subscription_id}/resourceGroups/${var.cluster_name}"
+#  role_definition_name = "Contributor"
+#  principal_id         = azurerm_virtual_machine.master[count.index].identity.0.principal_id
+#}
