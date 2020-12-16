@@ -83,8 +83,10 @@ resource "azurerm_virtual_machine_scale_set" "workers" {
   }
 }
 
+# can be added only when vm is created with identity
+# https://github.com/hashicorp/terraform/issues/25578
 resource "azurerm_role_assignment" "vmss_contributor" {
-  scope                = "/subscriptions/${var.subscription_id}/resourceGroups/${var.cluster_name}"
+  scope                = var.resource_group_id
   role_definition_name = "Contributor"
   principal_id         = azurerm_virtual_machine_scale_set.workers.identity[0].principal_id
 }

@@ -120,11 +120,11 @@ resource "azurerm_virtual_machine" "master" {
   }
 }
 
-# can't be rolled without identity enabled :/
+# can be added only when vm is created with identity
 # https://github.com/hashicorp/terraform/issues/25578
-#resource "azurerm_role_assignment" "master_contributor" {
-#  count                = var.master_count
-#  scope                = "/subscriptions/${var.subscription_id}/resourceGroups/${var.cluster_name}"
-#  role_definition_name = "Contributor"
-#  principal_id         = azurerm_virtual_machine.master[count.index].identity.0.principal_id
-#}
+resource "azurerm_role_assignment" "master_contributor" {
+  count                = var.master_count
+  scope                = var.resource_group_id
+  role_definition_name = "Contributor"
+  principal_id         = azurerm_virtual_machine.master[count.index].identity.0.principal_id
+}

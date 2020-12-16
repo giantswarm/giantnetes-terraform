@@ -42,6 +42,10 @@ variable "platform_fault_domain_count" {
   default     = 3
 }
 
+variable "resource_group_id" {
+type = string
+}
+
 variable "resource_group_name" {
   type = string
 }

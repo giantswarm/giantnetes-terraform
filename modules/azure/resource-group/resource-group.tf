@@ -16,6 +16,10 @@ resource "azurerm_resource_group" "cluster_rg" {
   }
 }
 
+output "id" {
+  value = azurerm_resource_group.cluster_rg.id
+}
+
 output "name" {
   value = azurerm_resource_group.cluster_rg.name
 }
