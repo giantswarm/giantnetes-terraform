@@ -39,6 +39,33 @@ resource "aws_iam_role_policy" "vault-s3-ignition" {
       "Resource": [
         "arn:${var.arn_region}:s3:::${var.aws_account}-${var.cluster_name}-ignition/*"
       ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeInstances"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:GetInstanceProfile"
+      ],
+      "Resource": [
+          "arn:${var.arn_region}:iam::${var.aws_account}:instance-profile/${var.cluster_name}-master",
+          "arn:${var.arn_region}:iam::${var.aws_account}:instance-profile/${var.cluster_name}-worker"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:GetRole"
+      ],
+      "Resource": [
+          "arn:${var.arn_region}:iam::${var.aws_account}:role/${var.cluster_name}-master",
+          "arn:${var.arn_region}:iam::${var.aws_account}:role/${var.cluster_name}-worker"
+      ]
     }
   ]
 }
