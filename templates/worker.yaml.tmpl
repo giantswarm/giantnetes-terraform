@@ -359,7 +359,7 @@ systemd:
           -e VAULT_ADDR\
           -e CLUSTER_NAME\
           {{.DockerRegistry}}/giantswarm/vault:1.6.1\
-          login -method=aws role=$${CLUSTER_NAME}-worker -format=json | jq -r .auth.client_token);\
+          login -method=aws role=$${CLUSTER_NAME}-worker region={{ .AWSRegion }} -format=json | jq -r .auth.client_token);\
           echo "VAULT_TOKEN=$${vault_token}" > /etc/tokens/node;\
           '
       [Install]
