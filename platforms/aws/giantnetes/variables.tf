@@ -54,6 +54,7 @@ variable "iam_region" {
 variable "nodes_vault_token" {
   type        = string
   description = "Vault token used by nodes for bootstrapping. Should be defined after Vault is installed."
+  default     = ""
 }
 
 variable "master_count" {

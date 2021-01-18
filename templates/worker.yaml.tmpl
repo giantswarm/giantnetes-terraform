@@ -265,8 +265,8 @@ systemd:
     contents: |
       [Unit]
       Description=get-vault-ssh-ca
-      Requires=docker.service get-vault-ca.service
-      After=docker.service get-vault-ca.service
+      Requires=docker.service get-vault-ca.service{{if eq .Provider "aws" }} get-vault-token.service{{ end }}
+      After=docker.service get-vault-ca.service{{if eq .Provider "aws" }} get-vault-token.service{{ end }}
 
       [Service]
       EnvironmentFile=/etc/tokens/node
@@ -317,7 +317,7 @@ systemd:
     contents: |
       [Unit]
       Description=get vault-ca into trusted certs
-      Before=calico-certs.service kubelet-certs.service
+      Before=calico-certs.service kubelet-certs.service{{ if eq .Provider "aws" }} get-vault-token.service{{ end }}
       After=wait-for-domains.service
       Requires=wait-for-domains.service
 
@@ -330,6 +330,42 @@ systemd:
 
       [Install]
       WantedBy=multi-user.target
+
+  {{ if eq .Provider "aws" -}}
+  - name: get-vault-token.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=get-vault-token
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service
+
+      [Service]
+      EnvironmentFile=/etc/environment
+      EnvironmentFile=/etc/network-environment
+      Environment=VAULT_ADDR=https://{{ .VaultDomainName }}
+      Environment=CLUSTER_NAME={{ .ClusterName }}
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/
+      ExecStartPre=/usr/bin/mkdir -p /etc/tokens
+      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt {{.DockerRegistry}}/giantswarm/curl:7.67.0 -k -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
+      ExecStart=/bin/bash -e -c '\
+          export vault_token=$(\
+          docker run --rm -i\
+          -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt\
+          --net host\
+          --privileged=true\
+          -e VAULT_ADDR\
+          -e CLUSTER_NAME\
+          {{.DockerRegistry}}/giantswarm/vault:1.6.1\
+          login -method=aws role=$${CLUSTER_NAME}-worker region={{ .AWSRegion }} -format=json | jq -r .auth.client_token);\
+          echo "VAULT_TOKEN=$${vault_token}" > /etc/tokens/node;\
+          '
+      [Install]
+      WantedBy=multi-user.target
+  {{- end }}
+
   - name: docker.service
     enabled: true
     dropins:
@@ -390,8 +426,8 @@ systemd:
     contents: |
       [Unit]
       Description=gen etcd client certs for calico
-      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service{{if eq .Provider "azure" }} waagent.service{{ end }}
-      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service{{if eq .Provider "azure" }} waagent.service{{end}}
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service{{if eq .Provider "azure" }} waagent.service{{ end }}{{ if eq .Provider "aws" }} get-vault-token.service{{ end }}
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service{{if eq .Provider "azure" }} waagent.service{{end}}{{ if eq .Provider "aws" }} get-vault-token.service{{ end }}
 
       [Service]
       EnvironmentFile=/etc/environment
@@ -433,8 +469,8 @@ systemd:
     contents: |
       [Unit]
       Description=api-certs
-      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service{{if eq .Provider "azure" }}  waagent.service{{end}}
-      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service{{if eq .Provider "azure" }}  waagent.service{{end}}
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service{{if eq .Provider "azure" }}  waagent.service{{end}}{{ if eq .Provider "aws" }} get-vault-token.service{{ end }}
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service{{if eq .Provider "azure" }}  waagent.service{{end}}{{ if eq .Provider "aws" }} get-vault-token.service{{ end }}
 
       [Service]
       EnvironmentFile=/etc/environment

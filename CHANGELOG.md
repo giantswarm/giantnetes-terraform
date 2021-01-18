@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add systemd unit to retrieve Vault token.
+
 ### Changed
 
 - Extend `vault` IAM role with vault auth backend required access.
