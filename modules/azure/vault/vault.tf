@@ -112,5 +112,5 @@ resource "azurerm_role_definition" "vault_access_role" {
 resource "azurerm_role_assignment" "vault_access_role_assignment" {
   scope              = "/subscriptions/${var.subscription_id}/resourceGroups/${var.cluster_name}"
   role_definition_id = azurerm_role_definition.vault_access_role.id
-  principal_id       = azurerm_virtual_machine.vault.identity.principal_id
+  principal_id       = azurerm_virtual_machine.vault.identity[0].principal_id
 }
