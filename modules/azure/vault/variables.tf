@@ -7,12 +7,12 @@ variable "flatcar_linux_version" {
 }
 
 variable "image_publisher" {
-  type = string
+  type    = string
   default = "kinvolk"
 }
 
 variable "image_offer" {
-  type = string
+  type    = string
   default = "flatcar-container-linux-free"
 }
 
@@ -49,7 +49,7 @@ variable "location" {
 }
 
 variable "network_interface_ids" {
-  type        = list
+  type        = list(any)
   description = "List of NICs to use for Vault VMs"
 }
 
@@ -65,6 +65,11 @@ variable "os_disk_storage_type" {
 variable "storage_type" {
   type        = string
   description = "Storage account type"
+}
+
+variable "subscription_id" {
+  type        = string
+  description = "Subscription ID"
 }
 
 variable "vm_size" {
