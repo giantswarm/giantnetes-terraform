@@ -797,7 +797,7 @@ systemd:
       ExecStartPre=/usr/bin/mkdir -p /etc/tokens
       ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt {{.DockerRegistry}}/giantswarm/curl:7.67.0 -k -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/bin/bash -e -c '\
-          export vault_token=$(\
+          login_info=$(\
           docker run --rm -i\
           -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt\
           --net host\
@@ -805,7 +805,8 @@ systemd:
           -e VAULT_ADDR\
           -e CLUSTER_NAME\
           {{.DockerRegistry}}/giantswarm/vault:1.6.1\
-          login -method=aws role=$${CLUSTER_NAME}-master region={{ .AWSRegion }} -format=json | jq -r .auth.client_token);\
+          login -method=aws role=$${CLUSTER_NAME}-master region={{ .AWSRegion }} -format=json);\
+          vault_token=$(echo $${login_info} | jq -r .auth.client_token);\
           echo "VAULT_TOKEN=$${vault_token}" > /etc/tokens/node;\
           '
       [Install]
