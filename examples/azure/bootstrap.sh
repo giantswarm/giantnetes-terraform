@@ -27,9 +27,6 @@ export TF_VAR_azure_location=<value>
 # needs to be unique within the azure account
 export TF_VAR_cluster_name=<value>
 
-# Leave empty at the beginning. After you'll have vault deployed, you will need to copy the "VAULT TOKEN for the g8s host cluster" in here.
-export TF_VAR_nodes_vault_token="$(${OPSCTL_PATH} show secret -i ./terraform-secrets.yaml -k Terraform.VaultToken)"
-
 # service principal credentials
 export TF_VAR_azure_sp_tenantid=<value>
 # account subscription id (from az account list --output table)

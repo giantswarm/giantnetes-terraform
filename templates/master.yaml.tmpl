@@ -302,6 +302,16 @@ storage:
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/azure-master.yaml" }}"
 
+    - path: /opt/bin/get-vault-token
+      filesystem: root
+      mode: 356
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/get-vault-token" }}"
+
     {{- end }}
     - path: /etc/kubernetes/config/audit-webhook-kube-config.yaml
       filesystem: root
@@ -382,18 +392,6 @@ storage:
         id: 0
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "kubeconfig/scheduler.yaml" }}"
-
-    {{ if eq .Provider "azure" -}}
-    - path: /etc/tokens/node
-      filesystem: root
-      mode: 256
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:,VAULT_TOKEN={{ .G8SVaultToken }}"
-    {{- end }}
 
     - path: /etc/kubernetes/manifests/k8s-api-healthz.yaml
       filesystem: root
@@ -676,8 +674,8 @@ systemd:
     contents: |
       [Unit]
       Description=get-vault-ssh-ca
-      Requires=docker.service get-vault-ca.service{{if eq .Provider "aws" }} get-vault-token.service{{ end }}
-      After=docker.service get-vault-ca.service{{if eq .Provider "aws" }} get-vault-token.service{{ end }}
+      Requires=docker.service get-vault-ca.service get-vault-token.service
+      After=docker.service get-vault-ca.service get-vault-token.service
 
       [Service]
       EnvironmentFile=/etc/tokens/node
@@ -765,7 +763,7 @@ systemd:
     contents: |
       [Unit]
       Description=get vault-ca into trusted certs
-      Before=calico-certs.service api-certs.service etcd3-certs.service{{if eq .Provider "aws" }} get-vault-token.service{{ end }}
+      Before=calico-certs.service api-certs.service etcd3-certs.service get-vault-token.service
       After=wait-for-domains.service{{if eq .Provider "azure" }} waagent.service{{ end }}
       Requires=wait-for-domains.service{{if eq .Provider "azure" }} waagent.service{{ end }}
 
@@ -813,13 +811,36 @@ systemd:
       WantedBy=multi-user.target
   {{- end }}
 
+  {{ if eq .Provider "azure" -}}
+  - name: get-vault-token.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=get-vault-token
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service
+
+      [Service]
+      EnvironmentFile=/etc/environment
+      EnvironmentFile=/etc/network-environment
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/
+      ExecStartPre=/usr/bin/mkdir -p /etc/tokens
+      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt {{.DockerRegistry}}/giantswarm/curl:7.67.0 -k -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
+      ExecStart=/opt/bin/get-vault-token
+
+      [Install]
+      WantedBy=multi-user.target
+  {{- end }}
+
   - name: calico-certs.service
     enabled: true
     contents: |
       [Unit]
       Description=calico-certs
-      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service{{if eq .Provider "azure" }} waagent.service{{ end }}{{ if eq .Provider "aws" }} get-vault-token.service{{ end }}
-      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service{{if eq .Provider "azure" }} waagent.service{{ end }}{{ if eq .Provider "aws" }} get-vault-token.service{{ end }}
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{ end }}
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{ end }}
 
       [Service]
       EnvironmentFile=/etc/environment
@@ -862,8 +883,8 @@ systemd:
     contents: |
       [Unit]
       Description=etcd3-certs
-      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service{{ if eq .Provider "aws" }} get-vault-token.service{{ end }}
-      After=get-vault-ca.service k8s-setup-network-env.service docker.service{{ if eq .Provider "aws" }} get-vault-token.service{{ end }}
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service get-vault-token.service
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service get-vault-token.service
 
       [Service]
       EnvironmentFile=/etc/environment
@@ -1156,8 +1177,8 @@ systemd:
     contents: |
       [Unit]
       Description=api-certs
-      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service{{if eq .Provider "azure" }} waagent.service{{ end }}{{ if eq .Provider "aws" }} get-vault-token.service{{ end }}
-      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service{{if eq .Provider "azure" }} waagent.service{{ end }}{{ if eq .Provider "aws" }} get-vault-token.service{{ end }}
+      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{ end }}
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{ end }}
 
       [Service]
       EnvironmentFile=/etc/environment
