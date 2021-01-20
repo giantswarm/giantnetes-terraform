@@ -84,16 +84,6 @@ storage:
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/wait-for-domains" }}"
 
-    - path: /etc/tokens/node
-      filesystem: root
-      mode: 256
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:,VAULT_TOKEN={{ .G8SVaultToken }}"
-
     - path: /etc/profile.d/confirm-shutdown.sh
       filesystem: root
       mode: 292
