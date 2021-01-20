@@ -44,9 +44,9 @@ resource "azurerm_virtual_machine" "vault" {
   dynamic "plan" {
     for_each = var.image_publisher == "kinvolk" ? [1] : []
     content {
-      name = var.flatcar_linux_channel
+      name      = var.flatcar_linux_channel
       publisher = var.image_publisher
-      product = "flatcar-container-linux-free"
+      product   = "flatcar-container-linux-free"
     }
   }
 
@@ -90,7 +90,27 @@ resource "azurerm_virtual_machine" "vault" {
     }
   }
 
+  identity {
+    type = "SystemAssigned"
+  }
+
   tags = {
     GiantSwarmInstallation = var.cluster_name
   }
+}
+
+resource "azurerm_role_definition" "vault_access_role" {
+  name        = "${var.cluster_name}-vault-access"
+  scope       = "/subscriptions/${var.subscription_id}/resourceGroups/${var.cluster_name}"
+  description = "Custom role used to provide vault access to VMs/VMSSs"
+
+  permissions {
+    actions = ["Microsoft.Compute/availabilitySets/read", "Microsoft.Compute/virtualMachines/read"]
+  }
+}
+
+resource "azurerm_role_assignment" "vault_access_role_assignment" {
+  scope                = "/subscriptions/${var.subscription_id}/resourceGroups/${var.cluster_name}"
+  role_definition_name = "${var.cluster_name}-vault-access" 
+  principal_id         = azurerm_virtual_machine.vault.identity[0].principal_id
 }

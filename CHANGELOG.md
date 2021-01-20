@@ -13,7 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Extend `vault` IAM role with vault auth backend required access.
+- Extend `vault` AWS IAM role with vault auth backend required access.
+- Enable access to `vault` via node assigned identity in Azure.
+
 
 ## [3.2.0] - 2020-12-17
 

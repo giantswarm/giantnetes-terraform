@@ -198,6 +198,7 @@ module "vault" {
   os_disk_storage_type  = var.os_disk_storage_type
   resource_group_name   = module.resource_group.name
   storage_type          = var.vault_storage_type
+  subscription_id       = var.azure_sp_subscriptionid
   user_data             = data.gotemplate.vault.rendered
   vm_size               = var.vault_vm_size
 }
