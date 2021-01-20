@@ -135,7 +135,6 @@ locals {
     "ETCDInitialClusterMulti"  = "etcd1=https://etcd1.${var.base_domain}:2380,etcd2=https://etcd2.${var.base_domain}:2380,etcd3=https://etcd3.${var.base_domain}:2380"
     "ETCDInitialClusterSingle" = "etcd1=https://etcd1.${var.base_domain}:2380"
     "GSReleaseVersion"         = var.release_version
-    "G8SVaultToken"            = var.nodes_vault_token
     "K8SAPIIP"                 = var.k8s_api_ip
     "K8SAuditWebhookPort"      = var.k8s_audit_webhook_port
     "K8SDNSIP"                 = var.k8s_dns_ip
