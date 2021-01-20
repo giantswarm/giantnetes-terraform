@@ -72,6 +72,21 @@ variable "storage_type" {
   description = "Storage account type"
 }
 
+variable "storage_acc" {
+  type        = string
+  description = "Blob storage account name."
+}
+
+variable "storage_acc_url" {
+  type        = string
+  description = "Blob storage account URL."
+}
+
+variable "storage_container" {
+  type        = string
+  description = "Blob storage container name."
+}
+
 variable "vm_size" {
   type        = string
   description = "VM Size name"
