@@ -53,8 +53,6 @@ data "azurerm_storage_account_sas" "sas" {
 }
 
 data "ignition_config" "loader" {
-  count = var.worker_count
-
   replace {
     source = "${azurerm_storage_blob.ignition_blob.url}${data.azurerm_storage_account_sas.sas.sas}"
   }
