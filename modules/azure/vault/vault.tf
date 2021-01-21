@@ -105,7 +105,7 @@ resource "azurerm_role_definition" "vault_access_role" {
   description = "Custom role used to provide vault access to VMs/VMSSs"
 
   permissions {
-    actions = ["Microsoft.Compute/availabilitySets/read", "Microsoft.Compute/virtualMachines/read"]
+    actions = ["Microsoft.Compute/virtualMachineScaleSets/read", "Microsoft.Compute/virtualMachines/read"]
   }
 }
 
