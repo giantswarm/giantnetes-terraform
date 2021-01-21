@@ -113,4 +113,8 @@ resource "azurerm_role_assignment" "vault_access_role_assignment" {
   scope                = "/subscriptions/${var.subscription_id}/resourceGroups/${var.cluster_name}"
   role_definition_name = "${var.cluster_name}-vault-access" 
   principal_id         = azurerm_virtual_machine.vault.identity[0].principal_id
+
+  depends_on = [
+    azurerm_role_assignment.vault_access_role_assignment,
+  ]
 }
