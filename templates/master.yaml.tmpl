@@ -828,7 +828,7 @@ systemd:
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/
       ExecStartPre=/usr/bin/mkdir -p /etc/tokens
       ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt {{.DockerRegistry}}/giantswarm/curl:7.67.0 -k -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
-      ExecStart=/opt/bin/get-vault-token
+      ExecStart=/opt/bin/get-vault-token master
 
       [Install]
       WantedBy=multi-user.target
