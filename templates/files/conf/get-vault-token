@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -uxo pipefail
+set -euxo pipefail
 
 # Vault configuration
 export VAULT_ADDR=https://{{ .VaultDomainName }}
