@@ -109,6 +109,16 @@ resource "azurerm_role_definition" "vault_access_role" {
   }
 }
 
+# there is delay between role is visible for assignment
+resource "null_resource" "delay_role_assignment_creation" {
+  provisioner "local-exec" {
+    command = "sleep 30"
+  }
+  triggers = {
+    "before" = azurerm_role_definition.vault_access_role.id
+  }
+}
+
 resource "azurerm_role_assignment" "vault_access_role_assignment" {
   scope                = "/subscriptions/${var.subscription_id}/resourceGroups/${var.cluster_name}"
   role_definition_name = "${var.cluster_name}-vault-access" 
@@ -116,5 +126,6 @@ resource "azurerm_role_assignment" "vault_access_role_assignment" {
 
   depends_on = [
     azurerm_role_assignment.vault_access_role_assignment,
+    null_resource.delay_role_assignment_creation.id,
   ]
 }

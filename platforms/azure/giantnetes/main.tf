@@ -240,8 +240,6 @@ module "master" {
   storage_container = module.blob.storage_container
 
   subscription_id = var.azure_sp_subscriptionid
-
-  depends_on = [module.vault]
 }
 
 # Generate ignition config.
@@ -277,8 +275,6 @@ module "worker" {
   vm_size = var.worker_vm_size
 
   subscription_id = var.azure_sp_subscriptionid
-
-  depends_on = [module.vault]
 }
 
 module "vpn" {
