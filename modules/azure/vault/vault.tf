@@ -126,6 +126,6 @@ resource "azurerm_role_assignment" "vault_access_role_assignment" {
 
   depends_on = [
     azurerm_role_assignment.vault_access_role_assignment,
-    null_resource.delay_role_assignment_creation.id,
+    null_resource.delay_role_assignment_creation,
   ]
 }
