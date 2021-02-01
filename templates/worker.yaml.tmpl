@@ -11,6 +11,15 @@ storage:
         id: 0
       contents:
         source: "data:,{{ .GSReleaseVersion }}"
+
+    - path: /boot/coreos/first_boot
+      filesystem: root
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
+
     {{if eq .Provider "azure" -}}
     - path: /etc/kubernetes/config/azure.yaml
       filesystem: root

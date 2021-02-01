@@ -12,6 +12,14 @@ storage:
       contents:
         source: "data:,{{ .GSReleaseVersion }}"
 
+    - path: /boot/coreos/first_boot
+      filesystem: root
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
+
 {{ if eq .Provider "aws" }}
     - path: /srv/aws-cni.yaml
       filesystem: root
