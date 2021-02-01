@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `first_boot` file in bastion/master/worker ignition templates.
+
 ## [3.3.0] - 2021-01-22
 
 ### Added
