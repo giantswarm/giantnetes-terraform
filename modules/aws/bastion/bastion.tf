@@ -69,6 +69,14 @@ resource "aws_security_group" "bastion" {
     cidr_blocks = [var.vpc_cidr]
   }
 
+  # Allow access to node-exporter metrics from pod CIDR
+  ingress {
+    from_port   = 10300
+    to_port     = 10300
+    protocol    = "tcp"
+    cidr_blocks = var.aws_cni_subnets
+  }
+
   # Allow SSH from everywhere
   ingress {
     from_port   = 22

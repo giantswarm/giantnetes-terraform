@@ -6,6 +6,12 @@ variable "aws_account" {
   type = string
 }
 
+
+variable "aws_cni_subnets" {
+  type        = list
+  description = "CIDR for AWS CNI networks used for pods."
+}
+
 variable "bastion_count" {
   type = string
 }
