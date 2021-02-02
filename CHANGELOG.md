@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add `first_boot` file in bastion/master/worker ignition templates.
 
+### Changed
+
+- Allow access to bastion node-exporter metrics from pod CIDR.
+
 ## [3.3.0] - 2021-01-22
 
 ### Added
