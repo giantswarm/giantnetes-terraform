@@ -602,6 +602,17 @@ systemd:
   - name: systemd-networkd-wait-online.service
     enabled: false
     mask: true
+  - name: boot.mount
+    enabled: true
+    contents:
+      [Unit]
+      Description=Mount /dev/sda1 to /boot directory
+      [Mount]
+      What=/dev/sda1
+      Where=/boot
+      Type=vfat
+      [Install]
+      WantedBy=local-fs.target
   - name: var-lib-etcd.mount
     enabled: {{if eq .Provider "aws" }}false{{else}}true{{end}}
     contents: |
