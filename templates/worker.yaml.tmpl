@@ -231,7 +231,7 @@ systemd:
     mask: true
   - name: boot.mount
     enabled: true
-    contents:
+    contents: |
       [Unit]
       Description=Mount /dev/sda1 to /boot directory
       [Mount]
