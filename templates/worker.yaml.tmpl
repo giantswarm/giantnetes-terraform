@@ -229,17 +229,17 @@ systemd:
   - name: systemd-networkd-wait-online.service
     enabled: false
     mask: true
-  - name: boot.mount
+  - name: mount-boot.service
     enabled: true
     contents: |
       [Unit]
       Description=Mount /dev/sda1 to /boot directory
-      [Mount]
-      What=/dev/sda1
-      Where=/boot
-      Type=vfat
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/bin/mount -t vfat /dev/sda1 /boot
+      RemainAfterExit=yes
       [Install]
-      WantedBy=local-fs.target
+      WantedBy=multi-user.target
   - name: var-lib-docker.mount
     enabled: true
     contents: |
