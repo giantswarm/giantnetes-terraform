@@ -53,7 +53,9 @@ spec:
       - --tls-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
       - --client-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
       - --service-account-key-file=/etc/kubernetes/ssl/service-account-key.pem
-      - --feature-gates=TTLAfterFinished=true
+      - --audit-dynamic-configuration
+      - --runtime-config=auditregistration.k8s.io/v1alpha1=true
+      - --feature-gates=TTLAfterFinished=true,DynamicAuditing=true
       - --audit-log-path=/var/log/apiserver/audit.log
       - --audit-log-maxage=30
       - --audit-log-maxbackup=30
