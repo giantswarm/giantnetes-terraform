@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Update Kubernetes to `1.19.4` version.
+- Update Kubernetes to `1.19.7` version.
 - Update Flatcar Linux to `2605.12.0` version.
 
 ## [3.3.1] - 2021-02-02
