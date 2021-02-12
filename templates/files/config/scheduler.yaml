@@ -1,7 +1,4 @@
 kind: KubeSchedulerConfiguration
-algorithmSource:
-  provider: DefaultProvider
-apiVersion: kubescheduler.config.k8s.io/v1alpha1
+apiVersion: kubescheduler.config.k8s.io/v1beta1
 clientConnection:
   kubeconfig: /etc/kubernetes/kubeconfig/scheduler.yaml
-hardPodAffinitySymmetricWeight: 1

@@ -43,6 +43,16 @@ storage:
 
     {{ end -}}
 
+    - path: /opt/k8s-extract
+      filesystem: root
+      mode: 356
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/k8s-extract" }}"
+
     - path: /etc/kubernetes/config/kubelet.yaml.tmpl
       filesystem: root
       mode: 420
@@ -532,7 +542,7 @@ systemd:
 
       [Install]
       WantedBy=multi-user.target
-  - name: k8s-setup-download-hyperkube-binaries.service
+  - name: k8s-extract.service 
     enabled: true
     contents: |
       [Unit]
@@ -545,10 +555,12 @@ systemd:
       TimeoutStartSec=0
       Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:{{.K8sVersion}}"
       Environment="NAME=%p.service"
-      ExecStartPre=/bin/bash -c "/usr/bin/docker create --name $NAME $IMAGE"
-      ExecStart=/bin/bash -c "/usr/bin/docker cp $NAME:/usr/local/bin/kubelet /opt/bin/kubelet"
-      ExecStart=/bin/bash -c "/usr/bin/docker cp $NAME:/usr/local/bin/kubectl /opt/bin/kubectl"
-      ExecStartPost=/bin/bash -c "/usr/bin/docker rm $NAME"
+      ExecStartPre=/usr/bin/mkdir -p /opt/bin/
+      ExecStartPre=/usr/bin/docker pull $IMAGE
+      ExecStartPre=-/usr/bin/docker rm $NAME
+      ExecStartPre=-/usr/bin/docker create --name $NAME $IMAGE /kubectl
+      ExecStart=/opt/k8s-extract $NAME
+      ExecStopPost=-/usr/bin/docker rm $NAME
       [Install]
       WantedBy=multi-user.target
   - name: k8s-setup-delete-old-node.service
@@ -556,8 +568,8 @@ systemd:
     contents: |
       [Unit]
       Description=Deletes old kubernetes node which this instance is going to replace
-      After=k8s-setup-download-hyperkube-binaries.service kubelet-certs.service{{ if eq .Provider "aws" }} set-hostname.service{{ end }}
-      Requires=k8s-setup-download-hyperkube-binaries.service kubelet-certs.service{{ if eq .Provider "aws" }} set-hostname.service{{ end }}
+      After=k8s-extract.service kubelet-certs.service{{ if eq .Provider "aws" }} set-hostname.service{{ end }}
+      Requires=k8s-extract.service kubelet-certs.service{{ if eq .Provider "aws" }} set-hostname.service{{ end }}
       ConditionFirstBoot=yes
       [Service]
       Type=oneshot
@@ -574,8 +586,8 @@ systemd:
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-setup-download-hyperkube-binaries.service k8s-setup-delete-old-node.service
-      Requires=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-setup-download-hyperkube-binaries.service k8s-setup-delete-old-node.service
+      After=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-extract.service k8s-setup-delete-old-node.service
+      Requires=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-extract.service k8s-setup-delete-old-node.service
 
       [Service]
       TimeoutStartSec=300

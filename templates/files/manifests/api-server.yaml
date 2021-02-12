@@ -15,20 +15,17 @@ spec:
   priorityClassName: system-node-critical
   containers:
     - name: k8s-api-server
-      image: {{.DockerRegistry}}/giantswarm/hyperkube:{{ .K8sVersion }}
+      image: {{.DockerRegistry}}/giantswarm/kube-apiserver:v{{ .K8sVersion }}
       env:
       - name: HOST_IP
         valueFrom:
           fieldRef:
             fieldPath: status.podIP
       command:
-      - /hyperkube
       - kube-apiserver
       - --allow-privileged=true
       - --anonymous-auth=false
-      - --kubelet-https=true
       - --secure-port=443
-      - --insecure-port=0
       {{ if eq .Provider "aws" -}}
       - --cloud-provider=aws
       {{ else -}}
@@ -53,9 +50,7 @@ spec:
       - --tls-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
       - --client-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
       - --service-account-key-file=/etc/kubernetes/ssl/service-account-key.pem
-      - --audit-dynamic-configuration
-      - --runtime-config=auditregistration.k8s.io/v1alpha1=true
-      - --feature-gates=TTLAfterFinished=true,DynamicAuditing=true
+      - --feature-gates=TTLAfterFinished=true
       - --audit-log-path=/var/log/apiserver/audit.log
       - --audit-log-maxage=30
       - --audit-log-maxbackup=30

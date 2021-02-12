@@ -10,9 +10,8 @@ spec:
   priorityClassName: system-node-critical
   containers:
     - name: k8s-controller-manager
-      image: {{.DockerRegistry}}/giantswarm/hyperkube:{{ .K8sVersion }}
+      image: {{.DockerRegistry}}/giantswarm/kube-controller-manager:v{{ .K8sVersion }}
       command:
-      - /hyperkube
       - kube-controller-manager
       - --master=https://{{ .APIDomainName }}:443
       - --logtostderr=true
