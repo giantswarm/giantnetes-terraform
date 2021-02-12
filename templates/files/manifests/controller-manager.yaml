@@ -10,7 +10,7 @@ spec:
   priorityClassName: system-node-critical
   containers:
     - name: k8s-controller-manager
-      image: {{.DockerRegistry}}/giantswarm/kube-controller-manager:{{ .K8sVersion }}
+      image: {{.DockerRegistry}}/giantswarm/kube-controller-manager:v{{ .K8sVersion }}
       command:
       - kube-controller-manager
       - --master=https://{{ .APIDomainName }}:443

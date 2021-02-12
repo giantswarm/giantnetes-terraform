@@ -15,7 +15,7 @@ spec:
   priorityClassName: system-node-critical
   containers:
     - name: k8s-api-server
-      image: {{.DockerRegistry}}/giantswarm/kube-apiserver:{{ .K8sVersion }}
+      image: {{.DockerRegistry}}/giantswarm/kube-apiserver:v{{ .K8sVersion }}
       env:
       - name: HOST_IP
         valueFrom:
