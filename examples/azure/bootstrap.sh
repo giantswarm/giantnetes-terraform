@@ -27,11 +27,11 @@ export TF_VAR_azure_location=<value>
 # needs to be unique within the azure account
 export TF_VAR_cluster_name=<value>
 
-# service principal credentials
+# Tenant ID owning the subscription.
 export TF_VAR_azure_sp_tenantid=<value>
-# account subscription id (from az account list --output table)
+# Subscription id
 export TF_VAR_azure_sp_subscriptionid=<value>
-# equals to azure appId
+# Client ID (or app ID) of the <installation>-management-cluster service principal
 export TF_VAR_azure_sp_aadclientid=<value>
 
 
