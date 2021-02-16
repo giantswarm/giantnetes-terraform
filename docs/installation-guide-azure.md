@@ -61,26 +61,11 @@ In the left menu, click on `Data protection`, select the `Turn on versioning` ch
 
 ### Create service principal
 
-Create resource group for cluster. We need one to assign permissions.
+Create resource group for cluster.
 
 ```
 az group create -n ${NAME} -l ${REGION}
 ```
-
-Create service principal with permissions limited to resource group.
-
-Get the subscription ID you want to work on by choosing the right "id" field from the following command:
-
-```
-az account list
-```
-
-```
-export SUBSCRIPTION_ID=<the ID you found with the command above>
-az ad sp create-for-rbac --name=${NAME}-sp --role="Contributor" --scopes="/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${NAME}" --years 10
-```
-
-Please save these and storage credentials above in keepass (e.g. "<cluster name> azure host cluster credentials"). They will be needed in next step.
 
 ### Prepare terraform environment
 
