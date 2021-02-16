@@ -83,11 +83,6 @@ Set the storage account access key under the `Terraform.ArmAccessKey` key.
 opsctl update secret --in=terraform-secrets.yaml -k Terraform.ArmAccessKey
 ```
 
-Set the service principal password under the `Terraform.AzureSPAadClientSecret` key.
-```
-opsctl update secret --in=terraform-secrets.yaml -k Terraform.AzureSPAadClientSecret
-```
-
 If you need to setup a VPN (mandatory for production installations) you first need to get a /28 subnet unique for this installation.
 
 Go to https://github.com/giantswarm/giantswarm/wiki/Giant-Swarm-VPN, choose an unused subnet and add it to the page with the new installation name to reserve it.
