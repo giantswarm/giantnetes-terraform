@@ -163,6 +163,10 @@ source bootstrap.sh
 terraform apply ./
 ```
 
+### Complete Vault setup
+
+Setup the Vault Kubernetes Auth backend by following [this guide](https://intranet.giantswarm.io/docs/support-and-ops/installation-guide-for-giantnetes/vault-kubernetes-auth-backend/).
+
 ## Upload variables and configuration
 
 Create `terraform` folder in [installations repository](https://github.com/giantswarm/installations) under particular installation folder. Copy variables and configuration.
