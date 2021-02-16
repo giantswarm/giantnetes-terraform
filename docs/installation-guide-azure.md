@@ -155,12 +155,6 @@ Temporarily save the password generated somewhere, then follow the instructions 
 
 How to do that see [here](https://github.com/giantswarm/hive/#install-insecure-vault)
 
-After you successfully installed Vault in the new installations, set the `g8s host cluster` vault unseal token (you got it in the Ansible output) in the secrets file:
-
-```
-opsctl update secret --in=terraform-secrets.yaml -k Terraform.VaultToken
-```
-
 ### Stage: Kubernetes
 
 ```
