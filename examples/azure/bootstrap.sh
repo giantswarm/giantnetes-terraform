@@ -31,12 +31,6 @@ export TF_VAR_cluster_name=<value>
 export TF_VAR_azure_sp_tenantid=<value>
 # Subscription id
 export TF_VAR_azure_sp_subscriptionid=<value>
-# Client ID (or app ID) of the <installation>-management-cluster service principal
-export TF_VAR_azure_sp_aadclientid=<value>
-
-
-export TF_VAR_azure_sp_aadclientsecret="$(${OPSCTL_PATH} show secret -i ./terraform-secrets.yaml -k Terraform.AzureSPAadClientSecret)"
-export ARM_ACCESS_KEY="$(${OPSCTL_PATH} show secret -i ./terraform-secrets.yaml -k Terraform.ArmAccessKey)"
 
 export TF_VAR_base_domain=${TF_VAR_cluster_name}.${TF_VAR_azure_location}.azure.gigantic.io
 # hosted zone name. This is the zone where the delegated NS records are set.
