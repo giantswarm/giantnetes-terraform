@@ -1,8 +1,12 @@
 cloud: {{ .AzureCloud }}
 tenantId: {{ .AzureSPTenantID }}
 subscriptionId: {{ .AzureSPSubscriptionID }}
+{{ if or (eq .AzureSPAADClientID "") (eq .AzureSPAADClientSecret "") }}
+useManagedIdentityExtension: true
+{{ else }}
 aadClientId: {{ .AzureSPAADClientID }}
 aadClientSecret: {{ .AzureSPAADClientSecret }}
+{{ end }}
 resourceGroup: {{ .AzureResourceGroup }}
 location: {{ .AzureLocation }}
 subnetName: {{ .AzureSubnetName }}
