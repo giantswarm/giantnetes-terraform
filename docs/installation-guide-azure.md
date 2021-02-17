@@ -227,13 +227,13 @@ terraform plan ./
 #### Update masters
 
 ```
-terraform taint -module="master" azurerm_virtual_machine.master.0
+terraform taint module.master.azurerm_virtual_machine.master[0]
 terraform apply ./
 
-terraform taint -module="master" azurerm_virtual_machine.master.1
+terraform taint module.master.azurerm_virtual_machine.master[1]
 terraform apply ./
 
-terraform taint -module="master" azurerm_virtual_machine.master.2
+terraform taint module.master.azurerm_virtual_machine.master[2]
 terraform apply ./
 ```
 
