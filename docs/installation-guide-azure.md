@@ -228,31 +228,22 @@ terraform plan ./
 
 ```
 terraform taint module.master.azurerm_virtual_machine.master[0]
-terraform apply ./
+terraform apply -target=module.master ./
 
 terraform taint module.master.azurerm_virtual_machine.master[1]
-terraform apply ./
+terraform apply -target=module.master ./
 
 terraform taint module.master.azurerm_virtual_machine.master[2]
-terraform apply ./
+terraform apply -target=module.master ./
 ```
-
-### Update workers
-
-Select worker (e.g. last worker with index 3) for update and delete VM and OS disk as described [above](#delete-vms-manually).
-
-```
-terraform taint -module="worker" "azurerm_virtual_machine.worker.3"
-terraform apply ./
-```
-
-Repeat for other workers.
 
 ### Update everything else
 
 ```
 terraform apply ./
 ```
+
+NB: worker nodes will be rolled automatically and sequentially by Azure.
 
 ## Known issues
 
