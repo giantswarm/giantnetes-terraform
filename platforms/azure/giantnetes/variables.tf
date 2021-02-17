@@ -55,11 +55,13 @@ variable "azure_sp_subscriptionid" {
 variable "azure_sp_aadclientid" {
   type        = string
   description = "ID of Service Principal for Kubernetes"
+  default     = ""
 }
 
 variable "azure_sp_aadclientsecret" {
   type        = string
   description = "Secret of Service Principal for Kubernetes"
+  default     = ""
 }
 
 variable "master_count" {
