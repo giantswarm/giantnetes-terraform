@@ -59,29 +59,6 @@ az storage account keys list -g ${NAME}-terraform  --account-name ${NAME}terrafo
 Enable versioning: go to the azure portal, navigate to the resource group `${NAME}-terraform`, then to the storage account `${NAME}terraform`.
 In the left menu, click on `Data protection`, select the `Turn on versioning` checkbox and click `Save`.
 
-### Create service principal
-
-Create resource group for cluster. We need one to assign permissions.
-
-```
-az group create -n ${NAME} -l ${REGION}
-```
-
-Create service principal with permissions limited to resource group.
-
-Get the subscription ID you want to work on by choosing the right "id" field from the following command:
-
-```
-az account list
-```
-
-```
-export SUBSCRIPTION_ID=<the ID you found with the command above>
-az ad sp create-for-rbac --name=${NAME}-sp --role="Contributor" --scopes="/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${NAME}" --years 10
-```
-
-Please save these and storage credentials above in keepass (e.g. "<cluster name> azure host cluster credentials"). They will be needed in next step.
-
 ### Prepare terraform environment
 
 ```
@@ -96,11 +73,6 @@ Now update the `terraform-secrets.yaml` file with the azure credentials.
 Set the storage account access key under the `Terraform.ArmAccessKey` key.
 ```
 opsctl update secret --in=terraform-secrets.yaml -k Terraform.ArmAccessKey
-```
-
-Set the service principal password under the `Terraform.AzureSPAadClientSecret` key.
-```
-opsctl update secret --in=terraform-secrets.yaml -k Terraform.AzureSPAadClientSecret
 ```
 
 If you need to setup a VPN (mandatory for production installations) you first need to get a /28 subnet unique for this installation.
@@ -183,12 +155,6 @@ Temporarily save the password generated somewhere, then follow the instructions 
 
 How to do that see [here](https://github.com/giantswarm/hive/#install-insecure-vault)
 
-After you successfully installed Vault in the new installations, set the `g8s host cluster` vault unseal token (you got it in the Ansible output) in the secrets file:
-
-```
-opsctl update secret --in=terraform-secrets.yaml -k Terraform.VaultToken
-```
-
 ### Stage: Kubernetes
 
 ```
@@ -196,6 +162,10 @@ opsctl update secret --in=terraform-secrets.yaml -k Terraform.VaultToken
 source bootstrap.sh
 terraform apply ./
 ```
+
+### Complete Vault setup
+
+Setup the Vault Kubernetes Auth backend by following [this guide](https://intranet.giantswarm.io/docs/support-and-ops/installation-guide-for-giantnetes/vault-kubernetes-auth-backend/).
 
 ## Upload variables and configuration
 
@@ -257,32 +227,23 @@ terraform plan ./
 #### Update masters
 
 ```
-terraform taint -module="master" azurerm_virtual_machine.master.0
-terraform apply ./
+terraform taint module.master.azurerm_virtual_machine.master[0]
+terraform apply -target=module.master ./
 
-terraform taint -module="master" azurerm_virtual_machine.master.1
-terraform apply ./
+terraform taint module.master.azurerm_virtual_machine.master[1]
+terraform apply -target=module.master ./
 
-terraform taint -module="master" azurerm_virtual_machine.master.2
-terraform apply ./
+terraform taint module.master.azurerm_virtual_machine.master[2]
+terraform apply -target=module.master ./
 ```
-
-### Update workers
-
-Select worker (e.g. last worker with index 3) for update and delete VM and OS disk as described [above](#delete-vms-manually).
-
-```
-terraform taint -module="worker" "azurerm_virtual_machine.worker.3"
-terraform apply ./
-```
-
-Repeat for other workers.
 
 ### Update everything else
 
 ```
 terraform apply ./
 ```
+
+NB: worker nodes will be rolled automatically and sequentially by Azure.
 
 ## Known issues
 

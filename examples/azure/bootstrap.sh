@@ -27,16 +27,10 @@ export TF_VAR_azure_location=<value>
 # needs to be unique within the azure account
 export TF_VAR_cluster_name=<value>
 
-# service principal credentials
+# Tenant ID owning the subscription.
 export TF_VAR_azure_sp_tenantid=<value>
-# account subscription id (from az account list --output table)
+# Subscription id
 export TF_VAR_azure_sp_subscriptionid=<value>
-# equals to azure appId
-export TF_VAR_azure_sp_aadclientid=<value>
-
-
-export TF_VAR_azure_sp_aadclientsecret="$(${OPSCTL_PATH} show secret -i ./terraform-secrets.yaml -k Terraform.AzureSPAadClientSecret)"
-export ARM_ACCESS_KEY="$(${OPSCTL_PATH} show secret -i ./terraform-secrets.yaml -k Terraform.ArmAccessKey)"
 
 export TF_VAR_base_domain=${TF_VAR_cluster_name}.${TF_VAR_azure_location}.azure.gigantic.io
 # hosted zone name. This is the zone where the delegated NS records are set.
