@@ -10,12 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Expand audit logging.
-- Optional support for managed identity in place of service principal for Azure VMs.
 
 ### Changed
 
 - Update Kubernetes to `1.19.7` version.
 - Update Flatcar Linux to `2605.12.0` version.
+
+## [3.4.0] - 2021-02-17
+
+### Added
+
+- Optional support for AzureManagedIdentity for Azure VMs.
 
 ## [3.3.1] - 2021-02-02
 
