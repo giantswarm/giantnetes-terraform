@@ -1,3 +1,7 @@
+locals {
+  role_definition_id = uuid()
+}
+
 resource "azurerm_managed_disk" "vault_data" {
   name                 = "${var.cluster_name}-vault-data-disk"
   location             = var.location
@@ -100,12 +104,19 @@ resource "azurerm_virtual_machine" "vault" {
 }
 
 resource "azurerm_role_definition" "vault_access_role" {
+  role_definition_id = local.role_definition_id
   name        = "${var.cluster_name}-vault-access"
   scope       = "/subscriptions/${var.subscription_id}/resourceGroups/${var.cluster_name}"
   description = "Custom role used to provide vault access to VMs/VMSSs"
 
   permissions {
     actions = ["Microsoft.Compute/virtualMachineScaleSets/read", "Microsoft.Compute/virtualMachines/read"]
+  }
+
+  lifecycle {
+    ignore_changes = [
+      role_definition_id,
+    ]
   }
 }
 
