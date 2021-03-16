@@ -6,3 +6,5 @@ platforms/aws/giantnetes/terraform-secrets.yaml
 platforms/azure/giantnetes/bootstrap.sh
 platforms/azure/giantnetes/terraform-secrets.yaml
 terraform.tfvars
+
+!platforms/vmware/giantnetes/terraform.tfstate
