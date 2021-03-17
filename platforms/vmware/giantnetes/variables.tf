@@ -6,6 +6,18 @@ variable "provider_name" {
   default     = ""
 }
 
+variable "base_domain" {
+  type        = string
+  description = "Base domain for g8s cluster (e.g $CLUSTER_NAME.$PROVIDER.vmware.gigantic.io)."
+}
+
+# Route53 DNS variables
+
+variable "root_dns_zone_id" {
+  description = "Root DNS zone ID."
+  default     = ""
+}
+
 # Required variables (NSX-T)
 variable "nsxt_host" {
   type        = string
