@@ -1,3 +1,11 @@
+# global cluster vars
+
+variable "provider_name" {
+  type        = string
+  description = "The name of the installation provider."
+  default     = ""
+}
+
 # Required variables (NSX-T)
 variable "nsxt_host" {
   type        = string
