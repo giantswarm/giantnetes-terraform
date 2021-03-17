@@ -88,6 +88,6 @@ terraform init -backend=true \
   -backend-config="bucket=${TF_VAR_cluster_name}-state" \
   -backend-config="key=terraform.tfstate" \
   -backend-config="dynamodb_table=${TF_VAR_cluster_name}-lock" \
-  -backend-config="profile=${TF_VAR_cluster_name}" \
+  -backend-config="profile=${AWS_PROFILE}" \
   -backend-config="region=${TF_VAR_aws_region}" \
   ./
