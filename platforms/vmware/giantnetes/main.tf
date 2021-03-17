@@ -140,3 +140,11 @@ module "worker" {
 
   depends_on = [module.nsxt]
 }
+
+module "dns" {
+  source = "../../../modules/aws/dns"
+
+  cluster_name     = var.cluster_name
+  root_dns_zone_id = var.root_dns_zone_id
+  zone_name        = var.base_domain
+}
