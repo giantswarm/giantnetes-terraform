@@ -1,3 +1,7 @@
+terraform {
+  backend "s3" {}
+}
+
 locals {
   tags = concat([{ scope = "Managed By Terraform", tag = "true" }], var.tags)
 }
