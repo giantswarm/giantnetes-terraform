@@ -1,5 +1,10 @@
 # global cluster vars
 
+variable "cluster_name" {
+  type        = string
+  description = "Cluster identifier which will be used in controller node names."
+}
+
 variable "provider_name" {
   type        = string
   description = "The name of the installation provider."
@@ -86,11 +91,6 @@ variable "dns_addresses" {
     "8.8.8.8",
     "8.8.4.4",
   ]
-}
-
-variable "cluster_name" {
-  type        = string
-  description = "Cluster identifier which will be used in controller node names."
 }
 
 # Required variables (VSphere)
