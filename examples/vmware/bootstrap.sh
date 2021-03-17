@@ -76,7 +76,7 @@ export TF_VAR_vsphere_server=""
 export TF_VAR_vsphere_user=""
 export TF_VAR_vsphere_password=""
 
-export TF_VAR_vsphere_datacente=""
+export TF_VAR_vsphere_datacenter=""
 export TF_VAR_vsphere_datastore=""
 export TF_VAR_vsphere_compute_cluster=""
 export TF_VAR_vsphere_template=""
