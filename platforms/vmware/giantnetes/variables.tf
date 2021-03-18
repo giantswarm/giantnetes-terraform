@@ -93,7 +93,16 @@ variable "dns_addresses" {
   ]
 }
 
+# Root DNS zone variables
+
+variable "dns_use_route53" {
+  type        = bool
+  description = "Set whether Route53 should be used for the root DNS zone."
+  default     = false
+}
+
 # Required variables (VSphere)
+
 variable "vsphere_server" {
   type        = string
   description = "The host name or IP address of the VSphere client."

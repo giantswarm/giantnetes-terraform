@@ -144,6 +144,8 @@ module "worker" {
 module "dns" {
   source = "../../../modules/aws/dns"
 
+  count = var.dns_use_route53 ? 1 : 0
+
   cluster_name     = var.cluster_name
   root_dns_zone_id = var.root_dns_zone_id
   zone_name        = var.base_domain

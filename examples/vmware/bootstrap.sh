@@ -47,6 +47,8 @@ export TF_VAR_base_domain=${TF_VAR_cluster_name}.${TF_VAR_provider_name}.vmware.
 ## VMWare installations use Route53 hosted zones in the
 ## AWS account listed above.
 
+export TF_VAR_dns_use_route53=true
+
 # ID of aws route53 zone
 export TF_VAR_root_dns_zone_id=
 
