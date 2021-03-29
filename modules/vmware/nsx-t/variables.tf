@@ -48,3 +48,10 @@ variable "tags" {
 
   default = []
 }
+
+# bastion variables
+
+variable "bastion_subnet_cidr" {
+  type        = string
+  description = "CIDR block to use for the bastion subnet"
+}
