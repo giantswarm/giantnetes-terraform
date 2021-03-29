@@ -6,7 +6,7 @@ resource "nsxt_policy_segment" "vmnet1" {
   nsx_id = format("%s-vmnet1", var.cluster_name)
 
   subnet {
-    cidr = "${cidrhost(var.management_cluster_cidr, 1)}/${local.subnet_mask}"
+    cidr = "${cidrhost(var.management_cluster_cidr, 1)}/${local.mc_subnet_mask}"
   }
 
   dynamic "tag" {

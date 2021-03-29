@@ -9,7 +9,7 @@ resource "nsxt_logical_dhcp_server" "dhcp_server" {
 
   // reproduce tre behaviour of AWS setting the DHCP Server IP + 2 IP
   // i.e. CIDR: 10.100.0.0/8 - DHCP Server IP: 10.100.0.2
-  dhcp_server_ip    = "${cidrhost(var.management_cluster_cidr, 2)}/${local.subnet_mask}"
+  dhcp_server_ip    = "${cidrhost(var.management_cluster_cidr, 2)}/${local.mc_subnet_mask}"
   gateway_ip        = cidrhost(var.management_cluster_cidr, 1)
   dns_name_servers  = var.dns_addresses
 
