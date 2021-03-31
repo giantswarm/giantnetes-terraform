@@ -13,8 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Update Kubernetes to `1.19.7` version.
-- Update Flatcar Linux to `2605.12.0` version in AWS.
+- Update Kubernetes to `1.20.5` version.
+- Update Flatcar Linux to `2765.2.2` version in AWS.
 
 ## [3.4.0] - 2021-02-17
 
