@@ -75,6 +75,9 @@ export TF_VAR_nsxt_transport_zone=""
 # CIDR for bastion subnet
 export TF_VAR_bastion_subnet_cidr=""
 
+# Number of bastions to provision (defaults to 1)
+export TF_VAR_bastion_host_count=""
+
 # vSphere configuration
 
 export TF_VAR_vsphere_server=""

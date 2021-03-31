@@ -32,6 +32,7 @@ module "nsxt" {
   public_ip_address = var.public_ip_address
   dns_addresses     = var.dns_addresses
 
+  bastion_host_count  = var.bastion_host_count
   bastion_subnet_cidr = var.bastion_subnet_cidr
 
   tags = local.tags
