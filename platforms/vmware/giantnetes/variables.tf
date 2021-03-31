@@ -93,6 +93,14 @@ variable "dns_addresses" {
   ]
 }
 
+# Bastion variables
+
+variable "bastion_subnet_cidr" {
+  type        = string
+  description = "CIDR block to use for the bastion subnet"
+  default     = ""
+}
+
 # Root DNS zone variables
 
 variable "dns_use_route53" {

@@ -72,6 +72,9 @@ export TF_VAR_nsxt_tier0_gateway=""
 export TF_VAR_nsxt_tier1_gateway=""
 export TF_VAR_nsxt_transport_zone=""
 
+# CIDR for bastion subnet
+export TF_VAR_bastion_subnet_cidr=""
+
 # vSphere configuration
 
 export TF_VAR_vsphere_server=""
