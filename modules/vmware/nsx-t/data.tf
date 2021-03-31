@@ -20,3 +20,8 @@ data "nsxt_policy_realization_info" "segment_info" {
   path = nsxt_policy_segment.vmnet1.path
   entity_type = "RealizedLogicalSwitch"
 }
+
+data "nsxt_policy_realization_info" "bastion_segment_info" {
+  path = nsxt_policy_segment.bastion-vmnet.path
+  entity_type = "RealizedLogicalSwitch"
+}
