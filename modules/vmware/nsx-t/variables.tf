@@ -51,6 +51,11 @@ variable "tags" {
 
 # bastion variables
 
+variable "bastion_host_count" {
+  type        = number
+  description = "Number of bastions to provision"
+}
+
 variable "bastion_subnet_cidr" {
   type        = string
   description = "CIDR block to use for the bastion subnet"
