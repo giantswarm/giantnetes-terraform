@@ -79,7 +79,7 @@ variable "volume_size_etcd" {
 
 variable "volume_size_root" {
   type    = string
-  default = 8
+  default = 30
 }
 
 variable "vpc_cidr" {
