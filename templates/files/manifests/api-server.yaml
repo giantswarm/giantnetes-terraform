@@ -50,6 +50,9 @@ spec:
       - --tls-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
       - --client-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
       - --service-account-key-file=/etc/kubernetes/ssl/service-account-key.pem
+      - --service-account-signing-key-file=/etc/kubernetes/ssl/service-account-key.pem
+      - --service-account-issuer=https://{{ .APIDomainName }}
+      - --api-audiences=https://{{ .APIDomainName }}
       - --feature-gates=TTLAfterFinished=true
       - --audit-log-path=/var/log/apiserver/audit.log
       - --audit-log-maxage=30
