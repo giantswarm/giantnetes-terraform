@@ -1,6 +1,14 @@
 ignition:
   version: "2.2.0"
 storage:
+  filesystems:
+    - name: docker
+      mount:
+        device: {{if eq .Provider "azure" }}/dev/disk/azure/scsi1/lun0{{else}}{{ .WorkerMountDocker }}{{end}}
+        format: xfs
+        wipe_filesystem: true
+        label: docker
+
   files:
     - path: /etc/gs-release-version
       filesystem: root
@@ -656,14 +664,6 @@ systemd:
       [Install]
       WantedBy=multi-user.target
 {{ end }}
-storage:
-  filesystems:
-    - name: docker
-      mount:
-        device: {{if eq .Provider "azure" }}/dev/disk/azure/scsi1/lun0{{else}}{{ .WorkerMountDocker }}{{end}}
-        format: xfs
-        wipe_filesystem: true
-        label: docker
 passwd:
   users:
   - name: giantswarm

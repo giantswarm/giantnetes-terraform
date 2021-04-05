@@ -1,6 +1,22 @@
 ignition:
   version: "2.2.0"
 storage:
+  filesystems:
+    - name: docker
+      mount:
+        device: {{if eq .Provider "azure" }}/dev/disk/azure/scsi1/lun0{{else}}{{ .MasterMountDocker }}{{end}}
+        format: xfs
+        wipe_filesystem: false
+        label: docker
+{{if eq .Provider "azure" }}
+    - name: etcd
+      mount:
+        device: /dev/disk/azure/scsi1/lun1
+        format: ext4
+        wipe_filesystem: false
+        label: var-lib-etcd
+{{end}}
+
   files:
     - path: /etc/gs-release-version
       filesystem: root
@@ -1310,22 +1326,6 @@ networkd:
       Gateway={{.MasterENIGateway}}
       Table=2
 {{ end -}}
-storage:
-  filesystems:
-    - name: docker
-      mount:
-        device: {{if eq .Provider "azure" }}/dev/disk/azure/scsi1/lun0{{else}}{{ .MasterMountDocker }}{{end}}
-        format: xfs
-        wipe_filesystem: false
-        label: docker
-{{if eq .Provider "azure" }}
-    - name: etcd
-      mount:
-        device: /dev/disk/azure/scsi1/lun1
-        format: ext4
-        wipe_filesystem: false
-        label: var-lib-etcd
-{{end}}
 passwd:
   users:
   - name: giantswarm
