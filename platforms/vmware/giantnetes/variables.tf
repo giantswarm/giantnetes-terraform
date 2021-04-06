@@ -107,6 +107,17 @@ variable "bastion_subnet_cidr" {
   default     = ""
 }
 
+variable "github_token" {
+  type        = string
+  description = "Your personal Github token, used to get access to github.com/giantswarm/employees to get the list of users."
+}
+
+variable "employees_branch" {
+  type        = string
+  description = "The branch in giantswarm/employees repo to use for getting a list of users"
+  default     = "master"
+}
+
 # Root DNS zone variables
 
 variable "dns_use_route53" {
@@ -162,6 +173,50 @@ variable "vsphere_template" {
 variable "vsphere_folder" {
   type        = string
   description = "The path to the folder to put this virtual machine in, relative to the datacenter that the resource pool is in."
+}
+
+# Flatcar variables
+
+variable "flatcar_linux_channel" {
+  description = "Flatcar linux channel (e.g. stable, beta, alpha)."
+  default     = "stable"
+}
+
+variable "flatcar_linux_version" {
+  description = "Flatcar linux version."
+  type        = string
+  default     = "2765.2.2"
+}
+
+# bastion variables
+
+variable "bastion_enabled" {
+  type    = bool
+  default = true
+}
+
+variable "bastion_node_count" {
+  type        = number
+  description = "Number of bastions to create."
+  default     = 1
+}
+
+variable "bastion_cpus_count" {
+  type        = number
+  description = "The total number of virtual processor cores to assign to this virtual machine."
+  default     = 2
+}
+
+variable "bastion_memory" {
+  type        = number
+  description = "The size of the virtual machine's memory, in MB."
+  default     = 2048
+}
+
+variable "bastion_root_disk_size" {
+  type        = number
+  description = "The root size of the virtual machine's disk, in GB."
+  default     = 30
 }
 
 # Optional variables.
