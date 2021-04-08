@@ -46,8 +46,8 @@ resource "nsxt_dhcp_server_ip_pool" "dhcp_bastion_ip_pool" {
 
   ip_range {
     // start from local value (usually .5) and only allocate enough IPs for the requested number of bastions
-    start = cidrhost(var.management_cluster_cidr, local.bastion_dhcp_pool_start)
-    end   = cidrhost(var.management_cluster_cidr, local.bastion_dhcp_pool_end)
+    start = cidrhost(var.bastion_subnet_cidr, local.bastion_dhcp_pool_start)
+    end   = cidrhost(var.bastion_subnet_cidr, local.bastion_dhcp_pool_end)
   }
 
   dynamic "tag" {
