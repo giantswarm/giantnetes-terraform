@@ -16,6 +16,12 @@ variable "base_domain" {
   description = "Base domain for g8s cluster (e.g $CLUSTER_NAME.$PROVIDER.vmware.gigantic.io)."
 }
 
+variable "docker_cidr" {
+  type        = string
+  description = "CIDR for Docker."
+  default     = "172.17.0.1/16"
+}
+
 # Route53 DNS variables
 
 variable "root_dns_zone_id" {
