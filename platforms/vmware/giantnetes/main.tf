@@ -5,7 +5,9 @@ terraform {
 locals {
   tags = concat([{ scope = "Managed By Terraform", tag = "true" }], var.tags)
   ignition_data = {
-    "Provider" = "vmware"
+    "DockerCIDR" = var.docker_cidr
+    "Provider"   = "vmware"
+    "Users"      = yamldecode(base64decode(jsondecode(data.http.bastion_users.body).content))
   }
 }
 
