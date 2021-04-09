@@ -4,6 +4,11 @@ terraform {
 
 locals {
   tags = concat([{ scope = "Managed By Terraform", tag = "true" }], var.tags)
+  ignition_data = {
+    "DockerCIDR" = var.docker_cidr
+    "Provider"   = "vmware"
+    "Users"      = yamldecode(base64decode(jsondecode(data.http.bastion_users.body).content))
+  }
 }
 
 provider "nsxt" {
@@ -31,6 +36,9 @@ module "nsxt" {
 
   public_ip_address = var.public_ip_address
   dns_addresses     = var.dns_addresses
+
+  bastion_host_count  = var.bastion_host_count
+  bastion_subnet_cidr = var.bastion_subnet_cidr
 
   tags = local.tags
 }
@@ -70,6 +78,52 @@ module "vault" {
   logs_disk_size = var.vault_logs_disk_size
 
   ignition_data = ""
+
+  tags = local.tags
+
+  depends_on = [module.nsxt]
+}
+
+data "http" "bastion_users" {
+  url = "https://api.github.com/repos/giantswarm/employees/contents/employees.yaml?ref=${var.employees_branch}"
+
+  request_headers = {
+    Authorization = "token ${var.github_token}"
+  }
+}
+
+# bastion ignition config
+data "gotemplate" "bastion" {
+  template    = "${path.module}/../../../templates/bastion.yaml.tmpl"
+  data        = jsonencode(merge(local.ignition_data, { "NodeType" = "bastion" }))
+  is_ignition = true
+}
+
+module "bastion" {
+  source = "../../../modules/vmware/bastion"
+
+  count = var.bastion_enabled ? 1 : 0
+
+  cluster_name = var.cluster_name
+
+  // VMware variables
+  datacenter      = var.vsphere_datacenter
+  datastore       = var.vsphere_datastore
+  compute_cluster = var.vsphere_compute_cluster
+
+  // In the case we do not use NSX-T the network where to attach VMs
+  // must be already created and passed as input variable
+  //
+  network  = var.nsxt_enabled ? module.nsxt[0].bastion_network : var.vsphere_network
+  template = var.vsphere_template
+  folder   = var.vsphere_folder
+
+  node_count       = var.bastion_node_count
+  cpus_count       = var.bastion_cpus_count
+  memory           = var.bastion_memory
+  root_disk_size   = var.bastion_root_disk_size
+
+  ignition_data = data.gotemplate.bastion.rendered
 
   tags = local.tags
 
