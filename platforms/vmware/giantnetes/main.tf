@@ -84,13 +84,6 @@ module "vault" {
   depends_on = [module.nsxt]
 }
 
-module "flatcar_linux" {
-  source = "../../../modules/flatcar-linux"
-
-  flatcar_channel = var.flatcar_linux_channel
-  flatcar_version = var.flatcar_linux_version
-}
-
 data "http" "bastion_users" {
   url = "https://api.github.com/repos/giantswarm/employees/contents/employees.yaml?ref=${var.employees_branch}"
 
