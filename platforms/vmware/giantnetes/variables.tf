@@ -181,19 +181,6 @@ variable "vsphere_folder" {
   description = "The path to the folder to put this virtual machine in, relative to the datacenter that the resource pool is in."
 }
 
-# Flatcar variables
-
-variable "flatcar_linux_channel" {
-  description = "Flatcar linux channel (e.g. stable, beta, alpha)."
-  default     = "stable"
-}
-
-variable "flatcar_linux_version" {
-  description = "Flatcar linux version."
-  type        = string
-  default     = "2765.2.2"
-}
-
 # bastion variables
 
 variable "bastion_enabled" {
