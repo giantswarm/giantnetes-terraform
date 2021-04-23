@@ -611,7 +611,6 @@ systemd:
       --config=/etc/kubernetes/config/kubelet.yaml \
       --node-ip=${DEFAULT_IPV4} \
       --container-runtime-endpoint=/var/run/dockershim/dockershim.sock \
-      --enable-server \
       --logtostderr=true \
       {{if eq .Provider "aws" -}}
       --cloud-provider=aws \
