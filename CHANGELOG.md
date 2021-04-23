@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.5.1] - 2021-04-23
+
 ### Fixed
 
 - Removed oem dir mount unit on Azure. Feature is provided by Flatcar nowadays.
@@ -237,7 +239,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v3.5.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v3.5.1...HEAD
+[3.5.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v3.5.0...v3.5.1
 [3.5.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v3.3.1...v3.5.0
 [3.3.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v3.3.0...v3.3.1
 [3.3.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v3.2.0...v3.3.0
