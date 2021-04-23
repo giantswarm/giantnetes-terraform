@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Removed oem dir mount unit on Azure. Feature is provided by Flatcar nowadays.
+
 ### Changed
 
 - Move `--enable-server` kubelet flag to kubelet config file.
