@@ -662,19 +662,6 @@ systemd:
       Type=xfs
       [Install]
       WantedBy=local-fs.target
-  {{if eq .Provider "azure" -}}
-  - name: usr-share-oem.mount
-    enabled: true
-    contents: |
-      [Unit]
-      Description=Mount OEM to /usr/share/oem
-      [Mount]
-      What=/dev/sda6
-      Where=/usr/share/oem
-      Type=ext4
-      [Install]
-      WantedBy=local-fs.target
-  {{ end -}}
   - name: wait-for-domains.service
     enabled: true
     contents: |
