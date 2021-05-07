@@ -67,7 +67,6 @@ spec:
         - --configmap=$(POD_NAMESPACE)/ingress-nginx
         - --annotations-prefix=nginx.ingress.kubernetes.io
         - --enable-ssl-chain-completion=false
-        - --enable-dynamic-certificates=true
         securityContext:
           allowPrivilegeEscalation: true
           capabilities:
