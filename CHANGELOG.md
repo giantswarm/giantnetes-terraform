@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Update nginx-IC to 0.29.0 and bring the specs closer to the ones in _nginx-ingress-controller-app_.
+
 ## [3.5.1] - 2021-04-23
 
 ### Fixed
