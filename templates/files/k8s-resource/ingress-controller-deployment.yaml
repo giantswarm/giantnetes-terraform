@@ -9,10 +9,15 @@ metadata:
     prometheus.io/port: '10254'
     prometheus.io/scrape: 'true'
 spec:
-  replicas: 3
   selector:
     matchLabels:
       k8s-app: nginx-ingress-controller
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 2
   template:
     metadata:
       labels:
@@ -52,17 +57,25 @@ spec:
                   values:
                   - nginx-ingress-controller
               topologyKey: kubernetes.io/hostname
-      serviceAccountName: nginx-ingress-controller
       priorityClassName: system-cluster-critical
+      serviceAccountName: nginx-ingress-controller
       containers:
       - name: nginx-ingress-controller
-        image: {{.DockerRegistry}}/giantswarm/nginx-ingress-controller:0.21.0
+        image: {{.DockerRegistry}}/giantswarm/nginx-ingress-controller:0.29.0
         args:
         - /nginx-ingress-controller
-        - --default-backend-service=$(POD_NAMESPACE)/default-http-backend
         - --configmap=$(POD_NAMESPACE)/ingress-nginx
         - --annotations-prefix=nginx.ingress.kubernetes.io
         - --enable-ssl-chain-completion=false
+        securityContext:
+          allowPrivilegeEscalation: true
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - NET_BIND_SERVICE
+          runAsUser: 101
+          runAsGroup: 101
         env:
           - name: POD_NAME
             valueFrom:
@@ -77,6 +90,10 @@ spec:
             path: /healthz
             port: 10254
             scheme: HTTP
+        resources:
+          requests:
+            cpu: 300m
+            memory: 500Mi
         livenessProbe:
           httpGet:
             path: /healthz
