@@ -8,14 +8,6 @@ storage:
         format: xfs
         wipe_filesystem: false
         label: docker
-{{if eq .Provider "azure" }}
-    - name: etcd
-      mount:
-        device: /dev/disk/azure/scsi1/lun1
-        format: ext4
-        wipe_filesystem: false
-        label: var-lib-etcd
-{{end}}
 
   files:
     - path: /etc/gs-release-version
@@ -345,6 +337,26 @@ storage:
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/get-vault-token" }}"
 
+    - path: /opt/attach-etcd-disk
+      filesystem: root
+      mode: 356
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/attach-etcd-disk" }}"
+
+    - path: /opt/ensure-dns-record
+      filesystem: root
+      mode: 356
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/ensure-dns-record" }}"
+
     {{- end }}
     - path: /etc/kubernetes/config/audit-webhook-kube-config.yaml
       filesystem: root
@@ -627,8 +639,9 @@ systemd:
   - name: systemd-networkd-wait-online.service
     enabled: false
     mask: true
+{{if eq .Provider "aws" }}
   - name: var-lib-etcd.mount
-    enabled: {{if eq .Provider "aws" }}false{{else}}true{{end}}
+    enabled: false
     contents: |
       [Unit]
       Description=Mount disk to /var/lib/etcd
@@ -639,7 +652,6 @@ systemd:
       Type=ext4
       [Install]
       WantedBy=local-fs.target
-{{if eq .Provider "aws" }}
   - name: var-lib-etcd.automount
     enabled: true
     contents: |
@@ -694,13 +706,14 @@ systemd:
     contents: |
       [Unit]
       Description=get-vault-ssh-ca
-      Requires=docker.service get-vault-ca.service get-vault-token.service
+      Wants=docker.service get-vault-ca.service get-vault-token.service
       After=docker.service get-vault-ca.service get-vault-token.service
 
       [Service]
       EnvironmentFile=/etc/tokens/node
       Environment=VAULT_ADDR=https://{{ .VaultDomainName }}:443
       Type=oneshot
+      Restart=on-failure
       RemainAfterExit=yes
       ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/bin/bash -c '\
@@ -785,7 +798,7 @@ systemd:
       Description=get vault-ca into trusted certs
       Before=calico-certs.service api-certs.service etcd3-certs.service get-vault-token.service
       After=wait-for-domains.service{{if eq .Provider "azure" }} waagent.service{{ end }}
-      Requires=wait-for-domains.service{{if eq .Provider "azure" }} waagent.service{{ end }}
+      Wants=wait-for-domains.service{{if eq .Provider "azure" }} waagent.service{{ end }}
 
       [Service]
       Type=oneshot
@@ -837,18 +850,19 @@ systemd:
     contents: |
       [Unit]
       Description=get-vault-token
-      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service
+      Wants=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service
       After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service
 
       [Service]
       EnvironmentFile=/etc/environment
       EnvironmentFile=/etc/network-environment
       Type=oneshot
+      Restart=on-failure
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/
       ExecStartPre=/usr/bin/mkdir -p /etc/tokens
       ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt {{.DockerRegistry}}/giantswarm/curl:7.67.0 -k -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
-      ExecStart=/opt/bin/get-vault-token master
+      ExecStart=/opt/bin/get-vault-token
 
       [Install]
       WantedBy=multi-user.target
@@ -859,17 +873,23 @@ systemd:
     contents: |
       [Unit]
       Description=calico-certs
-      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{ end }}
+      Wants=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{ end }}
       After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{ end }}
 
       [Service]
       EnvironmentFile=/etc/environment
       EnvironmentFile=/etc/network-environment
       EnvironmentFile=/etc/tokens/node
+      {{if eq .Provider "azure" }}EnvironmentFile=-/var/lib/etcd/master-id{{end}}
+      {{if eq .Provider "aws" }}Environment=MASTER_ID={{.MasterID}}{{end}}
       Type=oneshot
+      Restart=on-failure
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/calico/
       ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt {{.DockerRegistry}}/giantswarm/curl:7.67.0 -k -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
+      {{- if eq .Provider "azure" }}
+      ExecStartPre=/bin/bash -c "while [ ! -f /var/lib/etcd/master-id ]; do echo 'Waiting for /var/lib/etcd/master-id' && sleep 1; done"
+      {{- end }}
       ExecStart=/bin/bash -c '\
         RETRY=3;\
         while [ -z "$result" ] && [ $RETRY -gt 0 ]; do\
@@ -886,7 +906,7 @@ systemd:
           --vault-addr=https://{{ .VaultDomainName }} \
           --vault-token=${VAULT_TOKEN} \
           --cluster-id=g8s \
-          --common-name={{ .ETCDDomainName }} \
+          --common-name=etcd${MASTER_ID}.{{ .BaseDomain }} \
           --ttl=8760h \
           --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
           --alt-names=localhost \
@@ -903,17 +923,23 @@ systemd:
     contents: |
       [Unit]
       Description=etcd3-certs
-      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service get-vault-token.service
+      Wants=get-vault-ca.service k8s-setup-network-env.service docker.service get-vault-token.service
       After=get-vault-ca.service k8s-setup-network-env.service docker.service get-vault-token.service
 
       [Service]
       EnvironmentFile=/etc/environment
       EnvironmentFile=/etc/network-environment
       EnvironmentFile=/etc/tokens/node
+      {{if eq .Provider "azure" }}EnvironmentFile=-/var/lib/etcd/master-id{{end}}
+      {{if eq .Provider "aws" }}Environment=MASTER_ID={{.MasterID}}{{end}}
       Type=oneshot
+      Restart=on-failure
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/etcd/
       ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt {{.DockerRegistry}}/giantswarm/curl:7.67.0 -k -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
+      {{- if eq .Provider "azure" }}
+      ExecStartPre=/bin/bash -c "while [ ! -f /var/lib/etcd/master-id ]; do echo 'Waiting for /var/lib/etcd/master-id' && sleep 1; done"
+      {{- end }}
       ExecStart=/bin/bash -c '\
         RETRY=3;\
         while [ -z "$result" ] && [ $RETRY -gt 0 ]; do\
@@ -930,11 +956,11 @@ systemd:
           --vault-addr=https://{{ .VaultDomainName }} \
           --vault-token=${VAULT_TOKEN} \
           --cluster-id=g8s \
-          --common-name={{ .ETCDDomainName }} \
+          --common-name=etcd${MASTER_ID}.{{ .BaseDomain }} \
           --ttl=8760h \
           --crt-file=/etc/kubernetes/ssl/etcd/server-crt.pem \
           --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
-          --alt-names=localhost,etcd{{ .MasterID }}.{{ .BaseDomain }} \
+          --alt-names=localhost,etcd${MASTER_ID}.{{ .BaseDomain }} \
           --key-file=/etc/kubernetes/ssl/etcd/server-key.pem \
           --ca-file=/etc/kubernetes/ssl/etcd/server-ca.pem); \
         done; \
@@ -958,6 +984,7 @@ systemd:
       [Service]
       Environment="IMAGE={{.DockerRegistry}}/giantswarm/aws-attach-etcd-dep:0.1.0"
       Environment="NAME=%p.service"
+      Environment=MASTER_ID={{.MasterID}}
       Type=oneshot
       RemainAfterExit=yes
       ExecStart=/bin/bash -c "docker run --rm -i \
@@ -968,11 +995,11 @@ systemd:
                         ${IMAGE} \
                         --eni-device-index=1 \
                         --eni-tag-key=Name \
-                        --eni-tag-value={{.ClusterName}}-master{{.MasterID}}-etcd \
+                        --eni-tag-value={{.ClusterName}}-master${MASTER_ID}-etcd \
                         --volume-device-name=/dev/xvdh \
                         --volume-device-filesystem-type=ext4 \
                         --volume-tag-key=Name \
-                        --volume-tag-value={{.ClusterName}}-master{{.MasterID}}-etcd"
+                        --volume-tag-value={{.ClusterName}}-master${MASTER_ID}-etcd"
       [Install]
       WantedBy=multi-user.target
 {{ end }}
@@ -981,8 +1008,8 @@ systemd:
     contents: |
       [Unit]
       Description=etcd3
-      Requires=k8s-setup-network-env.service etcd3-certs.service calico-certs.service var-lib-etcd.mount
-      After=k8s-setup-network-env.service etcd3-certs.service calico-certs.service var-lib-etcd.mount
+      Wants=k8s-setup-network-env.service etcd3-certs.service calico-certs.service{{ if eq .Provider "aws" }} var-lib-etcd.mount{{ end }}
+      After=k8s-setup-network-env.service etcd3-certs.service calico-certs.service{{ if eq .Provider "aws" }} var-lib-etcd.mount{{ end }}
       Conflicts=etcd.service etcd2.service
       StartLimitIntervalSec=0
 
@@ -994,12 +1021,17 @@ systemd:
       Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.4.13
       Environment=NAME=%p.service
       EnvironmentFile=/etc/network-environment
+      {{if eq .Provider "azure" }}EnvironmentFile=-/var/lib/etcd/master-id{{end}}
+      {{if eq .Provider "aws" }}Environment=MASTER_ID={{.MasterID}}{{end}}
       ExecStartPre=-/usr/bin/docker stop  $NAME
       ExecStartPre=-/usr/bin/docker rm  $NAME
       ExecStartPre=-/usr/bin/docker pull $IMAGE
       ExecStartPre=/bin/bash -c "while [ ! -f /etc/kubernetes/ssl/etcd/server-ca.pem ]; do echo 'Waiting for /etc/kubernetes/ssl/etcd/server-ca.pem to be written' && sleep 1; done"
       ExecStartPre=/bin/bash -c "while [ ! -f /etc/kubernetes/ssl/etcd/server-crt.pem ]; do echo 'Waiting for /etc/kubernetes/ssl/etcd/server-crt.pem to be written' && sleep 1; done"
       ExecStartPre=/bin/bash -c "while [ ! -f /etc/kubernetes/ssl/etcd/server-key.pem ]; do echo 'Waiting for /etc/kubernetes/ssl/etcd/server-key.pem to be written' && sleep 1; done"
+      {{- if eq .Provider "azure" }}
+      ExecStartPre=/bin/bash -c "while [ ! -f /var/lib/etcd/master-id ]; do echo 'Waiting for /var/lib/etcd/master-id' && sleep 1; done"
+      {{- end }}
       ExecStart=/usr/bin/docker run \
           -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
           -v /etc/kubernetes/ssl/etcd/:/etc/etcd \
@@ -1008,7 +1040,7 @@ systemd:
           --name $NAME \
           $IMAGE \
           etcd \
-          --name etcd{{ .MasterID }} \
+          --name etcd${MASTER_ID} \
           --trusted-ca-file /etc/etcd/server-ca.pem \
           --cert-file /etc/etcd/server-crt.pem \
           --key-file /etc/etcd/server-key.pem \
@@ -1017,8 +1049,8 @@ systemd:
           --peer-cert-file /etc/etcd/server-crt.pem \
           --peer-key-file /etc/etcd/server-key.pem \
           --peer-client-cert-auth=true \
-          --advertise-client-urls=https://{{ .ETCDDomainName }}:2379 \
-          --initial-advertise-peer-urls=https://{{ .ETCDDomainName }}:2380 \
+          --advertise-client-urls=https://etcd${MASTER_ID}.{{ .BaseDomain }}:2379 \
+          --initial-advertise-peer-urls=https://etcd${MASTER_ID}.{{ .BaseDomain }}:2380 \
           --listen-client-urls=https://0.0.0.0:2379 \
           --listen-peer-urls=https://{{if eq .Provider "aws"}}{{.MasterENIAddress}}{{else}}${DEFAULT_IPV4}{{end}}:2380 \
           --initial-cluster-token=k8s-etcd-cluster \
@@ -1044,11 +1076,16 @@ systemd:
       [Service]
       Type=oneshot
       EnvironmentFile=/etc/environment
+      {{if eq .Provider "azure" }}EnvironmentFile=-/var/lib/etcd/master-id{{end}}
+      {{if eq .Provider "aws" }}Environment=MASTER_ID={{.MasterID}}{{end}}
       Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.4.13
       Environment=NAME=%p.service
       ExecStartPre=-/usr/bin/docker stop  $NAME
       ExecStartPre=-/usr/bin/docker rm  $NAME
       ExecStartPre=-/usr/bin/docker pull $IMAGE
+      {{- if eq .Provider "azure" }}
+      ExecStartPre=/bin/bash -c "while [ ! -f /var/lib/etcd/master-id ]; do echo 'Waiting for /var/lib/etcd/master-id' && sleep 1; done"
+      {{- end }}
       ExecStart=/usr/bin/docker run \
         -v /etc/kubernetes/ssl/etcd/:/etc/etcd \
         --net=host  \
@@ -1056,7 +1093,7 @@ systemd:
         --name $NAME \
         $IMAGE \
         etcdctl \
-        --endpoints https://{{ .ETCDDomainName }}:2379 \
+        --endpoints https://etcd${MASTER_ID}.{{ .BaseDomain }}:2379 \
         --cacert /etc/etcd/server-ca.pem \
         --cert /etc/etcd/server-crt.pem \
         --key /etc/etcd/server-key.pem \
@@ -1102,9 +1139,9 @@ systemd:
       [Unit]
       Description=Pulls hyperkube binaries from image to local FS
       After=docker.service
-      Requires=docker.service
       [Service]
       Type=oneshot
+      Restart=on-failure
       RemainAfterExit=yes
       TimeoutStartSec=0
       Environment="IMAGE={{.DockerRegistry}}/giantswarm/hyperkube:{{.K8sVersion}}"
@@ -1117,31 +1154,14 @@ systemd:
       ExecStopPost=-/usr/bin/docker rm $NAME
       [Install]
       WantedBy=multi-user.target
-  - name: k8s-setup-delete-old-node.service
-    enabled: true
-    contents: |
-      [Unit]
-      Description=Deletes old kubernetes node which this instance is going to replace
-      After=k8s-extract.service api-certs.service {{ if eq .Provider "aws" }} set-hostname.service{{ end }}
-      Requires=k8s-extract.service api-certs.service {{ if eq .Provider "aws" }} set-hostname.service{{ end }}
-      ConditionFirstBoot=yes
-      [Service]
-      Type=oneshot
-      RemainAfterExit=yes
-      TimeoutStartSec=0
-      Environment="KUBECTL=/opt/bin/kubectl --kubeconfig /etc/kubernetes/kubeconfig/kubelet.yaml"
-      # "-" at the front of the command makes unit ignore non-zero exit code.
-      ExecStart=-/bin/sh -c '$$KUBECTL delete node $(hostname | tr "[:upper:]" "[:lower:]")'
-      [Install]
-      WantedBy=multi-user.target
   - name: k8s-kubelet.service
     enabled: true
     contents: |
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-extract.service k8s-setup-delete-old-node.service etcd3.service
-      Requires=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-extract.service k8s-setup-delete-old-node.service etcd3.service
+      After=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-extract.service etcd3.service
+      Wants=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-extract.service etcd3.service
 
       [Service]
       TimeoutStartSec=300
@@ -1149,10 +1169,15 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       EnvironmentFile=/etc/network-environment
+      {{if eq .Provider "azure" }}EnvironmentFile=-/var/lib/etcd/master-id{{end}}
+      {{if eq .Provider "aws" }}Environment=MASTER_ID={{.MasterID}}{{end}}
       Environment="NAME=%p.service"
       Environment="ETCD_CA_CERT_FILE=/etc/kubernetes/ssl/etcd/client-ca.pem"
       Environment="ETCD_CERT_FILE=/etc/kubernetes/ssl/etcd/client-crt.pem"
       Environment="ETCD_KEY_FILE=/etc/kubernetes/ssl/etcd/client-key.pem"
+      {{- if eq .Provider "azure" }}
+      ExecStartPre=/bin/bash -c "while [ ! -f /var/lib/etcd/master-id ]; do echo 'Waiting for /var/lib/etcd/master-id' && sleep 1; done"
+      {{- end }}
       ExecStart=/opt/bin/kubelet \
       --config=/etc/kubernetes/config/kubelet.yaml \
       --node-ip=${DEFAULT_IPV4} \
@@ -1169,7 +1194,7 @@ systemd:
       --network-plugin=cni \
       --register-node=true \
       --kubeconfig=/etc/kubernetes/kubeconfig/kubelet.yaml \
-      --node-labels="node.kubernetes.io/master,role=master,ip=${DEFAULT_IPV4},master-id={{.MasterID}}" \
+      --node-labels="node.kubernetes.io/master,role=master,ip=${DEFAULT_IPV4},master-id=${MASTER_ID}" \
       --v=2
       ExecStop=-/usr/bin/docker stop -t 10 $NAME
       ExecStopPost=-/usr/bin/docker rm -f $NAME
@@ -1198,7 +1223,7 @@ systemd:
     contents: |
       [Unit]
       Description=api-certs
-      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{ end }}
+      Wants=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{ end }}
       After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{ end }}
 
       [Service]
@@ -1207,6 +1232,7 @@ systemd:
       EnvironmentFile=/etc/tokens/node
       Environment=VAULT_ADDR=https://{{ .VaultDomainName }}
       Type=oneshot
+      Restart=on-failure
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/
       ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt {{.DockerRegistry}}/giantswarm/curl:7.67.0 -k -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
@@ -1289,6 +1315,36 @@ systemd:
       Environment=LOGENTRIES_TOKEN={{ .LogentriesToken }}
       ExecStart=/bin/sh /opt/bin/logentries.sh ${LOGENTRIES_PREFIX} ${LOGENTRIES_TOKEN}
 
+      [Install]
+      WantedBy=multi-user.target
+{{ end -}}
+{{ if eq .Provider "azure" }}
+  - name: attach-etcd-disk.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=Attach format and mount disk for etcd
+      Wants=network-online.target docker.service waagent.service
+      After=docker.service waagent.service
+      [Service]
+      Type=oneshot
+      Restart=on-failure
+      RestartSec=3
+      ExecStart=/opt/attach-etcd-disk
+      [Install]
+      WantedBy=multi-user.target
+  - name: ensure-dns-record.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=Ensure DNS record for ETCD
+      Wants=network-online.target docker.service
+      After=docker.service
+      [Service]
+      Type=oneshot
+      Restart=on-failure
+      RestartSec=3
+      ExecStart=/opt/ensure-dns-record
       [Install]
       WantedBy=multi-user.target
 {{ end -}}

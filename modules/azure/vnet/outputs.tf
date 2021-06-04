@@ -70,12 +70,12 @@ output "worker_nsg_name" {
   value = azurerm_network_security_group.worker.name
 }
 
-output "master_network_interface_ids" {
-  value = azurerm_network_interface.master.*.id
-}
-
 output "api_backend_address_pool_id" {
   value = azurerm_lb_backend_address_pool.api-lb.id
+}
+
+output "internal_api_backend_address_pool_id" {
+  value = azurerm_lb_backend_address_pool.api-lb-internal.id
 }
 
 output "ingress_backend_address_pool_id" {
@@ -86,6 +86,10 @@ output "vault_backend_address_pool_id" {
   value = azurerm_lb_backend_address_pool.vault-lb.id
 }
 
-output "node_health_probe_id" {
+output "worker_nodes_health_probe_id" {
   value = azurerm_lb_probe.ssh.id
+}
+
+output "master_nodes_health_probe_id" {
+  value = azurerm_lb_probe.api_lb.id
 }

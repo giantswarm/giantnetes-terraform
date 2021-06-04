@@ -6,25 +6,11 @@ set -euxo pipefail
 export VAULT_ADDR=https://{{ .VaultDomainName }}
 export CLUSTER_NAME={{ .ClusterName }}
 
-role=$1
-
-if [ "${role}" = "" ]; then
-    echo "Node role can't be empty"
-    exit 1
-fi
-
 # Azure metadata
 jwt="$(curl -s 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://management.azure.com' -H Metadata:true | jq -r '.access_token')"
 subscription_id=$(curl -s -H Metadata:true "http://169.254.169.254/metadata/instance?api-version=2017-08-01" | jq -r '.compute | .subscriptionId')
-vm_parameter=""
-
-if [ "${role}" = "master" ]; then
-    vm_name="$(curl -s -H Metadata:true "http://169.254.169.254/metadata/instance?api-version=2017-08-01" | jq -r '.compute | .name')"
-    vm_parameter="vm_name=${vm_name}"
-else
-    vmss_name="${CLUSTER_NAME}-workers"
-    vm_parameter="vmss_name=${vmss_name}"
-fi
+vmss_name="$(curl -s -H Metadata:true "http://169.254.169.254/metadata/instance?api-version=2020-09-01" | jq -r '.compute.vmScaleSetName')"
+vm_parameter="vmss_name=${vmss_name}"
 
 login_info=$(\
     docker run --rm -i\

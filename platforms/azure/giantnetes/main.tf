@@ -204,10 +204,8 @@ module "vault" {
 
 # Generate ignition config.
 data "gotemplate" "master" {
-  count = var.master_count
-
   template    = "${path.module}/../../../templates/master.yaml.tmpl"
-  data        = jsonencode(merge(local.ignition_data, { "NodeType" = "master", "MasterID" = count.index + 1, "ETCDDomainName" = "etcd${count.index + 1}.${var.base_domain}" }))
+  data        = jsonencode(merge(local.ignition_data, { "NodeType" = "master" }))
   is_ignition = true
 }
 
@@ -215,8 +213,8 @@ data "gotemplate" "master" {
 module "master" {
   source = "../../../modules/azure/master-as"
 
-  api_backend_address_pool_id = module.vnet.api_backend_address_pool_id
-  user_data                   = data.gotemplate.master.*.rendered
+  load_balancer_backend_address_pool_ids = [module.vnet.api_backend_address_pool_id, module.vnet.internal_api_backend_address_pool_id]
+  user_data                   = data.gotemplate.master.rendered
   cluster_name                = var.cluster_name
   flatcar_linux_channel       = var.flatcar_linux_channel
   flatcar_linux_version       = module.flatcar_linux.flatcar_version
@@ -232,8 +230,10 @@ module "master" {
   platform_fault_domain_count = var.platform_fault_domain_count
   storage_type                = var.master_storage_type
 
-  network_interface_ids = module.vnet.master_network_interface_ids
-  vm_size               = var.master_vm_size
+  # it is intended to use the worker subnet for the masters as well
+  subnet_id                   = module.vnet.worker_subnet
+  node_health_probe_id        = module.vnet.master_nodes_health_probe_id
+  vm_size                     = var.master_vm_size
 
   storage_acc       = module.blob.storage_acc
   storage_acc_url   = module.blob.storage_acc_url
@@ -262,7 +262,7 @@ module "worker" {
   location                        = var.azure_location
   enable_accelerated_networking   = contains(local.vm_types_supporting_accelerated_networking, var.worker_vm_size) ? true : false
   subnet_id                       = module.vnet.worker_subnet
-  node_health_probe_id            = module.vnet.node_health_probe_id
+  node_health_probe_id            = module.vnet.worker_nodes_health_probe_id
 
   min_worker_count            = var.worker_count
   max_worker_count            = var.worker_count * 2

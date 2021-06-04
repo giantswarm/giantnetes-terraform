@@ -1,25 +1,3 @@
-resource "azurerm_availability_set" "masters" {
-  name                        = "${var.cluster_name}-masters"
-  location                    = var.location
-  resource_group_name         = var.resource_group_name
-  managed                     = true
-  platform_fault_domain_count = var.platform_fault_domain_count
-
-  tags = {
-    GiantSwarmInstallation = var.cluster_name
-  }
-}
-
-resource "azurerm_managed_disk" "master_docker" {
-  count                = var.master_count
-  name                 = "${var.cluster_name}-master-docker-disk-${count.index}"
-  location             = var.location
-  resource_group_name  = var.resource_group_name
-  storage_account_type = var.storage_type
-  create_option        = "Empty"
-  disk_size_gb         = var.docker_disk_size
-}
-
 resource "azurerm_managed_disk" "master_etcd" {
   count                = var.master_count
   name                 = "${var.cluster_name}-master-etcd-disk-${count.index}"
@@ -28,90 +6,89 @@ resource "azurerm_managed_disk" "master_etcd" {
   storage_account_type = var.storage_type
   create_option        = "Empty"
   disk_size_gb         = var.etcd_disk_size
+  tags = {
+    GiantSwarmRole = "etcd"
+    # etcd member ID is 1-based
+    GiantSwarmEtcdID = count.index + 1
+  }
 }
 
-resource "azurerm_virtual_machine" "master" {
-  count = var.master_count
+resource "azurerm_virtual_machine_scale_set" "masters" {
+  location            = var.location
+  name                = "${var.cluster_name}-masters"
+  resource_group_name = var.resource_group_name
 
-  # Name and computer_name in os_profile should be equal.
-  # Both are used as identifiers of VM.
-  name = "master${count.index}"
-
-  location              = var.location
-  resource_group_name   = var.resource_group_name
-  network_interface_ids = [var.network_interface_ids[count.index]]
-  availability_set_id   = azurerm_availability_set.masters.id
-  vm_size               = var.vm_size
-
-  delete_os_disk_on_termination = true
-
-  delete_data_disks_on_termination = false
-
-  storage_image_reference {
-    publisher = "kinvolk"
-    offer     = "flatcar-container-linux-free"
-    sku       = var.flatcar_linux_channel
-    version   = var.flatcar_linux_version
+  upgrade_policy_mode = "Rolling"
+  health_probe_id     = var.node_health_probe_id
+  rolling_upgrade_policy {
+    max_batch_instance_percent              = 40
+    max_unhealthy_instance_percent          = 40
+    max_unhealthy_upgraded_instance_percent = 40
+    pause_time_between_batches              = "PT30S"
   }
-
+  network_profile {
+    name                   = "master-nic-0"
+    primary                = true
+    accelerated_networking = var.enable_accelerated_networking
+    ip_forwarding          = true
+    ip_configuration {
+      name      = "master-ipconfig-0"
+      primary   = true
+      subnet_id = var.subnet_id
+      load_balancer_backend_address_pool_ids = var.load_balancer_backend_address_pool_ids
+    }
+  }
+  overprovision = false
   plan {
     name      = var.flatcar_linux_channel
     publisher = "kinvolk"
     product   = "flatcar-container-linux-free"
   }
-
-  storage_os_disk {
-    name              = "master-${count.index}-os"
-    managed_disk_type = var.os_disk_storage_type
-    create_option     = "FromImage"
-    caching           = "ReadWrite"
-    os_type           = "linux"
-  }
-
-  storage_data_disk {
-    name            = element(azurerm_managed_disk.master_docker.*.name, count.index)
-    managed_disk_id = element(azurerm_managed_disk.master_docker.*.id, count.index)
-    create_option   = "Attach"
-    lun             = 0
-    disk_size_gb    = element(azurerm_managed_disk.master_docker.*.disk_size_gb, count.index)
-  }
-
-  storage_data_disk {
-    name            = element(azurerm_managed_disk.master_etcd.*.name, count.index)
-    managed_disk_id = element(azurerm_managed_disk.master_etcd.*.id, count.index)
-    create_option   = "Attach"
-    lun             = 1
-    disk_size_gb    = element(azurerm_managed_disk.master_etcd.*.disk_size_gb, count.index)
-  }
-
   os_profile {
-    computer_name  = "master${count.index}"
-    admin_username = "core"
-    admin_password = ""
-    custom_data    = base64encode(element(data.ignition_config.loader.*.rendered, count.index))
+    admin_username       = "core"
+    computer_name_prefix = "master-"
+    custom_data          = base64encode(data.ignition_config.loader.rendered)
   }
-
   os_profile_linux_config {
     disable_password_authentication = true
-
     ssh_keys {
       path     = "/home/core/.ssh/authorized_keys"
       key_data = var.core_ssh_key
     }
   }
-
+  sku {
+    name     = var.vm_size
+    capacity = var.master_count
+    tier     = "standard"
+  }
+  storage_profile_image_reference {
+    publisher = "kinvolk"
+    offer     = "flatcar-container-linux-free"
+    sku       = var.flatcar_linux_channel
+    version   = var.flatcar_linux_version
+  }
+  storage_profile_os_disk {
+    managed_disk_type = var.os_disk_storage_type
+    create_option     = "FromImage"
+    caching           = "ReadWrite"
+    os_type           = "linux"
+  }
+  storage_profile_data_disk {
+    create_option     = "Empty"
+    lun               = 0
+    disk_size_gb      = var.docker_disk_size
+    managed_disk_type = var.storage_type
+  }
   identity {
     type = "SystemAssigned"
   }
 
   tags = {
-    GiantSwarmInstallation = var.cluster_name
-  }
-
-  # we ignore changes, to avoid rolling all masters at once
-  # update is done via tainting masters
-  lifecycle {
-    ignore_changes = all
+    GiantSwarmInstallation       = var.cluster_name
+    "cluster-autoscaler-enabled" = "false"
+    "cluster-autoscaler-name"    = var.cluster_name
+    min                          = var.master_count
+    max                          = var.master_count
   }
 
   timeouts {
@@ -122,9 +99,8 @@ resource "azurerm_virtual_machine" "master" {
 
 # can be added only when vm is created with identity
 # https://github.com/hashicorp/terraform/issues/25578
-resource "azurerm_role_assignment" "master_contributor" {
-  count                = var.master_count
+resource "azurerm_role_assignment" "vmss_contributor" {
   scope                = var.resource_group_id
   role_definition_name = "Contributor"
-  principal_id         = azurerm_virtual_machine.master[count.index].identity.0.principal_id
+  principal_id         = azurerm_virtual_machine_scale_set.masters.identity[0].principal_id
 }

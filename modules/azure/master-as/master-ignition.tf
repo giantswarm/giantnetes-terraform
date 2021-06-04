@@ -1,25 +1,21 @@
 locals {
-  timenow = timestamp()
+  timenow = formatdate("YYYY-MM-DD'T'00:00:00'Z'", timestamp())
 }
 
 # Only necessary, because azurerm_storage_blob requires file as a source.
 resource "local_file" "master_ignition" {
-  count = var.master_count
-
-  content  = var.user_data[ count.index]
-  filename = "${path.cwd}/generated/master-ignition${count.index}.yaml"
+  content  = var.user_data
+  filename = "${path.cwd}/generated/master-ignition.yaml"
 }
 
 resource "azurerm_storage_blob" "ignition_blob" {
-  count = var.master_count
-
-  name = "master-ignition${count.index}-${md5(var.user_data[count.index])}.yaml"
+  name = "master-ignition-${md5(var.user_data)}.yaml"
 
   storage_account_name   = var.storage_acc
   storage_container_name = var.storage_container
 
   type   = "Block"
-  source = "${path.cwd}/generated/master-ignition${count.index}.yaml"
+  source = "${path.cwd}/generated/master-ignition.yaml"
 }
 
 # Create temporary credentials to access storage account objects.
@@ -57,9 +53,7 @@ data "azurerm_storage_account_sas" "sas" {
 }
 
 data "ignition_config" "loader" {
-  count = var.master_count
-
   replace {
-    source = "${element(azurerm_storage_blob.ignition_blob.*.url,count.index)}${data.azurerm_storage_account_sas.sas.sas}"
+    source = "${azurerm_storage_blob.ignition_blob.url}${data.azurerm_storage_account_sas.sas.sas}"
   }
 }

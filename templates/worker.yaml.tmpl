@@ -293,13 +293,14 @@ systemd:
     contents: |
       [Unit]
       Description=get-vault-ssh-ca
-      Requires=docker.service get-vault-ca.service get-vault-token.service
+      Wants=docker.service get-vault-ca.service get-vault-token.service
       After=docker.service get-vault-ca.service get-vault-token.service
 
       [Service]
       EnvironmentFile=/etc/tokens/node
       Environment=VAULT_ADDR=https://{{ .VaultDomainName }}:443
       Type=oneshot
+      Restart=on-failure
       RemainAfterExit=yes
       ExecStartPre=/bin/bash -c "while ! curl -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/bin/bash -c '\
@@ -347,10 +348,11 @@ systemd:
       Description=get vault-ca into trusted certs
       Before=calico-certs.service kubelet-certs.service get-vault-token.service
       After=wait-for-domains.service
-      Requires=wait-for-domains.service
+      Wants=wait-for-domains.service
 
       [Service]
       Type=oneshot
+      Restart=on-failure
       ExecStartPre=/bin/bash -c "while ! curl -k -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
       ExecStartPre=/opt/get-ca.sh {{ .VaultDomainName }}:443 /etc/ssl/certs/gs-ca.pem
       ExecStart=/sbin/update-ca-certificates
@@ -401,7 +403,7 @@ systemd:
     contents: |
       [Unit]
       Description=get-vault-token
-      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service
+      Wants=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service
       After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service
 
       [Service]
@@ -412,7 +414,7 @@ systemd:
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/
       ExecStartPre=/usr/bin/mkdir -p /etc/tokens
       ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt {{.DockerRegistry}}/giantswarm/curl:7.67.0 -k -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
-      ExecStart=/opt/bin/get-vault-token worker
+      ExecStart=/opt/bin/get-vault-token
 
       [Install]
       WantedBy=multi-user.target
@@ -478,7 +480,7 @@ systemd:
     contents: |
       [Unit]
       Description=gen etcd client certs for calico
-      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{ end }}
+      Wants=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{ end }}
       After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{end}}
 
       [Service]
@@ -521,7 +523,7 @@ systemd:
     contents: |
       [Unit]
       Description=api-certs
-      Requires=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{end}}
+      Wants=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{end}}
       After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{end}}
 
       [Service]
@@ -529,6 +531,7 @@ systemd:
       EnvironmentFile=/etc/network-environment
       EnvironmentFile=/etc/tokens/node
       Type=oneshot
+      Restart=on-failure
       RemainAfterExit=yes
       ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/
       ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt {{.DockerRegistry}}/giantswarm/curl:7.67.0 -k -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
@@ -571,31 +574,14 @@ systemd:
       ExecStopPost=-/usr/bin/docker rm $NAME
       [Install]
       WantedBy=multi-user.target
-  - name: k8s-setup-delete-old-node.service
-    enabled: true
-    contents: |
-      [Unit]
-      Description=Deletes old kubernetes node which this instance is going to replace
-      After=k8s-extract.service kubelet-certs.service{{ if eq .Provider "aws" }} set-hostname.service{{ end }}
-      Requires=k8s-extract.service kubelet-certs.service{{ if eq .Provider "aws" }} set-hostname.service{{ end }}
-      ConditionFirstBoot=yes
-      [Service]
-      Type=oneshot
-      RemainAfterExit=yes
-      TimeoutStartSec=0
-      Environment="KUBECTL=/opt/bin/kubectl --kubeconfig /etc/kubernetes/kubeconfig/kubelet.yaml"
-      # "-" at the front of the command makes unit ignore non-zero exit code.
-      ExecStart=-/bin/sh -c '$$KUBECTL delete node $(hostname | tr "[:upper:]" "[:lower:]")'
-      [Install]
-      WantedBy=multi-user.target
   - name: k8s-kubelet.service
     enabled: true
     contents: |
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-extract.service k8s-setup-delete-old-node.service
-      Requires=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-extract.service k8s-setup-delete-old-node.service
+      After=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-extract.service
+      Wants=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-extract.service
 
       [Service]
       TimeoutStartSec=300

@@ -12,7 +12,7 @@ variable "core_ssh_key" {
 }
 
 variable "user_data" {
-  type        = list(string)
+  type        = string
   description = "Generated user data."
 }
 
@@ -31,9 +31,19 @@ variable "master_count" {
   description = "Count of master nodes to be created."
 }
 
-variable "network_interface_ids" {
-  type        = list(any)
-  description = "List of NICs to use for Master VMs"
+variable "enable_accelerated_networking" {
+  type    = bool
+  default = false
+}
+
+variable "subnet_id" {
+  type        = string
+  description = "ID of the subnet to connect the masters to"
+}
+
+variable "load_balancer_backend_address_pool_ids" {
+  type        = list(string)
+  description = "IDs of the backend address pools to connect the masters to"
 }
 
 variable "platform_fault_domain_count" {
@@ -77,11 +87,6 @@ variable "etcd_disk_size" {
   default     = "64"
 }
 
-variable "api_backend_address_pool_id" {
-  type        = string
-  description = "API load balances address pool id."
-}
-
 variable "storage_acc" {
   type        = string
   description = "Blob storage account name."
@@ -100,4 +105,9 @@ variable "storage_container" {
 variable "subscription_id" {
   type        = string
   description = "Subscription ID"
+}
+
+variable "node_health_probe_id" {
+  type        = string
+  description = "ID of the probe used to check nodes health"
 }
