@@ -80,7 +80,6 @@ else
     echo "Trying to attach disk $diskname to lun $LUN"
     set +e
     diskid="/subscriptions/${SUBSCRIPTION}/resourcegroups/${RESOURCEGROUP}/providers/Microsoft.Compute/disks/${diskname}"
-    # TODO un-hardcode registry
     IMAGE="quay.io/giantswarm/azure-disk-attacher:latest"
     docker pull $IMAGE
     if ! docker run --rm $IMAGE --subscription "${SUBSCRIPTION}" --resource-group "${RESOURCEGROUP}" --vmss "${VMSS}" --instance-id "${INSTANCEID}" --disk-id "${diskid}" --lun "${LUN}"
