@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.6.0] - 2021-06-14
+
 ### Changed
 
 - Use VMSS instead of VMs for master nodes on Azure.
@@ -250,7 +252,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v3.5.2...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v3.6.0...HEAD
+[3.6.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v3.5.2...v3.6.0
 [3.5.2]: https://github.com/giantswarm/giantnetes-terraform/compare/v3.5.1...v3.5.2
 [3.5.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v3.5.0...v3.5.1
 [3.5.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v3.3.1...v3.5.0
