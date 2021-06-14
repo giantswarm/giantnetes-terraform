@@ -1,0 +1,63 @@
+#!/bin/bash
+
+set -e
+
+until test -f /var/lib/etcd/master-id; do
+    echo "Waiting for /var/lib/etcd/master-id file to exist."
+    sleep 5
+done
+
+. /var/lib/etcd/master-id
+
+until test -f /etc/network-environment; do
+    echo "Waiting for /etc/network-environment file to exist."
+    sleep 5
+done
+
+. /etc/network-environment
+
+DESIRED_IP="${DEFAULT_IPV4}"
+
+run_az_cmd () {
+  cmd="$1"
+
+  docker run --rm mcr.microsoft.com/azure-cli bash -c "az login --identity 2>&1 >/dev/null && $cmd"
+}
+
+for base in etcd master
+do
+  RECORD="${base}${MASTER_ID}"
+
+  echo "Ensuring DNS record ${RECORD} with value ${DESIRED_IP}"
+
+  list="$(run_az_cmd "az network dns record-set a list -g {{ .ClusterName }} -z {{ .BaseDomain }} --query \"[?fqdn=='${RECORD}.{{ .BaseDomain }}.']\"")"
+
+  if [ "$list" == "[]" ]
+  then
+    echo "DNS record for $RECORD not found, creating."
+
+    run_az_cmd "az network dns record-set a add-record -n ${RECORD} -g {{ .ClusterName }} -z {{ .BaseDomain }} --ipv4-address ${DESIRED_IP} --ttl 60"
+  else
+    echo "DNS record for $RECORD was found, checking it is up to date."
+
+    found="false"
+    for ip in $(echo "$list" | jq -r '.[0].aRecords[].ipv4Address')
+    do
+      if [ "$ip" == "$DESIRED_IP" ]
+      then
+        export found="true"
+      else
+        echo "Removing wrong ip $ip from ${RECORD}"
+        run_az_cmd "az network dns record-set a remove-record -n ${RECORD} -g {{ .ClusterName }} -z {{ .BaseDomain }} --ipv4-address ${ip}"
+      fi
+    done
+
+    if [ "$found" == "false" ]
+    then
+      echo "DNS record for $RECORD did not contain $DESIRED_IP, adding."
+      run_az_cmd "az network dns record-set a add-record -n ${RECORD} -g {{ .ClusterName }} -z {{ .BaseDomain }} --ipv4-address ${DESIRED_IP} --ttl 60"
+    fi
+  fi
+
+  echo "Ensured DNS record ${RECORD} with value ${DESIRED_IP}"
+done

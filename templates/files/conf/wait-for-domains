@@ -9,7 +9,19 @@ done
 sleep 30s
 {{end}}
 {{ if eq .NodeType "master" }}
-domains="{{ .ETCDDomainName }} {{ .APIDomainName }} {{ .VaultDomainName }}"
+{{if eq .Provider "azure" }}
+until test -f /var/lib/etcd/master-id; do
+    echo "Waiting for /var/lib/etcd/master-id file to exist."
+    sleep 5
+done
+
+. /var/lib/etcd/master-id
+ETCD_DOMAIN="etcd${MASTER_ID}.{{ .BaseDomain }}"
+{{ else }}
+ETCD_DOMAIN="{{ .ETCDDomainName }}"
+{{ end }}
+
+domains="${ETCD_DOMAIN} {{ .APIDomainName }} {{ .VaultDomainName }}"
 {{ else }}
 domains="{{ .APIDomainName }} {{ .VaultDomainName }}"
 {{ end }}

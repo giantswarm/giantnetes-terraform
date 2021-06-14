@@ -7,3 +7,4 @@ platforms/azure/giantnetes/bootstrap.sh
 platforms/azure/giantnetes/terraform-secrets.yaml
 terraform.tfvars
 .terraform.lock.hcl
+platforms/azure/giantnetes/generated/*

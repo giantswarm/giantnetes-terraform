@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Use VMSS instead of VMs for master nodes on Azure.
+- Use 'Wants' instead of 'Requires' on key systemd units to make startup more reliable.
+
 ## [3.5.2] - 2021-05-17
 
 ### Changed

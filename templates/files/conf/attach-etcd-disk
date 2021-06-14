@@ -1,0 +1,151 @@
+#!/bin/bash
+
+set -e
+
+# On Azure wait for waagent.service to finish provisioning.
+WAA_FILE="/var/lib/waagent/provisioned"
+until test -f ${WAA_FILE}; do
+    echo "Waiting for waagent.service to finish provisioning."
+    sleep 5
+done
+sleep 30s
+
+LUN=20
+METADATA_ENDPOINT="http://169.254.169.254/metadata/instance?api-version=2020-09-01"
+
+DISK=/dev/disk/azure/scsi1/lun${LUN}
+MOUNTPOINT=/var/lib/etcd
+
+metadata="$(curl -H Metadata:true --noproxy "*" "$METADATA_ENDPOINT" -s)"
+
+SUBSCRIPTION="$(echo "$metadata" | jq -r .compute.subscriptionId)"
+RESOURCEGROUP="$(echo "$metadata" | jq -r .compute.resourceGroupName)"
+VMSS="$(echo "$metadata" | jq -r .compute.vmScaleSetName)"
+resourceid="$(echo "$metadata" | jq -r .compute.resourceId)"
+# Extract instance ID (a number) from the resource ID.
+INSTANCEID="$(echo $resourceid | grep -Eo '[0-9]+$')"
+
+run_az_cmd () {
+  cmd="$1"
+
+  docker run --rm mcr.microsoft.com/azure-cli bash -c "az login --identity 2>&1 >/dev/null && $cmd"
+}
+
+if [ -f "$DISK" ] || [ -h "$DISK" ]
+then
+  echo "There is a disk attached on lun ${LUN}"
+  echo "Checking disk attached to lun ${LUN}"
+
+  attached_disk_id="$(echo "$metadata" | jq -r --arg lun "$LUN" '.compute.storageProfile.dataDisks[] | select(.lun == $lun).managedDisk.id')"
+  echo "Disk ID is $attached_disk_id"
+
+  disk_details="$(run_az_cmd "az disk show --ids $attached_disk_id")"
+
+  role="$(echo "$disk_details" | jq -r .tags.GiantSwarmRole)"
+
+  echo "role is $role"
+
+  if [ "$role" != "etcd" ]
+  then
+    echo "Expected disk $attached_disk_id to have a tag GiantSwarmRole with value 'etcd' but that wasn't the case. Aborting."
+    exit 7
+  fi
+  MASTER_ID="$(echo "$disk_details" | jq -r .tags.GiantSwarmEtcdID)"
+  echo "MASTER_ID is $MASTER_ID"
+  if [ "$MASTER_ID" == "null" ]
+  then
+    echo "Disk $attached_disk_id is missing the GiantSwarmEtcdID tag, can't continue"
+    exit 8
+  fi
+
+  export MASTER_ID
+else
+  # list all disks with tag GiantSwarmRole == "etcd" and having a GiantSwarmEtcdID tag
+  echo "Looking for available disks"
+  # TODO discard disks with multi-attach feature enabled when az will support it
+  candidates="$(run_az_cmd "az disk list -g ${RESOURCEGROUP} | jq '. | map(select(.tags.GiantSwarmRole == \"etcd\" and .diskState == \"Unattached\" and (.tags | has(\"GiantSwarmEtcdID\"))))'")"
+
+  if [ "$candidates" == "[]" ]
+  then
+    echo "No unattached disks with a tag 'GiantSwarmRole' = 'etcd' and a 'GiantSwarmEtcdID' tag were found, can't continue"
+    exit 5
+  fi
+
+  # try attaching one disk from the list randomly in a loop until it succeedes
+  names="$(echo "$candidates" | jq -r .[].name)"
+  echo "Found some disks to try attaching: $names"
+
+  for diskname in $names
+  do
+    echo "Trying to attach disk $diskname to lun $LUN"
+    set +e
+    diskid="/subscriptions/${SUBSCRIPTION}/resourcegroups/${RESOURCEGROUP}/providers/Microsoft.Compute/disks/${diskname}"
+    IMAGE="quay.io/giantswarm/azure-disk-attacher:latest"
+    docker pull $IMAGE
+    if ! docker run --rm $IMAGE --subscription "${SUBSCRIPTION}" --resource-group "${RESOURCEGROUP}" --vmss "${VMSS}" --instance-id "${INSTANCEID}" --disk-id "${diskid}" --lun "${LUN}"
+    then
+      echo "Error attaching disk $diskname to lun $LUN"
+    else
+      echo "Successfully attached disk $diskname to lun $LUN"
+
+      export attached="true"
+      export MASTER_ID="$(echo "$candidates" | jq -r --arg diskname "$diskname" '. | map(select(.name == $diskname)) | .[0].tags.GiantSwarmEtcdID')"
+      break
+    fi
+  done
+
+  if [ "$attached" != "true" ]
+  then
+    echo "All attempts to attach a disk failed"
+    exit 6
+  fi
+fi
+
+set -e
+
+echo "Checking if disk $DISK is formatted with ext4"
+
+fstype="$(lsblk -f $DISK -no FSTYPE)"
+
+if [ "${fstype}" == "" ]
+then
+  echo "Disk is not formatted"
+  echo "Formatting disk with ext4"
+  mkfs.ext4 $DISK
+  echo "Disk formatted"
+else
+  echo "Disk is already formatted with fs '${fstype}'"
+  if [ "${fstype}" != "ext4" ]
+  then
+    echo "Expected disk $DISK to be ext4, but it wasn't. Can't continue"
+    exit 1
+  fi
+fi
+
+mkdir -p $MOUNTPOINT
+
+echo "Checking if disk $DISK is mounted to mountpoint $MOUNTPOINT"
+
+target="$(findmnt -rno TARGET "$DISK" || true)"
+
+if [ "${target}" == "" ]
+then
+  echo "Disk $DISK is not mounted"
+  echo "Mounting disk $DISK to $MOUNTPOINT"
+  mount $DISK $MOUNTPOINT
+  echo "Disk $DISK mounted into $MOUNTPOINT"
+else
+  if [ "${target}" != "$MOUNTPOINT" ]
+  then
+    echo "Expected $DISK to be mounted on $MOUNTPOINT but it was mounted on ${target}. Can't continue"
+    exit 2
+  fi
+
+  echo "Disk $DISK was already mounted on $MOUNTPOINT"
+fi
+
+master_id_file="${MOUNTPOINT}/master-id"
+
+echo "Writing master ID ${MASTER_ID} to ${master_id_file}"
+
+echo "MASTER_ID=${MASTER_ID}" >$master_id_file
