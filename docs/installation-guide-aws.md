@@ -152,18 +152,7 @@ How to do that see [here](https://github.com/giantswarm/hive/#install-insecure-v
 
 ### Stage: Kubernetes
 
-Update `bootstrap.sh` with the Vault node token (provided when bootstrapping Vault with Ansible).
-
-```bash
-source bootstrap.sh
-```
-
-```bash
-terraform plan .
-terraform apply .
-```
-
-### Recreate the new masters to complete cluster bootstrapping
+Recreate the new masters to complete cluster bootstrapping
 
 ```bash
 source bootstrap.sh
