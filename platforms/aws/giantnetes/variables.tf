@@ -29,12 +29,6 @@ variable "aws_account" {
   description = "An AWS account ID."
 }
 
-variable "ami_owner" {
-  type        = string
-  default     = "595879546273"
-  description = "ID of the ami owner for CoreOS images."
-}
-
 variable "bastion_log_priority" {
   type        = string
   default     = "none"
@@ -96,7 +90,7 @@ variable "vault_instance_type" {
 }
 
 variable "master_instance" {
-  type = map
+  type = map(any)
 
   default = {
     type          = "m5.xlarge"
@@ -106,7 +100,7 @@ variable "master_instance" {
 }
 
 variable "worker_instance" {
-  type = map
+  type = map(any)
 
   default = {
     type          = "m5.xlarge"
@@ -205,7 +199,7 @@ variable "aws_cni_cidr_block" {
 }
 
 variable "aws_cni_pod_cidrs" {
-  type        = list
+  type        = list(any)
   description = "CIDR for AWS CNI networks used for pods."
   default     = ["10.100.0.0/24", "10.100.1.0/24", "10.100.2.0/24"]
 }
@@ -217,7 +211,7 @@ variable "aws_cni_cidr_v2" {
 }
 
 variable "aws_cni_subnets_v2" {
-  type        = list
+  type        = list(any)
   description = "CIDR for AWS CNI networks used for pods."
   default     = ["100.64.0.0/18", "100.64.64.0/18", "100.64.128.0/18"]
 }
@@ -255,25 +249,25 @@ variable "k8s_audit_webhook_port" {
 
 variable "subnets_bastion" {
   description = "CIDR for bastion networks"
-  type        = list
+  type        = list(any)
   default     = ["10.0.1.0/25", "10.0.1.128/25"]
 }
 
 variable "subnets_elb" {
   description = "CIDR for load balancer networks."
-  type        = list
+  type        = list(any)
   default     = ["10.0.2.0/26", "10.0.2.64/26", "10.0.2.128/26"]
 }
 
 variable "subnets_vault" {
   description = "CIDR for Vault network."
-  type        = list
+  type        = list(any)
   default     = ["10.0.3.0/25"]
 }
 
 variable "subnets_worker" {
   description = "CIDR for worker networks"
-  type        = list
+  type        = list(any)
   default     = ["10.0.5.0/26", "10.0.5.64/26", "10.0.5.128/26"]
 }
 
