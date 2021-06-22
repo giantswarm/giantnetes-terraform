@@ -1,24 +1,3 @@
-resource "aws_vpc_ipv4_cidr_block_association" "cni" {
-  vpc_id     = aws_vpc.cluster_vpc.id
-  cidr_block = var.aws_cni_cidr_block
-}
-
-resource "aws_subnet" "cni" {
-  count = length(var.aws_cni_pod_cidrs)
-
-  vpc_id            = aws_vpc.cluster_vpc.id
-  availability_zone = data.aws_availability_zones.available.names[count.index]
-  cidr_block        = var.aws_cni_pod_cidrs[count.index]
-
-  tags = merge(
-    local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-cni${count.index}"
-    )
-  )
-  depends_on = [aws_vpc_ipv4_cidr_block_association.cni]
-}
-
 resource "aws_vpc_ipv4_cidr_block_association" "cni_v2" {
   vpc_id     = aws_vpc.cluster_vpc.id
   cidr_block = var.aws_cni_cidr_v2

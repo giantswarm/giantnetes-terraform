@@ -191,20 +191,6 @@ variable "vpc_cidr" {
   default     = "10.0.0.0/16"
 }
 
-# leaving here for now for migrationg part
-# it will be removed in second step
-variable "aws_cni_cidr_block" {
-  description = "Whole CIDR block for AWS CNI."
-  default     = "10.100.0.0/20"
-}
-
-variable "aws_cni_pod_cidrs" {
-  type        = list(any)
-  description = "CIDR for AWS CNI networks used for pods."
-  default     = ["10.100.0.0/24", "10.100.1.0/24", "10.100.2.0/24"]
-}
-
-# using v2 due the need to migrate to bigger subnets
 variable "aws_cni_cidr_v2" {
   description = "Whole CIDR block for AWS CNI. Using CGNAT range for all CPs."
   default     = "100.64.0.0/16"
