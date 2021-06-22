@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Add missing VGW attachment for AWS CN installations.
+
 ## [3.6.0] - 2021-06-14
 
 ### Changed
@@ -82,7 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add `cluster-autoscaler` tags for AWS ASG.
-- Add `cluster-autoscaler` tags for Azure VMSS.  
+- Add `cluster-autoscaler` tags for Azure VMSS.
 
 ### Changed
 
