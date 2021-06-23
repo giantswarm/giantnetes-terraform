@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - Remove unused `ami_owner` variable.
+- Remove AWS CNI v1 subnets (remove `aws_cni_pod_cidrs` and `aws_cni_cidr_block` variables).
 
 ## [3.6.0] - 2021-06-14
 
