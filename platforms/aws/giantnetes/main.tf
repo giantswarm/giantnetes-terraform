@@ -72,8 +72,6 @@ module "vpc" {
 
   arn_region         = var.arn_region
   aws_account        = var.aws_account
-  aws_cni_cidr_block = var.aws_cni_cidr_block
-  aws_cni_pod_cidrs  = var.aws_cni_pod_cidrs
   aws_cni_cidr_v2    = var.aws_cni_cidr_v2
   aws_cni_subnets_v2 = var.aws_cni_subnets_v2
   cluster_name       = var.cluster_name

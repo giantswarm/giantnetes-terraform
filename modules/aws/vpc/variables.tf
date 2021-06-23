@@ -11,17 +11,6 @@ variable "az_count" {
   default = "2"
 }
 
-# leaving here for now for migrationg part
-# it will be removed in second step
-variable "aws_cni_cidr_block" {
-  type = string
-}
-
-variable "aws_cni_pod_cidrs" {
-  type = list
-}
-
-# using v2 due the need to migrate to bigger subnets
 variable "aws_cni_cidr_v2" {
   type = string
 }
