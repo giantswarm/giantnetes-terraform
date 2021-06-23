@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Add missing VGW attachment for AWS CN installations.
+
 ### Changed
 
 - Include PE SSH keys on MC machines.
@@ -14,7 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - Remove unused `ami_owner` variable.
-
 
 ## [3.6.0] - 2021-06-14
 

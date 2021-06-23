@@ -142,13 +142,20 @@ resource "aws_route" "vpc_local_route" {
   depends_on             = [aws_route_table.cluster_vpc_public]
 }
 
+resource "aws_vpn_gateway_attachment" "vgw_attachment" {
+  count = var.vpc_vgw_id != "" ? 1 : 0
+
+  vpc_id         = aws_vpc.cluster_vpc.id
+  vpn_gateway_id = var.vpc_vgw_id
+}
+
 resource "aws_route" "vpc_transit_route" {
   count = var.transit_vpc_cidr != "" ? length(var.subnets_elb) : 0
 
   route_table_id         = element(aws_route_table.cluster_vpc_public.*.id, count.index)
   destination_cidr_block = var.transit_vpc_cidr
   gateway_id             = var.vpc_vgw_id
-  depends_on             = [aws_route_table.cluster_vpc_public]
+  depends_on             = [aws_route_table.cluster_vpc_public, aws_vpn_gateway_attachment.vgw_attachment]
 }
 
 resource "aws_route" "private_nat_gateway" {
@@ -165,7 +172,7 @@ resource "aws_route" "private_transit_route" {
   route_table_id         = element(aws_route_table.cluster_vpc_private.*.id, count.index)
   destination_cidr_block = var.transit_vpc_cidr
   gateway_id             = var.vpc_vgw_id
-  depends_on             = [aws_route_table.cluster_vpc_private]
+  depends_on             = [aws_route_table.cluster_vpc_private, aws_vpn_gateway_attachment.vgw_attachment]
 }
 
 resource "aws_vpc_endpoint" "s3" {
