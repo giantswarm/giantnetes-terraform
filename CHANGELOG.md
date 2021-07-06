@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.0] - 2021-06-23
+
 ### Fixed
 
 - Add missing VGW attachment for AWS CN installations.
@@ -265,7 +267,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v3.6.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v4.0.0...HEAD
+[4.0.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v3.6.0...v4.0.0
 [3.6.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v3.5.2...v3.6.0
 [3.5.2]: https://github.com/giantswarm/giantnetes-terraform/compare/v3.5.1...v3.5.2
 [3.5.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v3.5.0...v3.5.1
