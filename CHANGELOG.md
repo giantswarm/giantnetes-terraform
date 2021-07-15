@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.1] - 2021-07-15
+
 ### Changed
 
 - Fixed `/boot` automount udev rules for Azure storage devices
@@ -271,7 +273,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v4.0.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v4.0.1...HEAD
+[4.0.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v4.0.0...v4.0.1
 [4.0.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v3.6.0...v4.0.0
 [3.6.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v3.5.2...v3.6.0
 [3.5.2]: https://github.com/giantswarm/giantnetes-terraform/compare/v3.5.1...v3.5.2
