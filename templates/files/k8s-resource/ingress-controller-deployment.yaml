@@ -61,7 +61,7 @@ spec:
       serviceAccountName: nginx-ingress-controller
       containers:
       - name: nginx-ingress-controller
-        image: {{.DockerRegistry}}/giantswarm/nginx-ingress-controller:0.29.0
+        image: {{.DockerRegistry}}/giantswarm/nginx-ingress-controller:0.33.0
         args:
         - /nginx-ingress-controller
         - --configmap=$(POD_NAMESPACE)/ingress-nginx
