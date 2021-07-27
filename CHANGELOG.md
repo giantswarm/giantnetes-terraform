@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Enable SSL chain completion in `nginx-ingress-controller`.
+
 ## [4.0.1] - 2021-07-15
 
 ### Changed
