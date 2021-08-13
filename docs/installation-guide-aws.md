@@ -71,13 +71,14 @@ Control planes should be given a `/24`:
 export TF_VAR_vpc_cidr='172.30.33.0/24'
 ```
 
-And any subnets for control plane components should exist inside the `vpc_cidr` subnet:
+And any subnets for control plane components should exist inside the `vpc_cidr` subnet. E.g.:
 
 ```bash
-export TF_VAR_subnets_bastion='["172.30.33.160/28", "172.30.33.176/28"]'
-export TF_VAR_subnets_vault='["172.30.33.48/28"]'
-export TF_VAR_subnets_elb='["172.30.33.64/27","172.30.33.96/27","172.30.33.128/27"]'
-export TF_VAR_subnets_worker='["172.30.33.192/28","172.30.33.208/28","172.30.33.224/28"]'
+export TF_VAR_subnets_bastion='["172.30.33.0/28","172.30.33.16/28"]'
+export TF_VAR_subnets_elb='["172.30.33.32/27","172.30.33.64/27","172.30.33.96/27"]'
+export TF_VAR_subnets_vault='["172.30.33.128/28"]'
+export TF_VAR_subnets_worker='["172.30.33.144/28","172.30.33.160/28","172.30.33.176/28"]'
+
 ```
 
 Note: the bastion subnets should form one contiguous `/27` (as this is the VPN encryption domain). This should not overlap with any other customer VPN CIDRs - see [VPN subnets](https://github.com/giantswarm/giantswarm/wiki/Giant-Swarm-VPN) for a list of ranges currently in use.
