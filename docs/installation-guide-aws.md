@@ -80,7 +80,7 @@ export TF_VAR_subnets_elb='["172.30.33.64/27","172.30.33.96/27","172.30.33.128/2
 export TF_VAR_subnets_worker='["172.30.33.192/28","172.30.33.208/28","172.30.33.224/28"]'
 ```
 
-Note: the bastion subnets should form one contiguous `/27` (as this is the VPN encryption domain). This should not overlap with any other customer VPN CIDRs - see [VPN subnets](https://github.com/giantswarm/giantswarm/wiki/Giant-Swarm-VPN) for a list of ranges currently in use.
+Note: the bastion subnets should form one contiguous `/27` (as this is the VPN encryption domain). This should not overlap with any other customer VPN CIDRs - see [VPN subnets](https://intranet.giantswarm.io/docs/support-and-ops/vpn-subnet-allocation/) for a list of ranges currently in use.
 
 Care should also be taken that the subnets chosen for the control plane do not overlap with any other default subnets (see `aws cni`, `docker` and `k8s service` CIDRs).
 
