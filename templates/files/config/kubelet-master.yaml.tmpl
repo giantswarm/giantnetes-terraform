@@ -11,6 +11,7 @@ clusterDomain: cluster.local
 featureGates:
   ExpandPersistentVolumes: true
 staticPodPath: /etc/kubernetes/manifests
+kernelMemcgNotification: true
 evictionSoft:
   memory.available:  "500Mi"
 evictionHard:

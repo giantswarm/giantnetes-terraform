@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Update `nginx-ingress-controller` to v0.33.0.
+- Set `kernelMemcgNotification` kubelet flag to true. This helps better determine if memory eviction thresholds are crossed.
 
 ## [4.1.0] - 2021-07-27
 
