@@ -59,6 +59,24 @@ If the bastions need to be publicly routable then please skip this step.
 
 Otherwise, you will need to create a CGW for each VPN connection in the AWS console. They should be named after the VPN (Gridscale/Vultr) and the default settings should be used. The CGW IDs should be added to `bootstrap.sh`.
 
+The commands below can be run multiple times to output the ID (they won't create new CGWs in subsequent runs
+
+For Gridscale:
+```bash
+aws ec2 create-customer-gateway --bgp-asn=65000 --type="ipsec.1" \
+    --public-ip="185.102.95.187" \
+    --tag-specifications='ResourceType=customer-gateway,Tags=[{Key=Name,Value=Giant Swarm Gridscale}]' \
+    | jq '.CustomerGateway.CustomerGatewayId'
+```
+
+For Vultr:
+```bash
+aws ec2 create-customer-gateway --bgp-asn=65000 --type="ipsec.1" \
+    --public-ip="95.179.153.65" \
+    --tag-specifications='ResourceType=customer-gateway,Tags=[{Key=Name,Value=Giant Swarm Vultr}]' \
+    | jq '.CustomerGateway.CustomerGatewayId'
+```
+
 #### Custom subnet requirements
 
 If a customer has requested specific IP blocks for an installation then these can be overridden via `bootstrap.sh`. If not overridden, the defaults from `variables.tf` will be used.
