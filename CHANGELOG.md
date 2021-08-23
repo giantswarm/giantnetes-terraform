@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update `nginx-ingress-controller` to v0.33.0.
 - Set `kernelMemcgNotification` kubelet flag to true. This helps better determine if memory eviction thresholds are crossed.
+- Decrease `hostnetwork_pods` value for AWS CNI node pod limit script to 4.
+
 
 ## [4.1.0] - 2021-07-27
 
