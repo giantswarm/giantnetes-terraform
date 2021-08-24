@@ -153,7 +153,7 @@ How to do that see [here](https://github.com/giantswarm/hive/#install-insecure-v
 
 ### Stage: Kubernetes
 
-Recreate the new masters to complete cluster bootstrapping
+Recreate nodes to complete cluster bootstrapping
 
 ```bash
 source bootstrap.sh
@@ -161,6 +161,10 @@ source bootstrap.sh
 ```
 
 ```bash
+terraform taint "module.master.aws_cloudformation_stack.master_asg[0]"
+terraform taint "module.master.aws_cloudformation_stack.master_asg[1]"
+terraform taint "module.master.aws_cloudformation_stack.master_asg[2]"
+terraform taint "module.worker.aws_cloudformation_stack.worker_asg"
 terraform apply ./
 ```
 
