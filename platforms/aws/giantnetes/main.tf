@@ -82,7 +82,7 @@ module "vpc" {
   transit_vpc_cidr   = var.transit_vpc_cidr
   vpc_cidr           = var.vpc_cidr
   vpc_vgw_id         = var.vpc_vgw_id
-  with_public_access = (var.aws_customer_gateway_id_0 != "") || (var.vpn_instance_enabled) || (var.transit_vpc_cidr != "") ? false : true
+  with_public_access = (var.aws_customer_gateway_id_0 != "") || (var.transit_vpc_cidr != "") ? false : true
 }
 
 # Create S3 bucket for ignition configs.
@@ -172,36 +172,7 @@ module "bastion" {
   s3_bucket_tags         = var.s3_bucket_tags
   transit_vpc_cidr       = var.transit_vpc_cidr
   user_data              = data.gotemplate.bastion.rendered
-  with_public_access     = (var.aws_customer_gateway_id_0 != "") || (var.vpn_instance_enabled) || (var.transit_vpc_cidr != "") ? false : true
-  vpc_cidr               = var.vpc_cidr
-  vpc_id                 = module.vpc.vpc_id
-}
-
-# Generate ignition config.
-data "gotemplate" "vpn_instance" {
-  template    = "${path.module}/../../../templates/vpn.yaml.tmpl"
-  data        = jsonencode(merge(local.ignition_data, { "NodeType" = "vpn_instance" }))
-  is_ignition = true
-}
-
-module "vpn_instance" {
-  source = "../../../modules/aws/vpn_instance"
-
-  vpn_instance_enabled = var.vpn_instance_enabled
-
-  arn_region             = var.arn_region
-  aws_account            = var.aws_account
-  bastion_subnet_ids     = module.vpc.bastion_subnet_ids
-  cluster_name           = var.cluster_name
-  container_linux_ami_id = data.aws_ami.flatcar_ami[0].image_id
-  dns_zone_id            = module.dns.public_dns_zone_id
-  external_vpn_cidr_0    = "${var.external_ipsec_public_ip_0}/32"
-  external_vpn_cidr_1    = "${var.external_ipsec_public_ip_1}/32"
-  ignition_bucket_id     = module.s3.ignition_bucket_id
-  iam_region             = var.iam_region
-  instance_type          = var.bastion_instance_type
-  s3_bucket_tags         = var.s3_bucket_tags
-  user_data              = data.gotemplate.vpn_instance.rendered
+  with_public_access     = (var.aws_customer_gateway_id_0 != "") || (var.transit_vpc_cidr != "") ? false : true
   vpc_cidr               = var.vpc_cidr
   vpc_id                 = module.vpc.vpc_id
 }

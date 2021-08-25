@@ -301,12 +301,6 @@ variable "external_ipsec_subnet_1" {
   default     = "172.18.0.4/30"
 }
 
-### VPN with custom instance 
-variable "vpn_instance_enabled" {
-  default = false
-  type    = bool
-}
-
 ## Gridscale
 variable "external_ipsec_public_ip_0" {
   description = "External public ip from VPN 0 - Gridscale"

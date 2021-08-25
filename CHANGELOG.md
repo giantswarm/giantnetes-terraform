@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Decrease `hostnetwork_pods` value for AWS CNI node pod limit script to 4.
 
 
+### Removed
+
+- Remove AWS `vpn_instance` module. It was used for China regions and it's
+  replaced with the Direct Connect setup.
+
 ## [4.1.0] - 2021-07-27
 
 ### Changed
