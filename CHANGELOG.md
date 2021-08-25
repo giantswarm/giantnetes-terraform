@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- Remove AWS `vpn_instance` module. It was used for China regions and it's
+  replaced with the Direct Connect setup.
+
 ## [5.0.0] - 2021-08-25
 
 ## [4.2.0] - 2021-08-24
@@ -17,11 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Set `kernelMemcgNotification` kubelet flag to true. This helps better determine if memory eviction thresholds are crossed.
 - Decrease `hostnetwork_pods` value for AWS CNI node pod limit script to 4.
 
-
-### Removed
-
-- Remove AWS `vpn_instance` module. It was used for China regions and it's
-  replaced with the Direct Connect setup.
 
 ## [4.1.0] - 2021-07-27
 
