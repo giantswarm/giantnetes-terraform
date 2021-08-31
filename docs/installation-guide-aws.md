@@ -103,10 +103,13 @@ Note: the bastion subnets should form one contiguous `/27` (as this is the VPN e
 
 Care should also be taken that the subnets chosen for the control plane do not overlap with any other default subnets (see `aws cni`, `docker` and `k8s service` CIDRs).
 
-AWS CNI pod CIDR needs to be from the same private block as VPC and needs one subnet per AZ (usually 3 - check the installation region). The sizing for subnet should be ideally atleast `/24` or `/25`. 
+AWS CNI pod CIDR needs to be divided into subnets per AZ (usually 3 - check the installation region). The default CIDR block (below) should be changed **only** if there is a conflict between CNI CIDR and Management Cluster VPC CIDR (look for "IPv4 CIDR block association restrictions" in [this page](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html)).
+
+The `v2` suffix here is a leftover after migration from smaller CNI CIDR.
+
 ```
-export TF_VAR_aws_cni_cidr_block=172.18.128.0/20
-export TF_VAR_aws_cni_pod_cidrs='["172.18.0.0/24","172.18.1.0/24","172.18.2.0/24"]'
+export TF_VAR_aws_cni_cidr_v2='100.64.0.0/16'
+export TF_VAR_aws_cni_subnets_v2='["100.64.0.0/18", "100.64.64.0/18", "100.64.128.0/18"]'
 ```
 
 * Tenant Clusters:
