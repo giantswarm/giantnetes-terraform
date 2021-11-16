@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove AWS `vpn_instance` module. It was used for China regions and it's
   replaced with the Direct Connect setup.
 
+### Changed
+
+- Change Azure storage account authentication key (SAS) TTL to 180 days to comply with workload clusters.
+
 ## [5.0.0] - 2021-08-25
 
 ## [4.2.0] - 2021-08-24
