@@ -23,9 +23,9 @@ data "azurerm_storage_account_sas" "sas" {
   connection_string = var.storage_acc_url
   https_only        = true
 
-  # Set TTL to 3 months from execution time.
+  # Set TTL to 6 months from execution time.
   start  = local.timenow
-  expiry = timeadd(local.timenow, "2160h")
+  expiry = timeadd(local.timenow, "4320h")
 
   resource_types {
     service   = false
