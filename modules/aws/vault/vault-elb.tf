@@ -19,11 +19,12 @@ resource "aws_elb" "vault" {
     interval            = 5
   }
 
-  tags = {
-    Name                         = "${var.cluster_name}-vault"
-    "giantswarm.io/cluster"      = var.cluster_name
-    "giantswarm.io/installation" = var.cluster_name
-  }
+  tags = merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-vault"
+    )
+  )
 }
 
 resource "aws_elb_attachment" "vault" {
@@ -57,11 +58,12 @@ resource "aws_security_group" "vault_elb" {
     cidr_blocks = [var.ipam_network_cidr]
   }
 
-  tags = {
-    Name                         = "${var.cluster_name}-vault-elb"
-    "giantswarm.io/cluster"      = var.cluster_name
-    "giantswarm.io/installation" = var.cluster_name
-  }
+  tags = merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-vault-elb"
+    )
+  )
 }
 
 resource "aws_route53_record" "vault-elb" {

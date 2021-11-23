@@ -1,9 +1,16 @@
 locals {
-  common_tags = map(
-    "giantswarm.io/cluster", var.cluster_name,
-    "giantswarm.io/installation", var.cluster_name,
-    "kubernetes.io/cluster/${var.cluster_name}", "owned"
+  common_tags = merge(
+    var.additional_tags,
+    map(
+      "giantswarm.io/cluster", var.cluster_name,
+      "giantswarm.io/installation", var.cluster_name,
+      "giantswarm.io/cluster-type", "control-plane",
+      "kubernetes.io/cluster/${var.cluster_name}", "owned"
+    )
   )
+
+  common_tags_asg = join("",[for key, value in var.additional_tags : "{\"Key\":\"${key}\",\"Value\":\"${value}\",\"PropagateAtLaunch\": true},"])
+
   customer_vpn_public_subnets = var.customer_vpn_public_subnets != "" ? split(",", var.customer_vpn_public_subnets) : []
   customer_vpn_private_subnets = var.customer_vpn_private_subnets != "" ? split(",", var.customer_vpn_private_subnets) : []
   # k8s_api prefixed values represent access to public loadbalancer
@@ -39,6 +46,7 @@ resource "aws_cloudformation_stack" "master_asg" {
         "DesiredCapacity": "1",
         "MinSize": "1",
         "Tags": [
+          ${local.common_tags_asg}
           {
             "Key": "Name",
             "Value": "${var.cluster_name}-master-${count.index}",

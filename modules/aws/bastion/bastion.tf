@@ -7,10 +7,14 @@ locals {
   # In China there is no tags for s3 buckets
   s3_ignition_bastion_key = element(concat(aws_s3_bucket_object.ignition_bastion_with_tags.*.key, aws_s3_bucket_object.ignition_bastion_without_tags.*.key), 0)
 
-  common_tags = map(
-    "giantswarm.io/cluster", var.cluster_name,
-    "giantswarm.io/installation", var.cluster_name,
-    "kubernetes.io/cluster/${var.cluster_name}", "owned"
+  common_tags = merge(
+    var.additional_tags,
+    map(
+      "giantswarm.io/cluster", var.cluster_name,
+      "giantswarm.io/installation", var.cluster_name,
+      "giantswarm.io/cluster-type", "control-plane",
+      "kubernetes.io/cluster/${var.cluster_name}", "owned"
+    )
   )
 }
 
@@ -34,11 +38,12 @@ resource "aws_instance" "bastion" {
 
   user_data = data.ignition_config.s3.rendered
 
-  tags = {
-    Name                         = "${var.cluster_name}-bastion${count.index}"
-    "giantswarm.io/cluster"      = var.cluster_name
-    "giantswarm.io/installation" = var.cluster_name
-  }
+  tags = merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-bastion${count.index}"
+    )
+  )
 }
 
 resource "aws_security_group" "bastion" {
@@ -86,11 +91,12 @@ resource "aws_security_group" "bastion" {
     self        = true
   }
 
-  tags = {
-    Name                         = "${var.cluster_name}-bastion"
-    "giantswarm.io/cluster"      = var.cluster_name
-    "giantswarm.io/installation" = var.cluster_name
-  }
+  tags = merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-bastion"
+    )
+  )
 }
 
 resource "aws_route53_record" "bastion" {

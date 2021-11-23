@@ -2,10 +2,14 @@ locals {
   # In China there is no tags for s3 buckets
   s3_ignition_vault_key = element(concat(aws_s3_bucket_object.ignition_vault_with_tags.*.key, aws_s3_bucket_object.ignition_vault_without_tags.*.key), 0)
 
-  common_tags = map(
-    "giantswarm.io/cluster", var.cluster_name,
-    "giantswarm.io/installation", var.cluster_name,
-    "kubernetes.io/cluster/${var.cluster_name}", "owned"
+  common_tags = merge(
+    var.additional_tags,
+    map(
+      "giantswarm.io/cluster", var.cluster_name,
+      "giantswarm.io/installation", var.cluster_name,
+      "giantswarm.io/cluster-type", "control-plane",
+      "kubernetes.io/cluster/${var.cluster_name}", "owned"
+    )
   )
 }
 
@@ -43,11 +47,12 @@ resource "aws_instance" "vault" {
 
   user_data = data.ignition_config.s3.rendered
 
-  tags = {
-    Name                         = "${var.cluster_name}-vault${count.index}"
-    "giantswarm.io/cluster"      = var.cluster_name
-    "giantswarm.io/installation" = var.cluster_name
-  }
+  tags = merge(
+    local.common_tags,
+    map( 
+      "Name", "${var.cluster_name}-vault${count.index}"
+    )
+  )
 }
 
 resource "aws_ebs_volume" "vault_etcd" {
@@ -55,11 +60,12 @@ resource "aws_ebs_volume" "vault_etcd" {
   size              = var.volume_size_etcd
   type              = var.volume_type
 
-  tags = {
-    Name                         = "${var.cluster_name}-vault"
-    "giantswarm.io/cluster"      = var.cluster_name
-    "giantswarm.io/installation" = var.cluster_name
-  }
+  tags = merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-vault"
+    )
+  )
 }
 
 resource "aws_volume_attachment" "vault_etcd_ebs" {
@@ -77,11 +83,12 @@ resource "aws_ebs_volume" "vault_logs" {
   size              = var.volume_size_logs
   type              = var.volume_type
 
-  tags = {
-    Name                         = "${var.cluster_name}-vault"
-    "giantswarm.io/cluster"      = var.cluster_name
-    "giantswarm.io/installation" = var.cluster_name
-  }
+  tags = merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-vault"
+    ),
+  )
 }
 
 resource "aws_volume_attachment" "vault_logs_ebs" {
@@ -148,11 +155,12 @@ resource "aws_security_group" "vault" {
     cidr_blocks = concat(data.aws_subnet.worker_subnets.*.cidr_block,[var.aws_cni_cidr_block])
   }
 
-  tags = {
-    Name                         = "${var.cluster_name}-vault"
-    "giantswarm.io/cluster"      = var.cluster_name
-    "giantswarm.io/installation" = var.cluster_name
-  }
+  tags = merge(
+    local.common_tags,
+    map(
+      "Name" , "${var.cluster_name}-vault"
+    )
+  )
 }
 
 resource "aws_route53_record" "vault" {

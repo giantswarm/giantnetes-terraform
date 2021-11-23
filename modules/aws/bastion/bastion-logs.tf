@@ -2,10 +2,7 @@ resource "aws_cloudwatch_log_group" "bastion_log_group" {
   count = var.forward_logs_enabled ? 1 : 0
   name  = "${var.cluster_name}_bastion"
 
-  tags = {
-    "giantswarm.io/cluster"      = var.cluster_name
-    "giantswarm.io/installation" = var.cluster_name
-  }
+  tags = local.common_tags
 }
 
 resource "aws_cloudwatch_log_stream" "bastion_logs" {
