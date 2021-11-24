@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [5.2.0] - 2021-11-24
 
+### Added
+
+- Add `additional_tags` variable to AWS in order to specify custom tags that will be applied to all resources.
+
 ## [5.1.0] - 2021-11-16
 
 ### Removed
