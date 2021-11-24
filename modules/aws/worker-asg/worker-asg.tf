@@ -2,11 +2,17 @@ locals {
   # In China there is no tags for s3 buckets
   s3_ignition_worker_key = element(concat(aws_s3_bucket_object.ignition_worker_with_tags.*.key, aws_s3_bucket_object.ignition_worker_without_tags.*.key), 0)
 
-  common_tags = map(
-    "giantswarm.io/cluster", var.cluster_name,
-    "giantswarm.io/installation", var.cluster_name,
-    "kubernetes.io/cluster/${var.cluster_name}", "owned"
+  common_tags = merge(
+    var.additional_tags,
+    map(
+      "giantswarm.io/cluster", var.cluster_name,
+      "giantswarm.io/installation", var.cluster_name,
+      "kubernetes.io/cluster/${var.cluster_name}", "owned"
+    )
   )
+  common_tags_asg = join("",[for key, value in var.additional_tags : "{\"Key\":\"${key}\",\"Value\":\"${value}\",\"PropagateAtLaunch\": true},"])
+
+
 }
 
 resource "aws_cloudformation_stack" "worker_asg" {
@@ -28,6 +34,7 @@ resource "aws_cloudformation_stack" "worker_asg" {
         "MaxSize": "${var.worker_count * 2}",
         "MinSize": "${var.worker_count}",
         "Tags": [
+          ${local.common_tags_asg}
           {
             "Key": "Name",
             "Value": "${var.cluster_name}-worker",

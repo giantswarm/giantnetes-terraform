@@ -70,6 +70,7 @@ module "dns" {
 module "vpc" {
   source = "../../../modules/aws/vpc"
 
+  additional_tags    = var.additional_tags
   arn_region         = var.arn_region
   aws_account        = var.aws_account
   aws_cni_cidr_v2    = var.aws_cni_cidr_v2
@@ -89,6 +90,7 @@ module "vpc" {
 module "s3" {
   source = "../../../modules/aws/s3"
 
+  additional_tags      = var.additional_tags
   aws_account          = var.aws_account
   cluster_name         = var.cluster_name
   logs_expiration_days = var.logs_expiration_days
@@ -157,6 +159,7 @@ data "gotemplate" "bastion" {
 module "bastion" {
   source = "../../../modules/aws/bastion"
 
+  additional_tags        = var.additional_tags
   arn_region             = var.arn_region
   aws_account            = var.aws_account
   aws_cni_subnets        = var.aws_cni_subnets_v2
@@ -187,6 +190,7 @@ data "gotemplate" "vault" {
 module "vault" {
   source = "../../../modules/aws/vault"
 
+  additional_tags        = var.additional_tags
   arn_region             = var.arn_region
   aws_account            = var.aws_account
   aws_cni_cidr_block     = var.aws_cni_cidr_v2
@@ -224,6 +228,7 @@ module "master" {
 
   master_count = var.master_count
 
+  additional_tags              = var.additional_tags
   api_dns                      = var.api_dns
   api_internal_dns             = var.api_internal_dns
   aws_account                  = var.aws_account
@@ -262,6 +267,7 @@ data "gotemplate" "worker" {
 module "worker" {
   source = "../../../modules/aws/worker-asg"
 
+  additional_tags        = var.additional_tags
   aws_account            = var.aws_account
   aws_region             = var.aws_region
   aws_cni_cidr_block     = var.aws_cni_cidr_v2

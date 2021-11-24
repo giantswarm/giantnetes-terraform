@@ -106,3 +106,10 @@ variable "worker_subnet_count" {
 }
 
 variable "s3_bucket_tags" {}
+
+### additional tags
+variable "additional_tags" {
+  description = "Additional tags that can be added to all resources"
+  type        = map
+  default     = {}
+}

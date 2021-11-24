@@ -13,3 +13,10 @@ variable "logs_expiration_days" {
 variable "s3_bucket_prefix" {
   type = string
 }
+
+### additional tags
+variable "additional_tags" {
+  description = "Additional tags that can be added to all resources"
+  type        = map
+  default     = {}
+}
