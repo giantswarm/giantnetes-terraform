@@ -4,7 +4,6 @@ locals {
     map(
       "giantswarm.io/cluster", var.cluster_name,
       "giantswarm.io/installation", var.cluster_name,
-      "giantswarm.io/cluster-type", "control-plane",
       "kubernetes.io/cluster/${var.cluster_name}", "owned"
     )
   )
@@ -238,7 +237,7 @@ resource "aws_s3_bucket_object" "ignition_master_with_tags" {
   server_side_encryption = "AES256"
 
   tags = merge(
-    local.common_tags,
+    var.additional_tags,
     map(
       "Name", "${var.cluster_name}-ignition-master"
     )
