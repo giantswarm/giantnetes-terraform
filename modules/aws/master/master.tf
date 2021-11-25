@@ -4,6 +4,7 @@ locals {
     map(
       "giantswarm.io/cluster", var.cluster_name,
       "giantswarm.io/installation", var.cluster_name,
+      "giantswarm.io/cluster-type", "control-plane",
       "kubernetes.io/cluster/${var.cluster_name}", "owned"
     )
   )
