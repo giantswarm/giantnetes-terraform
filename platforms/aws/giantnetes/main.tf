@@ -10,6 +10,8 @@ locals {
   masters_eni_ips         = [cidrhost(var.subnets_worker[0], 4), cidrhost(var.subnets_worker[1], 4), cidrhost(var.subnets_worker[2], 4)]
   masters_eni_gateways    = [cidrhost(var.subnets_worker[0], 1), cidrhost(var.subnets_worker[1], 1), cidrhost(var.subnets_worker[2], 1)]
   masters_eni_subnet_size = split("/", var.subnets_worker[0])[1]
+
+  additional_tags_ignition = join(" ", [for key, value in var.additional_tags : "Key=${key},Value=${value}"])
 }
 
 data "http" "bastion_users" {
@@ -99,6 +101,7 @@ module "s3" {
 
 locals {
   ignition_data = {
+    "AdditionalTags"               = local.additional_tags_ignition
     "AvaiabilityZones"             = data.aws_availability_zones.available.names
     "APIDomainName"                = "${var.api_dns}.${var.base_domain}"
     "APIInternalDomainName"        = "${var.api_internal_dns}.${var.base_domain}"
