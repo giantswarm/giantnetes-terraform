@@ -1148,8 +1148,8 @@ systemd:
     contents: |
       [Unit]
       Description=Tag all EBS volumes attached to the machine with proper tags
-      After=docker.service etcd3.service
-      Requires=docker.service etcd3.service
+      After=docker.service
+      Requires=docker.service
 
       [Service]
       Type=oneshot
