@@ -1142,6 +1142,39 @@ systemd:
 
       [Install]
       WantedBy=multi-user.target
+{{ if ne .AdditionalTags "" }}
+  - name: tag-ebs-volumes.service
+    enabled: false
+    contents: |
+      [Unit]
+      Description=Tag all EBS volumes attached to the machine with proper tags
+      After=docker.service
+      Requires=docker.service
+
+      [Service]
+      Type=oneshot
+      EnvironmentFile=/etc/environment
+      Environment=IMAGE={{.DockerRegistry}}/giantswarm/awscli:2.0.24
+      Environment=NAME=%p.service
+      ExecStartPre=-/usr/bin/docker stop  $NAME
+      ExecStartPre=-/usr/bin/docker rm  $NAME
+      ExecStartPre=-/usr/bin/docker pull $IMAGE
+      ExecStart=/usr/bin/docker run --network=host --entrypoint /bin/bash $IMAGE -c "export instance_id=$(curl http://169.254.169.254/latest/meta-data/instance-id -qs); export volume_ids=$(aws ec2 describe-volumes --filter Name=attachment.instance-id,Values=$instance_id --query Volumes[*].VolumeId --out=text) ; aws ec2 create-tags --resources $volume_ids --tags {{.AdditionalTags}}; echo tagged volumes $volume_ids"
+
+      [Install]
+      WantedBy=multi-user.target
+  - name: tag-ebs-volumes.timer
+    enabled: true
+    contents: |
+      [Unit]
+      Description=Execute tag-ebs-volumes.service every hour
+
+      [Timer]
+      OnCalendar=*-*-* *:00:00 UTC
+
+      [Install]
+      WantedBy=multi-user.target
+{{end}}
 {{end}}
   - name: k8s-extract.service
     enabled: true

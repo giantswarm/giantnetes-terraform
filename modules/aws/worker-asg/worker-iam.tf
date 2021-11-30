@@ -51,6 +51,11 @@ resource "aws_iam_role_policy" "worker" {
       "Resource": "*"
     },
     {
+     "Effect": "Allow",
+     "Action": "ec2:CreateTags",
+      "Resource": "*"
+    },
+    {
       "Action": "elasticloadbalancing:*",
       "Resource": "*",
       "Effect": "Allow"
