@@ -295,6 +295,7 @@ module "worker" {
 module "vpn" {
   source = "../../../modules/aws/vpn"
 
+  additional_tags             = var.additional_tags
   # If aws_customer_gateway_id_0 is not set, no vpn resources will be created.
   aws_customer_gateway_id_0   = var.aws_customer_gateway_id_0
   aws_customer_gateway_id_1   = var.aws_customer_gateway_id_1
