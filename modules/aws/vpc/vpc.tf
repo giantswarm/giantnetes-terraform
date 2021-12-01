@@ -196,4 +196,5 @@ resource "aws_default_security_group" "default" {
 
   # Specifying w/o rules deletes all existing rules
   # https://www.terraform.io/docs/providers/aws/r/default_security_group.html
+  tags = local.common_tags
 }
