@@ -43,6 +43,7 @@ resource "aws_instance" "vault" {
   root_block_device {
     volume_type = var.volume_type
     volume_size = var.volume_size_root
+    tags = local.common_tags
   }
 
   user_data = data.ignition_config.s3.rendered
