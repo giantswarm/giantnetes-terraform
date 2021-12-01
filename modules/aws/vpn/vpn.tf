@@ -7,6 +7,12 @@ variable "aws_customer_gateway_id_1" {}
 variable "aws_external_ipsec_subnet_1" {}
 variable "aws_vpn_name" {}
 variable "aws_vpn_vpc_id" {}
+### additional tags
+variable "additional_tags" {
+  description = "Additional tags that can be added to all resources"
+  type        = map
+  default     = {}
+}
 
 variable "aws_private_route_table_ids" {
   type = list
@@ -16,11 +22,14 @@ resource "aws_vpn_gateway" "vpn_gw" {
   count  = var.aws_customer_gateway_id_0 == "" ? 0 : 1
   vpc_id = var.aws_vpn_vpc_id
 
-  tags = {
-    Name                         = var.aws_vpn_name
-    "giantswarm.io/cluster"      = var.aws_cluster_name
-    "giantswarm.io/installation" = var.aws_cluster_name
-  }
+  tags = merge(
+    var.additional_tags,
+    map(
+      "Name",  var.aws_vpn_name,
+      "giantswarm.io/cluster", var.aws_cluster_name,
+      "giantswarm.io/installation", var.aws_cluster_name,
+    )
+  )
 }
 
 resource "aws_vpn_connection" "aws_vpn_conn_0" {
@@ -30,11 +39,14 @@ resource "aws_vpn_connection" "aws_vpn_conn_0" {
   type                = "ipsec.1"
   static_routes_only  = true
 
-  tags = {
-    Name                         = "${var.aws_vpn_name}-0"
-    "giantswarm.io/cluster"      = var.aws_cluster_name
-    "giantswarm.io/installation" = var.aws_cluster_name
-  }
+  tags = merge(
+    var.additional_tags,
+    map(
+      "Name",  "${var.aws_vpn_name}-0", 
+      "giantswarm.io/cluster", var.aws_cluster_name,
+      "giantswarm.io/installation", var.aws_cluster_name,
+    )
+  )
 }
 
 resource "aws_vpn_connection" "aws_vpn_conn_1" {
@@ -44,11 +56,14 @@ resource "aws_vpn_connection" "aws_vpn_conn_1" {
   type                = "ipsec.1"
   static_routes_only  = true
 
-  tags = {
-    Name                         = "${var.aws_vpn_name}-1"
-    "giantswarm.io/cluster"      = var.aws_cluster_name
-    "giantswarm.io/installation" = var.aws_cluster_name
-  }
+  tags = merge(
+    var.additional_tags,
+    map(
+      "Name",  "${var.aws_vpn_name}-1",
+      "giantswarm.io/cluster", var.aws_cluster_name,
+      "giantswarm.io/installation", var.aws_cluster_name,
+    )
+  )
 }
 
 resource "aws_vpn_connection_route" "customer_network_0" {
