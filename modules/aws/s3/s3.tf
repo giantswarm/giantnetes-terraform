@@ -45,6 +45,31 @@ resource "aws_s3_bucket" "logging" {
   )
 }
 
+resource "aws_s3_bucket_policy" "access-logs-policy" {
+  bucket = aws_s3_bucket.logging.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "ForceSSLOnlyAccess"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:*"
+        Resource = [
+          aws_s3_bucket.logging.arn,
+          "${aws_s3_bucket.logging.arn}/*",
+        ]
+        Condition = {
+          Bool = {
+            "aws:SecureTransport" = "false"
+          }
+        }
+      },
+    ]
+  })
+}
+
 resource "aws_s3_bucket" "ignition" {
   bucket        = "${var.aws_account}-${var.cluster_name}-ignition"
   acl           = "private"
@@ -69,6 +94,31 @@ resource "aws_s3_bucket" "ignition" {
       "Name", "${var.cluster_name}-ignition"
     )
   )
+}
+
+resource "aws_s3_bucket_policy" "ignition-policy" {
+  bucket = aws_s3_bucket.ignition.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "ForceSSLOnlyAccess"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:*"
+        Resource = [
+          aws_s3_bucket.ignition.arn,
+          "${aws_s3_bucket.ignition.arn}/*",
+        ]
+        Condition = {
+          Bool = {
+            "aws:SecureTransport" = "false"
+          }
+        }
+      },
+    ]
+  })
 }
 
 output "ignition_bucket_id" {
