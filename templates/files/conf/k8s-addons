@@ -124,17 +124,9 @@ $KUBECTL -n kube-system delete deploy calico-kube-controllers --ignore-not-found
 # delete legacy nginx daemonset
 $KUBECTL -n kube-system delete daemonset nginx-ingress-controller --ignore-not-found=true
 
-
-SC="default-storage-class.yaml"
-$KUBECTL apply -f /srv/${SC}
-# change of parameters is forbidden so in cas this failed we need to delete and reapply
-if [ "$?" -ne "0" ] ; then
-	$KUBECTL delete -f /srv/${SC}
-	$KUBECTL apply -f /srv/${SC}
-fi
-
 # apply k8s addons
-MANIFESTS="coredns-all.yaml
+MANIFESTS="default-storage-class.yaml
+ coredns-all.yaml
  default-backend-dep.yaml
  default-backend-svc.yaml
  ingress-controller-cm.yaml
