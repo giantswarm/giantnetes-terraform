@@ -48,28 +48,28 @@ resource "aws_s3_bucket" "logging" {
 resource "aws_s3_bucket_policy" "access-logs-policy" {
   bucket = aws_s3_bucket.logging.id
 
-  policy = <<EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
       {
-        "Sid": "ForceSSLOnlyAccess",
-        "Effect": "Deny",
-        "Principal": "*",
-        "Action": "s3:*",
-        "Resource": [
-          "arn:aws:s3:::${var.s3_bucket_prefix}${var.cluster_name}-access-logs/*",
-          "arn:aws:s3:::${var.s3_bucket_prefix}${var.cluster_name}-access-logs"
-        ],
-        "Condition": {
-          "Bool": {
-            "aws:SecureTransport": "false"
+        Sid       = "ForceSSLOnlyAccess"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:*"
+        Resource = [
+          aws_s3_bucket.logging.arn,
+          "${aws_s3_bucket.logging.arn}/*",
+        ]
+        Condition = {
+          Bool = {
+            "aws:SecureTransport" = "false"
           }
         }
-      }
+      },
     ]
-  }
-EOF
+  })
+
+
 }
 
 
@@ -102,28 +102,26 @@ resource "aws_s3_bucket" "ignition" {
 resource "aws_s3_bucket_policy" "ignition-policy" {
   bucket = aws_s3_bucket.ignition.id
 
-  policy = <<EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
       {
-        "Sid": "ForceSSLOnlyAccess",
-        "Effect": "Deny",
-        "Principal": "*",
-        "Action": "s3:*",
-        "Resource": [
-          "arn:aws:s3:::${var.aws_account}-${var.cluster_name}-ignition/*",
-          "arn:aws:s3:::${var.aws_account}-${var.cluster_name}-ignition"
-        ],
-        "Condition": {
-          "Bool": {
-            "aws:SecureTransport": "false"
+        Sid       = "ForceSSLOnlyAccess"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:*"
+        Resource = [
+          aws_s3_bucket.ignition.arn,
+          "${aws_s3_bucket.ignition.arn}/*",
+        ]
+        Condition = {
+          Bool = {
+            "aws:SecureTransport" = "false"
           }
         }
-      }
+      },
     ]
-  }
-EOF
+  })
 }
 
 
