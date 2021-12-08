@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.4.0] - 2021-12-08
+
 ### Added
 
 - Add AWS S3 bucket policy to allow only SSL access to the buckets.
@@ -321,7 +323,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.3.2...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.4.0...HEAD
+[5.4.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.3.2...v5.4.0
 [5.3.2]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.3.1...v5.3.2
 [5.3.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.3.0...v5.3.1
 [5.3.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.2.2...v5.3.0
