@@ -68,10 +68,7 @@ resource "aws_s3_bucket_policy" "access-logs-policy" {
       },
     ]
   })
-
-
 }
-
 
 resource "aws_s3_bucket" "ignition" {
   bucket        = "${var.aws_account}-${var.cluster_name}-ignition"
@@ -123,7 +120,6 @@ resource "aws_s3_bucket_policy" "ignition-policy" {
     ]
   })
 }
-
 
 output "ignition_bucket_id" {
   value = aws_s3_bucket.ignition.id
