@@ -14,17 +14,17 @@ instance_type="$(curl http://169.254.169.254/latest/meta-data/instance-type 2>/d
 #
 #    curl -fsSLo - https://raw.githubusercontent.com/awslabs/amazon-eks-ami/2e1f63f951c82a76fd20b19b811592535962c82d/files/eni-max-pods.txt | grep -v '^#' | sed -E 's/([[:alnum:]]+)[[:space:]]+([[:digit:]]+)/\1)|MAX_PODS=$((\2|- $reserved_ips)) ;;/' | column -t -s '|'
 #
-if [ $1 == "master" ]; then
-  # 1 ENI for the node, 1 for ETCD
-  reserved_eni=2
-  # Only counting daemonsets, as they are mandatory in all nodes
-  hostnetwork_pods=9
-else
-  # 1 ENI for the node
-  reserved_eni=1
-  # Only counting daemonsets, as they are mandatory in all nodes
-  hostnetwork_pods=4
-fi
+{{ if eq .NodeType "master" }}
+# 1 ENI for the node, 1 for ETCD
+reserved_eni=2
+# Only counting daemonsets, as they are mandatory in all nodes
+hostnetwork_pods=9
+{{ else }}
+# 1 ENI for the node
+reserved_eni=1
+# Only counting daemonsets, as they are mandatory in all nodes
+hostnetwork_pods=4
+{{ end }}
 
 # Formula for max amount of pods in AWS CNI is (enis-$reserved_enis)*(ips_eni-1)+$host_network_pods
 # As host network pods reuse the ip of the node, it doesn't count against the AWS CNI quota.
