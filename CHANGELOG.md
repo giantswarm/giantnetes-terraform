@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.7.0] - 2021-12-15
+
 ### Changed
 
 - Update `aws-cni` version from `1.7.5` to `1.9.3`.
@@ -348,7 +350,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.6.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.7.0...HEAD
+[5.7.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.6.0...v5.7.0
 [5.6.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.5.0...v5.6.0
 [5.5.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.4.0...v5.5.0
 [5.4.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.3.2...v5.4.0
