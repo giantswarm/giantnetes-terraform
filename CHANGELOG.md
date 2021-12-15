@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Limited hostnetwork pods to the daemonsets only when calculating max pods
+
 ## [5.6.0] - 2021-12-15
 
 ### Changed

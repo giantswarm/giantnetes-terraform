@@ -18,7 +18,11 @@ instance_type="$(curl http://169.254.169.254/latest/meta-data/instance-type 2>/d
 # 1 ENI for the node, 1 for ETCD
 reserved_eni=2
 # Only counting daemonsets, as they are mandatory in all nodes
-hostnetwork_pods=9
+# Note: we don't include deployments that use host network unless
+# they're set to run on all master nodes. The reason for this is
+# on nodes where that deployment isn't running the scheduler will
+# thing another pod is able to be scheduled where it's not.
+hostnetwork_pods=4
 {{ else }}
 # 1 ENI for the node
 reserved_eni=1
