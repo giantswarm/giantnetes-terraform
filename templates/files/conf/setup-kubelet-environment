@@ -21,7 +21,7 @@ reserved_eni=2
 # Note: we don't include deployments that use host network unless
 # they're set to run on all master nodes. The reason for this is
 # on nodes where that deployment isn't running the scheduler will
-# thing another pod is able to be scheduled where it's not.
+# think another pod is able to be scheduled where it's not.
 hostnetwork_pods=4
 {{ else }}
 # 1 ENI for the node
