@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Bump flatcar to 2983.2.0 for AWS and Azure.
+- Bump Kubernetes to 1.20.13 for AWS and Azure.
+
 ### Fixed
 
 - Correctly calculate the max pods for control plane nodes
