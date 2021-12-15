@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.5.0] - 2021-12-15
+
 ### Changed
 
 - Bump flatcar to 2983.2.0 for AWS and Azure.
@@ -332,7 +334,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.4.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.5.0...HEAD
+[5.5.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.4.0...v5.5.0
 [5.4.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.3.2...v5.4.0
 [5.3.2]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.3.1...v5.3.2
 [5.3.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.3.0...v5.3.1
