@@ -214,6 +214,12 @@ Create PR with related changes.
 source bootstrap.sh
 ```
 
+First of all disable access logs:
+
+```bash
+aws s3api put-bucket-logging --bucket $CLUSTER-state --bucket-logging-status="{}"
+```
+
 Before delete all resources, you could want to keep access logs.
 
 ```bash
