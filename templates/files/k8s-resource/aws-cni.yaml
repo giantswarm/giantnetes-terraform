@@ -246,6 +246,7 @@ spec:
             path: /etc/cni/net.d
         - hostPath:
             path: /run/xtables.lock
+            type: FileOrCreate
           name: xtables-lock
         - hostPath:
             path: /var/log/aws-routed-eni
