@@ -1410,6 +1410,13 @@ networkd:
       Destination=0.0.0.0/0
       Gateway={{.MasterENIGateway}}
       Table=2
+  - name: 00-aws-cni.network
+    contents: |
+      [Match]
+      Name=eth[2-9]
+
+      [Link]
+      Unmanaged=yes
 {{ end -}}
 passwd:
   users:
