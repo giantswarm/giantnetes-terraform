@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Updated
+
+- Updated version of `flatcar`, `aws-cni` and `kubernetes` for AWS.
+
 ## [5.7.1] - 2021-12-24
 
 ## [5.7.0] - 2021-12-15

@@ -692,6 +692,17 @@ systemd:
       [Install]
       WantedBy=multi-user.target
 {{ end }}
+{{ if eq .Provider "aws" }}
+networkd:
+  units:
+  - name: 00-aws-cni.network
+    contents: |
+      [Match]
+      Name=eth[1-9]*
+
+      [Link]
+      Unmanaged=yes
+{{end}}
 passwd:
   users:
   - name: giantswarm
