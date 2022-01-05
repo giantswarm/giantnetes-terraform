@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.8.0] - 2022-01-05
+
 ### Updated
 
 - Updated version of `flatcar`, `aws-cni` and `kubernetes` for AWS.
@@ -356,7 +358,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.7.1...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.8.0...HEAD
+[5.8.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.7.1...v5.8.0
 [5.7.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.7.0...v5.7.1
 [5.7.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.6.0...v5.7.0
 [5.6.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.5.0...v5.6.0
