@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- In azure, force service principal credentials to be explicitely set.
+
 ## [5.8.1] - 2022-01-05
 
 ## [5.8.0] - 2022-01-05

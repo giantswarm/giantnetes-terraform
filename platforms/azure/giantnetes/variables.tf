@@ -1,3 +1,13 @@
+variable "azure_client_id" {
+  type        = string
+  description = "The Azure API client (application) ID"
+}
+
+variable "azure_client_secret" {
+  type        = string
+  description = "The Azure API client (application) secret"
+}
+
 variable "github_token" {
   type        = string
   description = "Your personal GITHUB token, used to get access to the private repository 'employees' to get the list of users."
