@@ -3,6 +3,11 @@ provider "azurerm" {
   metadata_host              = var.metadata_host
   environment                = var.environment
   skip_provider_registration = true
+
+  subscription_id = var.azure_sp_subscriptionid
+  client_id       = var.azure_client_id
+  client_secret   = var.azure_client_secret
+  tenant_id       = var.azure_sp_tenantid
 }
 
 data "azurerm_client_config" "current" {}
