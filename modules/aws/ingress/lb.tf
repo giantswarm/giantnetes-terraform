@@ -42,7 +42,7 @@ resource "aws_elb" "worker" {
     map(
       "Name", "${var.cluster_name}-worker"
     )
-    )
+  )
 }
 
 resource "aws_proxy_protocol_policy" "worker" {
