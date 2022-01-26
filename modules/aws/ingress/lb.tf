@@ -76,7 +76,7 @@ resource "aws_security_group" "worker_elb" {
   }
 
   tags = merge(
-  local.common_tags,
+    local.common_tags,
     map(
       "Name", "${var.cluster_name}-worker-elb"
     )
