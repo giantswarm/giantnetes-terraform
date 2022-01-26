@@ -128,9 +128,19 @@ $KUBECTL -n kube-system delete deploy calico-kube-controllers --ignore-not-found
 # delete legacy nginx daemonset
 $KUBECTL -n kube-system delete daemonset nginx-ingress-controller --ignore-not-found=true
 
+# If coredns app CR does not exist, delete old coredns manifests
+$KUBECTL -n giantswarm get app coredns || (
+  $KUBECTL -n kube-system delete svc coredns --ignore-not-found=true
+  $KUBECTL -n kube-system delete serviceaccount coredns --ignore-not-found=true
+  $KUBECTL -n kube-system delete cm coredns --ignore-not-found=true
+  $KUBECTL -n kube-system delete deploy coredns --ignore-not-found=true
+  $KUBECTL delete clusterrolebinding system:coredns --ignore-not-found=true
+  $KUBECTL delete clusterrole system:coredns --ignore-not-found=true
+)
+
 # apply k8s addons
 MANIFESTS="default-storage-class.yaml
- coredns-all.yaml
+ coredns-app.yaml
  default-backend-dep.yaml
  default-backend-svc.yaml
  ingress-controller-cm.yaml

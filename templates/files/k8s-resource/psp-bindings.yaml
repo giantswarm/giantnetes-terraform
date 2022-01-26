@@ -12,9 +12,6 @@ subjects:
   namespace: kube-system
 {{- end }}
 - kind: ServiceAccount
-  name: coredns
-  namespace: kube-system
-- kind: ServiceAccount
   name: nginx-ingress-controller
   namespace: kube-system
 - kind: ServiceAccount

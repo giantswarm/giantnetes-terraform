@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Use managed app to deploy coredns (AWS).
 - Bump flatcar to 3033.2.0 (AWS).
 - Bump policy-only manifests to calico 3.21.3 (currently used by AWS only).
 - Bump etcd to 3.4.18.
