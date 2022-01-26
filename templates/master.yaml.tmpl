@@ -96,7 +96,7 @@ storage:
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/default-storage-class.yaml" }}"
 
-    - path: /srv/coredns-all.yaml
+    - path: /srv/coredns-app.yaml
       filesystem: root
       mode: 420
       user:
@@ -104,7 +104,7 @@ storage:
       group:
         id: 0
       contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/coredns-all.yaml" }}"
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/coredns-app.yaml" }}"
 
     - path: /srv/kube-proxy-sa.yaml
       filesystem: root
