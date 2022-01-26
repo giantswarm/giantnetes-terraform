@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Move Ingress ELB resources in own module (AWS).
 - Use managed app to deploy nginx ingress controller (AWS).
 - Use managed app to deploy coredns (AWS).
 - Bump flatcar to 3033.2.0 (AWS).

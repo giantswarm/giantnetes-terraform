@@ -40,7 +40,8 @@ resource "aws_cloudformation_stack" "master_asg" {
         "LaunchConfigurationName": "${element(aws_launch_configuration.master.*.name, count.index)}",
         "LoadBalancerNames": [
           "${var.cluster_name}-master-api",
-          "${var.cluster_name}-master-api-internal"
+          "${var.cluster_name}-master-api-internal",
+          "${var.cluster_name}-worker"
         ],
         "MaxSize": "1",
         "DesiredCapacity": "1",

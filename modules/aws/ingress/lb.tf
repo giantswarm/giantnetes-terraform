@@ -1,3 +1,13 @@
+locals {
+  common_tags = merge(
+  var.additional_tags,
+  map(
+  "giantswarm.io/cluster", var.cluster_name,
+  "giantswarm.io/installation", var.cluster_name,
+  "kubernetes.io/cluster/${var.cluster_name}", "owned"
+  )
+  )
+}
 resource "aws_elb" "worker" {
   name                      = "${var.cluster_name}-worker"
   cross_zone_load_balancing = true
@@ -28,10 +38,10 @@ resource "aws_elb" "worker" {
   }
 
   tags = merge(
-    local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-worker"
-    )
+  local.common_tags,
+  map(
+  "Name", "${var.cluster_name}-worker-elb"
+  )
   )
 }
 
@@ -66,10 +76,10 @@ resource "aws_security_group" "worker_elb" {
   }
 
   tags = merge(
-    local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-worker-elb"
-    )
+  local.common_tags,
+  map(
+  "Name", "${var.cluster_name}-worker-elb"
+  )
   )
 }
 
