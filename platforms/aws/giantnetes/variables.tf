@@ -145,7 +145,7 @@ variable "docker_registry" {
 
 variable "hyperkube_version" {
   type    = string
-  default = "1.21.8"
+  default = "1.21.9"
 }
 
 ### DNS ###

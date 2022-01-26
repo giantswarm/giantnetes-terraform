@@ -90,6 +90,10 @@ done
 $KUBECTL delete pods -l k8s-app=kube-proxy -n kube-system
 
 {{ if eq .Provider "aws" -}}
+$KUBECTL apply -f /srv/calico-crd-installer-rbac.yaml
+$KUBECTL apply -f /srv/calico-crd-installer.yaml
+$KUBECTL wait --for=condition=complete --timeout=1m -n kube-system job -lapp.kubernetes.io/name=calico-crd-installer
+
 ## Apply AWS VPC CNI and Calico for ensuring network policies (only on AWS)
 CNI_FILE="aws-cni.yaml calico-policy-only.yaml"
 {{ else -}}

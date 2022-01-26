@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Bump policy-only manifests to calico 3.21.3 (currently used by AWS only).
+- Bump etcd to 3.4.18.
+- Bump kubernetes to 1.21.9 (AWS).
+
 ## [5.10.0] - 2022-01-19
 
 ### Changed

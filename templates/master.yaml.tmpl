@@ -47,6 +47,24 @@ storage:
         id: 0
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/calico-policy-only.yaml" }}"
+    - path: /srv/calico-crd-installer.yaml
+      filesystem: root
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/calico-crd-installer.yaml" }}"
+    - path: /srv/calico-crd-installer-rbac.yaml
+      filesystem: root
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/calico-crd-installer-rbac.yaml" }}"
 {{ else }}
     - path: /srv/calico-all.yaml
       filesystem: root
@@ -1028,7 +1046,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       LimitNOFILE=40000
-      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.4.13
+      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.4.18
       Environment=NAME=%p.service
       EnvironmentFile=/etc/network-environment
       {{if eq .Provider "azure" }}EnvironmentFile=-/var/lib/etcd/master-id{{end}}
