@@ -5,8 +5,9 @@ metadata:
   namespace: giantswarm
 data:
   configmap-values.yaml: |
-{{- if eq .Provider "aws" }}
     configmap:
+      use-forwarded-headers: "false"
+{{- if eq .Provider "aws" }}
       use-proxy-protocol: "true"
 {{- end }}
     controller:
