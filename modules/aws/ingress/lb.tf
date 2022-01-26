@@ -38,11 +38,11 @@ resource "aws_elb" "worker" {
   }
 
   tags = merge(
-  local.common_tags,
-  map(
-  "Name", "${var.cluster_name}-worker-elb"
-  )
-  )
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-worker-elb"
+    )
+    )
 }
 
 resource "aws_proxy_protocol_policy" "worker" {
