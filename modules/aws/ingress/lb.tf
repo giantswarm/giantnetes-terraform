@@ -40,7 +40,7 @@ resource "aws_elb" "worker" {
   tags = merge(
     local.common_tags,
     map(
-      "Name", "${var.cluster_name}-worker-elb"
+      "Name", "${var.cluster_name}-worker"
     )
     )
 }
