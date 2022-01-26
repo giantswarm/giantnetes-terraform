@@ -217,6 +217,18 @@ module "vault" {
   worker_subnet_count    = length(module.vpc.worker_subnet_ids)
 }
 
+# Ingress ELB
+module "ingress" {
+  source = "../../../modules/aws/ingress"
+
+  additional_tags = var.additional_tags
+  cluster_name    = var.cluster_name
+  dns_zone_id     = module.dns.public_dns_zone_id
+  elb_subnet_ids  = module.vpc.elb_subnet_ids
+  ingress_dns     = var.ingress_dns
+  vpc_id          = module.vpc.vpc_id
+}
+
 # Generate ignition config.
 data "gotemplate" "master" {
   count = var.master_count
