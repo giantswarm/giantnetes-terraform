@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.0.0] - 2022-01-28
+
 ### Changed
 
 - Switch Azure Load Balancer to be Standard rather than Basic.
@@ -384,7 +386,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.10.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.0.0...HEAD
+[6.0.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.10.0...v6.0.0
 [5.10.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.9.0...v5.10.0
 [5.9.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.8.1...v5.9.0
 [5.8.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.8.0...v5.8.1
