@@ -83,7 +83,7 @@ resource "azurerm_lb_rule" "ingress_ssh_lb" {
   backend_address_pool_id = azurerm_lb_backend_address_pool.api-lb.id
   probe_id                = azurerm_lb_probe.ssh.id
 
-  protocol                       = "tcp"
+  protocol                       = "udp"
   frontend_port                  = 65000
   backend_port                   = 65000
   frontend_ip_configuration_name = "ingress"

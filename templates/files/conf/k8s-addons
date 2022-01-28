@@ -145,10 +145,6 @@ $KUBECTL delete clusterrole nginx-ingress-controller --ignore-not-found=true
 $KUBECTL -n kube-system delete rolebinding nginx-ingress-controller --ignore-not-found=true
 $KUBECTL -n kube-system delete role nginx-ingress-role --ignore-not-found=true
 
-# Install nginx ingress controller app, only if it does not exist already.
-# From this release on, the ingress controller will be a standalone app and eventually it'll be part of the aws app collection.
-$KUBECTL create -f /srv/ingress-controller-app.yaml || true
-
 # If coredns app CR does not exist, delete old coredns manifests
 $KUBECTL -n giantswarm get app coredns || (
   $KUBECTL -n kube-system delete svc coredns --ignore-not-found=true
@@ -162,7 +158,8 @@ $KUBECTL -n giantswarm get app coredns || (
 # apply k8s addons
 MANIFESTS="default-storage-class.yaml
  coredns-app.yaml
- vault-token-reviewer.yaml"
+ vault-token-reviewer.yaml
+ ingress-controller-app.yaml"
 for manifest in $MANIFESTS
 do
     while
