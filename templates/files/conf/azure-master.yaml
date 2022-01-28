@@ -1,16 +1,18 @@
 cloud: {{ .AzureCloud }}
 tenantId: {{ .AzureSPTenantID }}
 subscriptionId: {{ .AzureSPSubscriptionID }}
-{{ if or (eq .AzureSPAADClientID "") (eq .AzureSPAADClientSecret "") }}
+{{ if or (eq .AzureSPAADClientID "") (eq .AzureSPAADClientSecret "") -}}
 useManagedIdentityExtension: true
-{{ else }}
+{{- else -}}
 aadClientId: {{ .AzureSPAADClientID }}
 aadClientSecret: {{ .AzureSPAADClientSecret }}
-{{ end }}
-resourceGroup: {{ .AzureResourceGroup }}
+{{- end }}
+loadBalancerSku: standard
 location: {{ .AzureLocation }}
+resourceGroup: {{ .AzureResourceGroup }}
+routeTableName: {{ .AzureRoutable }}
 subnetName: {{ .AzureSubnetName }}
 securityGroupName: {{ .AzureSecGroupName }}
-vnetName: {{ .AzureVnetName }}
-routeTableName: {{ .AzureRoutable }}
+useInstanceMetadata: true
 vmType: vmss
+vnetName: {{ .AzureVnetName }}
