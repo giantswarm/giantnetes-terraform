@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Switch Azure Load Balancer to be Standard rather than Basic.
 - Switch Azure from using calico for CNI to Calico with user provided routes.
 - Move Ingress ELB resources in own module (AWS).
 - Use managed app to deploy nginx ingress controller (AWS and Azure).

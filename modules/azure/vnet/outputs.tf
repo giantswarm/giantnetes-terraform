@@ -79,7 +79,7 @@ output "internal_api_backend_address_pool_id" {
 }
 
 output "ingress_backend_address_pool_id" {
-  value = azurerm_lb_backend_address_pool.ingress-lb.id
+  value = azurerm_lb_backend_address_pool.api-lb.id
 }
 
 output "vault_backend_address_pool_id" {
