@@ -88,14 +88,19 @@ done
 # restart ds to apply config from configmap
 $KUBECTL delete pods -l k8s-app=kube-proxy -n kube-system
 
-{{ if eq .Provider "aws" -}}
-$KUBECTL apply -f /srv/calico-crd-installer-rbac.yaml
-$KUBECTL apply -f /srv/calico-crd-installer.yaml
-$KUBECTL wait --for=condition=complete --timeout=1m -n kube-system job -lapp.kubernetes.io/name=calico-crd-installer
-
-## Apply AWS VPC CNI and Calico for ensuring network policies (only on AWS)
+{{ if eq .Provider "aws" }}
+## Apply AWS VPC CNI and Calico for ensuring network policies
 CNI_FILE="aws-cni.yaml calico-policy-only.yaml"
-{{ else -}}
+{{ end -}}
+{{ if eq .Provider "azure" }}
+## We used to have calico-all deployed in azure, so we need to cleanup resources.
+$KUBECTL delete -f /srv/calico-all.yaml --ignore-not-found=true
+
+## Apply Calico for ensuring network policies
+CNI_FILE="calico-policy-only.yaml"
+{{ end -}}
+
+{{ if and (ne .Provider "aws") (ne .Provider "azure") }}
 ## Apply Calico with all its components
 CNI_FILE="calico-all.yaml"
 {{ end -}}

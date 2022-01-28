@@ -9,13 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Switch Azure from using calico for CNI to Calico with user provided routes.
 - Move Ingress ELB resources in own module (AWS).
-- Use managed app to deploy nginx ingress controller (AWS).
-- Use managed app to deploy coredns (AWS).
-- Bump flatcar to 3033.2.0 (AWS).
-- Bump policy-only manifests to calico 3.21.3 (currently used by AWS only).
-- Bump etcd to 3.4.18.
-- Bump kubernetes to 1.21.9 (AWS).
+- Use managed app to deploy nginx ingress controller (AWS and Azure).
+- Use managed app to deploy coredns (AWS and Azure).
+- Bump flatcar to 3033.2.0 (AWS and Azure).
+- Bump policy-only manifests to calico 3.21.3 (AWS and Azure).
+- Bump etcd to 3.4.18 (AWS).
+- Bump kubernetes to 1.21.9  (AWS and Azure).
 
 ## [5.10.0] - 2022-01-19
 

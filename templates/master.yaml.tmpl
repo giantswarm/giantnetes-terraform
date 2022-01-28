@@ -38,6 +38,19 @@ storage:
         id: 0
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/aws-cni.yaml" }}"
+{{ end }}
+{{ if eq .Provider "azure" }}
+    - path: /opt/azure-cni
+      filesystem: root
+      mode: 356
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/azure-cni" }}"
+{{ end }}
+{{ if or (eq .Provider "aws") (eq .Provider "azure") }}
     - path: /srv/calico-policy-only.yaml
       filesystem: root
       mode: 420
@@ -47,25 +60,8 @@ storage:
         id: 0
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/calico-policy-only.yaml" }}"
-    - path: /srv/calico-crd-installer.yaml
-      filesystem: root
-      mode: 420
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/calico-crd-installer.yaml" }}"
-    - path: /srv/calico-crd-installer-rbac.yaml
-      filesystem: root
-      mode: 420
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/calico-crd-installer-rbac.yaml" }}"
-{{ else }}
+{{ end }}
+{{ if ne .Provider "aws" }}
     - path: /srv/calico-all.yaml
       filesystem: root
       mode: 420
@@ -832,6 +828,25 @@ systemd:
       ExecStartPre=/usr/bin/mkdir -p /etc/tokens
       ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt {{.DockerRegistry}}/giantswarm/curl:7.67.0 -k -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
       ExecStart=/opt/bin/get-vault-token
+
+      [Install]
+      WantedBy=multi-user.target
+
+  - name: azure-cni.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=azure-cni
+      StartLimitIntervalSec=0
+      After=k8s-setup-network-env.service
+      Wants=k8s-setup-network-env.service
+
+      [Service]
+      TimeoutStartSec=300
+      Restart=always
+      RestartSec=0
+      TimeoutStopSec=10
+      ExecStart=/opt/azure-cni
 
       [Install]
       WantedBy=multi-user.target
