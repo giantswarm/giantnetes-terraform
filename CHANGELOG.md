@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.0.1] - 2022-01-31
+
 ### Fixed
 
 - Fix CIDR in Azure CNI masquerading unit.
@@ -390,7 +392,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.0.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.0.1...HEAD
+[6.0.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.0.0...v6.0.1
 [6.0.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.10.0...v6.0.0
 [5.10.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.9.0...v5.10.0
 [5.9.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.8.1...v5.9.0
