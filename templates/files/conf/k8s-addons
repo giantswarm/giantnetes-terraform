@@ -93,9 +93,6 @@ $KUBECTL delete pods -l k8s-app=kube-proxy -n kube-system
 CNI_FILE="aws-cni.yaml calico-policy-only.yaml"
 {{ end -}}
 {{ if eq .Provider "azure" }}
-## We used to have calico-all deployed in azure, so we need to cleanup resources.
-$KUBECTL delete -f /srv/calico-all.yaml --ignore-not-found=true
-
 ## Apply Calico for ensuring network policies
 CNI_FILE="calico-policy-only.yaml"
 {{ end -}}
