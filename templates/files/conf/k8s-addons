@@ -93,9 +93,6 @@ $KUBECTL delete pods -l k8s-app=kube-proxy -n kube-system
 CNI_FILE="aws-cni.yaml calico-policy-only.yaml"
 {{ end -}}
 {{ if eq .Provider "azure" }}
-## We used to have calico-all deployed in azure, so we need to cleanup resources.
-$KUBECTL delete -f /srv/calico-all.yaml --ignore-not-found=true
-
 ## Apply Calico for ensuring network policies
 CNI_FILE="calico-policy-only.yaml"
 {{ end -}}
@@ -128,32 +125,6 @@ done
 
 # delete calico-kube-controllers
 $KUBECTL -n kube-system delete deploy calico-kube-controllers --ignore-not-found=true
-
-# delete legacy nginx daemonset
-$KUBECTL -n kube-system delete daemonset nginx-ingress-controller --ignore-not-found=true
-
-# delete nginx ingress controller installed by terraform <= 5.10
-$KUBECTL -n kube-system delete deploy default-http-backend --ignore-not-found=true
-$KUBECTL -n kube-system delete svc default-http-backend --ignore-not-found=true
-$KUBECTL -n kube-system delete cm ingress-nginx --ignore-not-found=true
-$KUBECTL -n kube-system delete serviceaccount nginx-ingress-controller --ignore-not-found=true
-$KUBECTL -n kube-system delete deploy nginx-ingress-controller --ignore-not-found=true
-$KUBECTL -n kube-system delete cm ingress-nginx --ignore-not-found=true
-$KUBECTL -n kube-system delete svc nginx-ingress-controller --ignore-not-found=true
-$KUBECTL delete clusterrolebinding nginx-ingress-controller --ignore-not-found=true
-$KUBECTL delete clusterrole nginx-ingress-controller --ignore-not-found=true
-$KUBECTL -n kube-system delete rolebinding nginx-ingress-controller --ignore-not-found=true
-$KUBECTL -n kube-system delete role nginx-ingress-role --ignore-not-found=true
-
-# If coredns app CR does not exist, delete old coredns manifests
-$KUBECTL -n giantswarm get app coredns || (
-  $KUBECTL -n kube-system delete svc coredns --ignore-not-found=true
-  $KUBECTL -n kube-system delete serviceaccount coredns --ignore-not-found=true
-  $KUBECTL -n kube-system delete cm coredns --ignore-not-found=true
-  $KUBECTL -n kube-system delete deploy coredns --ignore-not-found=true
-  $KUBECTL delete clusterrolebinding system:coredns --ignore-not-found=true
-  $KUBECTL delete clusterrole system:coredns --ignore-not-found=true
-)
 
 # apply k8s addons
 MANIFESTS="default-storage-class.yaml

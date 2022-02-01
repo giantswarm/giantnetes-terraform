@@ -60,8 +60,7 @@ storage:
         id: 0
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/calico-policy-only.yaml" }}"
-{{ end }}
-{{ if ne .Provider "aws" }}
+{{ else }}
     - path: /srv/calico-all.yaml
       filesystem: root
       mode: 420

@@ -81,6 +81,10 @@ resource "azurerm_virtual_machine_scale_set" "workers" {
     create = "60m"
     delete = "2h"
   }
+
+  lifecycle {
+    ignore_changes = [sku.0.capacity]
+  }
 }
 
 # can be added only when vm is created with identity
