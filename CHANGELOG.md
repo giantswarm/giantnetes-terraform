@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.1.1] - 2022-02-01
+
 ### Fixed
 
 - Fix azure-cni iptables rule to make outgoing traffic towards vault node to work.
@@ -402,7 +404,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.1.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.1.1...HEAD
+[6.1.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.1.0...v6.1.1
 [6.1.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.0.1...v6.1.0
 [6.0.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.0.0...v6.0.1
 [6.0.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.10.0...v6.0.0
