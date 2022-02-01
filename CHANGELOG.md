@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Use PodCIDR instead of whole VNET CIDR for azure SNAT.
+
 ## [6.1.0] - 2022-02-01
 
 ### Changed

@@ -154,7 +154,6 @@ locals {
     "Provider"                 = "azure"
     "Users"                    = yamldecode(base64decode(jsondecode(data.http.bastion_users.body).content))
     "VaultDomainName"          = "${var.vault_dns}.${var.base_domain}"
-    "NodesSubnet"              = cidrsubnet(var.vnet_cidr, 8, 2)
     "VnetCIDR"                 = var.vnet_cidr
   }
 }
