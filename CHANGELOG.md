@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Remove migration commands from k8s-addons (was needed to upgrade from < 6 to 6.0.0).
+
 ## [6.0.1] - 2022-01-31
 
 ### Fixed
