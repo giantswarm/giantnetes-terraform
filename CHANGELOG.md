@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix azure-cni iptables rule to make outgoing traffic towards vault node to work.
+
 ## [6.1.0] - 2022-02-01
 
 ### Changed

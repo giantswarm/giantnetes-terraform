@@ -2,7 +2,7 @@
 
 IPTABLES=/sbin/iptables
 
-RULE="POSTROUTING -t nat -m addrtype ! --dst-type local ! -d {{ .NodesSubnet }} -j MASQUERADE"
+RULE="POSTROUTING -t nat -m addrtype ! --dst-type local -d {{ .VaultSubnet }} -j MASQUERADE"
 
 while : ; do
   if $IPTABLES -C ${RULE}
