@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.1.0] - 2022-02-01
+
 ### Changed
 
 - Remove migration commands from k8s-addons (was needed to upgrade from < 6 to 6.0.0).
@@ -396,7 +398,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.0.1...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.1.0...HEAD
+[6.1.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.0.1...v6.1.0
 [6.0.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.0.0...v6.0.1
 [6.0.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.10.0...v6.0.0
 [5.10.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v5.9.0...v5.10.0
