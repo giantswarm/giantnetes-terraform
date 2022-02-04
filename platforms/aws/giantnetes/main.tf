@@ -113,6 +113,7 @@ locals {
     "CNISubnets"                   = module.vpc.aws_cni_subnet_ids
     "CNISecurityGroupID"           = module.vpc.aws_cni_security_group_id
     "CloudwatchForwarderEnabled"   = var.bastion_log_priority != "none" ? "true" : "false"
+    "ClusterDomain"                = var.cluster_domain
     "ClusterName"                  = var.cluster_name
     "DockerCIDR"                   = var.docker_cidr
     "DockerRegistry"               = var.docker_registry

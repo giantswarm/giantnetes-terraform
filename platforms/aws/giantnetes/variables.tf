@@ -376,3 +376,10 @@ variable "additional_tags" {
   type        = map(string)
   default     = {}
 }
+
+### cluster domain
+variable "cluster_domain" {
+  description = "clusterDomain setting for kubelet"
+  type        = string
+  default     = "cluster.local"
+}

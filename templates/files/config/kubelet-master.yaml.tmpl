@@ -7,7 +7,7 @@ healthzBindAddress: ${DEFAULT_IPV4}
 healthzPort: 10248
 clusterDNS:
   - {{ .K8SDNSIP }}
-clusterDomain: cluster.local
+clusterDomain: {{ .ClusterDomain }}
 featureGates:
   ExpandPersistentVolumes: true
 staticPodPath: /etc/kubernetes/manifests
