@@ -340,3 +340,10 @@ variable "release_version" {
   type        = string
   default     = ""
 }
+
+### cluster domain
+variable "cluster_domain" {
+  description = "clusterDomain setting for kubelet"
+  type        = string
+  default     = "cluster.local"
+}

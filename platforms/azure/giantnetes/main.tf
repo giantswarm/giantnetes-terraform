@@ -134,6 +134,7 @@ locals {
     "APIInternalDomainName"    = "${var.api_dns_internal}.${var.base_domain}"
     "BaseDomain"               = var.base_domain
     "CalicoMTU"                = var.calico_mtu
+    "ClusterDomain"            = var.cluster_domain
     "ClusterName"              = var.cluster_name
     "DockerCIDR"               = var.docker_cidr
     "DockerRegistry"           = var.docker_registry
