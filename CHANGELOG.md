@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.2.1] - 2022-02-07
+
 ## [6.2.0] - 2022-02-04
 
 ### Added
@@ -410,7 +412,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.2.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.2.1...HEAD
+[6.2.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.2.0...v6.2.1
 [6.2.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.1.1...v6.2.0
 [6.1.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.1.0...v6.1.1
 [6.1.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.0.1...v6.1.0
