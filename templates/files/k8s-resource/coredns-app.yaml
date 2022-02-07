@@ -7,7 +7,6 @@ data:
   values: |
     cluster:
       kubernetes:
-        clusterDomain: {{ .ClusterDomain }}
         API:
           clusterIPRange: {{ .K8SServiceCIDR }}
         DNS:
