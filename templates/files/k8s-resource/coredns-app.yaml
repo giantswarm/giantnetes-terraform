@@ -1,3 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-custom-values
+  namespace: giantswarm
+data:
+  values: |
+    cluster:
+      kubernetes:
+        clusterDomain: {{ .ClusterDomain }}
+---
 apiVersion: application.giantswarm.io/v1alpha1
 kind: App
 metadata:
@@ -29,8 +40,8 @@ spec:
   namespaceConfig: {}
   userConfig:
     configMap:
-      name: ""
-      namespace: ""
+      name: coredns-custom-values
+      namespace: giantswarm
     secret:
       name: ""
       namespace: ""
