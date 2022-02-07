@@ -8,6 +8,10 @@ data:
     cluster:
       kubernetes:
         clusterDomain: {{ .ClusterDomain }}
+        API:
+          clusterIPRange: {{ .K8SServiceCIDR }}
+        DNS:
+          IP: {{ .K8SDNSIP }}
 ---
 apiVersion: application.giantswarm.io/v1alpha1
 kind: App
