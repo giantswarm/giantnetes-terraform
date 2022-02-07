@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [6.2.1] - 2022-02-07
 
+### Added
+
+- Set clusterDomain in coredns config.
+
 ## [6.2.0] - 2022-02-04
 
 ### Added
