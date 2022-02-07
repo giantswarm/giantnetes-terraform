@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Set service CIDR, service IP and clusterDomain for Coredns app (backport from 6.2.2).
+
 ## [6.0.1] - 2022-01-31
 
 ### Fixed
