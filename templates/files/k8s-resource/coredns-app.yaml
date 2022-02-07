@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: coredns-custom-values
+  name: coredns-user-values
   namespace: giantswarm
 data:
   values: |
@@ -40,7 +40,7 @@ spec:
   namespaceConfig: {}
   userConfig:
     configMap:
-      name: coredns-custom-values
+      name: coredns-user-values
       namespace: giantswarm
     secret:
       name: ""
