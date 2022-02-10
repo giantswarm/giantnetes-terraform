@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.3.0] - 2022-02-10
+
 ### Changed
 
 - Bump nginx ingress controller app to 2.9.0 and enable `enable-ssl-chain-completion` flag.
@@ -426,7 +428,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.2.2...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.3.0...HEAD
+[6.3.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.2.2...v6.3.0
 [6.2.2]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.2.1...v6.2.2
 [6.2.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.2.0...v6.2.1
 [6.2.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.1.1...v6.2.0
