@@ -11,6 +11,7 @@ data:
       use-proxy-protocol: "true"
 {{- end }}
     controller:
+      enableSSLChainCompletion: true
       service:
         type: NodePort
 ---
@@ -49,4 +50,4 @@ spec:
     secret:
       name: ""
       namespace: ""
-  version: 2.7.0
+  version: 2.9.0
