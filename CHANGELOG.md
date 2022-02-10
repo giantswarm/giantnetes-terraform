@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Bump nginx ingress controller app to 2.9.0 and enable `enable-ssl-chain-completion` flag.
+
 ## [6.2.2] - 2022-02-07
 
 ### Fixed
