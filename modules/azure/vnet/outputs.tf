@@ -87,7 +87,7 @@ output "vault_backend_address_pool_id" {
 }
 
 output "worker_nodes_health_probe_id" {
-  value = azurerm_lb_probe.ssh.id
+  value = azurerm_lb_probe.kubelet.id
 }
 
 output "master_nodes_health_probe_id" {

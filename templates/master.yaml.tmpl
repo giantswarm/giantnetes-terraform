@@ -49,6 +49,15 @@ storage:
         id: 0
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/azure-cni" }}"
+    - path: /srv/azure-scheduled-events.yaml
+      filesystem: root
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/azure-scheduled-events.yaml" }}"
 {{ end }}
 {{ if or (eq .Provider "aws") (eq .Provider "azure") }}
     - path: /srv/calico-policy-only.yaml

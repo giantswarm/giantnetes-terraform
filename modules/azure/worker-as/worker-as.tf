@@ -10,6 +10,10 @@ resource "azurerm_virtual_machine_scale_set" "workers" {
     max_unhealthy_upgraded_instance_percent = 40
     pause_time_between_batches              = "PT30S"
   }
+  terminate_notification {
+    enabled = true
+    timeout = "PT5M"
+  }
   network_profile {
     name                   = "worker-nic-0"
     primary                = true
