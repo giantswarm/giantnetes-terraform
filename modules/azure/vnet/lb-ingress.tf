@@ -101,7 +101,7 @@ resource "azurerm_lb_probe" "ssh" {
 }
 
 resource "azurerm_lb_probe" "kubelet" {
-  name                = "ssh-probe"
+  name                = "kubelet-healthz-probe"
   loadbalancer_id     = azurerm_lb.api_lb.id
   resource_group_name = var.resource_group_name
   protocol            = "Http"
