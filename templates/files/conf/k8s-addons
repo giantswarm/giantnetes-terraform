@@ -131,6 +131,10 @@ MANIFESTS="default-storage-class.yaml
  coredns-app.yaml
  vault-token-reviewer.yaml
  ingress-controller-app.yaml"
+
+{{ if eq .Provider "azure" }}
+MANIFESTS="$MANIFESTS azure-scheduled-events.yaml"
+{{ end }}
 for manifest in $MANIFESTS
 do
     while

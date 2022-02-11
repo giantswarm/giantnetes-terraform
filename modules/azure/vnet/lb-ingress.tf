@@ -89,16 +89,24 @@ resource "azurerm_lb_rule" "ingress_ssh_lb" {
   frontend_ip_configuration_name = "ingress"
 }
 
-# Workers in VMSS are rolled with Rolling upgrade feature.
-# That feature automatically reimages one node at a time and waits for it to come back healthy before it goes on with other nodes.
-# To understand when a node is healthy, a load balancer probe has to be set. 
-# We use port 22 for this probe (not ideal, but does the job for now).
+# TODO delete this once deployed in all azure MCs.
 resource "azurerm_lb_probe" "ssh" {
   name                = "ssh-probe"
   loadbalancer_id     = azurerm_lb.api_lb.id
   resource_group_name = var.resource_group_name
   protocol            = "tcp"
   port                = 22
+  interval_in_seconds = 5
+  number_of_probes    = 2
+}
+
+resource "azurerm_lb_probe" "kubelet" {
+  name                = "kubelet-healthz-probe"
+  loadbalancer_id     = azurerm_lb.api_lb.id
+  resource_group_name = var.resource_group_name
+  protocol            = "Http"
+  port                = 10248
+  request_path        = "/healthz"
   interval_in_seconds = 5
   number_of_probes    = 2
 }

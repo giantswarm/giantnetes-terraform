@@ -1,20 +1,29 @@
-resource "azurerm_virtual_machine_scale_set" "workers" {
+resource "azurerm_linux_virtual_machine_scale_set" "workers" {
   location            = var.location
   name                = "${var.cluster_name}-workers"
   resource_group_name = var.resource_group_name
-  upgrade_policy_mode = "Rolling"
+  upgrade_mode        = "Rolling"
   health_probe_id     = var.node_health_probe_id
+
+  admin_username = "core"
+  instances      = var.min_worker_count
+  sku            = var.vm_size
+
   rolling_upgrade_policy {
     max_batch_instance_percent              = 40
     max_unhealthy_instance_percent          = 40
     max_unhealthy_upgraded_instance_percent = 40
     pause_time_between_batches              = "PT30S"
   }
-  network_profile {
-    name                   = "worker-nic-0"
-    primary                = true
-    accelerated_networking = var.enable_accelerated_networking
-    ip_forwarding          = true
+  terminate_notification {
+    enabled = true
+    timeout = "PT5M"
+  }
+  network_interface {
+    name                          = "worker-nic-0"
+    primary                       = true
+    enable_accelerated_networking = var.enable_accelerated_networking
+    enable_ip_forwarding          = true
     ip_configuration {
       name      = "worker-ipconfig-0"
       primary   = true
@@ -30,40 +39,29 @@ resource "azurerm_virtual_machine_scale_set" "workers" {
     publisher = "kinvolk"
     product   = "flatcar-container-linux-free"
   }
-  os_profile {
-    admin_username       = "core"
-    computer_name_prefix = "worker-"
-    custom_data          = base64encode(var.user_data)
+  computer_name_prefix = "worker-"
+  custom_data          = base64encode(var.user_data)
+  admin_ssh_key {
+    public_key = var.core_ssh_key
+    username   = "core"
   }
-  os_profile_linux_config {
-    disable_password_authentication = true
-    ssh_keys {
-      path     = "/home/core/.ssh/authorized_keys"
-      key_data = var.core_ssh_key
-    }
-  }
-  sku {
-    name     = var.vm_size
-    capacity = var.min_worker_count
-    tier     = "standard"
-  }
-  storage_profile_image_reference {
+  disable_password_authentication = true
+  source_image_reference {
     publisher = "kinvolk"
     offer     = "flatcar-container-linux-free"
     sku       = var.flatcar_linux_channel
     version   = var.flatcar_linux_version
   }
-  storage_profile_os_disk {
-    managed_disk_type = var.os_disk_storage_type
-    create_option     = "FromImage"
-    caching           = "ReadWrite"
-    os_type           = "linux"
+  os_disk {
+    storage_account_type = var.os_disk_storage_type
+    caching              = "ReadWrite"
   }
-  storage_profile_data_disk {
-    create_option     = "Empty"
-    lun               = 0
-    disk_size_gb      = var.docker_disk_size
-    managed_disk_type = var.storage_type
+  data_disk {
+    create_option        = "Empty"
+    lun                  = 0
+    disk_size_gb         = var.docker_disk_size
+    storage_account_type = var.storage_type
+    caching              = "None"
   }
   identity {
     type = "SystemAssigned"
@@ -83,7 +81,7 @@ resource "azurerm_virtual_machine_scale_set" "workers" {
   }
 
   lifecycle {
-    ignore_changes = [sku.0.capacity]
+    ignore_changes = [instances]
   }
 }
 
@@ -92,5 +90,5 @@ resource "azurerm_virtual_machine_scale_set" "workers" {
 resource "azurerm_role_assignment" "vmss_contributor" {
   scope                = var.resource_group_id
   role_definition_name = "Contributor"
-  principal_id         = azurerm_virtual_machine_scale_set.workers.identity[0].principal_id
+  principal_id         = azurerm_linux_virtual_machine_scale_set.workers.identity[0].principal_id
 }
