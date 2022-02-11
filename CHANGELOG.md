@@ -10,7 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Enable azure-scheduled-events for azure workers.
-- Use scale up and delete old strategy for Azure MC rollouts.
 
 ## [6.3.0] - 2022-02-10
 
