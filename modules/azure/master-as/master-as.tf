@@ -21,17 +21,17 @@ resource "azurerm_linux_virtual_machine_scale_set" "masters" {
   sku = var.vm_size
   instances = var.master_count
 
-  upgrade_policy_mode = "Manual"
-  health_probe_id     = var.node_health_probe_id
+  upgrade_mode    = "Manual"
+  health_probe_id = var.node_health_probe_id
   terminate_notification {
     enabled = true
     timeout = "PT5M"
   }
   network_interface {
-    name                   = "master-nic-0"
-    primary                = true
-    accelerated_networking = var.enable_accelerated_networking
-    ip_forwarding          = true
+    name                          = "master-nic-0"
+    primary                       = true
+    enable_accelerated_networking = var.enable_accelerated_networking
+    enable_ip_forwarding          = true
     ip_configuration {
       name      = "master-ipconfig-0"
       primary   = true
