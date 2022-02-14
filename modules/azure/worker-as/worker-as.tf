@@ -2,7 +2,7 @@ resource "azurerm_linux_virtual_machine_scale_set" "workers" {
   location            = var.location
   name                = "${var.cluster_name}-workers"
   resource_group_name = var.resource_group_name
-  upgrade_mode        = "Manual"
+  upgrade_mode        = "Rolling"
   health_probe_id     = var.node_health_probe_id
 
   admin_username = "core"

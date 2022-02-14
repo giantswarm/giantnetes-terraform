@@ -21,7 +21,7 @@ resource "azurerm_linux_virtual_machine_scale_set" "masters" {
   sku = var.vm_size
   instances = var.master_count
 
-  upgrade_mode    = "Manual"
+  upgrade_mode    = "Rolling"
   health_probe_id = var.node_health_probe_id
   terminate_notification {
     enabled = true
