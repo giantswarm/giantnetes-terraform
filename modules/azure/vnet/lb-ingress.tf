@@ -81,7 +81,7 @@ resource "azurerm_lb_rule" "ingress_ssh_lb" {
   resource_group_name      = var.resource_group_name
   loadbalancer_id          = azurerm_lb.api_lb.id
   backend_address_pool_ids = [azurerm_lb_backend_address_pool.api-lb.id]
-  probe_id                 = azurerm_lb_probe.ssh.id
+  probe_id                 = azurerm_lb_probe.kubelet.id
 
   protocol                       = "udp"
   frontend_port                  = 65000
