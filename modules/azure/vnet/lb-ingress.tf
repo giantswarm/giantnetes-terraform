@@ -98,8 +98,8 @@ resource "azurerm_lb_rule" "ingress_ssh_lb_legacy" {
   probe_id                 = azurerm_lb_probe.ssh.id
 
   protocol                       = "udp"
-  frontend_port                  = 65000
-  backend_port                   = 65000
+  frontend_port                  = 65001
+  backend_port                   = 65001
   frontend_ip_configuration_name = "ingress"
 }
 
