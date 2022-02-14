@@ -90,7 +90,7 @@ resource "azurerm_lb_rule" "ingress_ssh_lb" {
 }
 
 # TODO delete this once deployed in all azure MCs.
-resource "azurerm_lb_rule" "ingress_ssh_lb" {
+resource "azurerm_lb_rule" "ingress_ssh_lb_legacy" {
   name                     = "ingress-lb-fake-rule-for-node-health-legacy"
   resource_group_name      = var.resource_group_name
   loadbalancer_id          = azurerm_lb.api_lb.id
