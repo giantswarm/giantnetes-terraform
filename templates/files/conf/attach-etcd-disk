@@ -27,6 +27,7 @@ INSTANCEID="$(echo $resourceid | grep -Eo '[0-9]+$')"
 
 # Run a container with azure-cli.
 docker kill azure-cli || true
+docker rm azure-cli || true
 docker run --name azure-cli -d mcr.microsoft.com/azure-cli sleep infinity
 docker exec azure-cli az login --identity || (echo "Failed logging in with Azure cli."; exit 1)
 
@@ -68,7 +69,7 @@ else
   # list all disks with tag GiantSwarmRole == "etcd" and having a GiantSwarmEtcdID tag
   echo "Looking for available disks"
   # TODO discard disks with multi-attach feature enabled when az will support it
-  candidates="$(run_az_cmd "az disk list -g ${RESOURCEGROUP} | jq '. | map(select(.tags.GiantSwarmRole == \"etcd\" and .diskState == \"Unattached\" and (.tags | has(\"GiantSwarmEtcdID\"))))'")"
+  candidates="$(run_az_cmd "az disk list -g ${RESOURCEGROUP}" | jq '. | map(select(.tags.GiantSwarmRole == "etcd" and .diskState == "Unattached" and (.tags | has("GiantSwarmEtcdID"))))')"
 
   if [ "$candidates" == "[]" ]
   then
