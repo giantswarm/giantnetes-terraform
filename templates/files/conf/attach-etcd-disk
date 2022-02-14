@@ -25,10 +25,15 @@ resourceid="$(echo "$metadata" | jq -r .compute.resourceId)"
 # Extract instance ID (a number) from the resource ID.
 INSTANCEID="$(echo $resourceid | grep -Eo '[0-9]+$')"
 
+# Run a container with azure-cli.
+docker kill azure-cli || true
+docker run --name azure-cli -d mcr.microsoft.com/azure-cli sleep infinity
+docker exec azure-cli az login --identity || (echo "Failed logging in with Azure cli."; exit 1)
+
 run_az_cmd () {
   cmd="$1"
 
-  docker run --rm mcr.microsoft.com/azure-cli bash -c "az login --identity 2>&1 >/dev/null && $cmd"
+  docker exec azure-cli $cmd
 }
 
 if [ -f "$DISK" ] || [ -h "$DISK" ]

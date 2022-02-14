@@ -90,6 +90,20 @@ resource "azurerm_lb_rule" "ingress_ssh_lb" {
 }
 
 # TODO delete this once deployed in all azure MCs.
+resource "azurerm_lb_rule" "ingress_ssh_lb" {
+  name                     = "ingress-lb-fake-rule-for-node-health-legacy"
+  resource_group_name      = var.resource_group_name
+  loadbalancer_id          = azurerm_lb.api_lb.id
+  backend_address_pool_ids = [azurerm_lb_backend_address_pool.api-lb.id]
+  probe_id                 = azurerm_lb_probe.ssh.id
+
+  protocol                       = "udp"
+  frontend_port                  = 65000
+  backend_port                   = 65000
+  frontend_ip_configuration_name = "ingress"
+}
+
+# TODO delete this once deployed in all azure MCs.
 resource "azurerm_lb_probe" "ssh" {
   name                = "ssh-probe"
   loadbalancer_id     = azurerm_lb.api_lb.id
