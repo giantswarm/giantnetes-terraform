@@ -155,3 +155,6 @@ master_id_file="${MOUNTPOINT}/master-id"
 echo "Writing master ID ${MASTER_ID} to ${master_id_file}"
 
 echo "MASTER_ID=${MASTER_ID}" >$master_id_file
+
+docker kill azure-cli || true
+docker rm azure-cli || true
