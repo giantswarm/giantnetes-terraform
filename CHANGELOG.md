@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.5.0] - 2022-02-17
+
 ### Changed
 
 - Switch Azure Master nodes to `azurerm_linux_virtual_machine_scale_set`.
@@ -439,7 +441,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.4.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v6.5.0...HEAD
+[6.5.0]: https://github.com/giantswarm/giantswarm/compare/v6.4.0...v6.5.0
 [6.4.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.2.2...v6.4.0
 [6.2.2]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.2.1...v6.2.2
 [6.2.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.2.0...v6.2.1
