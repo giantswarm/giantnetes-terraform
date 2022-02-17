@@ -25,7 +25,6 @@ resource "azurerm_dns_a_record" "api_dns_internal" {
 
 resource "azurerm_lb_backend_address_pool" "api-lb-internal" {
   name                = "api-lb-pool-internal"
-  resource_group_name = var.resource_group_name
   loadbalancer_id     = azurerm_lb.api_lb_internal.id
 }
 

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Switch Azure Master nodes to `azurerm_linux_virtual_machine_scale_set`.
+- Enable azure-scheduled-events for azure masters.
+
 ## [6.4.0] - 2022-02-11
 
 ### Changed

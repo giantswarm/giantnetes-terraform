@@ -30,11 +30,11 @@ resource "azurerm_dns_a_record" "ingress_wildcard_dns" {
 }
 
 resource "azurerm_lb_rule" "ingress_http_lb" {
-  name                    = "ingress-lb-rule-80-30010"
-  resource_group_name     = var.resource_group_name
-  loadbalancer_id         = azurerm_lb.api_lb.id
-  backend_address_pool_id = azurerm_lb_backend_address_pool.api-lb.id
-  probe_id                = azurerm_lb_probe.ingress_30010_lb.id
+  name                     = "ingress-lb-rule-80-30010"
+  resource_group_name      = var.resource_group_name
+  loadbalancer_id          = azurerm_lb.api_lb.id
+  backend_address_pool_ids = [azurerm_lb_backend_address_pool.api-lb.id]
+  probe_id                 = azurerm_lb_probe.ingress_30010_lb.id
 
   protocol                       = "tcp"
   frontend_port                  = 80
@@ -51,11 +51,11 @@ resource "azurerm_lb_probe" "ingress_30010_lb" {
 }
 
 resource "azurerm_lb_rule" "ingress_https_lb" {
-  name                    = "ingress-lb-rule-443-30011"
-  resource_group_name     = var.resource_group_name
-  loadbalancer_id         = azurerm_lb.api_lb.id
-  backend_address_pool_id = azurerm_lb_backend_address_pool.api-lb.id
-  probe_id                = azurerm_lb_probe.ingress_30011_lb.id
+  name                     = "ingress-lb-rule-443-30011"
+  resource_group_name      = var.resource_group_name
+  loadbalancer_id          = azurerm_lb.api_lb.id
+  backend_address_pool_ids = [azurerm_lb_backend_address_pool.api-lb.id]
+  probe_id                 = azurerm_lb_probe.ingress_30011_lb.id
 
   protocol                       = "tcp"
   frontend_port                  = 443
@@ -77,15 +77,29 @@ resource "azurerm_lb_probe" "ingress_30011_lb" {
 # This probe has to be referenced by an active forwarding rule.
 # Since we don't want to expose SSH through the load balancer, we use random port 65000.
 resource "azurerm_lb_rule" "ingress_ssh_lb" {
-  name                    = "ingress-lb-fake-rule-for-node-health"
-  resource_group_name     = var.resource_group_name
-  loadbalancer_id         = azurerm_lb.api_lb.id
-  backend_address_pool_id = azurerm_lb_backend_address_pool.api-lb.id
-  probe_id                = azurerm_lb_probe.ssh.id
+  name                     = "ingress-lb-fake-rule-for-node-health"
+  resource_group_name      = var.resource_group_name
+  loadbalancer_id          = azurerm_lb.api_lb.id
+  backend_address_pool_ids = [azurerm_lb_backend_address_pool.api-lb.id]
+  probe_id                 = azurerm_lb_probe.kubelet.id
 
   protocol                       = "udp"
   frontend_port                  = 65000
   backend_port                   = 65000
+  frontend_ip_configuration_name = "ingress"
+}
+
+# TODO delete this once deployed in all azure MCs.
+resource "azurerm_lb_rule" "ingress_ssh_lb_legacy" {
+  name                     = "ingress-lb-fake-rule-for-node-health-legacy"
+  resource_group_name      = var.resource_group_name
+  loadbalancer_id          = azurerm_lb.api_lb.id
+  backend_address_pool_ids = [azurerm_lb_backend_address_pool.api-lb.id]
+  probe_id                 = azurerm_lb_probe.ssh.id
+
+  protocol                       = "udp"
+  frontend_port                  = 65001
+  backend_port                   = 65001
   frontend_ip_configuration_name = "ingress"
 }
 
