@@ -10,7 +10,7 @@ Terraform manifests for installing Giant Swarm's control plane.
 Install terraform plugin: `terraform-provider-gotemplate`
 
 ```
-GO111MODULE="on" GOBIN=${HOME}/.terraform.d/plugins/giantswarm.io/operations/gotemplate/0.1.0/$(go env GOOS)_amd64/ go get -u github.com/giantswarm/terraform-provider-gotemplate
+GO111MODULE="on" GOBIN=${HOME}/.terraform.d/plugins/giantswarm.io/operations/gotemplate/0.3.3/$(go env GOOS)_amd64/ go get -u github.com/giantswarm/terraform-provider-gotemplate
 ```
 
 
