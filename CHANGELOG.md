@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Lock `azurerm` to version `2.96.0` to avoid upstream bug.
+
 ## [6.5.0] - 2022-02-17
 
 ### Changed
