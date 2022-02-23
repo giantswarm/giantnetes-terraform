@@ -89,6 +89,81 @@ resource "aws_cloudformation_stack" "worker_asg" {
 EOF
 }
 
+resource "aws_cloudformation_stack" "worker_asg_single_az" {
+  count = length(var.worker_subnet_ids)
+  name = "${var.cluster_name}-worker-${count.index}"
+
+  template_body = <<EOF
+{
+  "Resources": {
+    "AutoScalingGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "DesiredCapacity": "1",
+        "HealthCheckType": "EC2",
+        "HealthCheckGracePeriod": 300,
+        "LaunchConfigurationName": "${aws_launch_configuration.worker.name}",
+        "LoadBalancerNames": [
+          "${var.cluster_name}-worker"
+        ],
+        "MaxSize": "3",
+        "MinSize": "1",
+        "Tags": [
+          ${local.common_tags_asg}
+          {
+            "Key": "Name",
+            "Value": "${var.cluster_name}-worker",
+            "PropagateAtLaunch": true
+          },
+          {
+            "Key": "giantswarm.io/cluster",
+            "Value": "${var.cluster_name}",
+            "PropagateAtLaunch": true
+          },
+          {
+            "Key": "giantswarm.io/installation",
+            "Value": "${var.cluster_name}",
+            "PropagateAtLaunch": true
+          },
+          {
+            "Key": "kubernetes.io/cluster/${var.cluster_name}",
+            "Value": "owned",
+            "PropagateAtLaunch": true
+          },
+          {
+            "Key": "k8s.io/cluster-autoscaler/enabled",
+            "Value": "true",
+            "PropagateAtLaunch": false
+          },
+          {
+            "Key": "k8s.io/cluster-autoscaler/${var.cluster_name}",
+            "Value": "true",
+            "PropagateAtLaunch": false
+          }
+        ],
+        "VPCZoneIdentifier": [${jsonencode(element(var.worker_subnet_ids, count.index))}]
+      },
+      "UpdatePolicy": {
+        "AutoScalingRollingUpdate": {
+          "MinInstancesInService": "${var.worker_count}",
+          "MaxBatchSize": "1",
+          "PauseTime": "PT3M"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "AsgName": {
+      "Description": "The name of the auto scaling group",
+      "Value": {
+        "Ref": "AutoScalingGroup"
+      }
+    }
+  }
+}
+EOF
+}
+
 resource "aws_launch_configuration" "worker" {
   name_prefix          = "${var.cluster_name}-worker-"
   iam_instance_profile = aws_iam_instance_profile.worker.name
