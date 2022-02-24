@@ -90,8 +90,8 @@ resource "aws_cloudformation_stack" "worker_asg_single_az" {
 EOF
 }
 
-resource "aws_launch_configuration" "worker" {
-  name_prefix          = "${var.cluster_name}-worker-"
+resource "aws_launch_configuration" "worker_asg_single_az" {
+  name_prefix          = "${var.cluster_name}-worker-singleaz-"
   iam_instance_profile = aws_iam_instance_profile.worker.name
   image_id             = var.container_linux_ami_id
   instance_type        = var.instance_type
