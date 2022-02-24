@@ -15,8 +15,9 @@ locals {
 
 }
 
-resource "aws_cloudformation_stack" "worker_asg" {
-  name = "${var.cluster_name}-worker"
+resource "aws_cloudformation_stack" "worker_asg_single_az" {
+  count = length(var.worker_subnet_ids)
+  name = "${var.cluster_name}-worker-${count.index}"
 
   template_body = <<EOF
 {
@@ -24,15 +25,15 @@ resource "aws_cloudformation_stack" "worker_asg" {
     "AutoScalingGroup": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
-        "DesiredCapacity": "${var.worker_count}",
+        "DesiredCapacity": "2",
         "HealthCheckType": "EC2",
         "HealthCheckGracePeriod": 300,
-        "LaunchConfigurationName": "${aws_launch_configuration.worker.name}",
+        "LaunchConfigurationName": "${aws_launch_configuration.worker_asg_single_az.name}",
         "LoadBalancerNames": [
           "${var.cluster_name}-worker"
         ],
-        "MaxSize": "${var.worker_count * 2}",
-        "MinSize": "${var.worker_count}",
+        "MaxSize": "3",
+        "MinSize": "1",
         "Tags": [
           ${local.common_tags_asg}
           {
@@ -66,7 +67,7 @@ resource "aws_cloudformation_stack" "worker_asg" {
             "PropagateAtLaunch": false
           }
         ],
-        "VPCZoneIdentifier": ${jsonencode(var.worker_subnet_ids)}
+        "VPCZoneIdentifier": [${jsonencode(element(var.worker_subnet_ids, count.index))}]
       },
       "UpdatePolicy": {
         "AutoScalingRollingUpdate": {
@@ -89,8 +90,8 @@ resource "aws_cloudformation_stack" "worker_asg" {
 EOF
 }
 
-resource "aws_launch_configuration" "worker" {
-  name_prefix          = "${var.cluster_name}-worker-"
+resource "aws_launch_configuration" "worker_asg_single_az" {
+  name_prefix          = "${var.cluster_name}-worker-singleaz-"
   iam_instance_profile = aws_iam_instance_profile.worker.name
   image_id             = var.container_linux_ami_id
   instance_type        = var.instance_type
