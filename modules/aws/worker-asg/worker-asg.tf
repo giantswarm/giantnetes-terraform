@@ -32,7 +32,7 @@ resource "aws_cloudformation_stack" "worker_asg_single_az" {
         "LoadBalancerNames": [
           "${var.cluster_name}-worker"
         ],
-        "MaxSize": "3",
+        "MaxSize": "${var.worker_count * 2}",
         "MinSize": "1",
         "Tags": [
           ${local.common_tags_asg}
