@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.0.0] - 2022-02-24
+
 ### Changed
 
 - Split worker nodes in different ASGs, each one having a single availability zone to ease cluster-autoscaler's decisions.
@@ -451,7 +453,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v6.6.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v7.0.0...HEAD
+[7.0.0]: https://github.com/giantswarm/giantswarm/compare/v6.6.0...v7.0.0
 [6.6.0]: https://github.com/giantswarm/giantswarm/compare/v6.5.0...v6.6.0
 [6.5.0]: https://github.com/giantswarm/giantswarm/compare/v6.4.0...v6.5.0
 [6.4.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v6.2.2...v6.4.0
