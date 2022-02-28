@@ -29,6 +29,16 @@ resource "aws_cloudformation_stack" "worker_asg_single_az" {
         "HealthCheckType": "EC2",
         "HealthCheckGracePeriod": 300,
         "LaunchConfigurationName": "${aws_launch_configuration.worker_asg_single_az.name}",
+        "LifecycleHookSpecificationList": [
+          {
+            "DefaultResult" : "CONTINUE",
+            "HeartbeatTimeout" : 900,
+            "LifecycleHookName" : "${var.cluster_name}-master-lifecycle-hook",
+            "LifecycleTransition" : "autoscaling:EC2_INSTANCE_TERMINATING",
+            "NotificationTargetARN" : "${var.sqs_temination_queue_arn}",
+            "RoleARN" : "${aws_iam_role.worker_lifecycle_hooks.arn}"
+          }
+        ],
         "LoadBalancerNames": [
           "${var.cluster_name}-worker"
         ],
@@ -65,13 +75,38 @@ resource "aws_cloudformation_stack" "worker_asg_single_az" {
             "Key": "k8s.io/cluster-autoscaler/${var.cluster_name}",
             "Value": "true",
             "PropagateAtLaunch": false
+          },
+          {
+            "Key": "ResourceId",
+            "Value": "${var.cluster_name}-worker-${count.index}",
+            "PropagateAtLaunch": true
+          },
+          {
+            "Key": "ResourceType",
+            "Value": "auto-scaling-group",
+            "PropagateAtLaunch": true
+          },
+          {
+            "Key": "Key",
+            "Value": "aws-node-termination-handler/managed",
+            "PropagateAtLaunch": true
+          },
+          {
+            "Key": "Value",
+            "Value": "",
+            "PropagateAtLaunch": true
+          },
+          {
+            "Key": "ValuePropagateAtLaunch",
+            "Value": "true",
+            "PropagateAtLaunch": true
           }
         ],
         "VPCZoneIdentifier": [${jsonencode(element(var.worker_subnet_ids, count.index))}]
       },
       "UpdatePolicy": {
         "AutoScalingRollingUpdate": {
-          "MinInstancesInService": "${var.worker_count}",
+          "MinInstancesInService": "1",
           "MaxBatchSize": "1",
           "PauseTime": "PT3M"
         }

@@ -104,6 +104,18 @@ resource "aws_iam_role_policy" "master" {
         ],
         "Resource": "arn:${var.arn_region}:autoscaling:${var.aws_region}:${var.aws_account}:autoScalingGroup:*:autoScalingGroupName/${var.cluster_name}-worker-*",
         "Effect": "Allow"
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "autoscaling:CompleteLifecycleAction",
+          "autoscaling:DescribeAutoScalingInstances",
+          "autoscaling:DescribeTags",
+          "ec2:DescribeInstances",
+          "sqs:DeleteMessage",
+          "sqs:ReceiveMessage"
+        ],
+        "Resource": "*"
       }
   ]
 }
@@ -122,4 +134,56 @@ resource "aws_iam_instance_profile" "master" {
   provisioner "local-exec" {
     command = "sleep 10"
   }
+}
+
+resource "aws_iam_role" "master_lifecycle_hooks" {
+  name = "${var.cluster_name}-master-lifecycle-hooks"
+  path = "/"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "autoscaling.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy" "master_lifecycle_hooks" {
+  name = "${var.cluster_name}-master-lifecycle-hooks"
+  role = aws_iam_role.master_lifecycle_hooks.id
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "sqs:SendMessage",
+        "sqs:GetQueueUrl"
+      ],
+      "Resource": [
+        "${var.sqs_temination_queue_arn}"
+      ]
+    }
+  ]
+}
+EOF
 }
