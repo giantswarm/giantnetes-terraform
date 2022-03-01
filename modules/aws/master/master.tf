@@ -42,7 +42,7 @@ resource "aws_cloudformation_stack" "master_asg" {
           {
             "DefaultResult" : "CONTINUE",
             "HeartbeatTimeout" : 900,
-            "LifecycleHookName" : "${var.cluster_name}-master-lifecycle-hook",
+            "LifecycleHookName" : "${var.cluster_name}-lifecycle-hook",
             "LifecycleTransition" : "autoscaling:EC2_INSTANCE_TERMINATING",
             "NotificationTargetARN" : "${var.sqs_temination_queue_arn}",
             "RoleARN" : "${aws_iam_role.master_lifecycle_hooks.arn}"
