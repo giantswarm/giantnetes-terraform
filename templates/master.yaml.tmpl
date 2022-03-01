@@ -38,6 +38,15 @@ storage:
         id: 0
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/aws-cni.yaml" }}"
+    - path: /srv/aws-node-termination-handler-app.yaml
+      filesystem: root
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/aws-node-termination-handler-app.yaml" }}"
 {{ end }}
 {{ if eq .Provider "azure" }}
     - path: /opt/azure-cni
@@ -974,7 +983,7 @@ systemd:
       Before=k8s-kubelet.service
 
       [Service]
-      Environment="IMAGE={{.DockerRegistry}}/giantswarm/aws-attach-etcd-dep:0.1.0"
+      Environment="IMAGE={{.DockerRegistry}}/giantswarm/aws-attach-etcd-dep:0.3.0"
       Environment="NAME=%p.service"
       Environment=MASTER_ID={{.MasterID}}
       Type=oneshot

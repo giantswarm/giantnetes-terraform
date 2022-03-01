@@ -125,6 +125,10 @@ variable "vpc_id" {
 
 variable "s3_bucket_tags" {}
 
+variable "sqs_temination_queue_arn" {
+  type = string
+}
+
 ### additional tags
 variable "additional_tags" {
   description = "Additional tags that can be added to all resources"

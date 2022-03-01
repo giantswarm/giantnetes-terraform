@@ -99,6 +99,16 @@ module "s3" {
   s3_bucket_prefix     = var.s3_bucket_prefix
 }
 
+# Create SQS queue for auto draining of nodes on instance termination.
+module "sqs" {
+  source = "../../../modules/aws/sqs"
+
+  aws_account     = var.aws_account
+  aws_region      = var.aws_region
+  cluster_name    = var.cluster_name
+  additional_tags = var.additional_tags
+}
+
 locals {
   ignition_data = {
     "AdditionalTags"               = local.additional_tags_ignition
@@ -242,6 +252,10 @@ data "gotemplate" "master" {
 module "master" {
   source = "../../../modules/aws/master"
 
+  depends_on = [
+    module.sqs
+  ]
+
   master_count = var.master_count
 
   additional_tags              = var.additional_tags
@@ -264,6 +278,7 @@ module "master" {
   master_subnet_ids            = module.vpc.worker_subnet_ids
   master_eni_ips               = local.masters_eni_ips
   nat_gateway_public_ips       = module.vpc.aws_eip_public_ips
+  sqs_temination_queue_arn     = module.sqs.termination_queue_arn
   volume_docker                = var.master_instance["volume_docker"]
   volume_etcd                  = var.master_instance["volume_etcd"]
   vpc_cidr                     = var.vpc_cidr
@@ -283,26 +298,31 @@ data "gotemplate" "worker" {
 module "worker" {
   source = "../../../modules/aws/worker-asg"
 
-  additional_tags        = var.additional_tags
-  aws_account            = var.aws_account
-  aws_region             = var.aws_region
-  aws_cni_cidr_block     = var.aws_cni_cidr_v2
-  cluster_name           = var.cluster_name
-  container_linux_ami_id = data.aws_ami.flatcar_ami[0].image_id
-  dns_zone_id            = module.dns.public_dns_zone_id
-  elb_subnet_ids         = module.vpc.elb_subnet_ids
-  ignition_bucket_id     = module.s3.ignition_bucket_id
-  ingress_dns            = var.ingress_dns
-  instance_type          = var.worker_instance["type"]
-  user_data              = data.gotemplate.worker.rendered
-  worker_count           = var.worker_count
-  worker_subnet_ids      = module.vpc.worker_subnet_ids
-  volume_docker          = var.worker_instance["volume_docker"]
-  vpc_cidr               = var.vpc_cidr
-  vpc_id                 = module.vpc.vpc_id
-  iam_region             = var.iam_region
-  s3_bucket_tags         = var.s3_bucket_tags
-  arn_region             = var.arn_region
+  depends_on = [
+    module.sqs
+  ]
+
+  additional_tags          = var.additional_tags
+  aws_account              = var.aws_account
+  aws_region               = var.aws_region
+  aws_cni_cidr_block       = var.aws_cni_cidr_v2
+  cluster_name             = var.cluster_name
+  container_linux_ami_id   = data.aws_ami.flatcar_ami[0].image_id
+  dns_zone_id              = module.dns.public_dns_zone_id
+  elb_subnet_ids           = module.vpc.elb_subnet_ids
+  ignition_bucket_id       = module.s3.ignition_bucket_id
+  ingress_dns              = var.ingress_dns
+  instance_type            = var.worker_instance["type"]
+  user_data                = data.gotemplate.worker.rendered
+  worker_count             = var.worker_count
+  worker_subnet_ids        = module.vpc.worker_subnet_ids
+  sqs_temination_queue_arn = module.sqs.termination_queue_arn
+  volume_docker            = var.worker_instance["volume_docker"]
+  vpc_cidr                 = var.vpc_cidr
+  vpc_id                   = module.vpc.vpc_id
+  iam_region               = var.iam_region
+  s3_bucket_tags           = var.s3_bucket_tags
+  arn_region               = var.arn_region
 }
 
 module "vpn" {

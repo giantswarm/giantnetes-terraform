@@ -38,6 +38,16 @@ resource "aws_cloudformation_stack" "master_asg" {
         "HealthCheckType": "EC2",
         "HealthCheckGracePeriod": 300,
         "LaunchConfigurationName": "${element(aws_launch_configuration.master.*.name, count.index)}",
+        "LifecycleHookSpecificationList": [
+          {
+            "DefaultResult" : "CONTINUE",
+            "HeartbeatTimeout" : 900,
+            "LifecycleHookName" : "${var.cluster_name}-lifecycle-hook",
+            "LifecycleTransition" : "autoscaling:EC2_INSTANCE_TERMINATING",
+            "NotificationTargetARN" : "${var.sqs_temination_queue_arn}",
+            "RoleARN" : "${aws_iam_role.master_lifecycle_hooks.arn}"
+          }
+        ],
         "LoadBalancerNames": [
           "${var.cluster_name}-master-api",
           "${var.cluster_name}-master-api-internal",
@@ -66,6 +76,11 @@ resource "aws_cloudformation_stack" "master_asg" {
           {
             "Key": "kubernetes.io/cluster/${var.cluster_name}",
             "Value": "owned",
+            "PropagateAtLaunch": true
+          },
+          {
+            "Key": "aws-node-termination-handler/managed",
+            "Value": "",
             "PropagateAtLaunch": true
           }
         ],
