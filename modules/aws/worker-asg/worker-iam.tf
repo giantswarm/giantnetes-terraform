@@ -130,6 +130,18 @@ resource "aws_iam_role_policy" "worker" {
         ],
         "Resource": "arn:${var.arn_region}:autoscaling:${var.aws_region}:${var.aws_account}:autoScalingGroup:*:autoScalingGroupName/${var.cluster_name}-worker-*",
         "Effect": "Allow"
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "autoscaling:CompleteLifecycleAction",
+          "autoscaling:DescribeAutoScalingInstances",
+          "autoscaling:DescribeTags",
+          "ec2:DescribeInstances",
+          "sqs:DeleteMessage",
+          "sqs:ReceiveMessage"
+        ],
+        "Resource": "*"
       }
 
   ]

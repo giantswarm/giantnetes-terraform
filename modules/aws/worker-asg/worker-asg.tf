@@ -76,29 +76,9 @@ resource "aws_cloudformation_stack" "worker_asg_single_az" {
             "Value": "true",
             "PropagateAtLaunch": false
           },
-          {
-            "Key": "ResourceId",
-            "Value": "${var.cluster_name}-worker-${count.index}",
-            "PropagateAtLaunch": true
-          },
-          {
-            "Key": "ResourceType",
-            "Value": "auto-scaling-group",
-            "PropagateAtLaunch": true
-          },
-          {
-            "Key": "Key",
-            "Value": "aws-node-termination-handler/managed",
-            "PropagateAtLaunch": true
-          },
-          {
-            "Key": "Value",
+                    {
+            "Key": "aws-node-termination-handler/managed",
             "Value": "",
-            "PropagateAtLaunch": true
-          },
-          {
-            "Key": "ValuePropagateAtLaunch",
-            "Value": "true",
             "PropagateAtLaunch": true
           }
         ],
