@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Enable lifecycle hooks to drain nodes before termination on AWS.
+
 ## [7.0.1] - 2022-02-24
 
 ### Fixed
