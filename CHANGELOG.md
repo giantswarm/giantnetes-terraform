@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `--tls-cipher-suites` flag to api-server manifest to disable vulnerable ciphers.
+
 ## [8.0.0] - 2022-03-01
 
 ### Added
