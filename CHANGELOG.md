@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.1.0] - 2022-03-10
+
 ### Added
 
 - Add `--tls-cipher-suites` flag to api-server manifest to disable vulnerable ciphers.
@@ -469,7 +471,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v8.0.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v8.1.0...HEAD
+[8.1.0]: https://github.com/giantswarm/giantswarm/compare/v8.0.0...v8.1.0
 [8.0.0]: https://github.com/giantswarm/giantswarm/compare/v7.0.1...v8.0.0
 [7.0.1]: https://github.com/giantswarm/giantswarm/compare/v7.0.0...v7.0.1
 [7.0.0]: https://github.com/giantswarm/giantswarm/compare/v6.6.0...v7.0.0
