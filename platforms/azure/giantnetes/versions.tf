@@ -6,6 +6,7 @@ terraform {
     }
     gotemplate = {
       source = "giantswarm.io/operations/gotemplate"
+      version = "= 0.4.0"
     }
     http = {
       source = "hashicorp/http"

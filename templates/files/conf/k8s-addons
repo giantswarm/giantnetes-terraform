@@ -126,18 +126,13 @@ done
 # delete calico-kube-controllers
 $KUBECTL -n kube-system delete deploy calico-kube-controllers --ignore-not-found=true
 
+# Apply all apps.
+$KUBECTL apply -f /srv/apps/ --recursive
+
 # apply k8s addons
 MANIFESTS="default-storage-class.yaml
- coredns-app.yaml
- vault-token-reviewer.yaml
- ingress-controller-app.yaml"
+ vault-token-reviewer.yaml"
 
-{{ if eq .Provider "azure" }}
-MANIFESTS="$MANIFESTS azure-scheduled-events.yaml"
-{{ end }}
-{{ if eq .Provider "aws" }}
-MANIFESTS="$MANIFESTS aws-node-termination-handler-app.yaml"
-{{ end }}
 for manifest in $MANIFESTS
 do
     while
