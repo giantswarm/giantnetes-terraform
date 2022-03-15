@@ -10,6 +10,15 @@ storage:
         label: docker
 
   files:
+{{- $providerAppsPath := print "apps/" .Provider "/" }}
+{{- range $path,$file := index .Files }}
+  {{- if or (hasPrefix $providerAppsPath $path) (hasPrefix "apps/common/" $path) }}
+    - path: /srv/{{ $path }}
+      filesystem: root
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ $file }}"
+  {{- end }}
+{{- end }}
     - path: /etc/gs-release-version
       filesystem: root
       mode: 420
@@ -38,15 +47,6 @@ storage:
         id: 0
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/aws-cni.yaml" }}"
-    - path: /srv/aws-node-termination-handler-app.yaml
-      filesystem: root
-      mode: 420
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/aws-node-termination-handler-app.yaml" }}"
 {{ end }}
 {{ if eq .Provider "azure" }}
     - path: /opt/azure-cni
@@ -58,15 +58,6 @@ storage:
         id: 0
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/azure-cni" }}"
-    - path: /srv/azure-scheduled-events.yaml
-      filesystem: root
-      mode: 420
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/azure-scheduled-events.yaml" }}"
 {{ end }}
 {{ if or (eq .Provider "aws") (eq .Provider "azure") }}
     - path: /srv/calico-policy-only.yaml
@@ -109,16 +100,6 @@ storage:
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/default-storage-class.yaml" }}"
 
-    - path: /srv/coredns-app.yaml
-      filesystem: root
-      mode: 420
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/coredns-app.yaml" }}"
-
     - path: /srv/kube-proxy-sa.yaml
       filesystem: root
       mode: 420
@@ -160,16 +141,6 @@ storage:
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/network-policy.json" }}"
     {{ end }}
-
-    - path: /srv/ingress-controller-app.yaml
-      filesystem: root
-      mode: 420
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/ingress-controller-app.yaml" }}"
 
     - path: /srv/rbac-bindings.yaml
       filesystem: root
