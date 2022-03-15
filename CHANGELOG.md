@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Create /srv/apps/ directory with all `App` CR manifests in order to simplify `k8s-addons` script.
+
 ## [8.1.0] - 2022-03-10
 
 ### Added
