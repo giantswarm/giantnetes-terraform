@@ -40,6 +40,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump kubernetes to `1.21.11`.
 - Bump Flatcar to `3033.2.4`.
 - Set `fs.inotify.max_user_instances` to 1024 to avoid `Too many open files` error.
+- [Azure] Disable cloud-provider integration from core k8s components.
+- [Azure] Add apps for out-of-tree cloud provider integration.
+- [Azure] Switch to CSI storage provider.
 
 ## [8.1.0] - 2022-03-10
 
