@@ -28,9 +28,6 @@ spec:
       - --secure-port=443
       {{ if eq .Provider "aws" -}}
       - --cloud-provider=aws
-      {{ else -}}
-      - --cloud-provider=azure
-      - --cloud-config=/etc/kubernetes/config/azure.yaml
       {{ end -}}
       - --bind-address=$(HOST_IP)
       - --etcd-prefix=giantswarm.io

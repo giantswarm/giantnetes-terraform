@@ -1193,8 +1193,7 @@ systemd:
       --image-pull-progress-deadline={{ .ImagePullProgressDeadline }} \
       --pod-infra-container-image={{.DockerRegistry}}/{{ .PodInfraImage }} \
       {{ else -}}
-      --cloud-provider=azure \
-      --cloud-config=/etc/kubernetes/config/azure.yaml \
+      --cloud-provider=external \
       {{ end -}}
       --network-plugin=cni \
       --register-node=true \

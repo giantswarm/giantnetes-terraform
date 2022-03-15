@@ -136,7 +136,7 @@ MANIFESTS="default-storage-class.yaml
 for manifest in $MANIFESTS
 do
     while
-        $KUBECTL apply -f /srv/$manifest
+        $KUBECTL apply --force -f /srv/$manifest
         [ "$?" -ne "0" ]
     do
         echo "failed to apply /srv/$manifest, retrying in 5 sec"
