@@ -677,6 +677,7 @@ systemd:
       {{ else -}}
       --cloud-provider=azure \
       --cloud-config=/etc/kubernetes/config/azure.yaml \
+      --feature-gates=CSIMigration=true,CSIMigrationAzureDisk=true \
       {{ end -}}
       --network-plugin=cni \
       --register-node=true \
