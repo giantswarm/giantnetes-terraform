@@ -30,5 +30,5 @@ spec:
     secret:
       name: ""
       namespace: ""
-  version: 1.1.8-gs3
+  version: 1.1.8-gs4
 
