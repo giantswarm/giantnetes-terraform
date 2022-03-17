@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Create /srv/apps/ directory with all `App` CR manifests in order to simplify `k8s-addons` script.
+- Bump azure-scheduled-events app to 0.7.0.
 
 ## [8.1.0] - 2022-03-10
 
