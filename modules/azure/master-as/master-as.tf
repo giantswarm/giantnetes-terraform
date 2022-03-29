@@ -21,17 +21,11 @@ resource "azurerm_linux_virtual_machine_scale_set" "masters" {
   sku = var.vm_size
   instances = var.master_count
 
-  upgrade_mode    = "Rolling"
+  upgrade_mode    = "Manual"
   health_probe_id = var.node_health_probe_id
   terminate_notification {
     enabled = true
     timeout = "PT5M"
-  }
-  rolling_upgrade_policy {
-    max_batch_instance_percent              = 40
-    max_unhealthy_instance_percent          = 40
-    max_unhealthy_upgraded_instance_percent = 40
-    pause_time_between_batches              = "PT30S"
   }
   network_interface {
     name                          = "master-nic-0"
@@ -91,6 +85,9 @@ resource "azurerm_linux_virtual_machine_scale_set" "masters" {
   timeouts {
     create = "60m"
     delete = "2h"
+  }
+  lifecycle {
+    ignore_changes = [rolling_upgrade_policy]
   }
 }
 

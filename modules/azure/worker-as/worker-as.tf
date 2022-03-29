@@ -2,19 +2,13 @@ resource "azurerm_linux_virtual_machine_scale_set" "workers" {
   location            = var.location
   name                = "${var.cluster_name}-workers"
   resource_group_name = var.resource_group_name
-  upgrade_mode        = "Rolling"
+  upgrade_mode        = "Manual"
   health_probe_id     = var.node_health_probe_id
 
   admin_username = "core"
   instances      = var.min_worker_count
   sku            = var.vm_size
 
-  rolling_upgrade_policy {
-    max_batch_instance_percent              = 40
-    max_unhealthy_instance_percent          = 40
-    max_unhealthy_upgraded_instance_percent = 40
-    pause_time_between_batches              = "PT30S"
-  }
   terminate_notification {
     enabled = true
     timeout = "PT5M"
@@ -81,7 +75,7 @@ resource "azurerm_linux_virtual_machine_scale_set" "workers" {
   }
 
   lifecycle {
-    ignore_changes = [instances]
+    ignore_changes = [instances,rolling_upgrade_policy]
   }
 }
 
