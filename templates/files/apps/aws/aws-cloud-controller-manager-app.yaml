@@ -1,0 +1,36 @@
+apiVersion: application.giantswarm.io/v1alpha1
+kind: App
+metadata:
+  labels:
+    app-operator.giantswarm.io/version: 0.0.0
+    app.kubernetes.io/name: aws-cloud-controller-manager-app
+  name: aws-cloud-controller-manager-app
+  namespace: giantswarm
+spec:
+  catalog: control-plane-test-catalog
+  config:
+    configMap:
+      name: ""
+      namespace: ""
+    secret:
+      name: ""
+      namespace: ""
+  install: {}
+  kubeConfig:
+    context:
+      name: ""
+    inCluster: true
+    secret:
+      name: ""
+      namespace: ""
+  name: aws-cloud-controller-manager-app
+  namespace: kube-system
+  namespaceConfig: {}
+  userConfig:
+    configMap:
+      name: ""
+      namespace: ""
+    secret:
+      name: ""
+      namespace: ""
+  version: 0.0.0-673f583ea5687ef93364f6bce77d4bd3a778596c

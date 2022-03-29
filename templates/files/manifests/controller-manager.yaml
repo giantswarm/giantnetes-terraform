@@ -17,7 +17,8 @@ spec:
       - --logtostderr=true
       - --v=2
       {{ if eq .Provider "aws" -}}
-      - --cloud-provider=aws
+      - --cloud-provider=external
+      - --external-cloud-volume-plugin=aws
       {{ else -}}
       - --cloud-provider=azure
       - --cloud-config=/etc/kubernetes/config/azure.yaml

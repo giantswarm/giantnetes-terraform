@@ -27,7 +27,7 @@ spec:
       - --anonymous-auth=false
       - --secure-port=443
       {{ if eq .Provider "aws" -}}
-      - --cloud-provider=aws
+      - --cloud-provider=external
       {{ else -}}
       - --cloud-provider=azure
       - --cloud-config=/etc/kubernetes/config/azure.yaml
