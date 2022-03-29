@@ -4,7 +4,7 @@ resource "azurerm_network_interface" "vault" {
   resource_group_name = var.resource_group_name
 
   ip_configuration {
-    private_ip_address_allocation = "dynamic"
+    private_ip_address_allocation = "Dynamic"
     name                          = "${var.cluster_name}-vaultIPConfiguration"
     subnet_id                     = azurerm_subnet.vault_subnet.id
   }

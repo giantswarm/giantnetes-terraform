@@ -6,12 +6,17 @@ resource "azurerm_lb" "api_lb_internal" {
 
   frontend_ip_configuration {
     name                          = "api-internal"
-    private_ip_address_allocation = "dynamic"
+    private_ip_address_allocation = "Dynamic"
     subnet_id                     = azurerm_subnet.worker_subnet.id
   }
 
   tags = {
     GiantSwarmInstallation = var.cluster_name
+  }
+
+  lifecycle {
+    # Needed to upgrade azurerm provider to 3.x to avoid the load balancer from being recreated.
+    ignore_changes = [frontend_ip_configuration.0.zones]
   }
 }
 
@@ -31,7 +36,6 @@ resource "azurerm_lb_backend_address_pool" "api-lb-internal" {
 resource "azurerm_lb_probe" "api_lb_internal" {
   name                = "api-lb-internal-probe-443-up"
   loadbalancer_id     = azurerm_lb.api_lb_internal.id
-  resource_group_name = var.resource_group_name
   protocol            = "Http"
   port                = 8089
   request_path        = "/healthz"
@@ -40,13 +44,12 @@ resource "azurerm_lb_probe" "api_lb_internal" {
 }
 
 resource "azurerm_lb_rule" "api_lb_internal" {
-  name                    = "api-lb-internal-rule-443-443"
-  resource_group_name     = var.resource_group_name
-  loadbalancer_id         = azurerm_lb.api_lb_internal.id
-  backend_address_pool_id = azurerm_lb_backend_address_pool.api-lb-internal.id
-  probe_id                = azurerm_lb_probe.api_lb_internal.id
+  name                     = "api-lb-internal-rule-443-443"
+  loadbalancer_id          = azurerm_lb.api_lb_internal.id
+  backend_address_pool_ids = [azurerm_lb_backend_address_pool.api-lb-internal.id]
+  probe_id                 = azurerm_lb_probe.api_lb_internal.id
 
-  protocol                       = "tcp"
+  protocol                       = "Tcp"
   frontend_port                  = 443
   backend_port                   = 443
   frontend_ip_configuration_name = "api-internal"

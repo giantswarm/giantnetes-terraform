@@ -28,7 +28,7 @@ resource "azurerm_network_security_rule" "master_ingress_api_external" {
   priority                    = 400
   direction                   = "Inbound"
   access                      = "Allow"
-  protocol                    = "TCP"
+  protocol                    = "Tcp"
   source_port_range           = "*"
   destination_port_range      = "443"
   source_address_prefixes     = [
@@ -46,7 +46,7 @@ resource "azurerm_network_security_rule" "master_ingress_api_internal" {
   priority                    = 500
   direction                   = "Inbound"
   access                      = "Allow"
-  protocol                    = "TCP"
+  protocol                    = "Tcp"
   source_port_range           = "*"
   destination_port_range      = "443"
   source_address_prefix       = "VirtualNetwork"
@@ -61,7 +61,7 @@ resource "azurerm_network_security_rule" "master_ingress_ingress" {
   priority                    = 700
   direction                   = "Inbound"
   access                      = "Allow"
-  protocol                    = "TCP"
+  protocol                    = "Tcp"
   source_port_range           = "*"
   destination_port_range      = "30010-30011"
   source_address_prefix       = "*"

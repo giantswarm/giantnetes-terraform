@@ -6,7 +6,7 @@ resource "azurerm_network_interface" "bastion" {
   enable_ip_forwarding = true
 
   ip_configuration {
-    private_ip_address_allocation = "dynamic"
+    private_ip_address_allocation = "Dynamic"
     name                          = "${var.cluster_name}-bastionIPConfiguration"
     subnet_id                     = element(azurerm_subnet.bastion_subnet.*.id, count.index)
     public_ip_address_id          = var.vpn_enabled ? "" : element(concat(azurerm_public_ip.bastion_public_ip.*.id, list("")), count.index)
