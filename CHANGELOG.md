@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.3.0] - 2022-03-29
+
 ### Changed
 
 - Bump azurerm provider to 3.0.2.
@@ -487,7 +489,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v8.2.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v8.3.0...HEAD
+[8.3.0]: https://github.com/giantswarm/giantswarm/compare/v8.2.0...v8.3.0
 [8.2.0]: https://github.com/giantswarm/giantswarm/compare/v8.1.0...v8.2.0
 [8.1.0]: https://github.com/giantswarm/giantswarm/compare/v8.0.0...v8.1.0
 [8.0.0]: https://github.com/giantswarm/giantswarm/compare/v7.0.1...v8.0.0
