@@ -11,7 +11,7 @@ output "bastion_subnet_name" {
 }
 
 output "bastion_cidr" {
-  value = azurerm_subnet.bastion_subnet.address_prefix
+  value = element(azurerm_subnet.bastion_subnet.address_prefixes, 0)
 }
 
 output "bastion_nsg_name" {
@@ -31,7 +31,7 @@ output "vault_subnet_name" {
 }
 
 output "vault_cidr" {
-  value = azurerm_subnet.vault_subnet.address_prefix
+  value = element(azurerm_subnet.vault_subnet.address_prefixes, 0)
 }
 
 output "vault_nsg_name" {
@@ -51,7 +51,7 @@ output "vpn_subnet_name" {
 }
 
 output "vpn_subnet_cidr" {
-  value = element(concat(azurerm_subnet.vpn_subnet.*.address_prefix, list("")), 0)
+  value = element(element(concat(azurerm_subnet.vpn_subnet.*.address_prefixes, list("")), 0), 0)
 }
 
 output "worker_subnet" {
@@ -63,7 +63,7 @@ output "worker_subnet_name" {
 }
 
 output "worker_cidr" {
-  value = azurerm_subnet.worker_subnet.address_prefix
+  value = element(azurerm_subnet.worker_subnet.address_prefixes, 0)
 }
 
 output "worker_nsg_name" {

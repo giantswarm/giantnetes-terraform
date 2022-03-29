@@ -19,7 +19,7 @@ resource "azurerm_network_security_rule" "bastion_ingress_ssh" {
   priority               = 500
   direction              = "Inbound"
   access                 = "Allow"
-  protocol               = "TCP"
+  protocol               = "Tcp"
   source_port_range      = "*"
   destination_port_range = "22"
 

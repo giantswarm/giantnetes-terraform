@@ -49,6 +49,8 @@ data "azurerm_storage_account_sas" "sas" {
     create  = false
     update  = false
     process = false
+    filter  = false
+    tag     = false
   }
 }
 

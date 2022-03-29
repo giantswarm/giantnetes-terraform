@@ -39,7 +39,7 @@ resource "azurerm_virtual_machine" "bastion" {
     managed_disk_type = var.os_disk_storage_type
     create_option     = "FromImage"
     caching           = "ReadWrite"
-    os_type           = "linux"
+    os_type           = "Linux"
   }
 
   os_profile {

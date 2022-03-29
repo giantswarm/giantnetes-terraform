@@ -23,18 +23,16 @@ resource "azurerm_dns_a_record" "vault_dns" {
 
 resource "azurerm_lb_backend_address_pool" "vault-lb" {
   name                = "vault-lb-pool"
-  resource_group_name = var.resource_group_name
   loadbalancer_id     = azurerm_lb.vault_lb.id
 }
 
 resource "azurerm_lb_rule" "vault_lb" {
-  name                    = "${var.cluster_name}-vault-lb-rule-443-8200"
-  resource_group_name     = var.resource_group_name
-  loadbalancer_id         = azurerm_lb.vault_lb.id
-  backend_address_pool_id = azurerm_lb_backend_address_pool.vault-lb.id
-  probe_id                = azurerm_lb_probe.vault_lb.id
+  name                     = "${var.cluster_name}-vault-lb-rule-443-8200"
+  loadbalancer_id          = azurerm_lb.vault_lb.id
+  backend_address_pool_ids = [azurerm_lb_backend_address_pool.vault-lb.id]
+  probe_id                 = azurerm_lb_probe.vault_lb.id
 
-  protocol                       = "tcp"
+  protocol                       = "Tcp"
   frontend_port                  = 443
   backend_port                   = 8200
   frontend_ip_configuration_name = "vault"
@@ -43,8 +41,7 @@ resource "azurerm_lb_rule" "vault_lb" {
 resource "azurerm_lb_probe" "vault_lb" {
   name                = "${var.cluster_name}-vault-lb-probe-8200"
   loadbalancer_id     = azurerm_lb.vault_lb.id
-  resource_group_name = var.resource_group_name
-  protocol            = "tcp"
+  protocol            = "Tcp"
   port                = 8200
   interval_in_seconds = 5
   number_of_probes    = 2
