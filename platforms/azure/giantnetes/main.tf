@@ -4,6 +4,7 @@ provider "azurerm" {
       roll_instances_when_required = false
     }
   }
+
   metadata_host              = var.metadata_host
   environment                = var.environment
   skip_provider_registration = true
