@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- [Azure] Disable cloud-provider integration from core k8s components.
+- [Azure] Add apps for out-of-tree cloud provider integration.
+- [Azure] Switch to CSI storage provider.
+- [Azure] Enable `CSIMigration` and `CSIMigrationAzureDisk` feature gates.
+
 ## [8.4.1] - 2022-03-30
 
 ### Fixed
@@ -24,10 +31,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Bump azurerm provider to 3.0.2.
-- [Azure] Disable cloud-provider integration from core k8s components.
-- [Azure] Add apps for out-of-tree cloud provider integration.
-- [Azure] Switch to CSI storage provider.
-- [Azure] Enable `CSIMigration` and `CSIMigrationAzureDisk` feature gates.
 - Switch to Manual rolling mode for azure nodes.
 
 ## [8.2.0] - 2022-03-28
@@ -40,9 +43,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump kubernetes to `1.21.11`.
 - Bump Flatcar to `3033.2.4`.
 - Set `fs.inotify.max_user_instances` to 1024 to avoid `Too many open files` error.
-- [Azure] Disable cloud-provider integration from core k8s components.
-- [Azure] Add apps for out-of-tree cloud provider integration.
-- [Azure] Switch to CSI storage provider.
 
 ## [8.1.0] - 2022-03-10
 
