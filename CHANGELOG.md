@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.4.0] - 2022-03-30
+
 ### Added
 
 - Allow setting custom tags to all resources in Azure.
@@ -493,7 +495,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v8.3.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v8.4.0...HEAD
+[8.4.0]: https://github.com/giantswarm/giantswarm/compare/v8.3.0...v8.4.0
 [8.3.0]: https://github.com/giantswarm/giantswarm/compare/v8.2.0...v8.3.0
 [8.2.0]: https://github.com/giantswarm/giantswarm/compare/v8.1.0...v8.2.0
 [8.1.0]: https://github.com/giantswarm/giantswarm/compare/v8.0.0...v8.1.0
