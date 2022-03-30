@@ -40,6 +40,10 @@ resource "azurerm_public_ip" "api_ip" {
   tags = merge(local.common_tags, map(
     "GiantSwarmInstallation", var.cluster_name
   ))
+
+  lifecycle {
+    ignore_changes = [zones]
+  }
 }
 
 resource "azurerm_dns_a_record" "api_dns" {

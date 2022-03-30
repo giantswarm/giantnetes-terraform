@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Ignore AZ setting for public API LB on azure to avoid unsolvable conflict.
+
 ## [8.4.0] - 2022-03-30
 
 ### Added
