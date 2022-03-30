@@ -4,7 +4,7 @@ resource "azurerm_route_table" "worker_rt" {
   location            = var.location
   resource_group_name = var.resource_group_name
 
-  tags = {
-    GiantSwarmInstallation = var.cluster_name
-  }
+  tags = merge(local.common_tags, map(
+    "GiantSwarmInstallation", var.cluster_name
+  ))
 }

@@ -111,3 +111,10 @@ variable "node_health_probe_id" {
   type        = string
   description = "ID of the probe used to check nodes health"
 }
+
+### additional tags
+variable "additional_tags" {
+  description = "Additional tags that can be added to all resources"
+  type        = map
+  default     = {}
+}

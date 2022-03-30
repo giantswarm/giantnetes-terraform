@@ -1,3 +1,7 @@
+locals {
+  common_tags = var.additional_tags
+}
+
 resource "azurerm_linux_virtual_machine_scale_set" "workers" {
   location            = var.location
   name                = "${var.cluster_name}-workers"
@@ -61,13 +65,13 @@ resource "azurerm_linux_virtual_machine_scale_set" "workers" {
     type = "SystemAssigned"
   }
 
-  tags = {
-    GiantSwarmInstallation       = var.cluster_name
-    "cluster-autoscaler-enabled" = "true"
-    "cluster-autoscaler-name"    = var.cluster_name
-    min                          = var.min_worker_count
-    max                          = var.max_worker_count
-  }
+  tags = merge(local.common_tags, map(
+    "GiantSwarmInstallation", var.cluster_name,
+    "cluster-autoscaler-enabled", "true",
+    "cluster-autoscaler-name", var.cluster_name,
+    "min", var.min_worker_count,
+    "max", var.max_worker_count
+  ))
 
   timeouts {
     create = "60m"

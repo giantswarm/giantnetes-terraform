@@ -347,3 +347,10 @@ variable "cluster_domain" {
   type        = string
   default     = "cluster.local"
 }
+
+### additional tags
+variable "additional_tags" {
+  description = "Additional tags that can be added to all resources"
+  type        = map(string)
+  default     = {}
+}

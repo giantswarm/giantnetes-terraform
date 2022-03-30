@@ -1,3 +1,7 @@
+locals {
+  common_tags = var.additional_tags
+}
+
 resource "azurerm_managed_disk" "master_etcd" {
   count                = var.master_count
   name                 = "${var.cluster_name}-master-etcd-disk-${count.index}"
@@ -6,11 +10,11 @@ resource "azurerm_managed_disk" "master_etcd" {
   storage_account_type = var.storage_type
   create_option        = "Empty"
   disk_size_gb         = var.etcd_disk_size
-  tags = {
-    GiantSwarmRole = "etcd"
+  tags = merge(local.common_tags, map(
+    "GiantSwarmRole", "etcd",
     # etcd member ID is 1-based
-    GiantSwarmEtcdID = count.index + 1
-  }
+    "GiantSwarmEtcdID", count.index + 1
+  ))
 }
 
 resource "azurerm_linux_virtual_machine_scale_set" "masters" {
@@ -74,13 +78,13 @@ resource "azurerm_linux_virtual_machine_scale_set" "masters" {
     type = "SystemAssigned"
   }
 
-  tags = {
-    GiantSwarmInstallation       = var.cluster_name
-    "cluster-autoscaler-enabled" = "false"
-    "cluster-autoscaler-name"    = var.cluster_name
-    min                          = var.master_count
-    max                          = var.master_count
-  }
+  tags = merge(local.common_tags, map(
+    "GiantSwarmInstallation", var.cluster_name,
+    "cluster-autoscaler-enabled", "false",
+    "cluster-autoscaler-name", var.cluster_name,
+    "min", var.master_count,
+    "max", var.master_count
+  ))
 
   timeouts {
     create = "60m"

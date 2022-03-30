@@ -18,8 +18,15 @@ resource "azurerm_lb" "api_lb" {
     private_ip_address_version    = "IPv4"
   }
 
-  tags = {
-    GiantSwarmInstallation = var.cluster_name
+  tags = merge(local.common_tags, map(
+    "GiantSwarmInstallation", var.cluster_name
+  ))
+
+  lifecycle {
+    ignore_changes = [
+      frontend_ip_configuration.0.private_ip_address_version,
+      frontend_ip_configuration.1.private_ip_address_version
+    ]
   }
 }
 
@@ -30,9 +37,9 @@ resource "azurerm_public_ip" "api_ip" {
   allocation_method   = "Static"
   sku                 = "Standard"
 
-  tags = {
-    GiantSwarmInstallation = var.cluster_name
-  }
+  tags = merge(local.common_tags, map(
+    "GiantSwarmInstallation", var.cluster_name
+  ))
 }
 
 resource "azurerm_dns_a_record" "api_dns" {

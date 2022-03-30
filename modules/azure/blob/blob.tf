@@ -1,3 +1,7 @@
+locals {
+  tags = var.additional_tags
+}
+
 resource "azurerm_storage_account" "storage_acc" {
   name                      = "${var.cluster_name}config"
   location                  = var.azure_location
@@ -6,6 +10,8 @@ resource "azurerm_storage_account" "storage_acc" {
   account_replication_type  = "LRS"
   enable_https_traffic_only = true
   resource_group_name       = var.resource_group_name
+
+  tags = local.tags
 }
 
 resource "azurerm_storage_container" "ignition" {

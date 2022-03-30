@@ -1,3 +1,4 @@
+
 variable "location" {
   type = string
 }
@@ -22,15 +23,26 @@ variable "zone_name" {
   type = string
 }
 
+### additional tags
+variable "additional_tags" {
+  description = "Additional tags that can be added to all resources"
+  type        = map
+  default     = {}
+}
+
+locals {
+  tags = merge(var.additional_tags, map(
+    "Name", var.zone_name,
+    "GiantSwarmInstallation", var.cluster_name
+  ))
+}
+
 resource "azurerm_dns_zone" "dns_zone" {
   count               = "1"
   name                = var.zone_name
   resource_group_name = var.resource_group_name
 
-  tags = {
-    Name                   = var.zone_name
-    GiantSwarmInstallation = var.cluster_name
-  }
+  tags = local.tags
 }
 
 resource "azurerm_dns_ns_record" "dns_zone_propagation" {

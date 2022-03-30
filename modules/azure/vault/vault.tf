@@ -1,5 +1,6 @@
 locals {
   role_definition_id = uuid()
+  common_tags = var.additional_tags
 }
 
 resource "azurerm_managed_disk" "vault_data" {
@@ -9,6 +10,8 @@ resource "azurerm_managed_disk" "vault_data" {
   storage_account_type = var.storage_type
   create_option        = "Empty"
   disk_size_gb         = var.data_disk_size
+
+  tags = local.common_tags
 }
 
 resource "azurerm_managed_disk" "logs_data" {
@@ -18,6 +21,8 @@ resource "azurerm_managed_disk" "logs_data" {
   storage_account_type = var.storage_type
   create_option        = "Empty"
   disk_size_gb         = var.logs_disk_size
+
+  tags = local.common_tags
 }
 
 resource "azurerm_virtual_machine" "vault" {
@@ -98,9 +103,9 @@ resource "azurerm_virtual_machine" "vault" {
     type = "SystemAssigned"
   }
 
-  tags = {
-    GiantSwarmInstallation = var.cluster_name
-  }
+  tags = merge(local.common_tags, map(
+    "GiantSwarmInstallation", var.cluster_name
+  ))
 }
 
 resource "azurerm_role_definition" "vault_access_role" {

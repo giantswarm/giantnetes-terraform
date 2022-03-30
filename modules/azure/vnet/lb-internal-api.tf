@@ -10,9 +10,9 @@ resource "azurerm_lb" "api_lb_internal" {
     subnet_id                     = azurerm_subnet.worker_subnet.id
   }
 
-  tags = {
-    GiantSwarmInstallation = var.cluster_name
-  }
+  tags = merge(local.common_tags, map(
+    "GiantSwarmInstallation", var.cluster_name
+  ))
 
   lifecycle {
     # Needed to upgrade azurerm provider to 3.x to avoid the load balancer from being recreated.

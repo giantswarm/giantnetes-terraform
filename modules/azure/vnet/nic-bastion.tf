@@ -11,6 +11,8 @@ resource "azurerm_network_interface" "bastion" {
     subnet_id                     = element(azurerm_subnet.bastion_subnet.*.id, count.index)
     public_ip_address_id          = var.vpn_enabled ? "" : element(concat(azurerm_public_ip.bastion_public_ip.*.id, list("")), count.index)
   }
+
+  tags = local.common_tags
 }
 
 resource "azurerm_public_ip" "bastion_public_ip" {

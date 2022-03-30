@@ -1,3 +1,10 @@
+locals {
+  tags = merge(
+    var.additional_tags,
+    map("GiantSwarmInstallation", var.cluster_name)
+  )
+}
+
 resource "azurerm_availability_set" "bastions" {
   name                        = "${var.cluster_name}-bastions"
   location                    = var.location
@@ -5,9 +12,7 @@ resource "azurerm_availability_set" "bastions" {
   managed                     = true
   platform_fault_domain_count = var.platform_fault_domain_count
 
-  tags = {
-    GiantSwarmInstallation = var.cluster_name
-  }
+  tags = local.tags
 }
 
 resource "azurerm_virtual_machine" "bastion" {
@@ -58,7 +63,5 @@ resource "azurerm_virtual_machine" "bastion" {
     }
   }
 
-  tags = {
-    GiantSwarmInstallation = var.cluster_name
-  }
+  tags = local.tags
 }

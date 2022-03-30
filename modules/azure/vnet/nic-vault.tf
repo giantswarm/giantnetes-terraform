@@ -8,6 +8,8 @@ resource "azurerm_network_interface" "vault" {
     name                          = "${var.cluster_name}-vaultIPConfiguration"
     subnet_id                     = azurerm_subnet.vault_subnet.id
   }
+
+  tags = local.common_tags
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "vault" {

@@ -1,9 +1,15 @@
+locals {
+  tags = var.additional_tags
+}
+
 resource "azurerm_public_ip" "public_ip" {
   count               = var.vpn_enabled
   name                = "${var.cluster_name}-vpn-public-ip"
   location            = var.location
   resource_group_name = var.resource_group_name
   allocation_method   = "Dynamic"
+
+  tags = local.tags
 }
 
 resource "azurerm_virtual_network_gateway" "gateway" {
@@ -28,6 +34,8 @@ resource "azurerm_virtual_network_gateway" "gateway" {
     private_ip_address_allocation = "Dynamic"
     subnet_id                     = var.subnet_id
   }
+
+  tags = local.tags
 }
 
 resource "azurerm_local_network_gateway" "local_gateway_0" {
@@ -37,6 +45,8 @@ resource "azurerm_local_network_gateway" "local_gateway_0" {
   resource_group_name = var.resource_group_name
   gateway_address     = var.vpn_right_gateway_address_0
   address_space       = [var.vpn_right_subnet_cidr_0]
+
+  tags = local.tags
 }
 
 resource "azurerm_local_network_gateway" "local_gateway_1" {
@@ -46,4 +56,6 @@ resource "azurerm_local_network_gateway" "local_gateway_1" {
   resource_group_name = var.resource_group_name
   gateway_address     = var.vpn_right_gateway_address_1
   address_space       = [var.vpn_right_subnet_cidr_1]
+
+  tags = local.tags
 }

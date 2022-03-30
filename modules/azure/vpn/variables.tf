@@ -34,3 +34,10 @@ variable "vpn_right_gateway_address_1" {
 variable "vpn_right_subnet_cidr_1" {
   type = string
 }
+
+### additional tags
+variable "additional_tags" {
+  description = "Additional tags that can be added to all resources"
+  type        = map
+  default     = {}
+}

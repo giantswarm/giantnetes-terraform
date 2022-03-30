@@ -1,12 +1,16 @@
+locals {
+  common_tags = var.additional_tags
+}
+
 resource "azurerm_virtual_network" "cluster_vnet" {
   name                = var.cluster_name
   resource_group_name = var.resource_group_name
   address_space       = [var.vnet_cidr]
   location            = var.location
 
-  tags = {
-    GiantSwarmInstallation = var.cluster_name
-  }
+  tags = merge(local.common_tags, map(
+    "GiantSwarmInstallation", var.cluster_name
+  ))
 }
 
 # NOTE: Using one subnet per role, because Azure does not have availability zones yet.
