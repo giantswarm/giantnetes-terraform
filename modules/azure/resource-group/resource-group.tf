@@ -1,3 +1,10 @@
+locals {
+  tags = merge(var.additional_tags, map(
+    "Name", var.cluster_name,
+    "GiantSwarmInstallation", var.cluster_name
+  ))
+}
+
 variable "location" {
   type = string
 }
@@ -10,10 +17,7 @@ resource "azurerm_resource_group" "cluster_rg" {
   location = var.location
   name     = var.cluster_name
 
-  tags = {
-    Name                   = var.cluster_name
-    GiantSwarmInstallation = var.cluster_name
-  }
+  tags = local.tags
 }
 
 output "id" {

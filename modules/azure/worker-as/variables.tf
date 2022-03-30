@@ -102,3 +102,10 @@ variable "subscription_id" {
   type        = string
   description = "Subscription ID"
 }
+
+### additional tags
+variable "additional_tags" {
+  description = "Additional tags that can be added to all resources"
+  type        = map
+  default     = {}
+}

@@ -12,9 +12,9 @@ resource "azurerm_network_security_group" "worker" {
   location            = var.location
   resource_group_name = var.resource_group_name
 
-  tags = {
-    GiantSwarmInstallation = var.cluster_name
-  }
+  tags = merge(local.common_tags, map(
+    "GiantSwarmInstallation", var.cluster_name
+  ))
 }
 
 resource "azurerm_subnet_network_security_group_association" "worker" {

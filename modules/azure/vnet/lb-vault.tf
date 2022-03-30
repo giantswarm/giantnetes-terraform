@@ -8,9 +8,9 @@ resource "azurerm_lb" "vault_lb" {
     subnet_id = azurerm_subnet.vault_subnet.id
   }
 
-  tags = {
-    GiantSwarmInstallation = var.cluster_name
-  }
+  tags = merge(local.common_tags, map(
+    "GiantSwarmInstallation", var.cluster_name
+  ))
 }
 
 resource "azurerm_dns_a_record" "vault_dns" {

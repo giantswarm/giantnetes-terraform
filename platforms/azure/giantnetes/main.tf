@@ -35,8 +35,9 @@ module "flatcar_linux" {
 module "resource_group" {
   source = "../../../modules/azure/resource-group"
 
-  location     = var.azure_location
-  cluster_name = var.cluster_name
+  location        = var.azure_location
+  cluster_name    = var.cluster_name
+  additional_tags = var.additional_tags
 }
 
 module "dns" {
@@ -49,6 +50,8 @@ module "dns" {
   root_dns_zone_name  = var.root_dns_zone_name
   root_dns_zone_rg    = var.root_dns_zone_rg
   zone_name           = var.base_domain
+
+  additional_tags = var.additional_tags
 }
 
 locals {
@@ -111,6 +114,8 @@ module "vnet" {
   vault_dns                            = var.vault_dns
   vnet_cidr                            = var.vnet_cidr
   vpn_enabled                          = var.vpn_enabled
+
+  additional_tags = var.additional_tags
 }
 
 module "blob" {
@@ -119,6 +124,8 @@ module "blob" {
   cluster_name        = var.cluster_name
   azure_location      = var.azure_location
   resource_group_name = module.resource_group.name
+
+  additional_tags = var.additional_tags
 }
 
 locals {
@@ -185,6 +192,8 @@ module "bastion" {
   os_disk_storage_type        = var.os_disk_storage_type
   user_data                   = data.gotemplate.bastion.rendered
   vm_size                     = var.bastion_vm_size
+
+  additional_tags = var.additional_tags
 }
 
 # Generate ignition config.
@@ -211,6 +220,8 @@ module "vault" {
   subscription_id       = var.azure_sp_subscriptionid
   user_data             = data.gotemplate.vault.rendered
   vm_size               = var.vault_vm_size
+
+  additional_tags = var.additional_tags
 }
 
 # Generate ignition config.
@@ -251,6 +262,7 @@ module "master" {
   storage_container = module.blob.storage_container
 
   subscription_id = var.azure_sp_subscriptionid
+  additional_tags = var.additional_tags
 }
 
 # Generate ignition config.
@@ -286,6 +298,7 @@ module "worker" {
   vm_size = var.worker_vm_size
 
   subscription_id = var.azure_sp_subscriptionid
+  additional_tags = var.additional_tags
 }
 
 module "vpn" {
@@ -300,6 +313,7 @@ module "vpn" {
   vpn_right_subnet_cidr_0     = var.vpn_right_subnet_cidr_0
   vpn_right_gateway_address_1 = var.vpn_right_gateway_address_1
   vpn_right_subnet_cidr_1     = var.vpn_right_subnet_cidr_1
+  additional_tags             = var.additional_tags
 }
 
 terraform {

@@ -5,9 +5,9 @@ resource "azurerm_public_ip" "ingress_ip" {
   allocation_method   = "Static"
   sku                 = "Standard"
 
-  tags = {
-    GiantSwarmInstallation = var.cluster_name
-  }
+  tags = merge(local.common_tags, map(
+    "GiantSwarmInstallation", var.cluster_name
+  ))
 }
 
 # We need explicitly add this entry for apps like happa.g8s.<base> to be working.
