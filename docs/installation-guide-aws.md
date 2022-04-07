@@ -185,7 +185,9 @@ source bootstrap.sh
 terraform taint "module.master.aws_cloudformation_stack.master_asg[0]"
 terraform taint "module.master.aws_cloudformation_stack.master_asg[1]"
 terraform taint "module.master.aws_cloudformation_stack.master_asg[2]"
-terraform taint "module.worker.aws_cloudformation_stack.worker_asg"
+terraform taint "module.worker.aws_cloudformation_stack.worker_asg_single_az[0]"
+terraform taint "module.worker.aws_cloudformation_stack.worker_asg_single_az[1]"
+terraform taint "module.worker.aws_cloudformation_stack.worker_asg_single_az[2]"
 terraform apply ./
 ```
 
