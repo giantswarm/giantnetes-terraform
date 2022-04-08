@@ -131,12 +131,13 @@ $KUBECTL apply -f /srv/apps/ --recursive
 
 # Remove after all AWS MCs are upgraded to release 9.0.0.
 {{ if eq .Provider "aws" }}
-# Storageclass is handled by the out-of-tree CSI driver app.
+# Storageclass needs to be recreated.
 $KUBECTL delete storageclass gp2 --ignore-not-found
 {{ end }}
 
 # apply k8s addons
-MANIFESTS="{{ if ne .Provider "aws" }}default-storage-class.yaml {{ end }}vault-token-reviewer.yaml"
+MANIFESTS="default-storage-class.yaml
+ vault-token-reviewer.yaml"
 
 for manifest in $MANIFESTS
 do
