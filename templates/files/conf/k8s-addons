@@ -132,7 +132,7 @@ $KUBECTL apply -f /srv/apps/ --recursive
 # Remove after all AWS MCs are upgraded to release 9.0.0.
 {{ if eq .Provider "aws" }}
 # Storageclass is handled by the out-of-tree CSI driver app.
-$KUBECTL delete storageclass gp2
+$KUBECTL delete storageclass gp2 --ignore-not-found
 {{ end }}
 
 # apply k8s addons
