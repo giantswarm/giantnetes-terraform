@@ -129,12 +129,6 @@ $KUBECTL -n kube-system delete deploy calico-kube-controllers --ignore-not-found
 # Apply all apps.
 $KUBECTL apply -f /srv/apps/ --recursive
 
-# Remove after all AWS MCs are upgraded to release 9.0.0.
-{{ if eq .Provider "aws" }}
-# Storageclass needs to be recreated.
-$KUBECTL delete storageclass gp2 --ignore-not-found
-{{ end }}
-
 # apply k8s addons
 MANIFESTS="default-storage-class.yaml
  vault-token-reviewer.yaml"
