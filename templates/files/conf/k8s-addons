@@ -136,8 +136,7 @@ $KUBECTL delete storageclass gp2
 {{ end }}
 
 # apply k8s addons
-MANIFESTS="default-storage-class.yaml
- vault-token-reviewer.yaml"
+MANIFESTS="{{ if ne .Provider "aws" }}default-storage-class.yaml {{ end }}vault-token-reviewer.yaml"
 
 for manifest in $MANIFESTS
 do
