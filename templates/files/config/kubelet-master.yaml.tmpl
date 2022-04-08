@@ -13,6 +13,9 @@ featureGates:
 {{- if eq .Provider "aws" }}
   CSIMigration: true
   CSIMigrationAWS: true
+  CSINodeInfo: true
+  CSIDriverRegistry: true
+  CSIBlockVolume: true
 {{- end }}
 staticPodPath: /etc/kubernetes/manifests
 kernelMemcgNotification: true
