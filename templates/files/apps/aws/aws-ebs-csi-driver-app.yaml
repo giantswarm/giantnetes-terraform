@@ -5,8 +5,8 @@ metadata:
   namespace: giantswarm
 data:
   values: |
-    node:
-      nodeSelector: {}
+    controller:
+      driverMode: all
 ---
 apiVersion: application.giantswarm.io/v1alpha1
 kind: App
@@ -43,4 +43,4 @@ spec:
     secret:
       name: ""
       namespace: ""
-  version: 2.10.0-ebd55e17cb018453182408e8740e245fbeaae65d
+  version: 2.10.0-93448adeabd3da017eb65b116cb1793ab3ffefc6
