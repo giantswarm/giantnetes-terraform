@@ -54,7 +54,7 @@ spec:
       - --service-account-signing-key-file=/etc/kubernetes/ssl/service-account-key.pem
       - --service-account-issuer=https://{{ .APIDomainName }}
       - --api-audiences=https://{{ .APIDomainName }}
-      - --feature-gates=TTLAfterFinished=true,RemoveSelfLink=false{{ if eq .Provider "aws" }},CSINodeInfo=true,CSIDriverRegistry=true,CSIBlockVolume=true,VolumeSnapshotDataSource=true{{ end }}
+      - --feature-gates=TTLAfterFinished=true,RemoveSelfLink=false{{ if eq .Provider "aws" }},CSIMigration=true,CSIMigrationAWS=true{{ end }}
       - --audit-log-path=/var/log/apiserver/audit.log
       - --audit-log-maxage=30
       - --audit-log-maxbackup=30
