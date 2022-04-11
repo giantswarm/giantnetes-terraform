@@ -17,7 +17,7 @@ metadata:
   name: aws-ebs-csi-driver-app
   namespace: giantswarm
 spec:
-  catalog: control-plane-catalog
+  catalog: control-plane-test-catalog
   config:
     configMap:
       name: "aws-ebs-csi-driver-app-user-values"
@@ -43,4 +43,4 @@ spec:
     secret:
       name: ""
       namespace: ""
-  version: 2.11.0
+  version: 2.11.0-d2140ac2c3de7964ce9e3f0c0be2ab4115b8c86d
