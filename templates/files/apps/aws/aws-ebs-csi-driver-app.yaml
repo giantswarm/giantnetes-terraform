@@ -6,7 +6,14 @@ metadata:
 data:
   values: |
     controller:
-      driverMode: all
+      replicas: 2
+      hostNetwork: false
+      nodeSelector:
+        kubernetes.io/os: linux
+    node:
+      hostNetwork: false
+      nodeSelector:
+        kubernetes.io/os: linux
 ---
 apiVersion: application.giantswarm.io/v1alpha1
 kind: App
@@ -43,4 +50,4 @@ spec:
     secret:
       name: ""
       namespace: ""
-  version: 2.11.0-681d1c7030c78c563d765b85dc6db29967bdf507
+  version: 2.11.0-8fd1939eb9c7f86bac05cf26c3330e276da28657
