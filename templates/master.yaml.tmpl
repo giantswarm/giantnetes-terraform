@@ -1192,8 +1192,6 @@ systemd:
       {{if eq .Provider "aws" -}}
       --image-pull-progress-deadline={{ .ImagePullProgressDeadline }} \
       --pod-infra-container-image={{.DockerRegistry}}/{{ .PodInfraImage }} \
-      {{ else -}}
-      --feature-gates=CSIMigration=true,CSIMigrationAzureDisk=true \
       {{ end -}}
       --network-plugin=cni \
       --register-node=true \
