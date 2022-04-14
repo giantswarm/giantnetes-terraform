@@ -1194,7 +1194,6 @@ systemd:
       --pod-infra-container-image={{.DockerRegistry}}/{{ .PodInfraImage }} \
       {{ else -}}
       --cloud-provider=external \
-      --feature-gates=CSIMigration=true,CSIMigrationAzureDisk=true \
       {{ end -}}
       --network-plugin=cni \
       --register-node=true \
