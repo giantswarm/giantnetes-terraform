@@ -1188,12 +1188,11 @@ systemd:
       --node-ip=${DEFAULT_IPV4} \
       --container-runtime-endpoint=/var/run/dockershim/dockershim.sock \
       --logtostderr=true \
-      {{if eq .Provider "aws" -}}
       --cloud-provider=external \
+      {{if eq .Provider "aws" -}}
       --image-pull-progress-deadline={{ .ImagePullProgressDeadline }} \
       --pod-infra-container-image={{.DockerRegistry}}/{{ .PodInfraImage }} \
       {{ else -}}
-      --cloud-provider=external \
       --feature-gates=CSIMigration=true,CSIMigrationAzureDisk=true \
       {{ end -}}
       --network-plugin=cni \
