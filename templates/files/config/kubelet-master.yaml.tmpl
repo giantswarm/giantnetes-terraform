@@ -10,7 +10,7 @@ clusterDNS:
 clusterDomain: {{ .ClusterDomain }}
 featureGates:
   ExpandPersistentVolumes: true
-    CSIMigration: true
+  CSIMigration: true
 {{- if eq .Provider "azure" }}
   CSIMigrationAzureDisk: true
 {{- end }}
