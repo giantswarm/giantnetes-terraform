@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- [Azure] Disable cloud-provider integration from core k8s components.
+- [Azure] Add apps for out-of-tree cloud provider integration.
+- [Azure] Switch to CSI storage provider.
+- [Azure] Enable `CSIMigration` and `CSIMigrationAzureDisk` feature gates.
+
 ## [8.4.1] - 2022-03-30
 
 ### Fixed
