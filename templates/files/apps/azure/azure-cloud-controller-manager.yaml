@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: azure-cloud-controller-manager-user-values
+  namespace: giantswarm
+data:
+  values: |
+    cluster:
+      calico:
+        CIDR: {{ .PodCIDR }}
+---
+apiVersion: application.giantswarm.io/v1alpha1
+kind: App
+metadata:
+  name: azure-cloud-controller-manager
+  namespace: giantswarm
+spec:
+  catalog: control-plane-catalog
+  config:
+    configMap:
+      name: ""
+      namespace: ""
+    secret:
+      name: ""
+      namespace: ""
+  install: {}
+  kubeConfig:
+    context:
+      name: ""
+    inCluster: true
+    secret:
+      name: ""
+      namespace: ""
+  name: azure-cloud-controller-manager-app
+  namespace: kube-system
+  namespaceConfig: {}
+  userConfig:
+    configMap:
+      name: "azure-cloud-controller-manager-user-values"
+      namespace: "giantswarm"
+    secret:
+      name: ""
+      namespace: ""
+  version: 1.1.11-gs2
+

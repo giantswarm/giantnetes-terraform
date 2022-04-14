@@ -1,0 +1,34 @@
+apiVersion: application.giantswarm.io/v1alpha1
+kind: App
+metadata:
+  name: azuredisk-csi-driver
+  namespace: giantswarm
+spec:
+  catalog: control-plane-catalog
+  config:
+    configMap:
+      name: ""
+      namespace: ""
+    secret:
+      name: ""
+      namespace: ""
+  install: {}
+  kubeConfig:
+    context:
+      name: ""
+    inCluster: true
+    secret:
+      name: ""
+      namespace: ""
+  name: azuredisk-csi-driver-app
+  namespace: kube-system
+  namespaceConfig: {}
+  userConfig:
+    configMap:
+      name: ""
+      namespace: ""
+    secret:
+      name: ""
+      namespace: ""
+  version: v1.16.0-gs2
+
