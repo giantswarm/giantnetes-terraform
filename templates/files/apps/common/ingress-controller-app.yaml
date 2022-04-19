@@ -27,8 +27,8 @@ spec:
   catalog: giantswarm
   config:
     configMap:
-      name: "nginx-ingress-controller-app-values"
-      namespace: "giantswarm"
+      name: ""
+      namespace: ""
     secret:
       name: ""
       namespace: ""
@@ -45,8 +45,8 @@ spec:
   namespaceConfig: {}
   userConfig:
     configMap:
-      name: ""
-      namespace: ""
+      name: "nginx-ingress-controller-app-values"
+      namespace: "giantswarm"
     secret:
       name: ""
       namespace: ""

@@ -27,8 +27,8 @@ spec:
   catalog: control-plane-catalog
   config:
     configMap:
-      name: "aws-ebs-csi-driver-app-user-values"
-      namespace: "giantswarm"
+      name: ""
+      namespace: ""
     secret:
       name: ""
       namespace: ""
@@ -45,8 +45,8 @@ spec:
   namespaceConfig: {}
   userConfig:
     configMap:
-      name: ""
-      namespace: ""
+      name: "aws-ebs-csi-driver-app-user-values"
+      namespace: "giantswarm"
     secret:
       name: ""
       namespace: ""
