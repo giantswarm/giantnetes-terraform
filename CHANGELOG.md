@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - [AWS] Switch to external cloud-controller-manager and CSI driver.
+
+## [9.0.0] - 2022-04-19
+
+### Changed
+
+- [Azure] Bump flatcar to `3139.2.0`.
+- Bump coredns to `1.9.0`.
+- Bump nginx-ingress-controller to `2.10.0`.
 - [Azure] Switch to external cloud-controller-manager and CSI driver.
 
 ## [8.4.1] - 2022-03-30
@@ -506,7 +514,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v8.4.1...HEAD
+[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v9.0.0...HEAD
+[9.0.0]: https://github.com/giantswarm/giantswarm/compare/v8.4.1...v9.0.0
 [8.4.1]: https://github.com/giantswarm/giantswarm/compare/v8.4.0...v8.4.1
 [8.4.0]: https://github.com/giantswarm/giantswarm/compare/v8.3.0...v8.4.0
 [8.3.0]: https://github.com/giantswarm/giantswarm/compare/v8.2.0...v8.3.0
