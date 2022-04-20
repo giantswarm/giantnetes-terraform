@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - [AWS] Switch to external cloud-controller-manager and CSI driver.
+- [AWS] Bump flatcar to `3139.2.0`.
 
 ## [9.0.0] - 2022-04-19
 
