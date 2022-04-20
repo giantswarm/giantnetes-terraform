@@ -17,7 +17,7 @@ metadata:
   name: aws-node-termination-handler-app
   namespace: giantswarm
 spec:
-  catalog: control-plane-catalog
+  catalog: giantswarm
   config:
     configMap:
       name: ""
@@ -43,4 +43,4 @@ spec:
     secret:
       name: ""
       namespace: ""
-  version: 0.2.0
+  version: 0.3.1
