@@ -63,6 +63,17 @@ do
     sleep 5s
 done
 
+KUBE_PROXY_MANIFESTS="kube-proxy-sa.yaml kube-proxy-ds.yaml"
+
+{{ if eq .Provider "aws" }}
+$KUBECTL -n kube-system delete configmap kube-proxy --ignore-not-found=true
+for manifest in $KUBE_PROXY_MANIFESTS
+do
+  $KUBECTL delete -f /srv/$manifest --ignore-not-found=true
+done
+{{ end -}}
+
+{{ if eq .Provider "azure" }}
 # create kube-proxy configmap
 while
     $KUBECTL create configmap kube-proxy --from-file=kube-proxy.yaml=/srv/kube-proxy-config.yaml -o yaml --dry-run | $KUBECTL apply -n kube-system -f -
@@ -73,7 +84,6 @@ do
 done
 
 # apply kube-proxy
-KUBE_PROXY_MANIFESTS="kube-proxy-sa.yaml kube-proxy-ds.yaml"
 for manifest in $KUBE_PROXY_MANIFESTS
 do
     while
@@ -87,10 +97,11 @@ done
 
 # restart ds to apply config from configmap
 $KUBECTL delete pods -l k8s-app=kube-proxy -n kube-system
+{{ end -}}
 
 {{ if eq .Provider "aws" }}
-## Apply AWS VPC CNI and Calico for ensuring network policies
-CNI_FILE="aws-cni.yaml calico-policy-only.yaml"
+# Delete legacy CNI.
+$KUBECTL delete -f aws-cni.yaml -f calico-policy-only.yaml --ignore-not-found=true
 {{ end -}}
 {{ if eq .Provider "azure" }}
 ## Apply Calico for ensuring network policies
@@ -112,6 +123,7 @@ do
     done
 done
 
+{{ if eq .Provider "azure" }}
 echo "Waiting for calico-node to be ready..."
 n=0
 exitcode=-1
@@ -125,6 +137,7 @@ done
 
 # delete calico-kube-controllers
 $KUBECTL -n kube-system delete deploy calico-kube-controllers --ignore-not-found=true
+{{ end -}}
 
 # Apply all apps.
 $KUBECTL apply -f /srv/apps/ --recursive
