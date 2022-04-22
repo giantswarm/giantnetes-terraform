@@ -101,18 +101,16 @@ $KUBECTL delete pods -l k8s-app=kube-proxy -n kube-system
 
 {{ if eq .Provider "aws" }}
 # Delete legacy CNI.
-$KUBECTL delete -f aws-cni.yaml -f calico-policy-only.yaml --ignore-not-found=true
-{{ end -}}
+$KUBECTL delete -f /srv/aws-cni.yaml -f /srv/calico-policy-only.yaml --ignore-not-found=true || true
+{{ else -}}
 {{ if eq .Provider "azure" }}
 ## Apply Calico for ensuring network policies
 CNI_FILE="calico-policy-only.yaml"
-{{ end -}}
-
-{{ if and (ne .Provider "aws") (ne .Provider "azure") }}
+{{ else -}}
 ## Apply Calico with all its components
 CNI_FILE="calico-all.yaml"
 {{ end -}}
-for manifest in ${CNI_FILE}
+for manifest in "${CNI_FILE}"
 do
     while
         $KUBECTL apply -f /srv/$manifest
@@ -122,6 +120,8 @@ do
         sleep 5s
     done
 done
+{{ end -}}
+
 
 {{ if eq .Provider "azure" }}
 echo "Waiting for calico-node to be ready..."
