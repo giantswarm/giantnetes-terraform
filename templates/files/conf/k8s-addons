@@ -65,15 +65,6 @@ done
 
 KUBE_PROXY_MANIFESTS="kube-proxy-sa.yaml kube-proxy-ds.yaml"
 
-{{ if eq .Provider "aws" }}
-$KUBECTL -n kube-system delete configmap kube-proxy --ignore-not-found=true
-for manifest in $KUBE_PROXY_MANIFESTS
-do
-  $KUBECTL delete -f /srv/$manifest --ignore-not-found=true
-done
-{{ end -}}
-
-{{ if eq .Provider "azure" }}
 # create kube-proxy configmap
 while
     $KUBECTL create configmap kube-proxy --from-file=kube-proxy.yaml=/srv/kube-proxy-config.yaml -o yaml --dry-run | $KUBECTL apply -n kube-system -f -
@@ -97,7 +88,6 @@ done
 
 # restart ds to apply config from configmap
 $KUBECTL delete pods -l k8s-app=kube-proxy -n kube-system
-{{ end -}}
 
 {{ if eq .Provider "aws" }}
 # Delete legacy CNI.
