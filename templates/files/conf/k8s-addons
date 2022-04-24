@@ -1,6 +1,14 @@
 #!/bin/bash
 set -eu
-KUBECTL="/opt/bin/kubectl --kubeconfig=/etc/kubernetes/kubeconfig/addons.yaml"
+KUBECONFIG=/etc/kubernetes/kubeconfig/addons.yaml
+KUBECTL="/opt/bin/kubectl --kubeconfig=$KUBECONFIG"
+
+# Get an helm binary
+docker rm helm-binary || true
+docker create --name=helm-binary alpine/helm:latest
+docker cp helm-binary:/usr/bin/helm /opt/bin/helm
+
+HELM="/opt/bin/helm --kubeconfig=$KUBECONFIG"HELM="/opt/bin/helm --kubeconfig=$KUBECONFIG"
 
 while ! curl --output /dev/null --silent --head --insecure "https://{{ .APIDomainName }}"; do sleep 1 && echo 'Waiting for master'; done
 
@@ -92,6 +100,36 @@ $KUBECTL delete pods -l k8s-app=kube-proxy -n kube-system
 {{ if eq .Provider "aws" }}
 # Delete legacy CNI.
 $KUBECTL delete -f /srv/aws-cni.yaml -f /srv/calico-policy-only.yaml --ignore-not-found=true || true
+
+# Install Cilium.
+APP_CATALOG="default-catalog"
+CILIUM_APP_VERSION="v0.1.1"
+CLUSTER_RESOURCES_APP_VERSION="v0.1.0"
+
+$HELM repo add \
+    --force-update \
+    "${APP_CATALOG}" \
+    "https://giantswarm.github.io/${APP_CATALOG}"
+
+$HELM repo update "${APP_CATALOG}"
+
+$HELM upgrade \
+    --install \
+    --devel \
+    --version "${CILIUM_APP_VERSION}" \
+    -n kube-system \
+    --set hubble.relay.enabled=true \
+    cilium \
+    "${APP_CATALOG}"/cilium
+
+${HELM} upgrade \
+    --install \
+    --devel \
+    --version "${CLUSTER_RESOURCES_APP_VERSION}" \
+    -n kube-system \
+    cluster-resources \
+    "${APP_CATALOG}"/cluster-resources
+
 {{ else -}}
 {{ if eq .Provider "azure" }}
 ## Apply Calico for ensuring network policies
