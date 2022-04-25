@@ -122,13 +122,53 @@ $HELM upgrade \
     cilium \
     "${APP_CATALOG}"/cilium
 
-${HELM} upgrade \
-    --install \
-    --devel \
-    --version "${CLUSTER_RESOURCES_APP_VERSION}" \
-    -n kube-system \
-    cluster-resources \
-    "${APP_CATALOG}"/cluster-resources
+# Wait for CRDs to exist.
+resources=""
+while true; do
+    set +e
+    resources=$(${KUBECTL} api-resources --no-headers -o name --api-group="cilium.io")
+    { set -e; } 2>/dev/null
+
+    # There are 6 resouces:
+    #   - ciliumclusterwidenetworkpolicies.cilium.io
+    #   - ciliumendpoints.cilium.io
+    #   - ciliumexternalworkloads.cilium.io
+    #   - ciliumidentities.cilium.io
+    #   - ciliumnetworkpolicies.cilium.io
+    #   - ciliumnodes.cilium.io
+    if [[ $(echo "${resources}" | wc -l) -gt 5 ]]; then
+        break
+    fi
+    sleep 3
+done
+
+CRs=$(cat << EOF
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-all-ingress-from-host
+  namespace: kube-system
+spec:
+  endpointSelector: {}
+  ingress:
+  - fromEntities:
+    - host
+    - remote-node
+---
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-all-egress
+  namespace: kube-system
+spec:
+  endpointSelector: {}
+  egress:
+    - toEntities:
+      - "all"
+EOF
+)
+
+echo "$CRs" | $KUBECTL apply -f -
 
 {{ else -}}
 {{ if eq .Provider "azure" }}
