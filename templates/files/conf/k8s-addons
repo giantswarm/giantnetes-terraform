@@ -119,6 +119,9 @@ $HELM upgrade \
     -n kube-system \
     --set hubble.relay.enabled=true \
     --set defaultPolicies.enabled=true \
+    --set egressMasqueradeInterfaces=eth0 \
+    --set tunnel=disabled \
+    --set nodeinit.enabled=true
     cilium \
     "${APP_CATALOG}"/cilium
 
