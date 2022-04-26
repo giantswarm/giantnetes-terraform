@@ -103,8 +103,7 @@ $KUBECTL delete -f /srv/aws-cni.yaml -f /srv/calico-policy-only.yaml --ignore-no
 
 # Install Cilium.
 APP_CATALOG="default-catalog"
-CILIUM_APP_VERSION="v0.1.1"
-CLUSTER_RESOURCES_APP_VERSION="v0.1.0"
+CILIUM_APP_VERSION="0.1.1-bbd4f2d4f7199bc46ca8b2ab329cac49ac12a835"
 
 $HELM repo add \
     --force-update \
@@ -119,56 +118,9 @@ $HELM upgrade \
     --version "${CILIUM_APP_VERSION}" \
     -n kube-system \
     --set hubble.relay.enabled=true \
+    --set defaultPolicies.enabled=true \
     cilium \
     "${APP_CATALOG}"/cilium
-
-# Wait for CRDs to exist.
-resources=""
-while true; do
-    set +e
-    resources=$(${KUBECTL} api-resources --no-headers -o name --api-group="cilium.io")
-    { set -e; } 2>/dev/null
-
-    # There are 6 resouces:
-    #   - ciliumclusterwidenetworkpolicies.cilium.io
-    #   - ciliumendpoints.cilium.io
-    #   - ciliumexternalworkloads.cilium.io
-    #   - ciliumidentities.cilium.io
-    #   - ciliumnetworkpolicies.cilium.io
-    #   - ciliumnodes.cilium.io
-    if [[ $(echo "${resources}" | wc -l) -gt 5 ]]; then
-        break
-    fi
-    sleep 3
-done
-
-CRs=$(cat << EOF
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-  name: allow-all-ingress-from-host
-  namespace: kube-system
-spec:
-  endpointSelector: {}
-  ingress:
-  - fromEntities:
-    - host
-    - remote-node
----
-apiVersion: cilium.io/v2
-kind: CiliumClusterwideNetworkPolicy
-metadata:
-  name: allow-all-egress
-  namespace: kube-system
-spec:
-  endpointSelector: {}
-  egress:
-    - toEntities:
-      - "all"
-EOF
-)
-
-echo "$CRs" | $KUBECTL apply -f -
 
 {{ else -}}
 {{ if eq .Provider "azure" }}
