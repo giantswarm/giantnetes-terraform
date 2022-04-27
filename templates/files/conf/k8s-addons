@@ -102,7 +102,7 @@ $KUBECTL delete pods -l k8s-app=kube-proxy -n kube-system
 $KUBECTL delete -f /srv/aws-cni.yaml -f /srv/calico-policy-only.yaml --ignore-not-found=true || true
 
 # Install Cilium.
-APP_CATALOG="default-catalog"
+APP_CATALOG="default-test-catalog"
 CILIUM_APP_VERSION="0.1.1-bbd4f2d4f7199bc46ca8b2ab329cac49ac12a835"
 
 $HELM repo add \
@@ -120,8 +120,11 @@ $HELM upgrade \
     --set hubble.relay.enabled=true \
     --set defaultPolicies.enabled=true \
     --set egressMasqueradeInterfaces=eth0 \
+    --set eni.enabled=true \
+    --set ipam.mode=eni \
+    --set egressMasqueradeInterfaces=eth0 \
     --set tunnel=disabled \
-    --set nodeinit.enabled=true
+    --set nodeinit.enabled=true \
     cilium \
     "${APP_CATALOG}"/cilium
 
