@@ -122,8 +122,8 @@ $HELM upgrade \
     --set egressMasqueradeInterfaces=eth0 \
     --set eni.enabled=false \
     --set ipam.mode=cluster-pool \
-    --set ipam.operator.clusterPoolIPv4PodCIDR=192.168.0.0/16 \
-    --set ipam.operator.clusterPoolIPv4MaskSize=25 \
+    --set ipam.operator.clusterPoolIPv4PodCIDR={{ .PodCIDR }} \
+    --set ipam.operator.clusterPoolIPv4MaskSize={{ .NodePodCIDRSize }} \
     --set tunnel=vxlan \
     --set nodeinit.enabled=true \
     cilium \

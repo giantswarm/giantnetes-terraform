@@ -16,7 +16,7 @@ data:
     ipam:
       mode: cluster-pool
       operator:
-        clusterPoolIPv4PodCIDR: "192.168.0.0/16"
+        clusterPoolIPv4PodCIDR: "{{ .PodCIDR }}"
         clusterPoolIPv4MaskSize: 25
     tunnel: vxlan
     nodeinit:
