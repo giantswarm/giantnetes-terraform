@@ -333,7 +333,6 @@ systemd:
       Type=oneshot
       RemainAfterExit=yes
       EnvironmentFile=/etc/network-environment
-      EnvironmentFile=/etc/kubelet-environment
       ExecStart=/bin/bash -c '/usr/bin/envsubst </etc/kubernetes/config/kubelet.yaml.tmpl >/etc/kubernetes/config/kubelet.yaml'
 
       [Install]
