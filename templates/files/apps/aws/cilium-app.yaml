@@ -12,10 +12,13 @@ data:
       enabled: true
     egressMasqueradeInterfaces: eth0
     eni:
-      enabled: true
+      enabled: false
     ipam:
-      mode: eni
-    tunnel: disabled
+      mode: cluster-pool
+      operator:
+        clusterPoolIPv4PodCIDR: "192.168.0.0/16"
+        clusterPoolIPv4MaskSize: 25
+    tunnel: vxlan
     nodeinit:
       enabled: true
 ---

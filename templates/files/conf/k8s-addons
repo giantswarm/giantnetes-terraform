@@ -120,9 +120,11 @@ $HELM upgrade \
     --set hubble.relay.enabled=true \
     --set defaultPolicies.enabled=true \
     --set egressMasqueradeInterfaces=eth0 \
-    --set eni.enabled=true \
-    --set ipam.mode=eni \
-    --set tunnel=disabled \
+    --set eni.enabled=false \
+    --set ipam.mode=cluster-pool \
+    --set ipam.operator.clusterPoolIPv4PodCIDR=192.168.0.0/16 \
+    --set ipam.operator.clusterPoolIPv4MaskSize=25 \
+    --set tunnel=vxlan \
     --set nodeinit.enabled=true \
     cilium \
     "${APP_CATALOG}"/cilium
