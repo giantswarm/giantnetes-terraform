@@ -1,3 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cilium-user-values
+  namespace: giantswarm
+data:
+  values: |
+    hubble:
+      relay:
+        enabled: true
+    defaultPolicies:
+      enabled: true
+    egressMasqueradeInterfaces: eth0
+    eni:
+      enabled: true
+    ipam:
+      mode: eni
+    tunnel: disabled
+    nodeinit:
+      enabled: true
+---
 apiVersion: application.giantswarm.io/v1alpha1
 kind: App
 metadata:
@@ -7,7 +28,7 @@ metadata:
   name: cilium
   namespace: giantswarm
 spec:
-  catalog: default
+  catalog: default-test
   config:
     configMap:
       name: ""
@@ -28,9 +49,9 @@ spec:
   namespaceConfig: {}
   userConfig:
     configMap:
-      name: ""
-      namespace: ""
+      name: "cilium-user-values"
+      namespace: "giantswarm"
     secret:
       name: ""
       namespace: ""
-  version: 0.1.1
+  version: 0.1.1-4489f762ce300ae741828c472c711b7ad87bee5e
