@@ -17,7 +17,7 @@ data:
       mode: cluster-pool
       operator:
         clusterPoolIPv4PodCIDR: "{{ .PodCIDR }}"
-        clusterPoolIPv4MaskSize: 25
+        clusterPoolIPv4MaskSize: {{ .NodePodCIDRSize }}
     tunnel: vxlan
     nodeinit:
       enabled: true
@@ -57,4 +57,4 @@ spec:
     secret:
       name: ""
       namespace: ""
-  version: 0.1.1-4489f762ce300ae741828c472c711b7ad87bee5e
+  version: 0.1.1-cd1e456fcbd6773e124881d66b1579108abdb3a7
