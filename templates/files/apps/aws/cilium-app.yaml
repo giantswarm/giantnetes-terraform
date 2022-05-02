@@ -13,6 +13,9 @@ data:
     egressMasqueradeInterfaces: eth0
     eni:
       enabled: false
+    kubeProxyReplacement: strict
+    k8sServiceHost: "{{ .APIInternalDomainName }}"
+    k8sServicePort: "443"
     ipam:
       mode: cluster-pool
       operator:

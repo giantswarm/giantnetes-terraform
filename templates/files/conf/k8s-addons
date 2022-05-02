@@ -73,6 +73,57 @@ done
 
 KUBE_PROXY_MANIFESTS="kube-proxy-sa.yaml kube-proxy-ds.yaml"
 
+{{ if eq .Provider "aws" }}
+# Delete legacy CNI.
+$KUBECTL delete -f /srv/aws-cni.yaml -f /srv/calico-policy-only.yaml --ignore-not-found=true || true
+
+# Install Cilium using helm only if the helm chart does not exist.
+# This is needed on new installations where app operator and chart operator are not yet running.
+set +e
+if ! $HELM -n kube-system get notes cilium
+then
+  APP_CATALOG="default-catalog"
+  CILIUM_APP_VERSION="0.2.0"
+
+  $HELM repo add \
+      --force-update \
+      "${APP_CATALOG}" \
+      "https://giantswarm.github.io/${APP_CATALOG}"
+
+  $HELM repo update "${APP_CATALOG}"
+
+  $HELM upgrade \
+      --install \
+      --devel \
+      --version "${CILIUM_APP_VERSION}" \
+      -n kube-system \
+      --set hubble.relay.enabled=true \
+      --set defaultPolicies.enabled=true \
+      --set egressMasqueradeInterfaces=eth0 \
+      --set eni.enabled=false \
+      --set ipam.mode=cluster-pool \
+      --set ipam.operator.clusterPoolIPv4PodCIDR={{ .PodCIDR }} \
+      --set ipam.operator.clusterPoolIPv4MaskSize={{ .NodePodCIDRSize }} \
+      --set tunnel=vxlan \
+      --set nodeinit.enabled=true \
+      cilium \
+      "${APP_CATALOG}"/cilium
+fi
+set -e
+
+# Wait for cilium daemonset to be ready.
+$KUBECTL -n kube-system rollout status daemonset cilium
+
+# Delete kube-proxy.
+for manifest in $KUBE_PROXY_MANIFESTS
+do
+  $KUBECTL delete -f /srv/$manifest --ignore-not-found=true || true
+done
+
+$KUBECTL delete configmap kube-proxy --ignore-not-found=true || true
+
+{{ else -}}
+{{ if eq .Provider "azure" }}
 # create kube-proxy configmap
 while
     $KUBECTL create configmap kube-proxy --from-file=kube-proxy.yaml=/srv/kube-proxy-config.yaml -o yaml --dry-run | $KUBECTL apply -n kube-system -f -
@@ -97,40 +148,6 @@ done
 # restart ds to apply config from configmap
 $KUBECTL delete pods -l k8s-app=kube-proxy -n kube-system
 
-{{ if eq .Provider "aws" }}
-# Delete legacy CNI.
-$KUBECTL delete -f /srv/aws-cni.yaml -f /srv/calico-policy-only.yaml --ignore-not-found=true || true
-
-# Install Cilium.
-APP_CATALOG="default-test-catalog"
-CILIUM_APP_VERSION="0.1.1-4489f762ce300ae741828c472c711b7ad87bee5e"
-
-$HELM repo add \
-    --force-update \
-    "${APP_CATALOG}" \
-    "https://giantswarm.github.io/${APP_CATALOG}"
-
-$HELM repo update "${APP_CATALOG}"
-
-$HELM upgrade \
-    --install \
-    --devel \
-    --version "${CILIUM_APP_VERSION}" \
-    -n kube-system \
-    --set hubble.relay.enabled=true \
-    --set defaultPolicies.enabled=true \
-    --set egressMasqueradeInterfaces=eth0 \
-    --set eni.enabled=false \
-    --set ipam.mode=cluster-pool \
-    --set ipam.operator.clusterPoolIPv4PodCIDR={{ .PodCIDR }} \
-    --set ipam.operator.clusterPoolIPv4MaskSize={{ .NodePodCIDRSize }} \
-    --set tunnel=vxlan \
-    --set nodeinit.enabled=true \
-    cilium \
-    "${APP_CATALOG}"/cilium
-
-{{ else -}}
-{{ if eq .Provider "azure" }}
 ## Apply Calico for ensuring network policies
 CNI_FILE="calico-policy-only.yaml"
 {{ else -}}
