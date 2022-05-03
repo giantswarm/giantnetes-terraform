@@ -106,6 +106,9 @@ then
       --set ipam.operator.clusterPoolIPv4MaskSize={{ .NodePodCIDRSize }} \
       --set tunnel=vxlan \
       --set nodeinit.enabled=true \
+      --set kubeProxyReplacement=strict \
+      --set k8sServiceHost="{{ .APIInternalDomainName }}" \
+      --set k8sServicePort="443" \
       cilium \
       "${APP_CATALOG}"/cilium
 fi
