@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Bump `nginx-ingress-controller-app` to `2.11.0`.
+- Add `logs:*` permission to masters' IAM role to allow running fluentbit on master nodes.
 
 ## [9.0.0] - 2022-04-19
 
