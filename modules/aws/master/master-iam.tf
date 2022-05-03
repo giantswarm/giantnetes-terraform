@@ -63,6 +63,17 @@ resource "aws_iam_role_policy" "master" {
       ]
     },
     {
+     "Effect": "Allow",
+     "Action": [
+       "logs:*",
+       "s3:GetObject"
+     ],
+     "Resource": [
+       "arn:${var.arn_region}:logs:${var.aws_region}:*:*",
+       "arn:${var.arn_region}:s3:::*"
+     ]
+    },
+    {
         "Effect": "Allow",
         "Action": [
           "ec2:AssignPrivateIpAddresses",

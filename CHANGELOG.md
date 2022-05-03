@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [AWS] Switch to external cloud-controller-manager and CSI driver.
 - [AWS] Bump flatcar to `3139.2.0`.
 
+## [9.1.0] - 2022-05-03
+
+### Changed
+
+- Bump `nginx-ingress-controller-app` to `2.11.0`.
+- Add `logs:*` permission to masters' IAM role to allow running fluentbit on master nodes.
+
 ## [9.0.0] - 2022-04-19
 
 ### Changed
@@ -515,7 +522,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v9.0.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v9.1.0...HEAD
+[9.1.0]: https://github.com/giantswarm/giantswarm/compare/v9.0.0...v9.1.0
 [9.0.0]: https://github.com/giantswarm/giantswarm/compare/v8.4.1...v9.0.0
 [8.4.1]: https://github.com/giantswarm/giantswarm/compare/v8.4.0...v8.4.1
 [8.4.0]: https://github.com/giantswarm/giantswarm/compare/v8.3.0...v8.4.0
