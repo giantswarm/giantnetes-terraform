@@ -23,10 +23,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- [Azure] Disable cloud-provider integration from core k8s components.
+- [Azure] Add apps for out-of-tree cloud provider integration.
+- [Azure] Switch to CSI storage provider.
+- [Azure] Enable `CSIMigration` and `CSIMigrationAzureDisk` feature gates.
 - [Azure] Bump flatcar to `3139.2.0`.
 - Bump coredns to `1.9.0`.
 - Bump nginx-ingress-controller to `2.10.0`.
-- [Azure] Switch to external cloud-controller-manager and CSI driver.
 
 ## [8.4.1] - 2022-03-30
 
