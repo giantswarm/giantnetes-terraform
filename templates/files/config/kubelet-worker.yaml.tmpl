@@ -10,8 +10,11 @@ clusterDNS:
 clusterDomain: {{ .ClusterDomain }}
 featureGates:
   ExpandPersistentVolumes: true
-{{- if eq .Provider "azure" }}
   CSIMigration: true
+{{- if eq .Provider "aws" }}
+  CSIMigrationAWS: true
+{{- end }}
+{{- if eq .Provider "azure" }}
   CSIMigrationAzureDisk: true
 {{- end }}
 kernelMemcgNotification: true

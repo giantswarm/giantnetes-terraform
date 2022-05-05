@@ -671,7 +671,7 @@ systemd:
       --container-runtime-endpoint=/var/run/dockershim/dockershim.sock \
       --logtostderr=true \
       {{if eq .Provider "aws" -}}
-      --cloud-provider=aws \
+      --cloud-provider=external \
       --image-pull-progress-deadline={{ .ImagePullProgressDeadline }} \
       --pod-infra-container-image={{.DockerRegistry}}/{{ .PodInfraImage }} \
       {{ else -}}

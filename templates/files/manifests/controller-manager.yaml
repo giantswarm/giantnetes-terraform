@@ -16,16 +16,12 @@ spec:
       - --master=https://{{ .APIDomainName }}:443
       - --logtostderr=true
       - --v=2
-      {{ if eq .Provider "aws" -}}
-      - --cloud-provider=aws
-      {{ else -}}
       - --cloud-provider=external
-      - --external-cloud-volume-plugin=azure
-      {{ end -}}
+      - --external-cloud-volume-plugin={{ .Provider }}
       - --profiling=false
       - --terminated-pod-gc-threshold=10
       - --use-service-account-credentials=true
-      - --feature-gates=ExpandPersistentVolumes=true,TTLAfterFinished=true{{ if eq .Provider "azure" }},CSIMigration=true,CSIMigrationAzureDisk=true{{ end }}
+      - --feature-gates=ExpandPersistentVolumes=true,TTLAfterFinished=true,CSIMigration=true{{ if eq .Provider "aws" }},CSIMigrationAWS=true{{ end }}{{ if eq .Provider "azure" }},CSIMigrationAzureDisk=true{{ end }}
       - --kubeconfig=/etc/kubernetes/kubeconfig/controller-manager.yaml
       - --root-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
       - --service-account-private-key-file=/etc/kubernetes/ssl/service-account-key.pem
