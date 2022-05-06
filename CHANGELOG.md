@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - [AWS] Disable kernel route for eth1 interface to avoid routing trouble within AZ.
+- Bind Api Server to 0.0.0.0.
+- Remove Api Server advertise address to make it be automatic set to VM's default IP address.
 
 ## [9.2.0] - 2022-05-05
 
