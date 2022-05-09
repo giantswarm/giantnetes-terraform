@@ -16,11 +16,6 @@ spec:
   containers:
     - name: k8s-api-server
       image: {{.DockerRegistry}}/giantswarm/kube-apiserver:v{{ .K8sVersion }}
-      env:
-      - name: HOST_IP
-        valueFrom:
-          fieldRef:
-            fieldPath: status.podIP
       command:
       - kube-apiserver
       - --allow-privileged=true
@@ -29,7 +24,7 @@ spec:
       {{ if eq .Provider "aws" -}}
       - --cloud-provider=external
       {{ end -}}
-      - --bind-address=$(HOST_IP)
+      - --bind-address=0.0.0.0
       - --etcd-prefix=giantswarm.io
       - --authorization-mode=RBAC
       - --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,PodSecurityPolicy,PersistentVolumeClaimResize,DefaultStorageClass,Priority,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook
@@ -38,7 +33,6 @@ spec:
       - --etcd-cafile=/etc/kubernetes/ssl/etcd/server-ca.pem
       - --etcd-certfile=/etc/kubernetes/ssl/etcd/server-crt.pem
       - --etcd-keyfile=/etc/kubernetes/ssl/etcd/server-key.pem
-      - --advertise-address=$(HOST_IP)
       - --runtime-config=api/all=true
       - --logtostderr=true
       - --profiling=false
