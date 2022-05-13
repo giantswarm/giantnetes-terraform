@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Switch kubelet's `cgroupDriver` to `systemd`.
+- Bump `nginx-ingress-controller-app` to `2.12.0`.
 
 ## [9.3.0] - 2022-05-09
 
