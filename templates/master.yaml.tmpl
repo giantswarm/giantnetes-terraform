@@ -1353,7 +1353,7 @@ systemd:
 {{ if eq .Provider "aws" -}}
 networkd:
   units:
-  - name: 10-eth1.network
+  - name: 11-eth1.network
     contents: |
       # ensure that traffic arriving on eth1 leaves again from eth1 to prevent asymetric routing
       [Match]
