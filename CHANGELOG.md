@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.4.0] - 2022-05-24
+
 ### Changed
 
 - Switch kubelet's `cgroupDriver` to `systemd`.
@@ -541,7 +543,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v9.3.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v9.4.0...HEAD
+[9.4.0]: https://github.com/giantswarm/giantswarm/compare/v9.3.0...v9.4.0
 [9.3.0]: https://github.com/giantswarm/giantswarm/compare/v9.2.0...v9.3.0
 [9.2.0]: https://github.com/giantswarm/giantswarm/compare/v9.1.0...v9.2.0
 [9.1.0]: https://github.com/giantswarm/giantswarm/compare/v9.0.0...v9.1.0
