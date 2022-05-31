@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Bump `aws-attach-etcd-dep` to `0.4.0`.
+- [AWS] Switch from `calico` and `kube-proxy` to `Cilium`.
 
 ## [9.4.0] - 2022-05-24
 
