@@ -930,7 +930,7 @@ systemd:
       Before=k8s-kubelet.service
 
       [Service]
-      Environment="IMAGE={{.DockerRegistry}}/giantswarm/aws-attach-etcd-dep:0.3.0"
+      Environment="IMAGE={{.DockerRegistry}}/giantswarm/aws-attach-etcd-dep:0.4.0"
       Environment="NAME=%p.service"
       Environment=MASTER_ID={{.MasterID}}
       Type=oneshot
