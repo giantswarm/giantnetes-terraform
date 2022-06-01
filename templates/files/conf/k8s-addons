@@ -3,30 +3,23 @@ set -eu
 KUBECONFIG=/etc/kubernetes/kubeconfig/addons.yaml
 KUBECTL="/opt/bin/kubectl --kubeconfig=$KUBECONFIG"
 
-# Get an helm binary
-docker rm helm-binary || true
-docker create --name=helm-binary alpine/helm:latest
-docker cp helm-binary:/usr/bin/helm /opt/bin/helm
-
-HELM="/opt/bin/helm --kubeconfig=$KUBECONFIG"HELM="/opt/bin/helm --kubeconfig=$KUBECONFIG"
-
 while ! curl --output /dev/null --silent --head --insecure "https://{{ .APIDomainName }}"; do sleep 1 && echo 'Waiting for master'; done
 
 # Create giantswarm, global and monitoring namespaces
 NAMESPACES="giantswarm global monitoring"
 for namespace in ${NAMESPACES}
 do
-  while
-      $KUBECTL get namespace ${namespace}
-      [ "$?" -ne "0" ]
+  while true
   do
-      while
-          $KUBECTL create namespace ${namespace}
-          [ "$?" -ne "0" ]
-      do
-          echo "failed to create namespace ${namespace}, retrying in 5 sec"
-          sleep 5s
-      done
+    # If namespace exists there is nothing to do so I exit the inner loop
+    $KUBECTL get namespace ${namespace} && break
+
+    # Create namespace and exit the loop if successful
+    $KUBECTL create namespace ${namespace} && break
+
+    # Something went wrong, try again
+    echo "failed to create namespace ${namespace}, retrying in 5 sec"
+    sleep 5s
   done
 done
 
@@ -61,133 +54,23 @@ do
     done
 done
 
-# apply priority classes
-PRIORITY_CLASSES_FILE="priority_classes.yaml"
-while
-    $KUBECTL apply -f /srv/${PRIORITY_CLASSES_FILE}
-    [ "$?" -ne "0" ]
-do
-    echo "failed to apply /srv/${PRIORITY_CLASSES_FILE}, retrying in 5 sec"
-    sleep 5s
-done
-
-KUBE_PROXY_MANIFESTS="kube-proxy-sa.yaml kube-proxy-ds.yaml"
-
+# Begin Remove once all MCs will be running cilium.
 {{ if eq .Provider "aws" }}
 # Delete legacy CNI.
-$KUBECTL delete -f /srv/aws-cni.yaml -f /srv/calico-policy-only.yaml --ignore-not-found=true || true
+$KUBECTL delete -f /srv/aws-cni.yaml --ignore-not-found=true || true
+{{ end }}
 
-# Install Cilium using helm only if the helm chart does not exist.
-# This is needed on new installations where app operator and chart operator are not yet running.
-set +e
-if ! $HELM -n kube-system get notes cilium
-then
-  APP_CATALOG="default-catalog"
-  CILIUM_APP_VERSION="0.2.0"
-
-  $HELM repo add \
-      --force-update \
-      "${APP_CATALOG}" \
-      "https://giantswarm.github.io/${APP_CATALOG}"
-
-  $HELM repo update "${APP_CATALOG}"
-
-  $HELM upgrade \
-      --install \
-      --devel \
-      --version "${CILIUM_APP_VERSION}" \
-      -n kube-system \
-      --set hubble.relay.enabled=true \
-      --set defaultPolicies.enabled=true \
-      --set egressMasqueradeInterfaces=eth0 \
-      --set eni.enabled=false \
-      --set ipam.mode=cluster-pool \
-      --set ipam.operator.clusterPoolIPv4PodCIDR={{ .PodCIDR }} \
-      --set ipam.operator.clusterPoolIPv4MaskSize={{ .NodePodCIDRSize }} \
-      --set tunnel=vxlan \
-      --set nodeinit.enabled=true \
-      --set kubeProxyReplacement=strict \
-      --set k8sServiceHost="{{ .APIInternalDomainName }}" \
-      --set k8sServicePort="443" \
-      cilium \
-      "${APP_CATALOG}"/cilium
-fi
-set -e
-
-# Wait for cilium daemonset to be ready.
-$KUBECTL -n kube-system rollout status daemonset cilium
+# Delete calico
+$KUBECTL delete -f /srv/calico-policy-only.yaml --ignore-not-found=true || true
 
 # Delete kube-proxy.
-for manifest in $KUBE_PROXY_MANIFESTS
+for manifest in kube-proxy-sa.yaml kube-proxy-ds.yaml
 do
   $KUBECTL delete -f /srv/$manifest --ignore-not-found=true || true
 done
 
 $KUBECTL delete configmap kube-proxy --ignore-not-found=true || true
-
-{{ else -}}
-{{ if eq .Provider "azure" }}
-# create kube-proxy configmap
-while
-    $KUBECTL create configmap kube-proxy --from-file=kube-proxy.yaml=/srv/kube-proxy-config.yaml -o yaml --dry-run | $KUBECTL apply -n kube-system -f -
-    [ "$?" -ne "0" ]
-do
-    echo "failed to configure kube-proxy from /srv/kube-proxy-confg.yaml, retrying in 5 sec"
-    sleep 5s
-done
-
-# apply kube-proxy
-for manifest in $KUBE_PROXY_MANIFESTS
-do
-    while
-        $KUBECTL apply -f /srv/$manifest
-        [ "$?" -ne "0" ]
-    do
-        echo "failed to apply /srv/$manifest, retrying in 5 sec"
-        sleep 5s
-    done
-done
-
-# restart ds to apply config from configmap
-$KUBECTL delete pods -l k8s-app=kube-proxy -n kube-system
-
-## Apply Calico for ensuring network policies
-CNI_FILE="calico-policy-only.yaml"
-{{ else -}}
-## Apply Calico with all its components
-CNI_FILE="calico-all.yaml"
-{{ end -}}
-for manifest in "${CNI_FILE}"
-do
-    while
-        $KUBECTL apply -f /srv/$manifest
-        [ "$?" -ne "0" ]
-    do
-        echo "failed to apply /srv/$manifest, retrying in 5 sec"
-        sleep 5s
-    done
-done
-{{ end -}}
-
-
-{{ if eq .Provider "azure" }}
-echo "Waiting for calico-node to be ready..."
-n=0
-exitcode=-1
-until [ "$n" -ge 20 ] || [ "$exitcode" -eq 0 ]
-do
-   $KUBECTL -n kube-system -l k8s-app=calico-node wait --for=condition=Ready --timeout=30s pods
-   exitcode=$?
-   n=$((n+1))
-   sleep 10
-done
-
-# delete calico-kube-controllers
-$KUBECTL -n kube-system delete deploy calico-kube-controllers --ignore-not-found=true
-{{ end -}}
-
-# Apply all apps.
-$KUBECTL apply -f /srv/apps/ --recursive
+# End Remove once all MCs will be running cilium.
 
 # apply k8s addons
 MANIFESTS="default-storage-class.yaml
@@ -203,5 +86,11 @@ do
         sleep 5s
     done
 done
+
+# Wait for App CRD to exist.
+while ! $KUBECTL get crd apps.application.giantswarm.io ; do sleep 1 && echo 'Waiting for App CRD to exist'; done
+
+# Apply all apps.
+$KUBECTL apply -f /srv/apps/ --recursive
 
 echo "Addons successfully installed"
