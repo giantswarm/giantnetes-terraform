@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [10.0.0] - 2022-06-08
+
 ### Changed
 
 - [Azure] Bump kubernetes to version 1.22.10.
@@ -551,7 +553,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v9.4.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v10.0.0...HEAD
+[10.0.0]: https://github.com/giantswarm/giantswarm/compare/v9.4.0...v10.0.0
 [9.4.0]: https://github.com/giantswarm/giantswarm/compare/v9.3.0...v9.4.0
 [9.3.0]: https://github.com/giantswarm/giantswarm/compare/v9.2.0...v9.3.0
 [9.2.0]: https://github.com/giantswarm/giantswarm/compare/v9.1.0...v9.2.0
