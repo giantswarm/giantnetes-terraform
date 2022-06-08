@@ -990,7 +990,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       LimitNOFILE=40000
-      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.4.18
+      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.5.4
       Environment=NAME=%p.service
       EnvironmentFile=/etc/network-environment
       {{if eq .Provider "azure" }}EnvironmentFile=-/var/lib/etcd/master-id{{end}}
