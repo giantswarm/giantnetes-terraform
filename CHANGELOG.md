@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- [Azure] Bump kubernetes to version 1.22.10.
+- [Azure] Bump flatcar to version 3139.2.1.
+- [AWS] Bump kubernetes to version 1.22.10.
+- [AWS] Bump flatcar to version 3139.2.2.
+- Bump etcd to 3.5.4.
+
 ## [9.4.0] - 2022-05-24
 
 ### Changed
