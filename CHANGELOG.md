@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [10.0.1] - 2022-06-09
+
 ### Changed
 
 - Bump `nginx-ingress-controller-app` to `2.12.1`.
@@ -557,7 +559,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v10.0.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v10.0.1...HEAD
+[10.0.1]: https://github.com/giantswarm/giantswarm/compare/v10.0.0...v10.0.1
 [10.0.0]: https://github.com/giantswarm/giantswarm/compare/v9.4.0...v10.0.0
 [9.4.0]: https://github.com/giantswarm/giantswarm/compare/v9.3.0...v9.4.0
 [9.3.0]: https://github.com/giantswarm/giantswarm/compare/v9.2.0...v9.3.0
