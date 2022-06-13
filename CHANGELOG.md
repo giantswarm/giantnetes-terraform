@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Use containerd socker instead of dockershim.
+- [AWS] Bump to AWS-cni 1.11.0 and mount containerd socket instead of dockershim one to `aws-node` pods.
+
 ## [10.1.0] - 2022-06-23
 
 ### Added
