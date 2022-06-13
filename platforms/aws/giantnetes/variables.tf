@@ -328,7 +328,7 @@ variable "image_pull_progress_deadline" {
 }
 
 variable "pod_infra_image" {
-  default = "giantswarm/pause-amd64:3.1"
+  default = "giantswarm/pause-amd64:3.5"
 }
 
 ### External Kubernetes API Access
