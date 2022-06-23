@@ -34,7 +34,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [AWS] Bump kubernetes to version 1.22.10.
 - [AWS] Bump flatcar to version 3139.2.2.
 - Bump etcd to 3.5.4.
-- Switch from dockershim to containerd.
 
 ## [9.4.0] - 2022-05-24
 
