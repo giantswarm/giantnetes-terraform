@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [10.1.0] - 2022-06-23
+
 ### Added
 
 - Add new variable `disable_api_fairness` to allow disabling API fairness.
@@ -563,7 +565,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v10.0.1...HEAD
+[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v10.1.0...HEAD
+[10.1.0]: https://github.com/giantswarm/giantswarm/compare/v10.0.1...v10.1.0
 [10.0.1]: https://github.com/giantswarm/giantswarm/compare/v10.0.0...v10.0.1
 [10.0.0]: https://github.com/giantswarm/giantswarm/compare/v9.4.0...v10.0.0
 [9.4.0]: https://github.com/giantswarm/giantswarm/compare/v9.3.0...v9.4.0
