@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- c
+- Add new variable `disable_api_fairness` to allow disabling API fairness.
 
 ## [10.0.1] - 2022-06-09
 
