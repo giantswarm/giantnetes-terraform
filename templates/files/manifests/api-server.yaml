@@ -62,6 +62,9 @@ spec:
       - --requestheader-username-headers=X-Remote-User
       - --proxy-client-cert-file=/etc/kubernetes/ssl/apiserver-crt.pem
       - --proxy-client-key-file=/etc/kubernetes/ssl/apiserver-key.pem
+      {{- if .DisableAPIFairness  }}
+      - --enable-priority-and-fairness=false
+      {{- end }}
       resources:
         requests:
           cpu: 300m

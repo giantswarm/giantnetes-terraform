@@ -354,3 +354,9 @@ variable "additional_tags" {
   type        = map(string)
   default     = {}
 }
+
+# If set to true, the kubernetes API fairness mechanism is disabled.
+variable "disable_api_fairness" {
+  default = false
+  type    = bool
+}

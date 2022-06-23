@@ -147,6 +147,7 @@ locals {
     "CalicoMTU"                = var.calico_mtu
     "ClusterDomain"            = var.cluster_domain
     "ClusterName"              = var.cluster_name
+    "DisableAPIFairness"       = var.disable_api_fairness
     "DockerCIDR"               = var.docker_cidr
     "DockerRegistry"           = var.docker_registry
     "ETCDInitialClusterMulti"  = "etcd1=https://etcd1.${var.base_domain}:2380,etcd2=https://etcd2.${var.base_domain}:2380,etcd3=https://etcd3.${var.base_domain}:2380"

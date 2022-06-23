@@ -383,3 +383,9 @@ variable "cluster_domain" {
   type        = string
   default     = "cluster.local"
 }
+
+# If set to true, the kubernetes API fairness mechanism is disabled.
+variable "disable_api_fairness" {
+  default = false
+  type    = bool
+}
