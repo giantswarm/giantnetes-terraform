@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Use containerd socket instead of dockershim in the kubelet config.
-- [AWS] Bump to AWS-cni 1.11.0 and mount containerd socket instead of dockershim one to `aws-node` pods.
+- [AWS] Bump to AWS-cni 1.11.2 and mount containerd socket instead of dockershim one to `aws-node` pods.
 - Bump Pod Infra image to `giantswarm/pause-amd64:3.3`.
 
 ## [10.1.0] - 2022-06-23
