@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [10.2.0] - 2022-06-29
+
 ### Changed
 
 - Use containerd socket instead of dockershim in the kubelet config.
@@ -571,7 +573,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v10.1.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v10.2.0...HEAD
+[10.2.0]: https://github.com/giantswarm/giantswarm/compare/v10.1.0...v10.2.0
 [10.1.0]: https://github.com/giantswarm/giantswarm/compare/v10.0.1...v10.1.0
 [10.0.1]: https://github.com/giantswarm/giantswarm/compare/v10.0.0...v10.0.1
 [10.0.0]: https://github.com/giantswarm/giantswarm/compare/v9.4.0...v10.0.0
