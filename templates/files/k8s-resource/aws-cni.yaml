@@ -153,7 +153,7 @@ spec:
       tolerations:
         - operator: Exists
       initContainers:
-        - image: {{.DockerRegistry}}/giantswarm/aws-cni-init:v1.10.1-nftables
+        - image: {{.DockerRegistry}}/giantswarm/aws-cni-init:v1.11.2-nftables
           imagePullPolicy: Always
           name: aws-vpc-cni-init
           env:
@@ -167,7 +167,7 @@ spec:
             - mountPath: /host/opt/cni/bin
               name: cni-bin-dir
       containers:
-        - image: {{.DockerRegistry}}/giantswarm/aws-cni:v1.10.1-nftables
+        - image: {{.DockerRegistry}}/giantswarm/aws-cni:v1.11.2-nftables
           imagePullPolicy: Always
           ports:
             - containerPort: 61678
@@ -244,8 +244,8 @@ spec:
               name: log-dir
             - mountPath: /var/run/aws-node
               name: run-dir
-            - mountPath: /var/run/dockershim.sock
-              name: dockershim
+            - mountPath: /var/run/cri.sock
+              name: cri
             - mountPath: /run/xtables.lock
               name: xtables-lock
       volumes:
@@ -267,9 +267,9 @@ spec:
             path: /var/run/aws-node
             type: DirectoryOrCreate
           name: run-dir
-        - name: dockershim
+        - name: cri
           hostPath:
-            path: /var/run/dockershim/dockershim.sock
+            path: /var/run/containerd/containerd.sock
 
 ---
 apiVersion: apiextensions.k8s.io/v1

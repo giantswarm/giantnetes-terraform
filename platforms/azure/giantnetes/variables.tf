@@ -165,6 +165,10 @@ variable "hyperkube_version" {
   default = "1.22.10"
 }
 
+variable "pod_infra_image" {
+  default = "giantswarm/pause-amd64:3.3"
+}
+
 ### DNS ###
 
 variable "base_domain" {
