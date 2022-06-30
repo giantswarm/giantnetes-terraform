@@ -1071,7 +1071,7 @@ systemd:
       EnvironmentFile=/etc/environment
       {{if eq .Provider "azure" }}EnvironmentFile=-/var/lib/etcd/master-id{{end}}
       {{if eq .Provider "aws" }}Environment=MASTER_ID={{.MasterID}}{{end}}
-      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.4.13
+      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.5.4
       Environment=NAME=%p.service
       ExecStartPre=-/usr/bin/docker stop  $NAME
       ExecStartPre=-/usr/bin/docker rm  $NAME

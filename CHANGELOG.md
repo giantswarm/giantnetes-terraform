@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Bump flatcar to `3139.2.3`.
+- Bump kubernetes to `1.22.11`.
+- Bump `coredns` app to `1.10.1`.
+- Bump `nginx-ingress-controller` app to `2.14.0`.
+- [AWS] Bump `aws-ebs-csi-driver` to `2.14.0`.
+- [AWS] Bump `aws-node-termination-handler` to `0.4.0`.
+
+### Fixed
+
+- Bump etcd image version to 3.5.4 for etcd3-defrag unit.
+
 ## [10.2.0] - 2022-06-29
 
 ### Changed
