@@ -33,4 +33,4 @@ spec:
     secret:
       name: ""
       namespace: ""
-  version: 1.21.0-gs1
+  version: 1.22.4-gs1

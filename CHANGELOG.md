@@ -14,7 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump `coredns` app to `1.10.1`.
 - Bump `nginx-ingress-controller` app to `2.14.0`.
 - [AWS] Bump `aws-ebs-csi-driver` to `2.14.0`.
-- [AWS] Bump `aws-node-termination-handler` to `0.4.0`.
+- [AWS] Bump `aws-node-termination-handler` to `1.16.5-gs1`.
+- [AWS] Bump `aws-cloud-controller-manager` to `1.22.4-gs1`.
+- [Azure] Bump `azuredisk-csi-driver` to `1.19.0-gs1`.
+- [Azure] Bump `azure-cloud-controller-manager` to `1.1.17-gs1`.
+- [Azure] Bump `azure-cloud-node-manager` to `1.1.17-gs1`.
 
 ### Fixed
 
