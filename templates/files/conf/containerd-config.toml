@@ -34,3 +34,7 @@ runtime_type = "io.containerd.runc.v2"
 SystemdCgroup = true
 [plugins."io.containerd.grpc.v1.cri"]
 sandbox_image = "{{.DockerRegistry}}/{{ .PodInfraImage }}"
+{{- if ne .DockerRegistryMirror "" }}
+[plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
+endpoint = ["{{.DockerRegistryMirror}}"]
+{{- end }}

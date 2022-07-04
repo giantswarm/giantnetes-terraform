@@ -143,6 +143,11 @@ variable "docker_registry" {
   default = "quay.io"
 }
 
+variable "docker_registry_mirror" {
+  type    = string
+  default = "giantswarm.azurecr.io"
+}
+
 variable "hyperkube_version" {
   type    = string
   default = "1.22.11"

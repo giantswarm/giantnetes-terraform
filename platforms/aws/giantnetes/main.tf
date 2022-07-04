@@ -128,6 +128,7 @@ locals {
     "DisableAPIFairness"           = var.disable_api_fairness
     "DockerCIDR"                   = var.docker_cidr
     "DockerRegistry"               = var.docker_registry
+    "DockerRegistryMirror"         = var.docker_registry_mirror
     "ETCDEndpoints"                = "https://etcd1.${var.base_domain}:2379,https://etcd2.${var.base_domain}:2379,https://etcd3.${var.base_domain}:2379"
     "ETCDInitialClusterMulti"      = "etcd1=https://etcd1.${var.base_domain}:2380,etcd2=https://etcd2.${var.base_domain}:2380,etcd3=https://etcd3.${var.base_domain}:2380"
     "ETCDInitialClusterSingle"     = "etcd1=https://etcd1.${var.base_domain}:2380"
