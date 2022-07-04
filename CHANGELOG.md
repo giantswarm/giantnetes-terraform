@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Enabled auditd on masters, workers and bastions.
+- Add registry mirror setting for containerd.
 
 ### Changed
 
