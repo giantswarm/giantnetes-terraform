@@ -14,6 +14,9 @@ data:
       hostNetwork: false
       nodeSelector:
         kubernetes.io/os: linux
+    global:
+      image:
+        registry: {{.DockerRegistry}}
 ---
 apiVersion: application.giantswarm.io/v1alpha1
 kind: App
@@ -50,4 +53,4 @@ spec:
     secret:
       name: ""
       namespace: ""
-  version: 2.14.0
+  version: 2.15.0
