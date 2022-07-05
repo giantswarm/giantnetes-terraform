@@ -80,15 +80,6 @@ storage:
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/calico-all.yaml" }}"
 {{ end }}
-    - path: /srv/priority_classes.yaml
-      filesystem: root
-      mode: 420
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/priority_classes.yaml" }}"
 
     - path: /srv/default-storage-class.yaml
       filesystem: root
@@ -986,7 +977,7 @@ systemd:
       Before=k8s-kubelet.service
 
       [Service]
-      Environment="IMAGE={{.DockerRegistry}}/giantswarm/aws-attach-etcd-dep:0.3.0"
+      Environment="IMAGE={{.DockerRegistry}}/giantswarm/aws-attach-etcd-dep:0.4.0"
       Environment="NAME=%p.service"
       Environment=MASTER_ID={{.MasterID}}
       Type=oneshot

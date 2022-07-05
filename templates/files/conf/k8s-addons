@@ -53,16 +53,6 @@ do
     done
 done
 
-# apply priority classes
-PRIORITY_CLASSES_FILE="priority_classes.yaml"
-while
-    $KUBECTL apply -f /srv/${PRIORITY_CLASSES_FILE}
-    [ "$?" -ne "0" ]
-do
-    echo "failed to apply /srv/${PRIORITY_CLASSES_FILE}, retrying in 5 sec"
-    sleep 5s
-done
-
 # create kube-proxy configmap
 while
     $KUBECTL create configmap kube-proxy --from-file=kube-proxy.yaml=/srv/kube-proxy-config.yaml -o yaml --dry-run | $KUBECTL apply -n kube-system -f -
