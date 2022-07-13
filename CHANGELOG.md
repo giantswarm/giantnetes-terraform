@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix runtime and image endpoint for crictl.
+
 ## [11.0.0] - 2022-07-12
 
 ### Added
