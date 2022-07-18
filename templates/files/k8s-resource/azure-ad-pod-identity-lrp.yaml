@@ -1,0 +1,20 @@
+apiVersion: "cilium.io/v2"
+kind: CiliumLocalRedirectPolicy
+metadata:
+  name: "azure-ad-pod-identity-redirect"
+  namespace: kube-system
+spec:
+  redirectFrontend:
+    addressMatcher:
+      ip: "169.254.169.254"
+      toPorts:
+        - port: "80"
+          protocol: TCP
+  redirectBackend:
+    localEndpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: azure-ad-pod-identity-app
+        app.kubernetes.io/component: nmi
+    toPorts:
+      - port: "2579"
+        protocol: TCP

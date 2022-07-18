@@ -242,6 +242,12 @@ variable "pod_cidr" {
   default     = "10.0.128.0/17"
 }
 
+variable "node_pod_cidr_size" {
+  description = "Size of Pod CIDR to be allocated for each node."
+  type        = string
+  default     = "25"
+}
+
 variable "docker_cidr" {
   description = "CIDR for Docker."
   default     = "172.17.0.1/16"

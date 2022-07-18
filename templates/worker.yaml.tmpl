@@ -59,16 +59,6 @@ storage:
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/66-azure-storage.rules" }}"
 
-    - path: /opt/azure-cni
-      filesystem: root
-      mode: 356
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/azure-cni" }}"
-
     {{ end -}}
 
     - path: /opt/k8s-extract
@@ -180,15 +170,6 @@ storage:
         id: 0
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/get-ca.sh" }}"
-    - path: /opt/bin/setup-kubelet-environment
-      filesystem: root
-      mode: 356
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/setup-kubelet-environment" }}"
     - path: /etc/sysctl.d/hardening.conf
       filesystem: root
       mode: 384
@@ -361,33 +342,18 @@ systemd:
          [ $? -ne 0 ] && echo "Failed to fetch CA ssh public key" && exit 1 || echo "Sucesfully retrieved CA ssh public key";'
       [Install]
       WantedBy=multi-user.target
-  - name: k8s-setup-kubelet-environment.service
-    enabled: true
-    contents: |
-      [Unit]
-      Description=k8s-setup-kubelet-environment Service
-      After=k8s-setup-network-env.service docker.service
-      Requires=k8s-setup-network-env.service docker.service
-      [Service]
-      Type=oneshot
-      RemainAfterExit=yes
-      TimeoutStartSec=0
-      ExecStart=/opt/bin/setup-kubelet-environment
-      [Install]
-      WantedBy=multi-user.target
   - name: k8s-setup-kubelet-config.service
     enabled: true
     contents: |
       [Unit]
       Description=k8s-setup-kubelet-config Service
-      After=k8s-setup-network-env.service docker.service k8s-setup-kubelet-environment.service
-      Requires=k8s-setup-network-env.service docker.service k8s-setup-kubelet-environment.service
+      After=k8s-setup-network-env.service docker.service
+      Requires=k8s-setup-network-env.service docker.service
 
       [Service]
       Type=oneshot
       RemainAfterExit=yes
       EnvironmentFile=/etc/network-environment
-      EnvironmentFile=/etc/kubelet-environment
       ExecStart=/bin/bash -c '/usr/bin/envsubst </etc/kubernetes/config/kubelet.yaml.tmpl >/etc/kubernetes/config/kubelet.yaml'
 
       [Install]

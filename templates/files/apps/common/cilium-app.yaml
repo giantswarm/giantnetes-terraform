@@ -1,0 +1,99 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cilium-user-values
+  namespace: giantswarm
+data:
+  values: |
+    hubble:
+      relay:
+        enabled: true
+    defaultPolicies:
+      enabled: true
+    egressMasqueradeInterfaces: eth0
+    eni:
+      enabled: false
+    kubeProxyReplacement: strict
+    k8sServiceHost: "{{ .APIInternalDomainName }}"
+    k8sServicePort: "443"
+    ipam:
+      mode: cluster-pool
+      operator:
+        clusterPoolIPv4PodCIDR: "{{ .PodCIDR }}"
+        clusterPoolIPv4MaskSize: {{ .NodePodCIDRSize }}
+    localRedirectPolicy: true
+    tunnel: vxlan
+    nodeinit:
+      enabled: true
+    image:
+      repository: {{.DockerRegistry}}/giantswarm/cilium
+    certgen:
+      image:
+        repository: {{.DockerRegistry}}/giantswarm/cilium-certgen
+    hubble:
+      relay:
+        image:
+          repository: {{.DockerRegistry}}/giantswarm/hubble-relay
+      ui:
+        backend:
+          image:
+            repository: {{.DockerRegistry}}/giantswarm/hubble-ui-backend
+        frontend:
+          image:
+            repository: {{.DockerRegistry}}/giantswarm/hubble-ui
+        proxy:
+          image:
+            repository: {{.DockerRegistry}}/giantswarm/envoy
+    etcd:
+      image:
+        repository: {{.DockerRegistry}}/giantswarm/cilium-etcd-operator
+    operator:
+      image:
+        repository: {{.DockerRegistry}}/giantswarm/cilium-operator
+    nodeinit:
+      image:
+        repository: {{.DockerRegistry}}/giantswarm/cilium-startup-script
+    preflight:
+      image:
+        repository: {{.DockerRegistry}}/giantswarm/cilium
+    clustermesh:
+      apiserver:
+        image:
+          repository: {{.DockerRegistry}}/giantswarm/clustermesh-apiserver
+---
+apiVersion: application.giantswarm.io/v1alpha1
+kind: App
+metadata:
+  labels:
+    app-operator.giantswarm.io/version: 0.0.0
+    app.kubernetes.io/name: cilium
+  name: cilium
+  namespace: giantswarm
+spec:
+  catalog: default
+  config:
+    configMap:
+      name: ""
+      namespace: ""
+    secret:
+      name: ""
+      namespace: ""
+  install: {}
+  kubeConfig:
+    context:
+      name: ""
+    inCluster: true
+    secret:
+      name: ""
+      namespace: ""
+  name: cilium
+  namespace: kube-system
+  namespaceConfig: {}
+  userConfig:
+    configMap:
+      name: "cilium-user-values"
+      namespace: "giantswarm"
+    secret:
+      name: ""
+      namespace: ""
+  version: 0.2.3
