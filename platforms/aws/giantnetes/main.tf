@@ -157,6 +157,7 @@ locals {
     "MasterMountETCD"              = var.master_instance["volume_etcd"]
     "OIDCIssuerURL"                = "https://${var.oidc_issuer_dns}.${var.base_domain}"
     "PodCIDR"                      = var.aws_cni_cidr_v2
+    "NodePodCIDRSize"              = var.node_pod_cidr_size
     "PodInfraImage"                = var.pod_infra_image
     "Provider"                     = "aws"
     "Users"                        = yamldecode(base64decode(jsondecode(data.http.bastion_users.body).content))

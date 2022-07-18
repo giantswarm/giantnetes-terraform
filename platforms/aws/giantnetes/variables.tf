@@ -207,6 +207,12 @@ variable "aws_cni_subnets_v2" {
   default     = ["100.64.0.0/18", "100.64.64.0/18", "100.64.128.0/18"]
 }
 
+variable "node_pod_cidr_size" {
+  description = "Size of Pod CIDR to be allocated for each node."
+  type        = string
+  default     = "25"
+}
+
 variable "docker_cidr" {
   description = "CIDR for Docker."
   default     = "172.17.0.1/16"

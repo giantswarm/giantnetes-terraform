@@ -165,6 +165,7 @@ locals {
     "MasterCount"              = var.master_count
     "OIDCIssuerURL"            = "https://${var.oidc_issuer_dns}.${var.base_domain}"
     "PodCIDR"                  = var.pod_cidr
+    "NodePodCIDRSize"          = var.node_pod_cidr_size
     "PodInfraImage"            = var.pod_infra_image
     "Provider"                 = "azure"
     "Users"                    = yamldecode(base64decode(jsondecode(data.http.bastion_users.body).content))
