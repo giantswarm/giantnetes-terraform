@@ -1,3 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aws-cloud-controller-manager-user-values
+  namespace: giantswarm
+data:
+  values: |
+    cluster:
+      calico:
+        CIDR: {{ .PodCIDR }}
+---
 apiVersion: application.giantswarm.io/v1alpha1
 kind: App
 metadata:
@@ -7,7 +18,7 @@ metadata:
   name: aws-cloud-controller-manager-app
   namespace: giantswarm
 spec:
-  catalog: giantswarm
+  catalog: giantswarm-test
   config:
     configMap:
       name: ""
@@ -28,9 +39,9 @@ spec:
   namespaceConfig: {}
   userConfig:
     configMap:
-      name: ""
-      namespace: ""
+      name: "aws-cloud-controller-manager-user-values"
+      namespace: "giantswarm"
     secret:
       name: ""
       namespace: ""
-  version: 1.22.4-gs1
+  version: 1.23.2-gs2-ef61cbecacee3f5dcabec298ff3c948ccd401ae2
