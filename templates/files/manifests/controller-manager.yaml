@@ -26,7 +26,7 @@ spec:
       - --root-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
       - --service-account-private-key-file=/etc/kubernetes/ssl/service-account-key.pem
       - --allocate-node-cidrs=true
-      - --cluster-cidr={{ .PodCidr }}
+      - --cluster-cidr={{ .PodCIDR }}
       - --node-cidr-mask-size={{ .NodePodCIDRSize }}
       resources:
         requests:
