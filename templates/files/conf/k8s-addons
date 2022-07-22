@@ -54,49 +54,6 @@ do
     done
 done
 
-# TODO Begin Remove once all MCs will be running cilium.
-# Install cilium app and wait for it to be running.
-$KUBECTL apply -f /srv/apps/common/cilium-app.yaml
-
-# Wait for cilium DS to exist and be satisfied
-set +e
-echo "Waiting for cilium DS to exist..."
-n=0
-exitcode=-1
-until [ "$exitcode" -eq 0 ]
-do
-   $KUBECTL -n kube-system get ds cilium
-   exitcode=$?
-   n=$((n+1))
-   if [ "$n" -ge 20 ]
-   then
-     echo "Failed waiting for cilium DS to exist"
-     exit 1
-   fi
-   sleep 10
-done
-set -e
-
-echo "Waiting for cilium DS to be rolled out..."
-$KUBECTL -n kube-system rollout status daemonset/cilium
-
-{{ if eq .Provider "aws" }}
-# Delete legacy CNI.
-$KUBECTL delete -f /srv/aws-cni.yaml --ignore-not-found=true || true
-{{ end }}
-
-# Delete calico
-$KUBECTL delete -f /srv/calico-policy-only.yaml --ignore-not-found=true || true
-
-# Delete kube-proxy.
-for manifest in kube-proxy-sa.yaml kube-proxy-ds.yaml
-do
-  $KUBECTL delete -f /srv/$manifest --ignore-not-found=true || true
-done
-
-$KUBECTL delete configmap kube-proxy --ignore-not-found=true || true
-# TODO End Remove once all MCs will be running cilium.
-
 {{ if eq .Provider "azure" }}
 # Apply CiliumLocalRedirectPolicy for cluster-autoscaler
 $KUBECTL apply -f /srv/azure-ad-pod-identity-lrp.yaml
