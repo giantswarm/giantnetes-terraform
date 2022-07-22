@@ -11,6 +11,8 @@ data:
     eni:
       enabled: false
     kubeProxyReplacement: strict
+    k8sServiceHost: "{{ .APIInternalDomainName }}"
+    k8sServicePort: "443"
     ipam:
       mode: kubernetes
     localRedirectPolicy: true
