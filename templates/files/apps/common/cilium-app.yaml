@@ -5,9 +5,6 @@ metadata:
   namespace: giantswarm
 data:
   values: |
-    hubble:
-      relay:
-        enabled: true
     defaultPolicies:
       enabled: true
     egressMasqueradeInterfaces: eth0
@@ -17,12 +14,8 @@ data:
     k8sServiceHost: "{{ .APIInternalDomainName }}"
     k8sServicePort: "443"
     ipam:
-      mode: cluster-pool
-      operator:
-        clusterPoolIPv4PodCIDR: "{{ .PodCIDR }}"
-        clusterPoolIPv4MaskSize: {{ .NodePodCIDRSize }}
+      mode: kubernetes
     localRedirectPolicy: true
-    tunnel: vxlan
     nodeinit:
       enabled: true
     image:

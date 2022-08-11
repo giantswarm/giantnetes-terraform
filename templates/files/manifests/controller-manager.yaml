@@ -25,6 +25,9 @@ spec:
       - --kubeconfig=/etc/kubernetes/kubeconfig/controller-manager.yaml
       - --root-ca-file=/etc/kubernetes/ssl/apiserver-ca.pem
       - --service-account-private-key-file=/etc/kubernetes/ssl/service-account-key.pem
+      - --allocate-node-cidrs=true
+      - --cluster-cidr={{ .PodCIDR }}
+      - --node-cidr-mask-size={{ .NodePodCIDRSize }}
       resources:
         requests:
           cpu: 200m

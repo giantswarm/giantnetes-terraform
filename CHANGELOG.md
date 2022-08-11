@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Enable `--allocate-node-cidrs` to controller-manager flags.
+- Bump `azure-cloud-controller-manager` to `1.1.17-gs2`.
+
+### Removed
+- Remove k8s-addons code used to migrate to cilium.
+
 ## [12.0.0] - 2022-07-18
 
 ### Fixed
