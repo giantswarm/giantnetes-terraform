@@ -15,7 +15,7 @@ metadata:
   name: azure-cloud-controller-manager
   namespace: giantswarm
 spec:
-  catalog: control-plane-test-catalog
+  catalog: control-plane-catalog
   config:
     configMap:
       name: ""
@@ -41,5 +41,5 @@ spec:
     secret:
       name: ""
       namespace: ""
-  version: v1.1.17-gs2-784f74b77fe065e796ee9083dc274e295c9ec216
+  version: v1.23.17-gs1
 

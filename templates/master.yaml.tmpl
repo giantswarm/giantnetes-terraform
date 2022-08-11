@@ -673,7 +673,7 @@ systemd:
       TimeoutStartSec=0
       Environment=IMAGE={{.DockerRegistry}}/giantswarm/alpine:3.16.1-envsubst
       ExecStart=docker run --rm \
-        --env-file /etc/network-environment --env-file /etc/kubelet-environment \
+        --env-file /etc/network-environment \
         -v /etc/kubernetes/config/:/etc/kubernetes/config/ \
         $IMAGE \
         ash -c "cat /etc/kubernetes/config/kubelet.yaml.tmpl |envsubst >/etc/kubernetes/config/kubelet.yaml"
