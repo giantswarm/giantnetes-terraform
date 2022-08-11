@@ -28,8 +28,8 @@ spec:
   namespaceConfig: {}
   userConfig:
     configMap:
-      name: "aws-cloud-controller-manager-user-values"
-      namespace: "giantswarm"
+      name: ""
+      namespace: ""
     secret:
       name: ""
       namespace: ""
