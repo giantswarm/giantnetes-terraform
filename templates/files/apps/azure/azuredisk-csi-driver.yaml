@@ -4,7 +4,7 @@ metadata:
   name: azuredisk-csi-driver
   namespace: giantswarm
 spec:
-  catalog: control-plane-catalog
+  catalog: control-plane-test-catalog
   config:
     configMap:
       name: ""
@@ -30,5 +30,5 @@ spec:
     secret:
       name: ""
       namespace: ""
-  version: v1.19.0-gs1
+  version: v1.19.0-gs1-ad07150f7bec1efd861b97695f3e63781fca29dc
 
