@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+
+- Bump to flatcar `3227.2.1`.
+- Bump to kubernetes `1.23.9`.
+- Bump to cilium app version `0.2.6`.
+- Bump to coredns app version `1.11.0`.
+- Bump to nginx-ingress-controller app version `2.15.1`.
+- [AWS] Bump to aws-cloud-controller-manager app version `1.23.2-gs2`.
+- [AWS] Bump to aws-ebs-csi-driver app version `2.16.1`.
 - Enable `--allocate-node-cidrs` to controller-manager flags.
 - Bump `azure-cloud-controller-manager` to `1.1.17-gs2`.
 
