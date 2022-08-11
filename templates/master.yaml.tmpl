@@ -59,27 +59,6 @@ storage:
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/azure-ad-pod-identity-lrp.yaml" }}"
 {{ end }}
-{{ if or (eq .Provider "aws") (eq .Provider "azure") }}
-    - path: /srv/calico-policy-only.yaml
-      filesystem: root
-      mode: 420
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/calico-policy-only.yaml" }}"
-{{ else }}
-    - path: /srv/calico-all.yaml
-      filesystem: root
-      mode: 420
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/calico-all.yaml" }}"
-{{ end }}
 
     - path: /srv/default-storage-class.yaml
       filesystem: root
@@ -196,16 +175,6 @@ storage:
     - path: /opt/install-debug-tools
       filesystem: root
       mode: 356
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/install-debug-tools" }}"
-
-    - path: /etc/calico/calicoctl.cfg
-      filesystem: root
-      mode: 420
       user:
         id: 0
       group:
@@ -748,7 +717,7 @@ systemd:
     contents: |
       [Unit]
       Description=get vault-ca into trusted certs
-      Before=calico-certs.service api-certs.service etcd3-certs.service get-vault-token.service
+      Before=api-certs.service etcd3-certs.service get-vault-token.service
       After=wait-for-domains.service{{if eq .Provider "azure" }} waagent.service{{ end }}
       Wants=wait-for-domains.service{{if eq .Provider "azure" }} waagent.service{{ end }}
 
@@ -821,56 +790,6 @@ systemd:
 
   {{- end }}
 
-  - name: calico-certs.service
-    enabled: true
-    contents: |
-      [Unit]
-      Description=calico-certs
-      Wants=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{ end }}
-      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{ end }}
-
-      [Service]
-      EnvironmentFile=/etc/environment
-      EnvironmentFile=/etc/network-environment
-      EnvironmentFile=/etc/tokens/node
-      {{if eq .Provider "azure" }}EnvironmentFile=-/var/lib/etcd/master-id{{end}}
-      {{if eq .Provider "aws" }}Environment=MASTER_ID={{.MasterID}}{{end}}
-      Type=oneshot
-      Restart=on-failure
-      RemainAfterExit=yes
-      ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/calico/
-      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt {{.DockerRegistry}}/giantswarm/curl:7.67.0 -k -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
-      {{- if eq .Provider "azure" }}
-      ExecStartPre=/bin/bash -c "while [ ! -f /var/lib/etcd/master-id ]; do echo 'Waiting for /var/lib/etcd/master-id' && sleep 1; done"
-      {{- end }}
-      ExecStart=/bin/bash -c '\
-        RETRY=3;\
-        while [ -z "$result" ] && [ $RETRY -gt 0 ]; do\
-        sleep 2s; echo "Trying to issue calico certs...";\
-        let RETRY=$RETRY-1;\
-        export result=$(\
-          /usr/bin/docker run \
-          --rm \
-          --net=host \
-          -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
-          -v /etc/kubernetes/ssl/calico/:/etc/kubernetes/ssl/calico/ \
-          {{.DockerRegistry}}/giantswarm/certctl:943e40d9c36efc2eec76783d48a891fc6f323493 \
-          issue \
-          --vault-addr=https://{{ .VaultDomainName }} \
-          --vault-token=${VAULT_TOKEN} \
-          --cluster-id=g8s \
-          --common-name=etcd${MASTER_ID}.{{ .BaseDomain }} \
-          --ttl=8760h \
-          --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
-          --alt-names=localhost \
-          --ca-file=/etc/kubernetes/ssl/calico/etcd-ca \
-          --crt-file=/etc/kubernetes/ssl/calico/etcd-cert \
-          --key-file=/etc/kubernetes/ssl/calico/etcd-key); \
-        done; \
-        [ -z "$result" ] && echo "Failed to issue calico certs." && exit 1 || echo "Successfully issued calico certs.";'
-      ExecStop=/usr/bin/rm -rf /etc/kubernetes/ssl/calico/
-      [Install]
-      WantedBy=multi-user.target
   - name: etcd3-certs.service
     enabled: true
     contents: |
@@ -961,8 +880,8 @@ systemd:
     contents: |
       [Unit]
       Description=etcd3
-      Wants=k8s-setup-network-env.service etcd3-certs.service calico-certs.service{{ if eq .Provider "aws" }} var-lib-etcd.mount{{ end }}
-      After=k8s-setup-network-env.service etcd3-certs.service calico-certs.service{{ if eq .Provider "aws" }} var-lib-etcd.mount{{ end }}
+      Wants=k8s-setup-network-env.service etcd3-certs.service{{ if eq .Provider "aws" }} var-lib-etcd.mount{{ end }}
+      After=k8s-setup-network-env.service etcd3-certs.service{{ if eq .Provider "aws" }} var-lib-etcd.mount{{ end }}
       Conflicts=etcd.service etcd2.service
       StartLimitIntervalSec=0
 
@@ -1146,8 +1065,8 @@ systemd:
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-extract.service etcd3.service
-      Wants=k8s-setup-network-env.service docker.service calico-certs.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-extract.service etcd3.service
+      After=k8s-setup-network-env.service docker.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-extract.service etcd3.service
+      Wants=k8s-setup-network-env.service docker.service api-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-extract.service etcd3.service
 
       [Service]
       TimeoutStartSec=300
@@ -1279,7 +1198,7 @@ systemd:
     enabled: true
     contents: |
       [Unit]
-      Description=Calicoctl and crictl tools
+      Description=Crictl tools
       After=network-online.target
       [Service]
       Type=oneshot

@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - Remove k8s-addons code used to migrate to cilium.
+- Remove calico-related files.
 
 ## [12.0.0] - 2022-07-18
 

@@ -144,7 +144,6 @@ locals {
     "APIDomainName"            = "${var.api_dns}.${var.base_domain}"
     "APIInternalDomainName"    = "${var.api_dns_internal}.${var.base_domain}"
     "BaseDomain"               = var.base_domain
-    "CalicoMTU"                = var.calico_mtu
     "ClusterDomain"            = var.cluster_domain
     "ClusterName"              = var.cluster_name
     "DisableAPIFairness"       = var.disable_api_fairness
