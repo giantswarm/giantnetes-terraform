@@ -1,3 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: azure-scheduled-events-user-values
+  namespace: giantswarm
+data:
+  values: |
+    Installation:
+      V1:
+        Registry:
+          Domain: {{ .DockerRegistry }}
+---
 apiVersion: application.giantswarm.io/v1alpha1
 kind: App
 metadata:
@@ -25,8 +37,8 @@ spec:
   namespaceConfig: {}
   userConfig:
     configMap:
-      name: ""
-      namespace: ""
+      name: "azure-scheduled-events-user-values"
+      namespace: "giantswarm"
     secret:
       name: ""
       namespace: ""
