@@ -5,6 +5,8 @@ metadata:
   namespace: giantswarm
 data:
   configmap-values.yaml: |
+    image:
+      registry: {{ .DockerRegistry }}
     configmap:
       use-forwarded-headers: "false"
 {{- if eq .Provider "aws" }}

@@ -5,6 +5,8 @@ metadata:
   namespace: giantswarm
 data:
   values: |
+    image:
+      registry: {{ .DockerRegistry }}
     cluster:
       calico:
         CIDR: {{ .PodCIDR }}
