@@ -363,7 +363,7 @@ systemd:
     contents: |
       [Unit]
       Description=get vault-ca into trusted certs
-      Before=calico-certs.service kubelet-certs.service get-vault-token.service
+      Before=kubelet-certs.service get-vault-token.service
       After=wait-for-domains.service
       Wants=wait-for-domains.service
 
@@ -544,49 +544,7 @@ systemd:
 
       [Install]
       WantedBy=multi-user.target
-  - name: calico-certs.service
-    enabled: true
-    contents: |
-      [Unit]
-      Description=gen etcd client certs for calico
-      Wants=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{ end }}
-      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{end}}
 
-      [Service]
-      EnvironmentFile=/etc/environment
-      EnvironmentFile=/etc/network-environment
-      EnvironmentFile=/etc/tokens/node
-      Type=oneshot
-      RemainAfterExit=yes
-      ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/calico/
-      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt {{.DockerRegistry}}/giantswarm/curl:7.67.0 -k -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
-      ExecStart=/usr/bin/docker run \
-      --rm \
-      --net=host \
-      -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
-      -v /etc/kubernetes/ssl/calico/:/etc/kubernetes/ssl/calico/ \
-      {{.DockerRegistry}}/giantswarm/certctl:943e40d9c36efc2eec76783d48a891fc6f323493 \
-      issue \
-      --vault-addr=https://{{ .VaultDomainName }} \
-      --vault-token=${VAULT_TOKEN} \
-      --cluster-id=g8s \
-      --common-name=calico.{{ .BaseDomain }} \
-      --ttl=8760h \
-      --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
-      --alt-names=localhost \
-      --ca-file=/etc/kubernetes/ssl/calico/etcd-ca \
-      --crt-file=/etc/kubernetes/ssl/calico/etcd-cert \
-      --key-file=/etc/kubernetes/ssl/calico/etcd-key
-      # TODO(r7vme): Remove steps below after all clusters will have certificates.
-      ExecStartPost=/usr/bin/mkdir -p /etc/kubernetes/ssl/etcd/
-      ExecStartPost=/bin/cp /etc/kubernetes/ssl/calico/etcd-cert /etc/kubernetes/ssl/etcd/client-crt.pem
-      ExecStartPost=/bin/cp /etc/kubernetes/ssl/calico/etcd-ca /etc/kubernetes/ssl/etcd/client-ca.pem
-      ExecStartPost=/bin/cp /etc/kubernetes/ssl/calico/etcd-key /etc/kubernetes/ssl/etcd/client-key.pem
-      ExecStop=/usr/bin/rm -rf /etc/kubernetes/ssl/calico/
-      ExecStop=/usr/bin/rm -rf /etc/kubernetes/ssl/etcd/
-
-      [Install]
-      WantedBy=multi-user.target
   - name: kubelet-certs.service
     enabled: true
     contents: |
@@ -649,8 +607,8 @@ systemd:
       [Unit]
       Description=k8s-kubelet
       StartLimitIntervalSec=0
-      After=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-extract.service
-      Wants=k8s-setup-network-env.service docker.service kubelet-certs.service calico-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-extract.service
+      After=k8s-setup-network-env.service docker.service kubelet-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-extract.service
+      Wants=k8s-setup-network-env.service docker.service kubelet-certs.service wait-for-domains.service k8s-setup-kubelet-config.service k8s-extract.service
 
       [Service]
       TimeoutStartSec=300

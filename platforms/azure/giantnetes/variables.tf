@@ -218,11 +218,6 @@ variable "root_dns_zone_rg" {
 
 ### Network ###
 
-variable "calico_mtu" {
-  description = "MTU used for Calico interfaces"
-  default     = "1500"
-}
-
 variable "vnet_cidr" {
   description = "CIDR for VMs internal virtual network."
   default     = "10.0.0.0/16"
