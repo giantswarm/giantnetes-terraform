@@ -5,6 +5,8 @@ metadata:
   namespace: giantswarm
 data:
   values: |
+    image:
+      registry: {{ .DockerRegistry }}
     cluster:
       calico:
         CIDR: {{ .PodCIDR }}
@@ -41,5 +43,5 @@ spec:
     secret:
       name: ""
       namespace: ""
-  version: 1.1.17-gs2
+  version: v1.23.17-gs2
 

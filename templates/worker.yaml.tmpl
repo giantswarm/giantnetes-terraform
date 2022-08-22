@@ -353,8 +353,13 @@ systemd:
       [Service]
       Type=oneshot
       RemainAfterExit=yes
-      EnvironmentFile=/etc/network-environment
-      ExecStart=/bin/bash -c '/usr/bin/envsubst </etc/kubernetes/config/kubelet.yaml.tmpl >/etc/kubernetes/config/kubelet.yaml'
+      TimeoutStartSec=0
+      Environment=IMAGE={{.DockerRegistry}}/giantswarm/alpine:3.16.1-envsubst
+      ExecStart=docker run --rm \
+        --env-file /etc/network-environment \
+        -v /etc/kubernetes/config/:/etc/kubernetes/config/ \
+        $IMAGE \
+        ash -c "cat /etc/kubernetes/config/kubelet.yaml.tmpl |envsubst >/etc/kubernetes/config/kubelet.yaml"
 
       [Install]
       WantedBy=multi-user.target

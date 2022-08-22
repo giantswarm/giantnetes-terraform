@@ -1,3 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: azuredisk-csi-driver-user-values
+  namespace: giantswarm
+data:
+  values: |
+    image:
+      baseRepo: {{ .DockerRegistry }}/giantswarm/
+---
 apiVersion: application.giantswarm.io/v1alpha1
 kind: App
 metadata:
@@ -25,10 +35,10 @@ spec:
   namespaceConfig: {}
   userConfig:
     configMap:
-      name: ""
-      namespace: ""
+      name: "azuredisk-csi-driver-user-values"
+      namespace: "giantswarm"
     secret:
       name: ""
       namespace: ""
-  version: v1.19.0-gs1
+  version: v1.21.0-gs1
 
