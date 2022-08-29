@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [13.0.1] - 2022-08-29
+
 ### Fixed
 
 - Generate etcd client certs on workers (needed by prometheus app).
@@ -639,7 +641,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v13.0.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v13.0.1...HEAD
+[13.0.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v13.0.0...v13.0.1
 [13.0.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v12.0.0...v13.0.0
 [12.0.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v11.0.0...v12.0.0
 [11.0.0]: https://github.com/giantswarm/giantswarm/compare/v10.2.0...v11.0.0
