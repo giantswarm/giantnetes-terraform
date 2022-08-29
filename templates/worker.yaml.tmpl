@@ -549,7 +549,42 @@ systemd:
 
       [Install]
       WantedBy=multi-user.target
+  - name: etcd-client-certs.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=gen etcd client certs
+      Wants=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{ end }}
+      After=get-vault-ca.service k8s-setup-network-env.service docker.service wait-for-domains.service get-vault-token.service{{if eq .Provider "azure" }} waagent.service{{end}}
 
+      [Service]
+      EnvironmentFile=/etc/environment
+      EnvironmentFile=/etc/network-environment
+      EnvironmentFile=/etc/tokens/node
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/ssl/etcd/
+      ExecStartPre=/bin/bash -c "while ! docker run --rm -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt {{.DockerRegistry}}/giantswarm/curl:7.67.0 -k -q --silent -o /dev/null https://{{ .VaultDomainName }};  do sleep 2s;echo wait for Vault;done;"
+      ExecStart=/usr/bin/docker run \
+      --rm \
+      --net=host \
+      -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
+      -v /etc/kubernetes/ssl/etcd/:/etc/kubernetes/ssl/etcd/ \
+      {{.DockerRegistry}}/giantswarm/certctl:943e40d9c36efc2eec76783d48a891fc6f323493 \
+      issue \
+      --vault-addr=https://{{ .VaultDomainName }} \
+      --vault-token=${VAULT_TOKEN} \
+      --cluster-id=g8s \
+      --common-name=calico.{{ .BaseDomain }} \
+      --ttl=8760h \
+      --ip-sans=127.0.0.1,${DEFAULT_IPV4} \
+      --alt-names=localhost \
+      --ca-file=/etc/kubernetes/ssl/etcd/client-ca.pem \
+      --crt-file=/etc/kubernetes/ssl/etcd/client-crt.pem \
+      --key-file=/etc/kubernetes/ssl/etcd/client-key.pem
+
+      [Install]
+      WantedBy=multi-user.target
   - name: kubelet-certs.service
     enabled: true
     contents: |
