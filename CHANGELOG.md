@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Bump to flatcar `3227.2.2`.
 - Bump to kubernetes `1.23.10`. 
+- Switch AWS volume types from gp2 to gp3.
 
 ## [13.0.1] - 2022-08-29
 
