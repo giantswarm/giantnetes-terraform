@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Bump to flatcar `3227.2.2`.
+- Bump to kubernetes `1.23.10`. 
+
 ## [13.0.1] - 2022-08-29
 
 ### Fixed
