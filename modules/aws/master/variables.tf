@@ -85,7 +85,7 @@ variable "user_data" {
 
 variable "volume_type" {
   type    = string
-  default = "gp2"
+  default = "gp3"
 }
 
 variable "dns_zone_id" {

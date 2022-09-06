@@ -56,7 +56,7 @@ variable "with_public_access" {
 
 variable "volume_type" {
   type    = string
-  default = "gp2"
+  default = "gp3"
 }
 
 variable "dns_zone_id" {
