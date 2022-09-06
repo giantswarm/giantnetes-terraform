@@ -334,10 +334,6 @@ variable "external_ipsec_password" {
 }
 
 ### Kubernetes ###
-variable "image_pull_progress_deadline" {
-  default = "1m"
-}
-
 variable "pod_infra_image" {
   default = "giantswarm/pause-amd64:3.3"
 }
