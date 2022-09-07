@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Automatically set `--max-requests-inflight`, `--max-mutating-requests-inflight` and resource limits to API Server's manifest based on node size.
 
+### Fixed
+
+- Fix leftover systemd unit used by azure CNI.
+
 ## [13.1.0] - 2022-09-06
 
 ### Changed
