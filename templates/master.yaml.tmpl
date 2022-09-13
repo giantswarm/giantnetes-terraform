@@ -868,6 +868,8 @@ systemd:
           --ca-file=/etc/kubernetes/ssl/etcd/server-ca.pem); \
         done; \
         [ -z "$result" ] && echo "Failed to issue etcd certs." && exit 1 || echo "Successfully issued etcd certs.";'
+      ExecStartPost=/usr/bin/chown root:giantswarm /etc/kubernetes/ssl/etcd/server-key.pem
+      ExecStartPost=/usr/bin/chmod 640 /etc/kubernetes/ssl/etcd/server-key.pem
       ExecStartPost=/bin/cp /etc/kubernetes/ssl/etcd/server-crt.pem /etc/kubernetes/ssl/etcd/client-crt.pem
       ExecStartPost=/bin/cp /etc/kubernetes/ssl/etcd/server-ca.pem /etc/kubernetes/ssl/etcd/client-ca.pem
       ExecStartPost=/bin/cp /etc/kubernetes/ssl/etcd/server-key.pem /etc/kubernetes/ssl/etcd/client-key.pem

@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix leftover systemd unit used by azure CNI.
 
+### Changed
+
+- Change permission of etcd key file in order to make `etcd-kubernetes-resources-count-exporter` app to run with unprivileged user.
+
 ## [13.1.0] - 2022-09-06
 
 ### Changed
