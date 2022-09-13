@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change permission of etcd key file in order to make `etcd-kubernetes-resources-count-exporter` app to run with unprivileged user.
 - Remove unused `ImagePullProgressDeadline` variable.
 - Remove deprecated flags from kubelet and scheduler.
+- Bump to kubernetes `1.24.4`.
+- [AWS] Bump `aws-cloud-controller-manager-app` to version `1.24.1-gs1`. 
  
 ## [13.1.0] - 2022-09-06
 
