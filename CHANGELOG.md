@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump to kubernetes `1.24.4`.
 - [AWS] Bump `aws-cloud-controller-manager-app` to version `1.24.1-gs1`.
 - [AWS] Bump `aws-node-termination-handler-app` to version `1.17.2-gs1`.
+- [Azure] Bump `azure-cloud-controller-manager` to version `1.24.5-gs1`.
 - [Azure] Bump `azure-cloud-node-manager` to version `1.24.5-gs1`.
  
 ## [13.1.0] - 2022-09-06
