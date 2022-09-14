@@ -140,7 +140,7 @@ variable "flatcar_ami_owner" {
 
 variable "docker_registry" {
   type    = string
-  default = "quay.io"
+  default = "docker.io"
 }
 
 variable "docker_registry_mirror" {
