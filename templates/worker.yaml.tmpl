@@ -649,12 +649,10 @@ systemd:
       --logtostderr=true \
       {{if eq .Provider "aws" -}}
       --cloud-provider=external \
-      --image-pull-progress-deadline={{ .ImagePullProgressDeadline }} \
       --pod-infra-container-image={{.DockerRegistry}}/{{ .PodInfraImage }} \
       {{ else -}}
       --cloud-provider=external \
       {{ end -}}
-      --network-plugin=cni \
       --register-node=true \
       --kubeconfig=/etc/kubernetes/kubeconfig/kubelet.yaml \
       --node-labels="node.kubernetes.io/worker,role=worker,ip=${DEFAULT_IPV4}" \

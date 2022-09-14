@@ -1124,10 +1124,8 @@ systemd:
       --logtostderr=true \
       --cloud-provider=external \
       {{if eq .Provider "aws" -}}
-      --image-pull-progress-deadline={{ .ImagePullProgressDeadline }} \
       --pod-infra-container-image={{.DockerRegistry}}/{{ .PodInfraImage }} \
       {{ end -}}
-      --network-plugin=cni \
       --register-node=true \
       --kubeconfig=/etc/kubernetes/kubeconfig/kubelet.yaml \
       --node-labels="node.kubernetes.io/master,role=master,ip=${DEFAULT_IPV4},master-id=${MASTER_ID}" \

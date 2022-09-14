@@ -1,3 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aws-cloud-controller-manager-app-user-values
+  namespace: giantswarm
+data:
+  values: |
+    image:
+      registry: {{.DockerRegistry}}
+---
 apiVersion: application.giantswarm.io/v1alpha1
 kind: App
 metadata:
@@ -28,9 +38,9 @@ spec:
   namespaceConfig: {}
   userConfig:
     configMap:
-      name: ""
-      namespace: ""
+      name: "aws-cloud-controller-manager-app-user-values"
+      namespace: "giantswarm"
     secret:
       name: ""
       namespace: ""
-  version: 1.23.2-gs2
+  version: 1.24.1-gs1

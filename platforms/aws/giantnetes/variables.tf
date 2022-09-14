@@ -140,7 +140,7 @@ variable "flatcar_ami_owner" {
 
 variable "docker_registry" {
   type    = string
-  default = "quay.io"
+  default = "docker.io"
 }
 
 variable "docker_registry_mirror" {
@@ -150,7 +150,7 @@ variable "docker_registry_mirror" {
 
 variable "hyperkube_version" {
   type    = string
-  default = "1.23.10"
+  default = "1.24.4"
 }
 
 ### DNS ###
@@ -334,10 +334,6 @@ variable "external_ipsec_password" {
 }
 
 ### Kubernetes ###
-variable "image_pull_progress_deadline" {
-  default = "1m"
-}
-
 variable "pod_infra_image" {
   default = "giantswarm/pause-amd64:3.3"
 }

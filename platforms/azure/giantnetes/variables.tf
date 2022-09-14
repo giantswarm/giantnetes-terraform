@@ -158,7 +158,7 @@ variable "core_ssh_key" {
 
 variable "docker_registry" {
   type    = string
-  default = "quay.io"
+  default = "docker.io"
 }
 
 variable "docker_registry_mirror" {
@@ -168,7 +168,7 @@ variable "docker_registry_mirror" {
 
 variable "hyperkube_version" {
   type    = string
-  default = "1.23.10"
+  default = "1.24.4"
 }
 
 variable "pod_infra_image" {
