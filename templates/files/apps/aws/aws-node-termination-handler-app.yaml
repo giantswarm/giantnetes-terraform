@@ -6,7 +6,8 @@ metadata:
 data:
   configmap-values.yaml: |
     queueURL: "{{.ClusterName}}-node-termination"
-
+    image:
+      registry: {{.DockerRegistry}}
 ---
 apiVersion: application.giantswarm.io/v1alpha1
 kind: App
