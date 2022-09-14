@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove unused `ImagePullProgressDeadline` variable.
 - Remove deprecated flags from kubelet and scheduler.
 - Bump to kubernetes `1.24.4`.
+- Bump `nginx-ingress-controller` app to version `2.17.0`.
 - [AWS] Bump `aws-cloud-controller-manager-app` to version `1.24.1-gs1`.
 - [AWS] Bump `aws-node-termination-handler-app` to version `1.17.2-gs1`.
 - [Azure] Bump `azure-cloud-controller-manager` to version `1.24.5-gs1`.
