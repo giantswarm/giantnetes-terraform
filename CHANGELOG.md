@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [14.0.0] - 2022-09-14
+
 ### Added
 
 - Automatically set `--max-requests-inflight`, `--max-mutating-requests-inflight` and resource limits to API Server's manifest based on node size.
@@ -671,7 +673,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v13.1.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.0.0...HEAD
+[14.0.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v13.1.0...v14.0.0
 [13.1.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v13.0.1...v13.1.0
 [13.0.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v13.0.0...v13.0.1
 [13.0.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v12.0.0...v13.0.0
