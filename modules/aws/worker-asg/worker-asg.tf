@@ -132,6 +132,7 @@ resource "aws_launch_configuration" "worker_asg_single_az" {
   }
 
   metadata_options {
+    http_endpoint = "enabled"
     http_put_response_hop_limit = 2
   }
 
