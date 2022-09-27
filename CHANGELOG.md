@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Set `metadata_options.http_put_response_hop_limit` to 2 for AWS launch configurations.
+- Set `metadata_options.http_put_response_hop_limit` to 5 for AWS launch configurations.
 
 ## [14.0.0] - 2022-09-14
 
