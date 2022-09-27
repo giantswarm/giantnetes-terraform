@@ -139,6 +139,10 @@ resource "aws_launch_configuration" "master" {
     volume_size           = var.volume_size_docker
   }
 
+  metadata_options {
+    http_put_response_hop_limit = 2
+  }
+
   user_data = element(data.ignition_config.s3.*.rendered, count.index)
 }
 
