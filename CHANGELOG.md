@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Create VPN connection on azure.
+
 ### Changed
 
 - Change Azure vault load balancer's SKU to Standard.
