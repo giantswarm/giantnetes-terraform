@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Change Azure vault load balancer's SKU to Standard.
+- Change Azure VPN public IP load balancer's SKU to Standard.
 - Set `metadata_options.http_put_response_hop_limit` to 5 for AWS launch configurations.
 
 ## [14.0.0] - 2022-09-14
