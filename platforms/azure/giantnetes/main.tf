@@ -317,6 +317,7 @@ module "vpn" {
   vpn_right_gateway_address_1 = var.vpn_right_gateway_address_1
   vpn_right_subnet_cidr_1     = var.vpn_right_subnet_cidr_1
   additional_tags             = var.additional_tags
+  vpn_shared_key              = var.vpn_shared_key
 }
 
 terraform {

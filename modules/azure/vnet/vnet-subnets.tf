@@ -25,8 +25,8 @@ resource "azurerm_subnet" "vpn_subnet" {
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.cluster_vnet.name
 
-  # Use first /28 for /16 (e.g. for 10.0.0.0/16 10.0.0.0/28 will be used).
-  address_prefixes = [cidrsubnet(var.vnet_cidr, 12, 0)]
+  # Use first /27 for /16 (e.g. for 10.0.0.0/16 10.0.0.0/27 will be used).
+  address_prefixes = [cidrsubnet(var.vnet_cidr, 11, 0)]
 }
 
 resource "azurerm_subnet" "bastion_subnet" {
