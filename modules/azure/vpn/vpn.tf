@@ -7,7 +7,8 @@ resource "azurerm_public_ip" "public_ip" {
   name                = "${var.cluster_name}-vpn-public-ip"
   location            = var.location
   resource_group_name = var.resource_group_name
-  allocation_method   = "Dynamic"
+  allocation_method   = "Static"
+  sku                 = "Standard"
 
   tags = local.tags
 }
@@ -58,4 +59,30 @@ resource "azurerm_local_network_gateway" "local_gateway_1" {
   address_space       = [var.vpn_right_subnet_cidr_1]
 
   tags = local.tags
+}
+
+resource "azurerm_virtual_network_gateway_connection" "vpn-connection-0" {
+  count               = var.vpn_enabled
+  name                = "${var.cluster_name}-vpn-connection-0"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+
+  type                       = "IPsec"
+  virtual_network_gateway_id = azurerm_virtual_network_gateway.gateway[0].id
+  local_network_gateway_id   = azurerm_local_network_gateway.local_gateway_0[0].id
+
+  shared_key = var.vpn_shared_key
+}
+
+resource "azurerm_virtual_network_gateway_connection" "vpn-connection-1" {
+  count               = var.vpn_enabled
+  name                = "${var.cluster_name}-vpn-connection-1"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+
+  type                       = "IPsec"
+  virtual_network_gateway_id = azurerm_virtual_network_gateway.gateway[0].id
+  local_network_gateway_id   = azurerm_local_network_gateway.local_gateway_1[0].id
+
+  shared_key = var.vpn_shared_key
 }

@@ -35,6 +35,10 @@ variable "vpn_right_subnet_cidr_1" {
   type = string
 }
 
+variable "vpn_shared_key" {
+  type = string
+}
+
 ### additional tags
 variable "additional_tags" {
   description = "Additional tags that can be added to all resources"

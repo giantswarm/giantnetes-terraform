@@ -304,6 +304,11 @@ variable "vpn_right_subnet_cidr_1" {
   default     = "172.18.0.5/32"
 }
 
+variable "vpn_shared_key" {
+  description = "Shared key for IPsec VPN"
+  default = ""
+}
+
 ### VPN with custom instance
 
 ## Gridscale

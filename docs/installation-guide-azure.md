@@ -77,12 +77,25 @@ opsctl update secret --in=terraform-secrets.yaml -k Terraform.ArmAccessKey
 
 If you need to setup a VPN (mandatory for production installations) you first need to get a /28 subnet unique for this installation.
 
-Go to https://github.com/giantswarm/giantswarm/wiki/Giant-Swarm-VPN, choose an unused subnet and add it to the page with the new installation name to reserve it.
+Go to https://intranet.giantswarm.io/docs/support-and-ops/vpn-subnet-allocation/, choose an unused subnet and add it to the page with the new installation name to reserve it.
 
-Then, set the following variables in the `bootstrap.sh` file:
+Generate a secret for the VPN:
+
+```
+cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 50 | head -n 1
+```
+
+Then set it in the secrets file
+
+```
+opsctl update secret --in=terraform-secrets.yaml -k Terraform.VPNSharedKey
+```
+
+Finally, set the following variables in the `bootstrap.sh` file:
 
 ```
 export TF_VAR_vpn_enabled=1
+export TF_VAR_vpn_shared_key=$(${OPSCTL_PATH} show secret -i ./terraform-secrets.yaml -k Terraform.VPNSharedKey)
 export TF_VAR_vpn_right_gateway_address_0=<ip address of first IPSec server (copy this from other installations in the installations repo)>
 export TF_VAR_vpn_right_gateway_address_1=<ip address of second IPSec server (copy this from other installations in the installations repo)>
 export TF_VAR_bastion_cidr=<the subnet you have chosen>
@@ -123,33 +136,8 @@ terraform apply -target="module.vnet" -target="module.bastion" -target="module.v
 
 #### (Optional) Connect to VPN
 
-If VPN was enabled, two additional manual steps are required:
-
-1. Create VPN connection clients on Azure with a shared key you generate randomly.
-
-```
-export SHARED_KEY=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 50 | head -n 1)
-
-echo $SHARED_KEY
-
-az network vpn-connection create \
-  -g ${NAME} \
-  --name ${NAME}-vpn-connection-0 \
-  --vnet-gateway1 ${NAME}-vpn-gateway \
-  --local-gateway2 ${NAME}-vpn-right-gateway-0 \
-  --shared-key $SHARED_KEY
-
-az network vpn-connection create \
-  -g ${NAME} \
-  --name ${NAME}-vpn-connection-1 \
-  --vnet-gateway1 ${NAME}-vpn-gateway \
-  --local-gateway2 ${NAME}-vpn-right-gateway-1 \
-  --shared-key $SHARED_KEY
-```
-
-2. Update the VPN connection 
-
-Temporarily save the password generated somewhere, then follow the instructions at the following page to update the VPN servers: https://github.com/giantswarm/vpn#configure-new-site2site-vpn-with-aws-installation
+If VPN is needed (mandatory on production installations) you need to update the VPN servers configuration.
+Follow the instructions at the following page to update the VPN servers: https://github.com/giantswarm/vpn#configure-new-site2site-vpn-with-aws-installation
 
 #### Provision Vault with Ansible
 

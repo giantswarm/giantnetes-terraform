@@ -2,6 +2,7 @@ resource "azurerm_lb" "vault_lb" {
   name                = "${var.cluster_name}-vault-lb"
   location            = var.location
   resource_group_name = var.resource_group_name
+  sku                 = "Standard"
 
   frontend_ip_configuration {
     name      = "vault"
