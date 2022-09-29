@@ -51,7 +51,7 @@ EOF
       "Resource": "arn:${var.arn_region}:s3:::etcd-backups.giantswarm.io/*"
     },
     {
-      "Sid": "CAPA-Rule",
+      "Sid": "CAPA",
       "Principal": "*",
       "Action": "*",
       "Effect": "Allow",
