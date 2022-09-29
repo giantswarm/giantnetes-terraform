@@ -51,7 +51,7 @@ EOF
       "Resource": "arn:${var.arn_region}:s3:::etcd-backups.giantswarm.io/*"
     },
     {
-      "Sid": "CAPA",
+      "Sid": "CAPA-Rule",
       "Principal": "*",
       "Action": "*",
       "Effect": "Allow",
@@ -63,6 +63,13 @@ EOF
       "Action": "*",
       "Effect": "Allow",
       "Resource": "arn:${var.arn_region}:s3:::*-g8s-*"
+    },
+    {
+      "Sid": "Giantswarm-Audit-Rule",
+      "Principal": "*",
+      "Action": "*",
+      "Effect": "Allow",
+      "Resource": "arn:${var.arn_region}:s3:::*-giantswarm-*/*"
     }
   ]
 }
