@@ -69,7 +69,7 @@ EOF
       "Principal": "*",
       "Action": "*",
       "Effect": "Allow",
-      "Resource": "arn:${var.arn_region}:s3:::*-giantswarm-*/*"
+      "Resource": "arn:${var.arn_region}:s3:::*-giantswarm-audit-logs*/*"
     }
   ]
 }
