@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Bump k8s to 1.24.6.
+
 ## [14.1.1] - 2022-09-28
 
 ### Fixed
