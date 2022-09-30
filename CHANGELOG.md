@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [14.2.0] - 2022-09-30
+
 ### Changed
 
 - Bump k8s to 1.24.6.
@@ -695,7 +697,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.1.1...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.2.0...HEAD
+[14.2.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.1.1...v14.2.0
 [14.1.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.1.0...v14.1.1
 [14.1.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.0.0...v14.1.0
 [14.0.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v13.1.0...v14.0.0
