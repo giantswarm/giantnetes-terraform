@@ -168,7 +168,7 @@ variable "docker_registry_mirror" {
 
 variable "hyperkube_version" {
   type    = string
-  default = "1.24.4"
+  default = "1.24.6"
 }
 
 variable "pod_infra_image" {
