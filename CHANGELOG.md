@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Add `*-giantswarm-audit-logs*/*` to the list of s3 authorized endpoints accessed from the AWS management clusters.
+
 ## [14.2.0] - 2022-09-30
 
 ### Changed
