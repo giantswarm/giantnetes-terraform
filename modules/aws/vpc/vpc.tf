@@ -63,6 +63,13 @@ EOF
       "Action": "*",
       "Effect": "Allow",
       "Resource": "arn:${var.arn_region}:s3:::*-g8s-*"
+    },
+    {
+      "Sid": "Giantswarm-Audit-Rule",
+      "Principal": "*",
+      "Action": "*",
+      "Effect": "Allow",
+      "Resource": "arn:${var.arn_region}:s3:::*-giantswarm-audit-logs*/*"
     }
   ]
 }
