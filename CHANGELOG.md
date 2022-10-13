@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Bump cilium to 0.4.0.
+
 ## [14.3.0] - 2022-10-05
 
 ### Changed
