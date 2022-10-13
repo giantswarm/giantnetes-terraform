@@ -9,7 +9,7 @@ data:
       replicas: 2
       hostNetwork: false
       nodeSelector:
-        kubernetes.io/os: linux
+        kubernetes.io/os: master
     node:
       hostNetwork: false
       nodeSelector:
