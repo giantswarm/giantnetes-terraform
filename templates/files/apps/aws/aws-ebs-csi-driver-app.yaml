@@ -8,8 +8,6 @@ data:
     controller:
       replicas: 2
       hostNetwork: false
-      nodeSelector:
-        kubernetes.io/os: linux
     node:
       hostNetwork: false
       nodeSelector:

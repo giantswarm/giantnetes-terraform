@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Bump cilium to 0.4.0.
+- Run EBS controller only on masters on AWS management clusters.
 
 ## [14.3.0] - 2022-10-05
 
