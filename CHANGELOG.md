@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Bump cilium to 0.5.0.
 - Make `--enable-priority-and-fairness` flag always explicit.
 - Set CPU and Memory requests for Api server.
 
