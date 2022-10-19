@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [14.4.1] - 2022-10-19
+
 ### Fixed
 
 - Use 'MemTotal' rather than 'MemFree' to get memory limit for api server.
@@ -714,7 +716,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.4.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.4.1...HEAD
+[14.4.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.4.0...v14.4.1
 [14.4.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.3.0...v14.4.0
 [14.3.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.2.0...v14.3.0
 [14.2.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.1.1...v14.2.0
