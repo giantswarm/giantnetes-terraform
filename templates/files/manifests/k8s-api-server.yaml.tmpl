@@ -62,16 +62,17 @@ spec:
       - --requestheader-username-headers=X-Remote-User
       - --proxy-client-cert-file=/etc/kubernetes/ssl/apiserver-crt.pem
       - --proxy-client-key-file=/etc/kubernetes/ssl/apiserver-key.pem
+      - --max-requests-inflight=${MAX_REQUESTS_INFLIGHT}
+      - --max-mutating-requests-inflight=${MAX_MUTATING_REQUESTS_INFLIGHT}
       {{- if .DisableAPIFairness  }}
       - --enable-priority-and-fairness=false
       {{- else }}
-      - --max-requests-inflight=${MAX_REQUESTS_INFLIGHT}
-      - --max-mutating-requests-inflight=${MAX_MUTATING_REQUESTS_INFLIGHT}
+      - --enable-priority-and-fairness=true
       {{- end }}
       resources:
         requests:
-          cpu: 300m
-          memory: 300Mi
+          cpu: ${CPU_REQUEST}
+          memory: ${MEMORY_REQUEST}
         limits:
           cpu: ${CPU_LIMIT}
           memory: ${MEMORY_LIMIT}

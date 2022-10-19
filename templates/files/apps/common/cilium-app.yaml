@@ -8,8 +8,6 @@ data:
     defaultPolicies:
       enabled: true
     egressMasqueradeInterfaces: eth0
-    eni:
-      enabled: false
     kubeProxyReplacement: strict
     k8sServiceHost: "{{ .APIInternalDomainName }}"
     k8sServicePort: "443"
@@ -89,4 +87,4 @@ spec:
     secret:
       name: ""
       namespace: ""
-  version: 0.4.0
+  version: 0.5.0
