@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Use 'MemTotal' rather than 'MemFree' to get memory limit for api server.
+
 ## [14.4.0] - 2022-10-13
 
 ### Changed

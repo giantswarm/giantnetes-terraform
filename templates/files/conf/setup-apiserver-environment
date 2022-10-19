@@ -2,7 +2,7 @@
 env_file="/etc/apiserver-environment"
 
 cpus="$(grep -c ^processor /proc/cpuinfo)"
-memory="$(awk '/MemFree/ { printf "%d \n", $2/1024/1024 }' /proc/meminfo)"
+memory="$(awk '/MemTotal/ { printf "%d \n", $2/1024/1024 }' /proc/meminfo)"
 
 declare -i cpus
 declare -i memory
