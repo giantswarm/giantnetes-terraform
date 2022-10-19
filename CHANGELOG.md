@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Make `--enable-priority-and-fairness` flag always explicit.
+- Set CPU and Memory requests for Api server.
+
 ## [14.4.1] - 2022-10-19
 
 ### Fixed
