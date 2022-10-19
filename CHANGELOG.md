@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [14.5.0] - 2022-10-19
+
 ### Changed
 
 - Bump cilium to 0.5.0.
@@ -722,7 +724,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.4.1...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.5.0...HEAD
+[14.5.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.4.1...v14.5.0
 [14.4.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.4.0...v14.4.1
 [14.4.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.3.0...v14.4.0
 [14.3.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.2.0...v14.3.0
