@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Apply override to journald systemd unit to overcome race condition between auditd and falco that made journald to crash.
+
 ## [14.5.0] - 2022-10-19
 
 ### Changed
