@@ -556,17 +556,6 @@ storage:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/10-require-attach-dep.conf" }}"
 {{ end }}
 
-    - path : /etc/systemd/system/systemd-journald.service.d/10-override.conf
-      overwrite: true
-      filesystem: root
-      mode: 644
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/journald-override.conf" }}"
-
 systemd:
   units:
   - name: etcd2.service
@@ -585,6 +574,20 @@ systemd:
     enabled: false
     mask: true
   - name: locksmithd.service
+    enabled: false
+    mask: true
+  - name: systemd-journald.service
+    dropins:
+      # Better restarts: infinite retries, with a small delay
+      # Because it crashes when we have falco + audit rules
+      - name: 10-override.conf
+        contents: |
+          [Unit]
+          StartLimitIntervalSec=0
+          [Service]
+          RestartSec=1
+  - name: systemd-journal-flush.service
+    # we don't want jounal data to be persisted
     enabled: false
     mask: true
   - name: systemd-modules-load.service
