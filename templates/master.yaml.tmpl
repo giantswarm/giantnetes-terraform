@@ -503,6 +503,16 @@ storage:
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/audit-docker-wait.conf" }}"
 
+    - path: /etc/systemd/journald.conf.d/storage.conf
+      filesystem: root
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/journald-storage.conf" }}"
+
     - path : /etc/modules-load.d/ipvs.conf
       filesystem: root
       mode: 420
@@ -574,6 +584,20 @@ systemd:
     enabled: false
     mask: true
   - name: locksmithd.service
+    enabled: false
+    mask: true
+  - name: systemd-journald.service
+    dropins:
+      # Better restarts: infinite retries, with a small delay
+      # Because it crashes when we have falco + audit rules
+      - name: 10-override.conf
+        contents: |
+          [Unit]
+          StartLimitIntervalSec=0
+          [Service]
+          RestartSec=1
+  - name: systemd-journal-flush.service
+    # we don't want jounal data to be persisted
     enabled: false
     mask: true
   - name: systemd-modules-load.service
