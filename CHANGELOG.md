@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Add `node-role.kubernetes.io/control-plane` label to master nodes to comply with CAPI.
+
 ### Fixed
 
 - Apply override to journald systemd unit to overcome race condition between auditd and falco that made journald to crash.
