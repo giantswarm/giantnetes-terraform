@@ -80,4 +80,6 @@ $KUBECTL apply -f /srv/apps/ --recursive
 $KUBECTL apply -f /srv/azure-ad-pod-identity-lrp.yaml
 {{ end }}
 
+$KUBECTL apply -f /srv/cilium-egress.yaml
+
 echo "Addons successfully installed"

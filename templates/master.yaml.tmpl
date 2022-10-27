@@ -60,6 +60,16 @@ storage:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/azure-ad-pod-identity-lrp.yaml" }}"
 {{ end }}
 
+    - path: /srv/cilium-egress.yaml
+      filesystem: root
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/cilium-egress.yaml" }}"
+
     - path: /srv/default-storage-class.yaml
       filesystem: root
       mode: 420
