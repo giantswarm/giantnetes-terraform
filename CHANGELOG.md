@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Add `node-role.kubernetes.io/control-plane` label to master nodes to comply with CAPI.
+- [Azure] Create CiliumLocalRedirectPolicy for Azure AD pod identity app after creating App CRs to avoid race condition.
 
 ### Fixed
 

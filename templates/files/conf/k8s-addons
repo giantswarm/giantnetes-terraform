@@ -54,11 +54,6 @@ do
     done
 done
 
-{{ if eq .Provider "azure" }}
-# Apply CiliumLocalRedirectPolicy for cluster-autoscaler
-$KUBECTL apply -f /srv/azure-ad-pod-identity-lrp.yaml
-{{ end }}
-
 # apply k8s addons
 MANIFESTS="default-storage-class.yaml
  vault-token-reviewer.yaml"
@@ -79,5 +74,10 @@ while ! $KUBECTL get crd apps.application.giantswarm.io ; do sleep 1 && echo 'Wa
 
 # Apply all apps.
 $KUBECTL apply -f /srv/apps/ --recursive
+
+{{ if eq .Provider "azure" }}
+# Apply CiliumLocalRedirectPolicy for cluster-autoscaler
+$KUBECTL apply -f /srv/azure-ad-pod-identity-lrp.yaml
+{{ end }}
 
 echo "Addons successfully installed"
