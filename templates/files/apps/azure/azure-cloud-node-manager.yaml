@@ -13,6 +13,8 @@ kind: App
 metadata:
   name: azure-cloud-node-manager
   namespace: giantswarm
+  labels:
+    app-operator.giantswarm.io/version: 0.0.0
 spec:
   catalog: control-plane-catalog
   config:

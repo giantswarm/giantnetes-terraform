@@ -15,6 +15,8 @@ kind: App
 metadata:
   name: azure-scheduled-events
   namespace: giantswarm
+  labels:
+    app-operator.giantswarm.io/version: 0.0.0
 spec:
   catalog: default
   config:

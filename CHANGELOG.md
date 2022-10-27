@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Apply override to journald systemd unit to overcome race condition between auditd and falco that made journald to crash.
+- Add 'app-operator.giantswarm.io/version: 0.0.0' label to Azure Apps.
 
 ## [14.5.0] - 2022-10-19
 
