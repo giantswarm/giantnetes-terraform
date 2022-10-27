@@ -138,7 +138,7 @@ variable "flatcar_linux_channel" {
 variable "flatcar_linux_version" {
   description = "Flatcar linux version."
   type        = string
-  default     = "3227.2.2"
+  default     = "3227.2.3"
 }
 
 variable "vault_image_publisher" {
@@ -168,7 +168,7 @@ variable "docker_registry_mirror" {
 
 variable "hyperkube_version" {
   type    = string
-  default = "1.24.6"
+  default = "1.24.7"
 }
 
 variable "pod_infra_image" {
