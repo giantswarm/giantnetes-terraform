@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add `node-role.kubernetes.io/control-plane` label to master nodes to comply with CAPI.
 - [Azure] Create CiliumLocalRedirectPolicy for Azure AD pod identity app after creating App CRs to avoid race condition.
+- Bump to flatcar `3227.2.3`.
+- Bump kubernetes to `1.24.7`.
+- Bump etcd to `3.5.5`.
+- Bump `nginx-ingress-controller-app` to version `2.19.0`.
+- [Azure] Bump `azuredisk-csi-driver-app` to version `v1.21.0-gs4`.
 
 ### Fixed
 
