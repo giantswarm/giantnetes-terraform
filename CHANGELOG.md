@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- [AWS] Fix IAM permission for master nodes when using cross-account KMS for EBS volumes' encryption.
+
 ## [14.6.1] - 2022-11-02
 
 - Fix journald systemd override for worker nodes

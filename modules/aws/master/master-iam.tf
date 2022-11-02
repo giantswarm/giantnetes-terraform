@@ -127,6 +127,35 @@ resource "aws_iam_role_policy" "master" {
           "sqs:ReceiveMessage"
         ],
         "Resource": "*"
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "kms:CreateGrant",
+          "kms:ListGrants",
+          "kms:RevokeGrant"
+        ],
+        "Resource": [
+          "*"
+        ],
+        "Condition": {
+          "Bool": {
+            "kms:GrantIsForAWSResource": "true"
+          }
+        }
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ],
+        "Resource": [
+          "*"
+        ]
       }
   ]
 }
