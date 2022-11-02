@@ -285,7 +285,7 @@ systemd:
     enabled: false
     mask: true
   - name: systemd-journald.service
-    dropin:
+    dropins:
       # Better restarts: infinite retries, with a small delay
       # Because it crashes when we have falco + audit rules
       - name: 10-override.conf
