@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [14.6.1] - 2022-11-02
+
 - Fix journald systemd override for worker nodes
 
 ## [14.6.0] - 2022-10-28
@@ -744,7 +746,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.6.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.6.1...HEAD
+[14.6.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.6.0...v14.6.1
 [14.6.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.5.0...v14.6.0
 [14.5.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.4.1...v14.5.0
 [14.4.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.4.0...v14.4.1
