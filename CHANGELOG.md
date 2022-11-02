@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [14.6.2] - 2022-11-02
+
 ### Fixed
 
 - [AWS] Fix IAM permission for master nodes when using cross-account KMS for EBS volumes' encryption.
@@ -750,7 +752,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.6.1...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.6.2...HEAD
+[14.6.2]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.6.1...v14.6.2
 [14.6.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.6.0...v14.6.1
 [14.6.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.5.0...v14.6.0
 [14.5.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.4.1...v14.5.0
