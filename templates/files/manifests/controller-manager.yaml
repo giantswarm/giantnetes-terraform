@@ -28,6 +28,7 @@ spec:
       - --allocate-node-cidrs=true
       - --cluster-cidr={{ .PodCIDR }}
       - --node-cidr-mask-size={{ .NodePodCIDRSize }}
+      - --authorization-always-allow-paths="/healthz,/readyz,/livez,/metrics"
       resources:
         requests:
           cpu: 200m

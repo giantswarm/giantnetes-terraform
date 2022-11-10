@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Allow scraping of `kube-scheduler` and `controller-manager` metrics.
+
 ## [14.6.2] - 2022-11-02
 
 ### Fixed

@@ -18,6 +18,7 @@ spec:
       - --feature-gates=CSIMigration=true,CSIMigrationAzureDisk=true
       {{ end -}}
       - --v=2
+      - --authorization-always-allow-paths="/healthz,/readyz,/livez,/metrics"
       resources:
         requests:
           cpu: 200m
