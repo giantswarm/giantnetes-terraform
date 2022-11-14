@@ -18,6 +18,9 @@ spec:
       - --feature-gates=CSIMigration=true,CSIMigrationAzureDisk=true
       {{ end -}}
       - --v=2
+      - --authorization-always-allow-paths=/healthz,/readyz,/livez,/metrics
+      - --authentication-kubeconfig=/etc/kubernetes/kubeconfig/scheduler.yaml
+      - --authorization-kubeconfig=/etc/kubernetes/kubeconfig/scheduler.yaml
       resources:
         requests:
           cpu: 200m

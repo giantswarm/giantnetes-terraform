@@ -28,6 +28,9 @@ spec:
       - --allocate-node-cidrs=true
       - --cluster-cidr={{ .PodCIDR }}
       - --node-cidr-mask-size={{ .NodePodCIDRSize }}
+      - --authorization-always-allow-paths=/healthz,/readyz,/livez,/metrics
+      - --authentication-kubeconfig=/etc/kubernetes/kubeconfig/controller-manager.yaml
+      - --authorization-kubeconfig=/etc/kubernetes/kubeconfig/controller-manager.yaml
       resources:
         requests:
           cpu: 200m
