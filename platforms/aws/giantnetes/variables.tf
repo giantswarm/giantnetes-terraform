@@ -130,7 +130,7 @@ variable "flatcar_linux_channel" {
 variable "flatcar_linux_version" {
   description = "Flatcar linux version."
   type        = string
-  default     = "3227.2.3"
+  default     = "3227.2.1"
 }
 
 variable "flatcar_ami_owner" {
@@ -150,7 +150,7 @@ variable "docker_registry_mirror" {
 
 variable "hyperkube_version" {
   type    = string
-  default = "1.24.7"
+  default = "1.24.8"
 }
 
 ### DNS ###

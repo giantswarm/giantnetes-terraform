@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Allow scraping of `kube-scheduler` and `controller-manager` metrics.
 
+### Changed
+
+- Revert flatcar to 3227.2.1 to prevent filesystem hang bug (see https://github.com/giantswarm/giantswarm/issues/23831).
+- Bump kubernetes to 1.24.8.
+
 ## [14.6.2] - 2022-11-02
 
 ### Fixed
