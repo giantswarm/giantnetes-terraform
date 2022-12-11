@@ -1,10 +1,13 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: k8s-scheduler
-  namespace: kube-system
   annotations:
     scheduler.alpha.kubernetes.io/critical-pod: ''
+  labels:
+    component: kube-scheduler
+    tier: control-plane
+  name: k8s-scheduler
+  namespace: kube-system
 spec:
   hostNetwork: true
   priorityClassName: system-node-critical
@@ -29,7 +32,7 @@ spec:
         httpGet:
           host: 127.0.0.1
           path: /healthz
-          port: 10257
+          port: 10259
           scheme: HTTPS
         initialDelaySeconds: 15
         timeoutSeconds: 15
