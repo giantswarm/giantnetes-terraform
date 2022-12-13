@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [14.8.0] - 2022-12-13
+
 ### Added
 
 - Add missing labels for `kube-scheduler` and `controller-manager`.
@@ -771,7 +773,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.7.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.8.0...HEAD
+[14.8.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.7.0...v14.8.0
 [14.7.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.6.2...v14.7.0
 [14.6.2]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.6.1...v14.6.2
 [14.6.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.6.0...v14.6.1
