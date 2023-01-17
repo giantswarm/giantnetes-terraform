@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Change api server resources calculation to leave more room for pods on master nodes.
 - Bump flatcar to `3374.2.2`.
 - Bump kubernetes to `1.24.9`.
 - Bump etcd to `v3.5.6`.
