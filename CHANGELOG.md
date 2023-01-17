@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Bump flatcar to `3374.2.2`.
+- Bump kubernetes to `1.24.9`.
+- Bump etcd to `v3.5.6`.
+- Bump cilium-app to `v0.6.1`.
+- Bump coredns-app to `v1.13.0`.
+- Bump nginx-ingress-controller-app to `v2.22.0`.
+- [Azure] Bump azure-cloud-controller-manager-app to `v1.24.6-gs1`.
+- [Azure] Bump azure-cloud-node-manager-app to `v1.24.6-gs1`.
+- [Azure] Bump azuredisk-csi-driver-app to `v1.25.2-gs1`.
+- [AWS] Bump aws-ebs-csi-driver app to `v2.19.1`.
+
 ## [14.8.0] - 2022-12-13
 
 ### Added
