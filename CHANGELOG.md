@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Azure] Bump azuredisk-csi-driver-app to `v1.25.2-gs1`.
 - [AWS] Bump aws-ebs-csi-driver app to `v2.19.1`.
 
+### Added
+
+- Add registry mirror setting to docker daemon.
+
 ## [14.8.0] - 2022-12-13
 
 ### Added

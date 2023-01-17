@@ -1,0 +1,7 @@
+{
+  "registry-mirrors": [
+    {{- if ne .DockerRegistryMirror "" }}
+    "https://{{ .DockerRegistryMirror }}"
+    {{- end }}
+  ]
+}
