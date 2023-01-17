@@ -553,6 +553,16 @@ storage:
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/10-use-custom-config.conf" }}"
 
+    - path : /etc/docker/daemon.json
+      filesystem: root
+      mode: 420
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/docker-daemon.json" }}"
+
     - path : /etc/audit/rules.d/99-default.rules
       overwrite: true
       filesystem: root
@@ -957,7 +967,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       LimitNOFILE=40000
-      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.5.5
+      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.5.6
       Environment=NAME=%p.service
       EnvironmentFile=/etc/network-environment
       {{if eq .Provider "azure" }}EnvironmentFile=-/var/lib/etcd/master-id{{end}}
@@ -1017,7 +1027,7 @@ systemd:
       EnvironmentFile=/etc/environment
       {{if eq .Provider "azure" }}EnvironmentFile=-/var/lib/etcd/master-id{{end}}
       {{if eq .Provider "aws" }}Environment=MASTER_ID={{.MasterID}}{{end}}
-      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.5.5
+      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.5.6
       Environment=NAME=%p.service
       ExecStartPre=-/usr/bin/docker stop  $NAME
       ExecStartPre=-/usr/bin/docker rm  $NAME
