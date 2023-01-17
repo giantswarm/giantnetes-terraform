@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Allowed the use of all seccomp profiles for components under the restricted podsecurity policy.
+- Set the default seccomp profile to runtime/default under the restricted podsecurity policy.
+
 ## [14.8.0] - 2022-12-13
 
 ### Added
