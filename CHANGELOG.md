@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
 ### Changed
 
 - Change api server resources calculation to leave more room for pods on master nodes.
@@ -20,10 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Azure] Bump azure-cloud-node-manager-app to `v1.24.6-gs1`.
 - [Azure] Bump azuredisk-csi-driver-app to `v1.25.2-gs1`.
 - [AWS] Bump aws-ebs-csi-driver app to `v2.19.1`.
+- Allowed the use of all seccomp profiles for components under the restricted podsecurity policy.
+- Set the default seccomp profile to runtime/default under the restricted podsecurity policy.
 
 ### Added
 
 - Add registry mirror setting to docker daemon.
+
 
 ## [14.8.0] - 2022-12-13
 
