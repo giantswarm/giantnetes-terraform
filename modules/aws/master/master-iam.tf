@@ -76,6 +76,28 @@ resource "aws_iam_role_policy" "master" {
     {
         "Effect": "Allow",
         "Action": [
+            "s3:ListBucket",
+            "s3:PutObject",
+            "s3:GetObject",
+            "s3:DeleteObject" 
+        ],
+        "Resource": [
+            "arn:${var.arn_region}:s3:::${var.aws_account}-${var.cluster_name}-g8s-loki",
+            "arn:${var.arn_region}:s3:::${var.aws_account}-${var.cluster_name}-g8s-loki/*"
+        ]
+    },
+    {
+        "Effect": "Allow",
+        "Action": [
+            "s3:GetAccessPoint",
+            "s3:GetAccountPublicAccessBlock",
+            "s3:ListAccessPoints"
+        ],
+        "Resource": "*"
+    },
+    {
+        "Effect": "Allow",
+        "Action": [
           "ec2:AssignPrivateIpAddresses",
           "ec2:AttachNetworkInterface",
           "ec2:CreateNetworkInterface",
