@@ -47,6 +47,7 @@ resource "aws_s3_bucket" "logging" {
 
 resource "aws_s3_bucket" "loki" {
   bucket        = "${var.aws_account}-${var.cluster_name}-g8s-loki"
+  acl           = "private"
   force_destroy = true
 
   server_side_encryption_configuration {
