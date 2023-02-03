@@ -102,8 +102,8 @@ resource "aws_iam_role_policy" "worker" {
             "s3:DeleteObject" 
         ],
         "Resource": [
-            "arn:${var.arn_region}:s3:::${var.aws_account}-${var.cluster_name}-g8s-loki",
-            "arn:${var.arn_region}:s3:::${var.aws_account}-${var.cluster_name}-g8s-loki/*"
+            "arn:${var.arn_region}:s3:::${var.s3_bucket_prefix}${var.cluster_name}-g8s-loki",
+            "arn:${var.arn_region}:s3:::${var.s3_bucket_prefix}${var.cluster_name}-g8s-loki/*"
         ]
     },
     {

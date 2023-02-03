@@ -46,7 +46,7 @@ resource "aws_s3_bucket" "logging" {
 }
 
 resource "aws_s3_bucket" "loki" {
-  bucket        = "${var.aws_account}-${var.cluster_name}-g8s-loki"
+  bucket        = "${var.s3_bucket_prefix}${var.cluster_name}-g8s-loki"
   acl           = "private"
   force_destroy = true
 
@@ -70,7 +70,7 @@ resource "aws_s3_bucket" "loki" {
   tags = merge(
     local.common_tags,
     map(
-      "Name", "${var.aws_account}-${var.cluster_name}-g8s-loki"
+      "Name", "${var.s3_bucket_prefix}${var.cluster_name}-g8s-loki"
     )
   )
 }
