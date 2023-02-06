@@ -45,6 +45,36 @@ resource "aws_s3_bucket" "logging" {
   )
 }
 
+resource "aws_s3_bucket" "loki" {
+  bucket        = "${var.cluster_name}-g8s-loki"
+  acl           = "private"
+  force_destroy = true
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+
+  lifecycle_rule {
+    id      = "ExpirationLogs"
+    enabled = true
+
+    expiration {
+      days = var.logs_expiration_days
+    }
+  }
+
+  tags = merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-g8s-loki"
+    )
+  )
+}
+
 resource "aws_s3_bucket_policy" "access-logs-policy" {
   bucket = aws_s3_bucket.logging.id
 
