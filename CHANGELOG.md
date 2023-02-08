@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Add Loki s3 bucket and permissions.
+- Bump kubernetes to `1.24.10`.
 
 ## [14.10.0] - 2023-01-31
 
