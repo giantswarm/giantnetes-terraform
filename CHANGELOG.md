@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [14.11.0] - 2023-02-08
+
 ### Changed
 
 - Add Loki s3 bucket and permissions.
@@ -808,7 +810,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.10.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.11.0...HEAD
+[14.11.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.10.0...v14.11.0
 [14.10.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.9.0...v14.10.0
 [14.9.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.8.0...v14.9.0
 [14.8.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.7.0...v14.8.0
