@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Add Mimir s3 buckets permissions.
+
 ## [14.11.0] - 2023-02-08
 
 ### Changed
