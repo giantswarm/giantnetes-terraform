@@ -14,8 +14,6 @@ data:
     ipam:
       mode: kubernetes
     localRedirectPolicy: true
-    nodeinit:
-      enabled: true
     image:
       registry: {{.DockerRegistry}}
 ---
