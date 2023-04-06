@@ -1296,6 +1296,29 @@ systemd:
       [Install]
       WantedBy=multi-user.target
 {{ end -}}
+{{if eq .Provider "aws" }}
+  - name: master-instance-healthcheck.service
+    enabled: false
+    contents: |
+      [Unit]
+      Description=master-instance-healthcheck job
+      After=k8s-kubelet.service k8s-setup-network-env.service
+      Requires=k8s-kubelet.service k8s-setup-network-env.service
+      [Service]
+      Type=oneshot
+      ExecStart=/opt/bin/master-instance-healthcheck
+      [Install]
+      WantedBy=multi-user.target
+  - name: master-instance-healthcheck.timer
+    enabled: true
+    contents: |
+      [Unit]
+      Description=Execute master-instance-healthcheck every 5 minutes
+      [Timer]
+      OnCalendar=*:0/5
+      [Install]
+      WantedBy=multi-user.target
+{{ end -}}
 {{ if eq .Provider "aws" -}}
 networkd:
   units:

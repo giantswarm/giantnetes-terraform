@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add self-health-checks for master instances in AWS.
+
 ### Changed
 
+- Enabled anonymous-auth in `api-server` to allow health checks from outside kubernetes.
 - Bump flatcar to `3374.2.5`.
 - Bump kubenetes to `1.24.12`.
 - Bump etcd to `3.5.7`.
