@@ -14,43 +14,8 @@ data:
     ipam:
       mode: kubernetes
     localRedirectPolicy: true
-    nodeinit:
-      enabled: true
     image:
-      repository: {{.DockerRegistry}}/giantswarm/cilium
-    certgen:
-      image:
-        repository: {{.DockerRegistry}}/giantswarm/cilium-certgen
-    hubble:
-      relay:
-        image:
-          repository: {{.DockerRegistry}}/giantswarm/hubble-relay
-      ui:
-        backend:
-          image:
-            repository: {{.DockerRegistry}}/giantswarm/hubble-ui-backend
-        frontend:
-          image:
-            repository: {{.DockerRegistry}}/giantswarm/hubble-ui
-        proxy:
-          image:
-            repository: {{.DockerRegistry}}/giantswarm/envoy
-    etcd:
-      image:
-        repository: {{.DockerRegistry}}/giantswarm/cilium-etcd-operator
-    operator:
-      image:
-        repository: {{.DockerRegistry}}/giantswarm/cilium-operator
-    nodeinit:
-      image:
-        repository: {{.DockerRegistry}}/giantswarm/cilium-startup-script
-    preflight:
-      image:
-        repository: {{.DockerRegistry}}/giantswarm/cilium
-    clustermesh:
-      apiserver:
-        image:
-          repository: {{.DockerRegistry}}/giantswarm/clustermesh-apiserver
+      registry: {{.DockerRegistry}}
 ---
 apiVersion: application.giantswarm.io/v1alpha1
 kind: App
@@ -87,4 +52,4 @@ spec:
     secret:
       name: ""
       namespace: ""
-  version: 0.6.1
+  version: 0.9.0

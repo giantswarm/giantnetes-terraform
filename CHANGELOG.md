@@ -7,9 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add self-health-checks for master instances in AWS.
+- Add Mimir s3 buckets permissions.
+
 ### Changed
 
-- Add Mimir s3 buckets permissions.
+- Enabled anonymous-auth in `api-server` to allow health checks from outside kubernetes.
+- Bump flatcar to `3374.2.5`.
+- Bump kubenetes to `1.24.12`.
+- Bump etcd to `3.5.7`.
+- Bump `cilium-app` to `0.9.0`.
+- Bump `coredns-app` to `1.15.2`.
+- Bump `nginx-ingress-controller-app` to `2.29.0`.
+- Bump `aws-ebs-csi-driver-app` to `2.21.0`.
+- Bump `azuredisk-csi-driver` to `v1.26.2-gs1`.
+
+### Removed
+
+- AWS-cni and kube-proxy leftovers.
 
 ## [14.11.0] - 2023-02-08
 

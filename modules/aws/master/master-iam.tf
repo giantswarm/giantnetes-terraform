@@ -169,6 +169,15 @@ resource "aws_iam_role_policy" "master" {
         "Resource": [
           "*"
         ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "autoscaling:SetInstanceHealth"
+        ],
+        "Resource": [
+          "arn:${var.arn_region}:autoscaling:${var.aws_region}:${var.aws_account}:autoScalingGroup:*:autoScalingGroupName/${var.cluster_name}-master-*"
+        ]
       }
   ]
 }

@@ -37,17 +37,6 @@ storage:
       group:
         id: 0
 
-{{ if eq .Provider "aws" }}
-    - path: /srv/aws-cni.yaml
-      filesystem: root
-      mode: 420
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/aws-cni.yaml" }}"
-{{ end }}
 {{ if eq .Provider "azure" }}
     - path: /srv/azure-ad-pod-identity-lrp.yaml
       filesystem: root
@@ -79,36 +68,6 @@ storage:
         id: 0
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/default-storage-class.yaml" }}"
-
-    - path: /srv/kube-proxy-sa.yaml
-      filesystem: root
-      mode: 420
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/kube-proxy-sa.yaml" }}"
-
-    - path: /srv/kube-proxy-config.yaml
-      filesystem: root
-      mode: 420
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "config/kube-proxy.yaml" }}"
-
-    - path: /srv/kube-proxy-ds.yaml
-      filesystem: root
-      mode: 420
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/kube-proxy-ds.yaml" }}"
 
     {{ if eq .Provider "aws" -}}
     - path: /srv/network-policy.json
@@ -584,6 +543,16 @@ storage:
         id: 0
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/10-require-attach-dep.conf" }}"
+
+    - path: /opt/bin/master-instance-healthcheck
+      filesystem: root
+      mode: 744
+      user:
+        id: 0
+      group:
+        id: 0
+      contents:
+        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "conf/master-instance-healthcheck" }}"
 {{ end }}
 
 systemd:
@@ -967,7 +936,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       LimitNOFILE=40000
-      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.5.6
+      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.5.7
       Environment=NAME=%p.service
       EnvironmentFile=/etc/network-environment
       {{if eq .Provider "azure" }}EnvironmentFile=-/var/lib/etcd/master-id{{end}}
@@ -1027,7 +996,7 @@ systemd:
       EnvironmentFile=/etc/environment
       {{if eq .Provider "azure" }}EnvironmentFile=-/var/lib/etcd/master-id{{end}}
       {{if eq .Provider "aws" }}Environment=MASTER_ID={{.MasterID}}{{end}}
-      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.5.6
+      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.5.7
       Environment=NAME=%p.service
       ExecStartPre=-/usr/bin/docker stop  $NAME
       ExecStartPre=-/usr/bin/docker rm  $NAME
@@ -1324,6 +1293,29 @@ systemd:
       Restart=on-failure
       RestartSec=3
       ExecStart=/opt/ensure-dns-record
+      [Install]
+      WantedBy=multi-user.target
+{{ end -}}
+{{if eq .Provider "aws" }}
+  - name: master-instance-healthcheck.service
+    enabled: false
+    contents: |
+      [Unit]
+      Description=master-instance-healthcheck job
+      After=k8s-kubelet.service k8s-setup-network-env.service
+      Requires=k8s-kubelet.service k8s-setup-network-env.service
+      [Service]
+      Type=oneshot
+      ExecStart=/opt/bin/master-instance-healthcheck
+      [Install]
+      WantedBy=multi-user.target
+  - name: master-instance-healthcheck.timer
+    enabled: true
+    contents: |
+      [Unit]
+      Description=Execute master-instance-healthcheck every 5 minutes
+      [Timer]
+      OnCalendar=*:0/5
       [Install]
       WantedBy=multi-user.target
 {{ end -}}
