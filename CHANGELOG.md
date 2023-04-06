@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add self-health-checks for master instances in AWS.
+- Add Mimir s3 buckets permissions.
 
 ### Changed
 
