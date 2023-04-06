@@ -19,7 +19,7 @@ spec:
       command:
       - kube-apiserver
       - --allow-privileged=true
-      - --anonymous-auth=false
+      - --anonymous-auth=true
       - --secure-port=443
       {{ if eq .Provider "aws" -}}
       - --cloud-provider=external
