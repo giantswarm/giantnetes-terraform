@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Enable ingress for hubble UI.
+
 ## [14.12.0] - 2023-04-06
 
 ### Added
