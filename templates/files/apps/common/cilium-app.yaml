@@ -24,11 +24,11 @@ data:
           annotations:
             cert-manager.io/cluster-issuer: "letsencrypt-giantswarm"
           hosts:
-          - hubble.{{ .BaseDomain }}
+          - hubble.g8s.{{ .BaseDomain }}
           tls:
           - secretName: hubble-ui-tls
             hosts:
-            - hubble.{{ .BaseDomain }}
+            - hubble.g8s.{{ .BaseDomain }}
 ---
 apiVersion: application.giantswarm.io/v1alpha1
 kind: App
