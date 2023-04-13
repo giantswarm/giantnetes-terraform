@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [14.13.0] - 2023-04-13
+
 ### Added
 
 - Enable ingress for hubble UI.
@@ -837,7 +839,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.12.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.13.0...HEAD
+[14.13.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.12.0...v14.13.0
 [14.12.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.11.0...v14.12.0
 [14.11.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.10.0...v14.11.0
 [14.10.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.9.0...v14.10.0
