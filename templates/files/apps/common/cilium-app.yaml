@@ -16,6 +16,50 @@ data:
     localRedirectPolicy: true
     image:
       registry: {{.DockerRegistry}}
+    hubble:
+      ui:
+        ingress:
+          enabled: true
+          className: nginx
+          annotations:
+            cert-manager.io/cluster-issuer: "letsencrypt-giantswarm"
+            nginx.ingress.kubernetes.io/auth-signin: https://$host/oauth2/start?rd=$escaped_request_uri
+            nginx.ingress.kubernetes.io/auth-url: https://$host/oauth2/auth
+            nginx.ingress.kubernetes.io/whitelist-source-range: 0.0.0.0/0
+          hosts:
+          - hubble.g8s.{{ .BaseDomain }}
+          tls:
+          - secretName: hubble-ui-tls
+            hosts:
+            - hubble.g8s.{{ .BaseDomain }}
+---
+# In order to login to hubble we need to use oauth2-proxy.
+# In order to reuse the already running instance, in the monitoring namespace,
+# we need to create an ingress for oauth2-proxy for hubble in the monitoring namespace.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hubble-ui-oauth
+  namespace: monitoring
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-giantswarm"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: hubble.g8s.{{ .BaseDomain }}
+    http:
+      paths:
+      - backend:
+          service:
+            name: oauth2-proxy
+            port:
+              number: 4180
+        path: /oauth2
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - hubble.g8s.{{ .BaseDomain }}
+    secretName: hubble-ui-oauth-tls
 ---
 apiVersion: application.giantswarm.io/v1alpha1
 kind: App
@@ -52,4 +96,4 @@ spec:
     secret:
       name: ""
       namespace: ""
-  version: 0.9.0
+  version: 0.9.2
