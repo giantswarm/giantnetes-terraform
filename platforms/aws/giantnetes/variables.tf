@@ -130,7 +130,7 @@ variable "flatcar_linux_channel" {
 variable "flatcar_linux_version" {
   description = "Flatcar linux version."
   type        = string
-  default     = "3374.2.5"
+  default     = "3510.2.0"
 }
 
 variable "flatcar_ami_owner" {
