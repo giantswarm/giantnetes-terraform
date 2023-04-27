@@ -115,19 +115,6 @@ resource "aws_iam_role_policy" "worker" {
             "s3:DeleteObject" 
         ],
         "Resource": [
-            "arn:${var.arn_region}:s3:::${var.cluster_name}-loki-test-v19",
-            "arn:${var.arn_region}:s3:::${var.cluster_name}-loki-test-v19/*"
-        ]
-    },
-    {
-        "Effect": "Allow",
-        "Action": [
-            "s3:ListBucket",
-            "s3:PutObject",
-            "s3:GetObject",
-            "s3:DeleteObject" 
-        ],
-        "Resource": [
             "arn:${var.arn_region}:s3:::${var.cluster_name}-g8s-mimir",
             "arn:${var.arn_region}:s3:::${var.cluster_name}-g8s-mimir/*"
         ]
