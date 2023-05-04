@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add Mimir-ruler S3 buckets permissions.
 
+### Changed
+
+- nginx-ingress-controller: Enable `controller.allowSnippetAnnotations`.
+
 ## [14.13.0] - 2023-04-13
 
 ### Added
