@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Bump flatcar to `3510.2.0`.
+- Bump flatcar to `3510.2.1`.
 - Bump etcd to `3.5.8`.
 - Bump `cilium-app` to `0.9.2`.
 
