@@ -13,7 +13,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Bump flatcar to `3510.2.1`.
 - Bump etcd to `3.5.8`.
-- Bump `cilium-app` to `0.9.2`.
 
 ## [14.14.0] - 2023-05-05
 
@@ -30,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Enable ingress for hubble UI.
+
+### Changed
+
+- Bump `cilium-app` to `0.9.2`.
 
 ## [14.12.0] - 2023-04-06
 
