@@ -89,6 +89,19 @@ resource "aws_iam_role_policy" "master" {
     {
         "Effect": "Allow",
         "Action": [
+            "s3:ListBucket",
+            "s3:PutObject",
+            "s3:GetObject",
+            "s3:DeleteObject" 
+        ],
+        "Resource": [
+            "arn:${var.arn_region}:s3:::${var.cluster_name}-g8s-mimir-ruler",
+            "arn:${var.arn_region}:s3:::${var.cluster_name}-g8s-mimir-ruler/*"
+        ]
+    },
+    {
+        "Effect": "Allow",
+        "Action": [
           "ec2:AssignPrivateIpAddresses",
           "ec2:AttachNetworkInterface",
           "ec2:CreateNetworkInterface",

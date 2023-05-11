@@ -5,17 +5,18 @@ metadata:
   namespace: giantswarm
 data:
   configmap-values.yaml: |
-    image:
-      registry: {{ .DockerRegistry }}
-    configmap:
-      use-forwarded-headers: "false"
-{{- if eq .Provider "aws" }}
-      use-proxy-protocol: "true"
-{{- end }}
     controller:
+      allowSnippetAnnotations: true
       enableSSLChainCompletion: true
       service:
         type: NodePort
+    configmap:
+      use-forwarded-headers: "false"
+      {{- if eq .Provider "aws" }}
+      use-proxy-protocol: "true"
+      {{- end }}
+    image:
+      registry: {{ .DockerRegistry }}
 ---
 apiVersion: application.giantswarm.io/v1alpha1
 kind: App
