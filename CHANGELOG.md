@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [14.15.0] - 2023-05-11
+
 ### Changed
 
 - Bump flatcar to `3510.2.0`.
@@ -855,7 +857,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.14.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.15.0...HEAD
+[14.15.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.14.0...v14.15.0
 [14.14.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.13.0...v14.14.0
 [14.13.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.12.0...v14.13.0
 [14.12.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.11.0...v14.12.0
