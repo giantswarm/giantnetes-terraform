@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [14.15.1] - 2023-05-29
+
 ### Changed
 
 - Allow customizing vault's etcd disk size.
@@ -864,7 +866,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.15.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.15.1...HEAD
+[14.15.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.15.0...v14.15.1
 [14.15.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.14.0...v14.15.0
 [14.14.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.13.0...v14.14.0
 [14.13.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.12.0...v14.13.0
