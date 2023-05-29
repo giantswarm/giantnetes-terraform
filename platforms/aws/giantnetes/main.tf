@@ -228,6 +228,7 @@ module "vault" {
   vpc_id                 = module.vpc.vpc_id
   worker_subnet_ids      = module.vpc.worker_subnet_ids
   worker_subnet_count    = length(module.vpc.worker_subnet_ids)
+  volume_size_etcd       = var.vault_etcd_volume_size
 }
 
 # Ingress ELB
