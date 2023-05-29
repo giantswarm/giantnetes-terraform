@@ -89,6 +89,11 @@ variable "vault_instance_type" {
   default = "t2.medium"
 }
 
+variable "vault_etcd_volume_size" {
+  type    = string
+  default = 10
+}
+
 variable "master_instance" {
   type = map(any)
 
