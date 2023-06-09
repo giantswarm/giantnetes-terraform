@@ -11,13 +11,6 @@ clusterDNS:
 clusterDomain: {{ .ClusterDomain }}
 featureGates:
   ExpandPersistentVolumes: true
-  CSIMigration: true
-{{- if eq .Provider "aws" }}
-  CSIMigrationAWS: true
-{{- end }}
-{{- if eq .Provider "azure" }}
-  CSIMigrationAzureDisk: true
-{{- end }}
 kernelMemcgNotification: true
 evictionSoft:
   memory.available:  "500Mi"
