@@ -62,6 +62,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove CSIMigration feature flag (enabled by default with k8s 1.23).
 - Allow port 2112 on vault instance for vault-etcd-backups-exporter.
 
+### Changed
+
+- independent data retention variable for Loki S3 buckets
+
 ## [14.15.1] - 2023-05-29
 
 ### Changed

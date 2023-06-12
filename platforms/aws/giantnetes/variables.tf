@@ -69,6 +69,12 @@ variable "logs_expiration_days" {
   default     = "365"
 }
 
+variable "loki_expiration_days" {
+  type        = string
+  description = "Number of days Loki data will be stored in logging bucket if not deleted by Loki compactor."
+  default     = "100"
+}
+
 variable "s3_bucket_prefix" {
   default = ""
 }
