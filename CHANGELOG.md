@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Bump flatcar to `3510.2.2`.
 - Bump etcd to `3.5.9`.
+- Bump kubernetes to `1.24.15`.
 - Bump aws-cloud-controller-manager to `1.24.1-gs8`.
 - Bump `aws-ebs-csi-driver-app` to `2.24.0`.
 - Bump `azure-cloud-controller-manager` to `1.24.18-gs4`.
