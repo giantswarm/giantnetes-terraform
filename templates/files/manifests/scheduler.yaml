@@ -17,9 +17,6 @@ spec:
       command:
       - kube-scheduler
       - --config=/etc/kubernetes/config/scheduler.yaml
-      {{if eq .Provider "azure" -}}
-      - --feature-gates=CSIMigration=true,CSIMigrationAzureDisk=true
-      {{ end -}}
       - --v=2
       - --authorization-always-allow-paths=/healthz,/readyz,/livez,/metrics
       - --authentication-kubeconfig=/etc/kubernetes/kubeconfig/scheduler.yaml

@@ -7,11 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- Remove CSIMigration feature flag (enabled by default with k8s 1.23).
+- Allow port 2112 on vault instance for vault-etcd-backups-exporter.
+
+## [14.15.1] - 2023-05-29
+
+### Changed
+
+- Allow customizing vault's etcd disk size.
+
+## [14.15.0] - 2023-05-11
+
+### Changed
+
+- Bump flatcar to `3510.2.1`.
+- Bump etcd to `3.5.8`.
+
+## [14.14.0] - 2023-05-05
+
+### Added
+
+- Add Mimir-ruler S3 buckets permissions.
+
+### Changed
+
+- nginx-ingress-controller: Enable `controller.allowSnippetAnnotations`.
+
 ## [14.13.0] - 2023-04-13
 
 ### Added
 
 - Enable ingress for hubble UI.
+
+### Changed
+
+- Bump `cilium-app` to `0.9.2`.
 
 ## [14.12.0] - 2023-04-06
 
@@ -839,7 +871,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.13.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.15.1...HEAD
+[14.15.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.15.0...v14.15.1
+[14.15.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.14.0...v14.15.0
+[14.14.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.13.0...v14.14.0
 [14.13.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.12.0...v14.13.0
 [14.12.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.11.0...v14.12.0
 [14.11.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.10.0...v14.11.0

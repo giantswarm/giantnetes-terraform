@@ -89,6 +89,11 @@ variable "vault_instance_type" {
   default = "t2.medium"
 }
 
+variable "vault_etcd_volume_size" {
+  type    = string
+  default = 10
+}
+
 variable "master_instance" {
   type = map(any)
 
@@ -130,7 +135,7 @@ variable "flatcar_linux_channel" {
 variable "flatcar_linux_version" {
   description = "Flatcar linux version."
   type        = string
-  default     = "3374.2.5"
+  default     = "3510.2.1"
 }
 
 variable "flatcar_ami_owner" {
