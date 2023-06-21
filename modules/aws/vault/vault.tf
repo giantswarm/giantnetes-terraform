@@ -156,6 +156,14 @@ resource "aws_security_group" "vault" {
     cidr_blocks = concat(data.aws_subnet.worker_subnets.*.cidr_block,[var.aws_cni_cidr_block])
   }
 
+  # Allow vault-etcd-backups-exporter from worker nodes.
+  ingress {
+    from_port   = 2112
+    to_port     = 2112
+    protocol    = "tcp"
+    cidr_blocks = concat(data.aws_subnet.worker_subnets.*.cidr_block,[var.aws_cni_cidr_block])
+  }
+
   tags = merge(
     local.common_tags,
     map(
