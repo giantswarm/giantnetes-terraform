@@ -42,5 +42,5 @@ spec:
     secret:
       name: ""
       namespace: ""
-  version: v1.24.6-gs1
+  version: v1.24.18-gs3
 
