@@ -8,13 +8,15 @@ data:
     controller:
       allowSnippetAnnotations: true
       enableSSLChainCompletion: true
+      resources:
+        requests:
+          cpu: 1
+          memory: 350Mi
+      autoscaling:
+        targetCPUUtilizationPercentage: 80
+        targetMemoryUtilizationPercentage: 80
       service:
         type: NodePort
-    configmap:
-      use-forwarded-headers: "false"
-      {{- if eq .Provider "aws" }}
-      use-proxy-protocol: "true"
-      {{- end }}
     image:
       registry: {{ .DockerRegistry }}
 ---
