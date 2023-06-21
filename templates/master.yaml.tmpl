@@ -936,7 +936,7 @@ systemd:
       RestartSec=0
       TimeoutStopSec=10
       LimitNOFILE=40000
-      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.5.8
+      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.5.9
       Environment=NAME=%p.service
       EnvironmentFile=/etc/network-environment
       {{if eq .Provider "azure" }}EnvironmentFile=-/var/lib/etcd/master-id{{end}}
@@ -996,7 +996,7 @@ systemd:
       EnvironmentFile=/etc/environment
       {{if eq .Provider "azure" }}EnvironmentFile=-/var/lib/etcd/master-id{{end}}
       {{if eq .Provider "aws" }}Environment=MASTER_ID={{.MasterID}}{{end}}
-      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.5.8
+      Environment=IMAGE={{.DockerRegistry}}/giantswarm/etcd:v3.5.9
       Environment=NAME=%p.service
       ExecStartPre=-/usr/bin/docker stop  $NAME
       ExecStartPre=-/usr/bin/docker rm  $NAME
