@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- nginx-ingress-controller: Improve requests and autoscaling. ([#715](https://github.com/giantswarm/giantnetes-terraform/pull/715))
+
 ## [14.16.0] - 2023-06-21
 
 ### Changed
