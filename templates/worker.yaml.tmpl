@@ -713,7 +713,8 @@ systemd:
         $KUBECTL label nodes --overwrite $(hostname | tr '[:upper:]' '[:lower:]') kubernetes.io/role=worker'
       [Install]
       WantedBy=multi-user.target
-
+  - name: auditd.service
+    enabled: true
 {{ if .LogentriesEnabled }}
   - name: logentries.service
     enabled: true

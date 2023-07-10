@@ -1251,6 +1251,8 @@ systemd:
       ExecStart=/opt/install-debug-tools
       [Install]
       WantedBy=multi-user.target
+  - name: auditd.service
+    enabled: true
 {{ if .LogentriesEnabled }}
   - name: logentries.service
     enabled: true
