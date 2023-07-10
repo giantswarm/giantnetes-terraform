@@ -1319,6 +1319,8 @@ systemd:
       [Install]
       WantedBy=multi-user.target
 {{ end -}}
+  - name: auditd.service
+    enabled: true
 {{ if eq .Provider "aws" -}}
 networkd:
   units:
