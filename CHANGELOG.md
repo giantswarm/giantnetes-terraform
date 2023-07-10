@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [14.16.2] - 2023-07-10
+
 ### Changed
 
 - Enable auditd.
@@ -901,7 +903,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.16.1...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.16.2...HEAD
+[14.16.2]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.16.1...v14.16.2
 [14.16.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.16.0...v14.16.1
 [14.16.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.15.1...v14.16.0
 [14.15.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.15.0...v14.15.1
