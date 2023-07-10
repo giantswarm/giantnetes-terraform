@@ -15,6 +15,11 @@ resource "aws_s3_bucket" "logging" {
   acl           = "log-delivery-write"
   force_destroy = true
 
+  logging {
+    target_bucket = "${var.s3_bucket_prefix}${var.cluster_name}-access-logs"
+    target_prefix = "self-logs/"
+  }
+
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
@@ -38,13 +43,6 @@ resource "aws_s3_bucket" "logging" {
       "Name", "${var.s3_bucket_prefix}${var.cluster_name}-access-logs"
     )
   )
-}
-
-resource "aws_s3_bucket_logging" "logging" {
-  bucket = aws_s3_bucket.logging.id
-
-  target_bucket = aws_s3_bucket.logging.id
-  target_prefix = "self-logs/"
 }
 
 resource "aws_s3_bucket" "loki" {
@@ -107,6 +105,11 @@ resource "aws_s3_bucket" "ignition" {
   acl           = "private"
   force_destroy = true
 
+  logging {
+    target_bucket = aws_s3_bucket.logging.id
+    target_prefix = "${var.s3_bucket_prefix}${var.cluster_name}-ignition-logs/"
+  }
+
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
@@ -121,13 +124,6 @@ resource "aws_s3_bucket" "ignition" {
       "Name", "${var.cluster_name}-ignition"
     )
   )
-}
-
-resource "aws_s3_bucket_logging" "ignition" {
-  bucket = aws_s3_bucket.ignition.id
-
-  target_bucket = aws_s3_bucket.logging.id
-  target_prefix = "${var.s3_bucket_prefix}${var.cluster_name}-ignition-logs/"
 }
 
 resource "aws_s3_bucket_policy" "ignition-policy" {

@@ -1251,6 +1251,8 @@ systemd:
       ExecStart=/opt/install-debug-tools
       [Install]
       WantedBy=multi-user.target
+  - name: auditd.service
+    enabled: true
 {{ if .LogentriesEnabled }}
   - name: logentries.service
     enabled: true
@@ -1319,8 +1321,6 @@ systemd:
       [Install]
       WantedBy=multi-user.target
 {{ end -}}
-  - name: auditd.service
-    enabled: true
 {{ if eq .Provider "aws" -}}
 networkd:
   units:
