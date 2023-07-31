@@ -116,7 +116,7 @@ passwd:
     - "sudo"
     - "docker"
 {{ range .Users }}
-{{- if eq .role "SRE" "PE" }}
+{{- if eq .role "SRE" "PE" "robot" }}
   - name: "{{ .name }}"
     groups:
       - "sudo"
