@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Bump flatcar to `3510.2.5`.
+- Bump kubernetes to `1.24.16`.
+- Bump aws-cloud-controller-manager to `1.24.1-gs9`.
+- Bump aws-node-termination-handler to `1.18.0`.
+- Bump azuredisk-csi-driver to `1.27.0`.
+- Bump `cilium-app` to `0.11.0`.
+- Bump `coredns-app` to `1.18.0`.
+ 
 ## [14.17.0] - 2023-07-31
 
 ### Changed
