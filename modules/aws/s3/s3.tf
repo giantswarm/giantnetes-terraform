@@ -63,7 +63,7 @@ resource "aws_s3_bucket" "loki" {
     enabled = true
 
     expiration {
-      days = var.logs_expiration_days
+      days = var.loki_expiration_days
     }
   }
 

@@ -10,6 +10,10 @@ variable "logs_expiration_days" {
   type = string
 }
 
+variable "loki_expiration_days" {
+  type = string
+}
+
 variable "s3_bucket_prefix" {
   type = string
 }
