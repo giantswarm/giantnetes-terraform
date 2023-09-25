@@ -96,6 +96,7 @@ module "s3" {
   aws_account          = var.aws_account
   cluster_name         = var.cluster_name
   logs_expiration_days = var.logs_expiration_days
+  loki_expiration_days = var.loki_expiration_days
   s3_bucket_prefix     = var.s3_bucket_prefix
 }
 
@@ -331,7 +332,7 @@ module "worker" {
 module "vpn" {
   source = "../../../modules/aws/vpn"
 
-  additional_tags             = var.additional_tags
+  additional_tags = var.additional_tags
   # If aws_customer_gateway_id_0 is not set, no vpn resources will be created.
   aws_customer_gateway_id_0   = var.aws_customer_gateway_id_0
   aws_customer_gateway_id_1   = var.aws_customer_gateway_id_1

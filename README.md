@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/giantswarm/giantnetes-terraform.svg?style=shield)](https://circleci.com/gh/giantswarm/giantnetes-terraform)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/giantswarm/giantnetes-terraform/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/giantswarm/giantnetes-terraform/tree/master)
 
 # Giant Swarm control plane terraform manifests
 
