@@ -69,6 +69,12 @@ variable "logs_expiration_days" {
   default     = "365"
 }
 
+variable "loki_expiration_days" {
+  type        = string
+  description = "Number of days Loki data will be stored in logging bucket if not deleted by Loki compactor."
+  default     = "100"
+}
+
 variable "s3_bucket_prefix" {
   default = ""
 }
@@ -135,7 +141,7 @@ variable "flatcar_linux_channel" {
 variable "flatcar_linux_version" {
   description = "Flatcar linux version."
   type        = string
-  default     = "3510.2.5"
+  default     = "3510.2.7"
 }
 
 variable "flatcar_ami_owner" {
@@ -155,7 +161,7 @@ variable "docker_registry_mirror" {
 
 variable "hyperkube_version" {
   type    = string
-  default = "1.24.16"
+  default = "1.24.17"
 }
 
 ### DNS ###
