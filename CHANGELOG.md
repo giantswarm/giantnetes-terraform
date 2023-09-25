@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Bump flatcar to `3510.2.7`.
+- Bump kubernetes to `1.24.17`.
+- Bump `aws-ebs-csi-driver-app` to `2.25.0`.
+- Bump `cilium-app` to `0.12.0`.
+- Bump `coredns-app` to `1.18.1`.
+- Set `--quota-backend-bytes` flag to etcd.
+
 ## [14.18.0] - 2023-08-03
 
 ### Changed

@@ -979,6 +979,7 @@ systemd:
           {{- end }}
           --initial-cluster-state new \
           --data-dir=/var/lib/etcd \
+          --quota-backend-bytes 8589934592 \
           --enable-v2
 
       [Install]
