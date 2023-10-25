@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump `cilium-app` to `0.12.0`.
 - Bump `coredns-app` to `1.18.1`.
 - Set `--quota-backend-bytes` flag to etcd.
+- Add Tempo s3 bucket and permissions.
+- Create mimir buckets.
 
 ## [14.18.0] - 2023-08-03
 

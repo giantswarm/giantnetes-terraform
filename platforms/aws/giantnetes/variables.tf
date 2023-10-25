@@ -75,6 +75,18 @@ variable "loki_expiration_days" {
   default     = "100"
 }
 
+variable "mimir_expiration_days" {
+  type        = string
+  description = "Number of days Mimir data will be stored in mimir bucket if not deleted by Mimir compactor."
+  default     = "60"
+}
+
+variable "tempo_expiration_days" {
+  type        = string
+  description = "Number of days Tempo data will be stored in trace bucket if not deleted by Tempo compactor."
+  default     = "60"
+}
+
 variable "s3_bucket_prefix" {
   default = ""
 }

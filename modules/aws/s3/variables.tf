@@ -14,6 +14,14 @@ variable "loki_expiration_days" {
   type = string
 }
 
+variable "mimir_expiration_days" {
+  type = string
+}
+
+variable "tempo_expiration_days" {
+  type = string
+}
+
 variable "s3_bucket_prefix" {
   type = string
 }
