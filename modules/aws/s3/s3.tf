@@ -106,7 +106,7 @@ resource "aws_s3_bucket" "mimir" {
 }
 
 resource "aws_s3_bucket" "mimir-ruler" {
-  bucket        = "${var.cluster_name}-g8s--ruler"
+  bucket        = "${var.cluster_name}-g8s-mimir-ruler"
   acl           = "private"
   force_destroy = true
 
