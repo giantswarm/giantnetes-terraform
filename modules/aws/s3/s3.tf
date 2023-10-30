@@ -140,7 +140,7 @@ resource "aws_s3_bucket" "tempo" {
   }
 
   lifecycle_rule {
-    id      = "expiration"
+    id      = "Expiration"
     enabled = true
 
     expiration {
