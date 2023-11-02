@@ -59,7 +59,7 @@ resource "aws_s3_bucket" "loki" {
   }
 
   lifecycle_rule {
-    id      = "ExpirationLogs"
+    id      = "Expiration"
     enabled = true
 
     expiration {
@@ -71,6 +71,87 @@ resource "aws_s3_bucket" "loki" {
     local.common_tags,
     map(
       "Name", "${var.cluster_name}-g8s-loki"
+    )
+  )
+}
+
+resource "aws_s3_bucket" "mimir" {
+  bucket        = "${var.cluster_name}-g8s-mimir"
+  acl           = "private"
+  force_destroy = true
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+
+  lifecycle_rule {
+    id      = "Expiration"
+    enabled = true
+
+    expiration {
+      days = var.mimir_expiration_days
+    }
+  }
+
+  tags = merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-g8s-mimir"
+    )
+  )
+}
+
+resource "aws_s3_bucket" "mimir-ruler" {
+  bucket        = "${var.cluster_name}-g8s-mimir-ruler"
+  acl           = "private"
+  force_destroy = true
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+
+  tags = merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-g8s-mimir-ruler"
+    )
+  )
+}
+
+resource "aws_s3_bucket" "tempo" {
+  bucket        = "${var.cluster_name}-g8s-tempo"
+  acl           = "private"
+  force_destroy = true
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+
+  lifecycle_rule {
+    id      = "Expiration"
+    enabled = true
+
+    expiration {
+      days = var.tempo_expiration_days
+    }
+  }
+
+  tags = merge(
+    local.common_tags,
+    map(
+      "Name", "${var.cluster_name}-g8s-tempo"
     )
   )
 }

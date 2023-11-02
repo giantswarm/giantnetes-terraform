@@ -132,6 +132,19 @@ resource "aws_iam_role_policy" "worker" {
             "arn:${var.arn_region}:s3:::${var.cluster_name}-g8s-mimir-ruler/*"
         ]
     },
+        {
+        "Effect": "Allow",
+        "Action": [
+            "s3:ListBucket",
+            "s3:PutObject",
+            "s3:GetObject",
+            "s3:DeleteObject" 
+        ],
+        "Resource": [
+            "arn:${var.arn_region}:s3:::${var.cluster_name}-g8s-tempo",
+            "arn:${var.arn_region}:s3:::${var.cluster_name}-g8s-tempo/*"
+        ]
+    },
     {
         "Effect": "Allow",
         "Action": [
