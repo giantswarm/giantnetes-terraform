@@ -138,7 +138,7 @@ variable "flatcar_linux_channel" {
 variable "flatcar_linux_version" {
   description = "Flatcar linux version."
   type        = string
-  default     = "3510.2.7"
+  default     = "3602.2.1"
 }
 
 variable "vault_image_publisher" {
