@@ -9,12 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Bump flatcar to `3510.2.7`.
+- Bump flatcar to `3602.2.1`.
 - Bump kubernetes to `1.24.17`.
 - Bump `aws-ebs-csi-driver-app` to `2.25.0`.
 - Bump `cilium-app` to `0.12.0`.
 - Bump `coredns-app` to `1.18.1`.
 - Set `--quota-backend-bytes` flag to etcd.
+- Add Tempo s3 bucket and permissions.
+- Create mimir buckets.
 
 ## [14.18.0] - 2023-08-03
 
