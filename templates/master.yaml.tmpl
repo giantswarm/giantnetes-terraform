@@ -91,36 +91,6 @@ storage:
       contents:
         source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/rbac-bindings.yaml" }}"
 
-    - path: /srv/psp-policies.yaml
-      filesystem: root
-      mode: 420
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/psp-policies.yaml" }}"
-
-    - path: /srv/psp-roles.yaml
-      filesystem: root
-      mode: 420
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/psp-roles.yaml" }}"
-
-    - path: /srv/psp-bindings.yaml
-      filesystem: root
-      mode: 420
-      user:
-        id: 0
-      group:
-        id: 0
-      contents:
-        source: "data:text/plain;charset=utf-8;base64,{{ index .Files "k8s-resource/psp-bindings.yaml" }}"
-
     - path: /srv/vault-token-reviewer.yaml
       filesystem: root
       mode: 420
