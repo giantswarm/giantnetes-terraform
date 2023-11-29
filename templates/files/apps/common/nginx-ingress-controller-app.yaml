@@ -11,7 +11,7 @@ data:
       resources:
         requests:
           cpu: 1
-          memory: 350Mi
+          memory: 500Mi
       autoscaling:
         targetCPUUtilizationPercentage: 80
         targetMemoryUtilizationPercentage: 80
