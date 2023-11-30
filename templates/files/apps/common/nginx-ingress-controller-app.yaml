@@ -4,14 +4,14 @@ metadata:
   name: nginx-ingress-controller-app-values
   namespace: giantswarm
 data:
-  configmap-values.yaml: |
+  values: |
     controller:
       allowSnippetAnnotations: true
       enableSSLChainCompletion: true
       resources:
         requests:
           cpu: 1
-          memory: 350Mi
+          memory: 500Mi
       autoscaling:
         targetCPUUtilizationPercentage: 80
         targetMemoryUtilizationPercentage: 80
@@ -23,36 +23,18 @@ data:
 apiVersion: application.giantswarm.io/v1alpha1
 kind: App
 metadata:
-  labels:
-    app-operator.giantswarm.io/version: 0.0.0
-    app.kubernetes.io/name: nginx-ingress-controller-app
   name: nginx-ingress-controller-app
   namespace: giantswarm
+  labels:
+    app-operator.giantswarm.io/version: 0.0.0
 spec:
   catalog: giantswarm
-  config:
-    configMap:
-      name: ""
-      namespace: ""
-    secret:
-      name: ""
-      namespace: ""
-  install: {}
-  kubeConfig:
-    context:
-      name: ""
-    inCluster: true
-    secret:
-      name: ""
-      namespace: ""
   name: nginx-ingress-controller-app
-  namespace: kube-system
-  namespaceConfig: {}
+  version: 2.30.1
   userConfig:
     configMap:
-      name: "nginx-ingress-controller-app-values"
-      namespace: "giantswarm"
-    secret:
-      name: ""
-      namespace: ""
-  version: 2.30.1
+      name: nginx-ingress-controller-app-values
+      namespace: giantswarm
+  kubeConfig:
+    inCluster: true
+  namespace: kube-system
