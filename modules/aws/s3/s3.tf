@@ -45,6 +45,31 @@ resource "aws_s3_bucket" "logging" {
   )
 }
 
+resource "aws_s3_bucket_policy" "access-logs-policy" {
+  bucket = aws_s3_bucket.logging.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "ForceSSLOnlyAccess"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:*"
+        Resource = [
+          aws_s3_bucket.logging.arn,
+          "${aws_s3_bucket.logging.arn}/*",
+        ]
+        Condition = {
+          Bool = {
+            "aws:SecureTransport" = "false"
+          }
+        }
+      },
+    ]
+  })
+}
+
 resource "aws_s3_bucket" "loki" {
   bucket        = "${var.cluster_name}-g8s-loki"
   acl           = "private"
@@ -73,6 +98,31 @@ resource "aws_s3_bucket" "loki" {
       "Name", "${var.cluster_name}-g8s-loki"
     )
   )
+}
+
+resource "aws_s3_bucket_policy" "loki-policy" {
+  bucket = aws_s3_bucket.loki.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "ForceSSLOnlyAccess"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:*"
+        Resource = [
+          aws_s3_bucket.loki.arn,
+          "${aws_s3_bucket.loki.arn}/*",
+        ]
+        Condition = {
+          Bool = {
+            "aws:SecureTransport" = "false"
+          }
+        }
+      },
+    ]
+  })
 }
 
 resource "aws_s3_bucket" "mimir" {
@@ -105,6 +155,31 @@ resource "aws_s3_bucket" "mimir" {
   )
 }
 
+resource "aws_s3_bucket_policy" "mimir-policy" {
+  bucket = aws_s3_bucket.mimir.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "ForceSSLOnlyAccess"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:*"
+        Resource = [
+          aws_s3_bucket.mimir.arn,
+          "${aws_s3_bucket.mimir.arn}/*",
+        ]
+        Condition = {
+          Bool = {
+            "aws:SecureTransport" = "false"
+          }
+        }
+      },
+    ]
+  })
+}
+
 resource "aws_s3_bucket" "mimir-ruler" {
   bucket        = "${var.cluster_name}-g8s-mimir-ruler"
   acl           = "private"
@@ -124,6 +199,31 @@ resource "aws_s3_bucket" "mimir-ruler" {
       "Name", "${var.cluster_name}-g8s-mimir-ruler"
     )
   )
+}
+
+resource "aws_s3_bucket_policy" "mimir-ruler-policy" {
+  bucket = aws_s3_bucket.mimir-ruler.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "ForceSSLOnlyAccess"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:*"
+        Resource = [
+          aws_s3_bucket.mimir-ruler.arn,
+          "${aws_s3_bucket.mimir-ruler.arn}/*",
+        ]
+        Condition = {
+          Bool = {
+            "aws:SecureTransport" = "false"
+          }
+        }
+      },
+    ]
+  })
 }
 
 resource "aws_s3_bucket" "tempo" {
@@ -156,8 +256,8 @@ resource "aws_s3_bucket" "tempo" {
   )
 }
 
-resource "aws_s3_bucket_policy" "access-logs-policy" {
-  bucket = aws_s3_bucket.logging.id
+resource "aws_s3_bucket_policy" "tempo-policy" {
+  bucket = aws_s3_bucket.tempo.id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -168,8 +268,8 @@ resource "aws_s3_bucket_policy" "access-logs-policy" {
         Principal = "*"
         Action    = "s3:*"
         Resource = [
-          aws_s3_bucket.logging.arn,
-          "${aws_s3_bucket.logging.arn}/*",
+          aws_s3_bucket.tempo.arn,
+          "${aws_s3_bucket.tempo.arn}/*",
         ]
         Condition = {
           Bool = {
@@ -180,6 +280,7 @@ resource "aws_s3_bucket_policy" "access-logs-policy" {
     ]
   })
 }
+
 
 resource "aws_s3_bucket" "ignition" {
   bucket        = "${var.aws_account}-${var.cluster_name}-ignition"

@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - nginx-ingress-controller-app: Increase `controller.resources.requests.memory` to 500Mi. ([#742](https://github.com/giantswarm/giantnetes-terraform/pull/742))
 
+### Fixed
+
+- Add encryption in transit for s3 buckets.
+
 ## [14.19.0] - 2023-11-02
 
 ### Changed
