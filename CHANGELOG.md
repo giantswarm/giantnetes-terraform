@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [14.20.0] - 2024-01-08
+
 ### Changed
 
 - nginx-ingress-controller-app: Increase `controller.resources.requests.memory` to 500Mi. ([#742](https://github.com/giantswarm/giantnetes-terraform/pull/742))
@@ -946,7 +948,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.19.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.20.0...HEAD
+[14.20.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.19.0...v14.20.0
 [14.19.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.18.0...v14.19.0
 [14.18.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.17.0...v14.18.0
 [14.17.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.16.2...v14.17.0
