@@ -90,12 +90,12 @@ jobs:
       - gather_facts
     steps:
       - name: Install architect
-        uses: giantswarm/install-binary-action@v1.1.0
+        uses: giantswarm/install-binary-action@v2.0.0
         with:
           binary: "architect"
           version: "6.13.0"
       - name: Install semver
-        uses: giantswarm/install-binary-action@v1.1.0
+        uses: giantswarm/install-binary-action@v2.0.0
         with:
           binary: "semver"
           version: "3.2.0"
@@ -199,7 +199,7 @@ jobs:
     if: ${{ needs.gather_facts.outputs.version }}
     steps:
       - name: Install semver
-        uses: giantswarm/install-binary-action@v1.1.0
+        uses: giantswarm/install-binary-action@v2.0.0
         with:
           binary: "semver"
           version: "3.0.0"
