@@ -51,4 +51,4 @@ spec:
     secret:
       name: ""
       namespace: ""
-  version: 1.18.1
+  version: 1.21.0

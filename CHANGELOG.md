@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Bump `coredns-app` to `1.21.0`.
+
 ## [14.20.0] - 2024-01-08
 
 ### Changed
