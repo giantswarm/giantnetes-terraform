@@ -13,6 +13,8 @@ data:
       nodeSelector:
         kubernetes.io/os: linux
     global:
+      podSecurityStandards:
+        enforced: true
       image:
         registry: {{.DockerRegistry}}
 ---
@@ -51,4 +53,4 @@ spec:
     secret:
       name: ""
       namespace: ""
-  version: 2.25.0
+  version: 2.28.1

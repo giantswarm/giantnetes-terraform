@@ -7,6 +7,9 @@ data:
   values: |
     image:
       registry: {{.DockerRegistry}}
+    global:
+      podSecurityStandards:
+        enforced: true
 ---
 apiVersion: application.giantswarm.io/v1alpha1
 kind: App
@@ -43,4 +46,4 @@ spec:
     secret:
       name: ""
       namespace: ""
-  version: 1.24.1-gs9
+  version: 1.25.14-gs2
