@@ -19,6 +19,8 @@ data:
         type: NodePort
     image:
       registry: {{ .DockerRegistry }}
+    podSecurityPolicy:
+      enabled: false
 ---
 apiVersion: application.giantswarm.io/v1alpha1
 kind: App

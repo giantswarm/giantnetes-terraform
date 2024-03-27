@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump `aws-cloud-controller-manager` to `1.25.14-gs2` and force enable PSS.
 - Bump `aws-ebs-csi-driver` to `2.28.1` and force enable PSS.
 - Bump `aws-node-termination-handler` to `1.19.0` and force enable PSS.
+- Disable PSPs for `ingress-nginx`.
 
 ### Remove
 
