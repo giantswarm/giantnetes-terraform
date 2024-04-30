@@ -8,6 +8,9 @@ data:
     queueURL: "{{.ClusterName}}-node-termination"
     image:
       registry: {{.DockerRegistry}}
+    global:
+      podSecurityStandards:
+        enforced: true
 ---
 apiVersion: application.giantswarm.io/v1alpha1
 kind: App
@@ -44,4 +47,4 @@ spec:
     secret:
       name: ""
       namespace: ""
-  version: 1.18.0
+  version: 1.19.0

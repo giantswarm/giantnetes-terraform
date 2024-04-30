@@ -11,6 +11,9 @@ data:
     kubeProxyReplacement: strict
     k8sServiceHost: "{{ .APIInternalDomainName }}"
     k8sServicePort: "443"
+    global:
+      podSecurityStandards:
+        enforced: true
     ipam:
       mode: kubernetes
     localRedirectPolicy: true
@@ -96,4 +99,4 @@ spec:
     secret:
       name: ""
       namespace: ""
-  version: 0.12.0
+  version: 0.21.0
