@@ -27,7 +27,7 @@ spec:
       - --bind-address=0.0.0.0
       - --etcd-prefix=giantswarm.io
       - --authorization-mode=RBAC
-      - --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,PodSecurityPolicy,PersistentVolumeClaimResize,DefaultStorageClass,Priority,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook
+      - --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,PersistentVolumeClaimResize,DefaultStorageClass,Priority,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook
       - --service-cluster-ip-range={{ .K8SServiceCIDR }}
       - --etcd-servers=https://{{if eq .Provider "azure" }}127.0.0.1{{else}}{{ .ETCDDomainName }}{{end}}:2379
       - --etcd-cafile=/etc/kubernetes/ssl/etcd/server-ca.pem
@@ -45,7 +45,6 @@ spec:
       - --service-account-signing-key-file=/etc/kubernetes/ssl/service-account-key.pem
       - --service-account-issuer=https://{{ .APIDomainName }}
       - --api-audiences=https://{{ .APIDomainName }}
-      - --feature-gates=TTLAfterFinished=true
       - --audit-log-path=/var/log/apiserver/audit.log
       - --audit-log-maxage=30
       - --audit-log-maxbackup=30

@@ -173,7 +173,7 @@ variable "docker_registry_mirror" {
 
 variable "hyperkube_version" {
   type    = string
-  default = "1.24.17"
+  default = "1.25.15"
 }
 
 ### DNS ###
