@@ -14,6 +14,9 @@ data:
           clusterIPRange: {{ .K8SServiceCIDR }}
         DNS:
           IP: {{ .K8SDNSIP }}
+    global:
+      podSecurityStandards:
+        enforced: true
 ---
 apiVersion: application.giantswarm.io/v1alpha1
 kind: App

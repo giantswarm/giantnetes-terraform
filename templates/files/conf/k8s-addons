@@ -39,10 +39,7 @@ do
 done
 
 # apply Security bootstrap (RBAC and PSP)
-SECURITY_FILES="rbac-bindings.yaml
- psp-policies.yaml
- psp-roles.yaml
- psp-bindings.yaml"
+SECURITY_FILES="rbac-bindings.yaml"
 for manifest in $SECURITY_FILES
 do
     while
