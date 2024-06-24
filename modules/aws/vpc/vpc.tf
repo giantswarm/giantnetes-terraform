@@ -48,7 +48,12 @@ EOF
       "Principal": "*",
       "Action": "*",
       "Effect": "Allow",
-      "Resource": ["arn:${var.arn_region}:s3:::etcd-backups.giantswarm.io/*", "arn:${var.arn_region}:s3:::etcd-backups.giantswarm.io"]
+      "Resource": [
+        "arn:${var.arn_region}:s3:::etcd-backups.giantswarm.io",
+        "arn:${var.arn_region}:s3:::etcd-backups.giantswarm.io/*",
+        "arn:${var.arn_region}:s3:::${var.cluster_name}-etcd-backups",
+        "arn:${var.arn_region}:s3:::${var.cluster_name}-etcd-backups/*"
+      ]
     },
     {
       "Sid": "CAPA",
