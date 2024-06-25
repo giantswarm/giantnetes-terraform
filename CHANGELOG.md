@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [16.0.1] - 2024-06-25
+
+### Changed
+
+- VPC: Allow access to installation specific etcd backup buckets. ([#764](https://github.com/giantswarm/giantnetes-terraform/pull/764))
+
 ## [16.0.0] - 2024-05-02
 
 ### Changed
@@ -976,7 +982,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add github release workflows.
 
-[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v16.0.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantnetes-terraform/compare/v16.0.1...HEAD
+[16.0.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v16.0.0...v16.0.1
 [16.0.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v15.0.1...v16.0.0
 [15.0.1]: https://github.com/giantswarm/giantnetes-terraform/compare/v15.0.0...v15.0.1
 [15.0.0]: https://github.com/giantswarm/giantnetes-terraform/compare/v14.20.0...v15.0.0
