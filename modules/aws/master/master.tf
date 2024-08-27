@@ -1,12 +1,12 @@
 locals {
   common_tags = merge(
     var.additional_tags,
-    map(
-      "giantswarm.io/cluster", var.cluster_name,
-      "giantswarm.io/installation", var.cluster_name,
-      "giantswarm.io/cluster-type", "control-plane",
-      "kubernetes.io/cluster/${var.cluster_name}", "owned"
-    )
+    tomap({
+      "giantswarm.io/cluster" = var.cluster_name
+      "giantswarm.io/installation" = var.cluster_name
+      "giantswarm.io/cluster-type" = "control-plane"
+      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+    })
   )
 
   common_tags_asg = join("",[for key, value in var.additional_tags : "{\"Key\":\"${key}\",\"Value\":\"${value}\",\"PropagateAtLaunch\": true},"])
@@ -156,9 +156,9 @@ resource "aws_ebs_volume" "master_etcd" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-master${count.index + 1}-etcd"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-master${count.index + 1}-etcd"
+    })
   )
 }
 
@@ -200,9 +200,9 @@ resource "aws_security_group" "master" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-master"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-master"
+    })
   )
 }
 
@@ -232,10 +232,10 @@ resource "aws_network_interface" "master" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-master${count.index + 1}-etcd",
-      "node.k8s.amazonaws.com/no_manage", "true",
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-master${count.index + 1}-etcd"
+      "node.k8s.amazonaws.com/no_manage" = "true"
+    })
   )
 
   lifecycle {
@@ -260,9 +260,9 @@ resource "aws_s3_bucket_object" "ignition_master_with_tags" {
 
   tags = merge(
     var.additional_tags,
-    map(
-      "Name", "${var.cluster_name}-ignition-master"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-ignition-master"
+    })
   )
 }
 

@@ -4,12 +4,12 @@ locals {
 
   common_tags = merge(
     var.additional_tags,
-    map(
-      "giantswarm.io/cluster", var.cluster_name,
-      "giantswarm.io/installation", var.cluster_name,
-      "giantswarm.io/cluster-type", "control-plane",
-      "kubernetes.io/cluster/${var.cluster_name}", "owned"
-    )
+    tomap({
+      "giantswarm.io/cluster" = var.cluster_name
+      "giantswarm.io/installation" =  var.cluster_name
+      "giantswarm.io/cluster-type" =  "control-plane"
+      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+    })
   )
 }
 
@@ -50,9 +50,9 @@ resource "aws_instance" "vault" {
 
   tags = merge(
     local.common_tags,
-    map( 
-      "Name", "${var.cluster_name}-vault${count.index}"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-vault${count.index}"
+    })
   )
 }
 
@@ -63,9 +63,9 @@ resource "aws_ebs_volume" "vault_etcd" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-vault"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-vault"
+    })
   )
 }
 
@@ -86,9 +86,9 @@ resource "aws_ebs_volume" "vault_logs" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-vault"
-    ),
+    tomap({
+      "Name" = "${var.cluster_name}-vault"
+    }),
   )
 }
 
@@ -166,9 +166,9 @@ resource "aws_security_group" "vault" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name" , "${var.cluster_name}-vault"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-vault"
+    })
   )
 }
 
@@ -195,9 +195,9 @@ resource "aws_s3_bucket_object" "ignition_vault_with_tags" {
 
   tags = merge(
     var.additional_tags,
-    map(
-      "Name", "${var.cluster_name}-ignition-vault"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-ignition-vault"
+    })
   )
 }
 

@@ -5,9 +5,9 @@ resource "aws_subnet" "vault_0" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-vault0"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-vault0"
+    })
   )
 }
 

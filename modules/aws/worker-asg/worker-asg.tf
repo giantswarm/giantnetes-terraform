@@ -4,11 +4,11 @@ locals {
 
   common_tags = merge(
     var.additional_tags,
-    map(
-      "giantswarm.io/cluster", var.cluster_name,
-      "giantswarm.io/installation", var.cluster_name,
-      "kubernetes.io/cluster/${var.cluster_name}", "owned"
-    )
+    tomap({
+      "giantswarm.io/cluster" = var.cluster_name
+      "giantswarm.io/installation" = var.cluster_name
+      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+    })
   )
   common_tags_asg = join("",[for key, value in var.additional_tags : "{\"Key\":\"${key}\",\"Value\":\"${value}\",\"PropagateAtLaunch\": true},"])
 
@@ -177,9 +177,9 @@ resource "aws_security_group" "worker" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-worker"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-worker"
+    })
   )
 }
 
@@ -196,9 +196,9 @@ resource "aws_s3_bucket_object" "ignition_worker_with_tags" {
 
   tags = merge(
     var.additional_tags,
-    map(
-      "Name", "${var.cluster_name}-ignition-worker"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-ignition-worker"
+    })
   )
 }
 

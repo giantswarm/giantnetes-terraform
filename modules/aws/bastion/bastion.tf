@@ -9,12 +9,12 @@ locals {
 
   common_tags = merge(
     var.additional_tags,
-    map(
-      "giantswarm.io/cluster", var.cluster_name,
-      "giantswarm.io/installation", var.cluster_name,
-      "giantswarm.io/cluster-type", "control-plane",
-      "kubernetes.io/cluster/${var.cluster_name}", "owned"
-    )
+    tomap({
+      "giantswarm.io/cluster" = var.cluster_name
+      "giantswarm.io/installation" = var.cluster_name
+      "giantswarm.io/cluster-type" = "control-plane"
+      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+    })
   )
 }
 
@@ -41,9 +41,9 @@ resource "aws_instance" "bastion" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-bastion${count.index}"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-bastion${count.index}"
+    })
   )
 }
 
@@ -94,9 +94,9 @@ resource "aws_security_group" "bastion" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-bastion"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-bastion"
+    })
   )
 }
 
@@ -124,9 +124,9 @@ resource "aws_s3_bucket_object" "ignition_bastion_with_tags" {
 
   tags = merge(
     var.additional_tags,
-    map(
-      "Name", "${var.cluster_name}-ignition-bastion"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-ignition-bastion"
+    })
   )
 }
 

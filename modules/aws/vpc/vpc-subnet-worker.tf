@@ -7,9 +7,9 @@ resource "aws_subnet" "worker" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-worker${count.index}"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-worker${count.index}"
+    })
   )
 }
 

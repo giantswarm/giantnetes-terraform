@@ -1,11 +1,11 @@
 locals {
   common_tags = merge(
   var.additional_tags,
-  map(
-  "giantswarm.io/cluster", var.cluster_name,
-  "giantswarm.io/installation", var.cluster_name,
-  "kubernetes.io/cluster/${var.cluster_name}", "owned"
-  )
+  tomap({
+  "giantswarm.io/cluster" =  var.cluster_name
+  "giantswarm.io/installation" =  var.cluster_name
+  "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+  })
   )
 }
 resource "aws_elb" "worker" {
@@ -39,9 +39,9 @@ resource "aws_elb" "worker" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-worker"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-worker"
+    })
   )
 }
 
@@ -77,9 +77,9 @@ resource "aws_security_group" "worker_elb" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-worker-elb"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-worker-elb"
+    })
   )
 }
 
