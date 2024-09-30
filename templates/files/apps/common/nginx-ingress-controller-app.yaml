@@ -6,6 +6,8 @@ metadata:
 data:
   values: |
     controller:
+      image:
+        tag: "v1.11.2"
       allowSnippetAnnotations: true
       enableSSLChainCompletion: true
       resources:
