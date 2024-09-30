@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- nginx-ingress-controller-app: Update ingress-nginx container image to `v1.11.2`.
+
 ## [16.0.1] - 2024-06-25
 
 ### Changed
