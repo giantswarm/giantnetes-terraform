@@ -24,11 +24,11 @@ resource "aws_vpn_gateway" "vpn_gw" {
 
   tags = merge(
     var.additional_tags,
-    map(
-      "Name",  var.aws_vpn_name,
-      "giantswarm.io/cluster", var.aws_cluster_name,
-      "giantswarm.io/installation", var.aws_cluster_name,
-    )
+    tomap({
+      "Name" =  var.aws_vpn_name
+      "giantswarm.io/cluster" = var.aws_cluster_name
+      "giantswarm.io/installation" = var.aws_cluster_name
+    })
   )
 }
 
@@ -41,11 +41,11 @@ resource "aws_vpn_connection" "aws_vpn_conn_0" {
 
   tags = merge(
     var.additional_tags,
-    map(
-      "Name",  "${var.aws_vpn_name}-0", 
-      "giantswarm.io/cluster", var.aws_cluster_name,
-      "giantswarm.io/installation", var.aws_cluster_name,
-    )
+    tomap({
+      "Name" =  "${var.aws_vpn_name}-0"
+      "giantswarm.io/cluster" = var.aws_cluster_name,
+      "giantswarm.io/installation" = var.aws_cluster_name,
+    })
   )
 }
 
@@ -58,11 +58,11 @@ resource "aws_vpn_connection" "aws_vpn_conn_1" {
 
   tags = merge(
     var.additional_tags,
-    map(
-      "Name",  "${var.aws_vpn_name}-1",
-      "giantswarm.io/cluster", var.aws_cluster_name,
-      "giantswarm.io/installation", var.aws_cluster_name,
-    )
+    tomap({
+      "Name" =  "${var.aws_vpn_name}-1"
+      "giantswarm.io/cluster" = var.aws_cluster_name
+      "giantswarm.io/installation" = var.aws_cluster_name
+    })
   )
 }
 

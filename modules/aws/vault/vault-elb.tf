@@ -21,9 +21,9 @@ resource "aws_elb" "vault" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-vault"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-vault"
+    })
   )
 }
 
@@ -60,9 +60,9 @@ resource "aws_security_group" "vault_elb" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-vault-elb"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-vault-elb"
+    })
   )
 }
 

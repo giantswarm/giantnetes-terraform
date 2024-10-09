@@ -12,9 +12,9 @@ resource "aws_subnet" "cni_v2" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-cni_v2-${count.index}"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-cni_v2-${count.index}"
+    })
   )
   depends_on = [aws_vpc_ipv4_cidr_block_association.cni_v2]
 }
@@ -48,9 +48,9 @@ resource "aws_security_group" "cni" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-cni"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-cni"
+    })
   )
 }
 

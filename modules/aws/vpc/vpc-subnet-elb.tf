@@ -7,9 +7,9 @@ resource "aws_subnet" "elb" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-elb${count.index}"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-elb${count.index}"
+    })
   )
 }
 

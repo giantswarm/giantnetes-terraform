@@ -23,9 +23,9 @@ resource "aws_elb" "master_api" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-master-api"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-master-api"
+    })
   )
 }
 
@@ -54,9 +54,9 @@ resource "aws_elb" "master_api_internal" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-master-api-internal"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-master-api-internal"
+    })
   )
 }
 
@@ -97,9 +97,9 @@ resource "aws_security_group" "master_elb_api" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-master-elb-api"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-master-elb-api"
+    })
   )
 }
 
@@ -140,9 +140,9 @@ resource "aws_security_group" "master_elb_api_internal" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-master-elb-api-internal"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-master-elb-api-internal"
+    })
   )
 }
 

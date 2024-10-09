@@ -1,12 +1,12 @@
 locals {
   common_tags = merge(
     var.additional_tags,
-    map(
-      "giantswarm.io/cluster", var.cluster_name,
-      "giantswarm.io/installation", var.cluster_name,
-      "giantswarm.io/cluster-type", "control-plane",
-      "kubernetes.io/cluster/${var.cluster_name}", "owned"
-    )
+    tomap({
+      "giantswarm.io/cluster" =  var.cluster_name
+      "giantswarm.io/installation" =  var.cluster_name
+      "giantswarm.io/cluster-type" =  "control-plane"
+      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+    })
   )
 }
 
@@ -39,9 +39,9 @@ resource "aws_s3_bucket" "logging" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.s3_bucket_prefix}${var.cluster_name}-access-logs"
-    )
+    tomap({
+      "Name" = "${var.s3_bucket_prefix}${var.cluster_name}-access-logs"
+    })
   )
 }
 
@@ -94,9 +94,9 @@ resource "aws_s3_bucket" "loki" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-g8s-loki"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-g8s-loki"
+    })
   )
 }
 
@@ -149,9 +149,9 @@ resource "aws_s3_bucket" "mimir" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-g8s-mimir"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-g8s-mimir"
+    })
   )
 }
 
@@ -195,9 +195,9 @@ resource "aws_s3_bucket" "mimir-ruler" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-g8s-mimir-ruler"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-g8s-mimir-ruler"
+    })
   )
 }
 
@@ -250,9 +250,9 @@ resource "aws_s3_bucket" "tempo" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-g8s-tempo"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-g8s-tempo"
+    })
   )
 }
 
@@ -302,9 +302,9 @@ resource "aws_s3_bucket" "ignition" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-ignition"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-ignition"
+    })
   )
 }
 
@@ -347,8 +347,8 @@ resource "aws_cloudwatch_log_group" "control-plane" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-ignition"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-ignition"
+    })
   )
 }

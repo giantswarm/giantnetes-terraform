@@ -9,12 +9,12 @@
 locals {
   common_tags = merge(
     var.additional_tags,
-    map(
-      "giantswarm.io/cluster", var.cluster_name,
-      "giantswarm.io/installation", var.cluster_name,
-      "giantswarm.io/cluster-type", "control-plane",
-      "kubernetes.io/cluster/${var.cluster_name}", "owned"
-    )
+    tomap({
+      "giantswarm.io/cluster" = var.cluster_name
+      "giantswarm.io/installation" =  var.cluster_name
+      "giantswarm.io/cluster-type" = "control-plane"
+      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+    })
   )
 
   policy_allow = <<EOF
@@ -93,9 +93,9 @@ resource "aws_vpc" "cluster_vpc" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", var.cluster_name
-    )
+    tomap({
+      "Name" = var.cluster_name
+    })
   )
 }
 
@@ -104,9 +104,9 @@ resource "aws_internet_gateway" "cluster_vpc" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", var.cluster_name
-    )
+    tomap({
+      "Name" = var.cluster_name
+    })
   )
 }
 
@@ -123,9 +123,9 @@ resource "aws_eip" "private_nat_gateway" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-private-nat-gateway${count.index}"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-private-nat-gateway${count.index}"
+    })
   )
 }
 
@@ -135,10 +135,10 @@ resource "aws_route_table" "cluster_vpc_private" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}_private_${count.index}",
-      "giantswarm.io/route-table-type", "private"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}_private_${count.index}"
+      "giantswarm.io/route-table-type" = "private"
+    })
   )
 }
 
@@ -148,10 +148,10 @@ resource "aws_route_table" "cluster_vpc_public" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "Name", "${var.cluster_name}-public${count.index}",
-      "giantswarm.io/route-table-type", "public"
-    )
+    tomap({
+      "Name" = "${var.cluster_name}-public${count.index}"
+      "giantswarm.io/route-table-type" = "public"
+    })
   )
 }
 
